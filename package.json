@@ -1,14 +1,12 @@
 {
     "name": "mindforge-guard-workspace",
     "private": true,
-    "workspaces": [
-      "packages/*"
-    ],
-    "engines": {
-      "node": ">=18"
-    },
+    "workspaces": ["packages/*"],
+    "engines": { "node": ">=18" },
     "scripts": {
       "install:all": "npm install",
-      "guard": "node packages/guard/src/runGuard.mjs --help"
+      "guard": "node packages/guard/src/runGuard.mjs",
+      "guard:help": "node packages/guard/src/runGuard.mjs --help",
+      "guard:version": "node packages/guard/src/runGuard.mjs --version"
     }
   }

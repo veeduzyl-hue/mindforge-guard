@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { loadPolicy } from "../../kernel/src/policy.mjs";
 import { runAudit } from "./runAudit.mjs";
@@ -29,9 +30,10 @@ import { buildCompare } from "./runtime/drift/compare.mjs";
 // v0.29 NEW (signal-only analytics surface)
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
 
-function parseFlag(argv, flag) {
-  return argv.includes(flag);
-}
+const GUARD_VERSION = "1.0.0";
+
+// DS-EXIT-001: keep stable defaults for packaging failures
+const EXIT_ERROR_DEFAULT = 30;
 
 function parseValue(argv, key) {
   const pref = `${key}=`;
@@ -39,8 +41,49 @@ function parseValue(argv, key) {
   return hit ? hit.slice(pref.length) : undefined;
 }
 
+function renderGuardHelp() {
+  return [
+    "Guard — AI Coding Safety Layer",
+    "",
+    "Usage:",
+    "  guard <command> [options]",
+    "",
+    "Getting started:",
+    "  guard init",
+    "",
+    "Core:",
+    "  guard validate-policy [--path=<file>]",
+    "  guard audit ...",
+    "  guard snapshot ...",
+    "",
+    "Drift (signal-only; no policy required):",
+    "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
+    "  guard drift timeline [--window 7d|14d|30d]",
+    "  guard drift compare  [--window 7d|14d|30d]",
+    "",
+    "Analytics (signal-only; no policy required):",
+    "  guard assoc correlate [--window 7d|14d|30d] [--bucket day]",
+    "                       [--x drift_density|drift_events|drift_unique_modules]",
+    "                       [--y risk_score_avg|risk_score_p95|risk_events]",
+    "                       [--lags <n>] [--subsamples <n>]",
+    "                       [--eventsPath <file>] [--auditPath <file>]",
+    "                       [--pretty]",
+    "",
+    "Options:",
+    "  --help, -h     Show help",
+    "  --version, -v  Show version",
+    "",
+  ].join("\n");
+}
+
 function parseDriftArgs(argv) {
-  const out = { window: "7d", format: "text", pretty: false, out: null, help: false };
+  const out = {
+    window: "7d",
+    format: "text",
+    pretty: false,
+    out: null,
+    help: false,
+  };
   const a = [...argv];
   while (a.length) {
     const t = a.shift();
@@ -55,12 +98,12 @@ function parseDriftArgs(argv) {
 
 function renderDriftHelp() {
   return [
-    "mf drift <status|timeline|compare>",
+    "guard drift <status|timeline|compare>",
     "",
     "Usage:",
-    "  mf drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
-    "  mf drift timeline [--window 7d|14d|30d]",
-    "  mf drift compare  [--window 7d|14d|30d]",
+    "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
+    "  guard drift timeline [--window 7d|14d|30d]",
+    "  guard drift compare  [--window 7d|14d|30d]",
     "",
     "Notes:",
     "  - signal-only; does NOT affect exit codes",
@@ -135,15 +178,15 @@ function parseAssocArgs(argv) {
 
 function renderAssocHelp() {
   return [
-    "mf assoc correlate",
+    "guard assoc correlate",
     "",
     "Usage:",
-    "  mf assoc correlate [--window 7d|14d|30d] [--bucket day]",
-    "                    [--x drift_density|drift_events|drift_unique_modules]",
-    "                    [--y risk_score_avg|risk_score_p95|risk_events]",
-    "                    [--lags <n>] [--subsamples <n>]",
-    "                    [--eventsPath <file>] [--auditPath <file>]",
-    "                    [--pretty]",
+    "  guard assoc correlate [--window 7d|14d|30d] [--bucket day]",
+    "                       [--x drift_density|drift_events|drift_unique_modules]",
+    "                       [--y risk_score_avg|risk_score_p95|risk_events]",
+    "                       [--lags <n>] [--subsamples <n>]",
+    "                       [--eventsPath <file>] [--auditPath <file>]",
+    "                       [--pretty]",
     "",
     "Notes:",
     "  - signal-only analytics; does NOT affect exit codes",
@@ -176,11 +219,90 @@ function stableAssocBundle({ window, bucket, x, y }) {
   };
 }
 
+function policyMissingMessage(policyPath) {
+  return (
+    "Guard is not initialized for this repo.\n" +
+    `Missing policy file: ${policyPath}\n\n` +
+    "Run:\n" +
+    "  guard init\n"
+  );
+}
+
+function ensureDir(p) {
+  fs.mkdirSync(p, { recursive: true });
+}
+
+function writeFileAtomic(filePath, content) {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, content, "utf8");
+}
+
+/**
+ * Minimal default policy (Community).
+ * This is intentionally small and stable to avoid scope creep in 1.0 packaging.
+ */
+function defaultPolicyJson() {
+  return {
+    v: 1,
+    edition: "community",
+    exit_codes: {
+      ok: 0,
+      soft_block: 10,
+      hard_block: 20,
+      error: 30,
+    },
+    limits: {
+      lines_added_soft: 900,
+      files_changed_hard: 16,
+    },
+  };
+}
+
+function getRepoPolicyPath(repoRoot) {
+  return path.join(repoRoot, ".mindforge", "config", "policy.json");
+}
+
 export async function runGuard({ argv }) {
+  // Product-level help/version (must work even if no command is given)
+  if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
+    return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
+  }
+  if (argv.includes("--version") || argv.includes("-v")) {
+    return { exitCode: 0, stdout: `guard ${GUARD_VERSION}\n` };
+  }
+
   const cmd = argv[0];
+  const repoRoot = process.cwd();
 
   // -------------------------
-  // validate-policy
+  // init (Day-0 UX)
+  // -------------------------
+  if (cmd === "init") {
+    const policyPath = getRepoPolicyPath(repoRoot);
+
+    // If already exists, keep idempotent
+    if (fs.existsSync(policyPath)) {
+      return {
+        exitCode: 0,
+        stdout: `Guard already initialized: ${policyPath}\n`,
+      };
+    }
+
+    const policy = defaultPolicyJson();
+    writeFileAtomic(policyPath, JSON.stringify(policy, null, 2) + "\n");
+
+    // Create common runtime dirs (safe/no-op if unused)
+    ensureDir(path.join(repoRoot, ".mindforge", "drift"));
+    ensureDir(path.join(repoRoot, ".mindforge", "audit"));
+
+    return {
+      exitCode: 0,
+      stdout: `Initialized Guard: ${policyPath}\n`,
+    };
+  }
+
+  // -------------------------
+  // validate-policy (no need to load repo policy)
   // -------------------------
   if (cmd === "validate-policy") {
     const args = argv.slice(1);
@@ -197,23 +319,17 @@ export async function runGuard({ argv }) {
     }
   }
 
-  const policy = await loadPolicy();
-
   // -------------------------
-  // drift surface
+  // drift surface (signal-only; NO policy required)
   // -------------------------
   if (cmd === "drift") {
     const sub = argv[1] || "status";
     const args = parseDriftArgs(argv.slice(2));
-    const repoRoot = process.cwd();
 
     if (args.help) {
       return { exitCode: 0, stdout: renderDriftHelp() + "\n" };
     }
 
-    // -------------------------
-    // status (existing)
-    // -------------------------
     if (sub === "status") {
       let bundle;
       try {
@@ -235,10 +351,8 @@ export async function runGuard({ argv }) {
       }
 
       if (args.out) {
-        const abs = path.isAbsolute(args.out)
-          ? args.out
-          : path.join(process.cwd(), args.out);
-        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        const abs = path.isAbsolute(args.out) ? args.out : path.join(repoRoot, args.out);
+        ensureDir(path.dirname(abs));
         fs.writeFileSync(abs, text, "utf8");
         return { exitCode: 0, stdout: abs + "\n" };
       }
@@ -246,9 +360,6 @@ export async function runGuard({ argv }) {
       return { exitCode: 0, stdout: text };
     }
 
-    // -------------------------
-    // timeline (v0.28)
-    // -------------------------
     if (sub === "timeline") {
       try {
         const result = buildTimeline({
@@ -256,10 +367,7 @@ export async function runGuard({ argv }) {
           window: args.window,
         });
 
-        return {
-          exitCode: 0,
-          stdout: JSON.stringify(result, null, 2) + "\n",
-        };
+        return { exitCode: 0, stdout: JSON.stringify(result, null, 2) + "\n" };
       } catch {
         return {
           exitCode: 0,
@@ -280,9 +388,6 @@ export async function runGuard({ argv }) {
       }
     }
 
-    // -------------------------
-    // compare (v0.28)
-    // -------------------------
     if (sub === "compare") {
       try {
         const result = buildCompare({
@@ -290,10 +395,7 @@ export async function runGuard({ argv }) {
           window: args.window,
         });
 
-        return {
-          exitCode: 0,
-          stdout: JSON.stringify(result, null, 2) + "\n",
-        };
+        return { exitCode: 0, stdout: JSON.stringify(result, null, 2) + "\n" };
       } catch {
         return {
           exitCode: 0,
@@ -319,7 +421,7 @@ export async function runGuard({ argv }) {
   }
 
   // -------------------------
-  // assoc surface (v0.29)
+  // assoc surface (signal-only; NO policy required)
   // -------------------------
   if (cmd === "assoc") {
     const sub = argv[1] || "correlate";
@@ -332,7 +434,7 @@ export async function runGuard({ argv }) {
     let bundle;
     try {
       bundle = buildAssociationBundle({
-        repoRoot: process.cwd(),
+        repoRoot,
         window: args.window,
         bucket: args.bucket,
         metric_x: args.x,
@@ -359,7 +461,23 @@ export async function runGuard({ argv }) {
   }
 
   // -------------------------
-  // audit (unchanged)
+  // Commands below REQUIRE policy (audit/snapshot/etc.)
+  // -------------------------
+  let policy;
+  try {
+    policy = await loadPolicy({ repoRoot });
+  } catch (err) {
+    if (err?.code === "MF_POLICY_MISSING") {
+      return {
+        exitCode: EXIT_ERROR_DEFAULT,
+        stderr: policyMissingMessage(err.policy_path || getRepoPolicyPath(repoRoot)),
+      };
+    }
+    throw err;
+  }
+
+  // -------------------------
+  // audit
   // -------------------------
   if (cmd === "audit") {
     const result = await runAudit({ argv, policy });
@@ -378,5 +496,44 @@ export async function runGuard({ argv }) {
     };
   }
 
-  return { exitCode: policy.exit_codes?.error ?? 30 };
+  // (keep hook path if you still use it internally; do not expose in help)
+  if (cmd === "hook") {
+    try {
+      const cfg = loadHookConfig({ repoRoot });
+      const out = await invokeEnterpriseHook({ argv: argv.slice(1), config: cfg, policy });
+      return { exitCode: out?.exitCode ?? 0, stdout: out?.stdout, stderr: out?.stderr };
+    } catch {
+      return { exitCode: 0, stdout: "" };
+    }
+  }
+
+  // Unknown command -> show help + non-zero
+  return {
+    exitCode: policy.exit_codes?.error ?? EXIT_ERROR_DEFAULT,
+    stdout: renderGuardHelp() + "\n",
+  };
 }
+
+/**
+ * CLI entrypoint
+ */
+async function main() {
+  const result = await runGuard({ argv: process.argv.slice(2) });
+
+  if (result?.stdout) process.stdout.write(String(result.stdout));
+  if (result?.stderr) process.stderr.write(String(result.stderr));
+
+  const code =
+    typeof result?.exitCode === "number" && Number.isFinite(result.exitCode)
+      ? result.exitCode
+      : 0;
+
+  process.exit(code);
+}
+
+// Always run main() when executed as CLI entry
+main().catch((err) => {
+  const msg = err?.stack || err?.message || String(err);
+  process.stderr.write(msg + "\n");
+  process.exit(1);
+});
