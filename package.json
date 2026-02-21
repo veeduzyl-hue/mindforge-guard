@@ -1,0 +1,7 @@
+{
+    "name": "@mindforge/kernel",
+    "version": "0.20.0",
+    "type": "module",
+    "main": "src/index.mjs"
+  }
+  
