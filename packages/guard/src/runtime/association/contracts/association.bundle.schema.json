@@ -1,0 +1,147 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mindforge://schemas/association/association_bundle.v2.json",
+    "title": "Association Bundle v2 (signal-only, statistically rigorous)",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "kind",
+      "v",
+      "generated_at",
+      "window",
+      "bucket",
+      "metric_x",
+      "metric_y",
+      "series",
+      "diagnostics",
+      "results"
+    ],
+    "properties": {
+      "kind": { "const": "association_bundle" },
+      "v": { "const": 2 },
+  
+      "generated_at": { "type": "string", "minLength": 1 },
+  
+      "window": { "type": "string", "enum": ["7d", "14d", "30d"] },
+      "bucket": { "type": "string", "enum": ["day"] },
+  
+      "metric_x": {
+        "type": "string",
+        "enum": ["drift_density", "drift_events", "drift_unique_modules"]
+      },
+      "metric_y": {
+        "type": "string",
+        "enum": ["risk_score_avg", "risk_score_p95", "risk_events"]
+      },
+  
+      "series": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["t", "x", "y"],
+          "properties": {
+            "t": { "type": "string", "minLength": 1 },
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          }
+        }
+      },
+  
+      "diagnostics": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_days",
+          "nonzero_x_days",
+          "nonzero_y_days",
+          "nonzero_overlap_days",
+          "missing_policy",
+          "notes"
+        ],
+        "properties": {
+          "window_days": { "type": "number", "minimum": 1 },
+          "nonzero_x_days": { "type": "number", "minimum": 0 },
+          "nonzero_y_days": { "type": "number", "minimum": 0 },
+          "nonzero_overlap_days": { "type": "number", "minimum": 0 },
+          "missing_policy": { "type": "string", "enum": ["zero_fill"] },
+          "notes": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+  
+      "results": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pearson", "lags", "robustness"],
+        "properties": {
+          "pearson": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "r",
+              "n",
+              "n_effective",
+              "degenerate",
+              "variance_x",
+              "variance_y"
+            ],
+            "properties": {
+              "r": { "type": "number", "minimum": -1, "maximum": 1 },
+              "n": { "type": "number", "minimum": 1 },
+              "n_effective": { "type": "number", "minimum": 0 },
+              "degenerate": { "type": "boolean" },
+              "variance_x": { "type": "number", "minimum": 0 },
+              "variance_y": { "type": "number", "minimum": 0 }
+            }
+          },
+  
+          "lags": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["lag_days", "r", "n", "n_pairs", "n_effective", "degenerate"],
+              "properties": {
+                "lag_days": { "type": "number", "minimum": -30, "maximum": 30 },
+                "r": { "type": "number", "minimum": -1, "maximum": 1 },
+                "n": { "type": "number", "minimum": 1 },
+                "n_pairs": { "type": "number", "minimum": 0 },
+                "n_effective": { "type": "number", "minimum": 0 },
+                "degenerate": { "type": "boolean" }
+              }
+            }
+          },
+  
+          "robustness": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "subsamples",
+              "samples_used",
+              "degenerate_rate",
+              "median_r",
+              "iqr_r",
+              "stability",
+              "is_informative"
+            ],
+            "properties": {
+              "method": { "type": "string", "enum": ["block_bootstrap"] },
+              "subsamples": { "type": "number", "minimum": 20, "maximum": 500 },
+              "samples_used": { "type": "number", "minimum": 0, "maximum": 500 },
+              "degenerate_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+              "median_r": { "type": "number", "minimum": -1, "maximum": 1 },
+              "iqr_r": { "type": "number", "minimum": 0, "maximum": 2 },
+              "stability": { "type": "string", "enum": ["low", "medium", "high"] },
+              "is_informative": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  }

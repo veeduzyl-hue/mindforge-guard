@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mindforge://schemas/drift/drift_timeline.v1.json",
+    "title": "Drift Timeline v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["kind", "v", "window", "generated_at", "series"],
+    "properties": {
+      "kind": { "const": "drift_timeline" },
+      "v": { "const": 1 },
+      "window": {
+        "type": "string",
+        "enum": ["7d", "14d", "30d"]
+      },
+      "generated_at": {
+        "type": "string",
+        "minLength": 1
+      },
+      "series": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["t", "events", "unique_modules"],
+          "properties": {
+            "t": { "type": "string" },
+            "events": { "type": "number", "minimum": 0 },
+            "unique_modules": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }

@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mindforge://schemas/drift/drift_signal_bundle.v2.json",
+    "title": "Drift Signal Bundle v2",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["kind", "v", "window", "generated_at", "trend", "signal", "policy"],
+    "properties": {
+      "kind": { "const": "drift_signal_bundle" },
+      "v": { "const": 2 },
+      "window": {
+        "type": "string",
+        "enum": ["7d", "14d", "30d"]
+      },
+      "generated_at": {
+        "type": "string",
+         "minLength": 1
+      },
+
+      "trend": {
+        "type": "string",
+        "enum": ["accelerating", "stable", "cooling"]
+      },
+      "signal": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["density", "slope", "expansion", "unique_modules"],
+        "properties": {
+          "density": { "type": "number", "minimum": 0 },
+          "slope": { "type": "number" },
+          "expansion": { "type": "number", "minimum": 0 },
+          "unique_modules": { "type": "number", "minimum": 0 }
+        }
+      },
+      "highlights": {
+        "type": "array",
+        "maxItems": 10,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "id", "delta"],
+          "properties": {
+            "type": { "type": "string", "enum": ["surface", "module"] },
+            "id": { "type": "string", "minLength": 1 },
+            "delta": { "type": "number" }
+          }
+        }
+      },
+      "explain": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "events": { "type": "number", "minimum": 0 },
+          "events_prev": { "type": "number", "minimum": 0 },
+          "unique_modules_prev": { "type": "number", "minimum": 0 }
+        }
+      },
+      "policy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["affects_exit", "affects_risk_v1"],
+        "properties": {
+          "affects_exit": { "const": false },
+          "affects_risk_v1": { "const": false }
+        }
+      }
+    }
+  }
+  

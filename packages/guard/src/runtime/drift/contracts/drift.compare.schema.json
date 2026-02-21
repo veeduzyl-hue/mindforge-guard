@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mindforge://schemas/drift/drift_compare.v1.json",
+    "title": "Drift Compare v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["kind", "v", "window", "generated_at", "a", "b", "delta"],
+    "properties": {
+      "kind": { "const": "drift_compare" },
+      "v": { "const": 1 },
+      "window": {
+        "type": "string",
+        "enum": ["7d", "14d", "30d"]
+      },
+      "generated_at": { "type": "string" },
+      "a": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["events", "unique_modules", "density", "expansion"],
+        "properties": {
+          "events": { "type": "number" },
+          "unique_modules": { "type": "number" },
+          "density": { "type": "number" },
+          "expansion": { "type": "number" }
+        }
+      },
+      "b": { "$ref": "#/properties/a" },
+      "delta": { "$ref": "#/properties/a" }
+    }
+  }
