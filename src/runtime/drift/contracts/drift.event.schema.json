@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mindforge://schemas/drift/drift_event.v2.json",
+    "title": "Drift Collector Event v2 (JSONL line)",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["kind", "v", "ts", "surface_id", "module"],
+    "properties": {
+      "kind": { "const": "drift_event" },
+      "v": { "const": 2 },
+  
+      "ts": { "type": "string", "minLength": 1 },
+  
+      "surface_id": { "type": "string", "minLength": 1 },
+      "module": { "type": "string", "minLength": 1 },
+  
+      "risk_score": { "type": ["number", "null"] },
+      "severity": { "type": ["string", "null"] },
+      "verdict": { "type": ["string", "null"] },
+      "exit_code": { "type": ["number", "null"] },
+      "ds_exit_001": { "type": ["string", "null"] },
+  
+      "receipt_id": { "type": ["string", "null"] },
+      "snapshot_id": { "type": ["string", "null"] }
+    }
+  }
+  
