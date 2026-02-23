@@ -3,26 +3,27 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { loadPolicy } from "../../kernel/src/policy.mjs";
-import { runAudit } from "./runAudit.mjs";
-import { runSnapshot } from "../../kernel/src/snapshot.mjs";
 import {
   validatePolicyFile,
   defaultPolicyPath,
 } from "../../kernel/src/validatePolicy.mjs";
 
-// v0.24 Enterprise Hooks (minimal, internal)
-import { loadHookConfig } from "./hooks/hook_config.mjs";
-import { invokeEnterpriseHook } from "./hooks/hook_invoke.mjs";
-
-// v0.26 Drift (signal-only)
+// Drift (signal-only)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
-
-// v0.28
 import { buildTimeline } from "./runtime/drift/timeline.mjs";
 import { buildCompare } from "./runtime/drift/compare.mjs";
 
-// v0.29 (signal-only analytics surface)
+// Assoc (signal-only analytics)
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
+
+// License (manual activation v0)
+import {
+  readLicense,
+  writeLicenseFromKey,
+  removeLicense,
+  licenseTier,
+  getLicensePath,
+} from "./product/license.mjs";
 
 const GUARD_VERSION = "1.0.0";
 
@@ -58,6 +59,11 @@ function renderGuardHelp() {
     "                       [--eventsPath <file>] [--auditPath <file>]",
     "                       [--pretty]",
     "",
+    "License:",
+    "  guard license status",
+    "  guard license activate <key>",
+    "  guard license remove",
+    "",
     "Options:",
     "  --help, -h     Show help",
     "  --version, -v  Show version",
@@ -88,13 +94,13 @@ function policyMissingMessage(policyPath) {
 }
 
 /**
- * Minimal default policy (Community).
- * Intentionally small and stable to keep 1.0 packaging crisp.
+ * Minimal default policy.
+ * Keep 1.0 packaging crisp: small, stable, and predictable.
  */
-function defaultPolicyJson() {
+function defaultPolicyJson({ edition }) {
   return {
     v: 1,
-    edition: "community",
+    edition: edition || "community",
     exit_codes: {
       ok: 0,
       soft_block: 10,
@@ -109,11 +115,14 @@ function defaultPolicyJson() {
 }
 
 function parseInitArgs(argv) {
-  const out = { force: false, dryRun: false, help: false };
-  for (const t of argv) {
+  const out = { force: false, dryRun: false, help: false, edition: null };
+  const a = [...argv];
+  while (a.length) {
+    const t = a.shift();
     if (t === "--force") out.force = true;
     else if (t === "--dry-run") out.dryRun = true;
     else if (t === "--help" || t === "-h") out.help = true;
+    else if (t === "--edition") out.edition = a.shift() || null;
   }
   return out;
 }
@@ -123,11 +132,15 @@ function renderInitHelp() {
     "guard init",
     "",
     "Usage:",
-    "  guard init [--force] [--dry-run]",
+    "  guard init [--force] [--dry-run] [--edition community|pro|pro+]",
     "",
     "Options:",
-    "  --force     Overwrite existing policy file",
-    "  --dry-run   Print policy content without writing files",
+    "  --force       Overwrite existing policy file",
+    "  --dry-run     Print policy content without writing files",
+    "  --edition     Write policy edition (repo-level). Default: community",
+    "",
+    "Notes:",
+    "  - repo policy edition can limit enforcement even if your account license is higher",
     "",
   ].join("\n");
 }
@@ -197,7 +210,7 @@ function stableDriftBundle({ window }) {
 }
 
 /* -------------------------
- * v0.29 assoc (signal-only)
+ * assoc (signal-only)
  * ------------------------- */
 
 function parseAssocArgs(argv) {
@@ -287,7 +300,42 @@ function safeTry(fn, fallback) {
   }
 }
 
-function renderStatusText({ repoRoot, policyState, driftState, licenseState }) {
+function normalizeEdition(e) {
+  if (e === "pro+" || e === "pro" || e === "community") return e;
+  return "community";
+}
+
+function tierFromEdition(e) {
+  if (e === "pro+") return 2;
+  if (e === "pro") return 1;
+  return 0;
+}
+
+function effectiveTier({ policyEdition, licenseTierNum }) {
+  // enforcement is governed by repo policy; analytics by license.
+  // For "Effective" messaging: show both explicitly, plus a derived min for "overall".
+  const enforcementTier = tierFromEdition(policyEdition);
+  const analyticsTier = typeof licenseTierNum === "number" ? licenseTierNum : 0;
+  return {
+    enforcementTier,
+    analyticsTier,
+    overallTier: Math.min(enforcementTier, analyticsTier),
+  };
+}
+
+function tierLabel(n) {
+  if (n >= 2) return "pro+";
+  if (n === 1) return "pro";
+  return "community";
+}
+
+function renderStatusText({
+  repoRoot,
+  policyState,
+  driftState,
+  licenseState,
+  effective,
+}) {
   const lines = [];
   lines.push("Guard Status");
   lines.push("------------");
@@ -299,7 +347,7 @@ function renderStatusText({ repoRoot, policyState, driftState, licenseState }) {
     lines.push(`  next: guard init`);
   } else if (policyState.kind === "ok") {
     lines.push(`Policy: ok`);
-    lines.push(`  edition: ${policyState.edition}`);
+    lines.push(`  edition: ${policyState.edition} (repo)`);
     lines.push(`  path: ${policyState.path}`);
   } else {
     lines.push(`Policy: error`);
@@ -318,10 +366,28 @@ function renderStatusText({ repoRoot, policyState, driftState, licenseState }) {
     lines.push(`Drift: unavailable`);
   }
 
-  // License (placeholder until we wire real license commands)
+  // License
   lines.push("");
   lines.push(`License: ${licenseState.state}`);
   if (licenseState.note) lines.push(`  note: ${licenseState.note}`);
+
+  // Effective tier
+  if (policyState.kind === "ok") {
+    lines.push("");
+    lines.push("Effective");
+    lines.push("---------");
+    lines.push(`Enforcement: ${tierLabel(effective.enforcementTier)} (policy)`);
+    lines.push(`Analytics:   ${tierLabel(effective.analyticsTier)} (license)`);
+    lines.push(`Overall:     ${tierLabel(effective.overallTier)} (min)`);
+
+    if (effective.enforcementTier < effective.analyticsTier) {
+      lines.push(
+        `note: repo policy edition limits enforcement. you can re-init with: guard init --force --edition ${tierLabel(
+          effective.analyticsTier
+        )}`
+      );
+    }
+  }
 
   lines.push("");
   lines.push(`Repo: ${repoRoot}`);
@@ -329,10 +395,40 @@ function renderStatusText({ repoRoot, policyState, driftState, licenseState }) {
   return lines.join("\n") + "\n";
 }
 
-function detectLicensePlaceholder() {
-  // v1.0: we haven't shipped license commands yet in this repo.
-  // Keep a stable user-facing message.
-  return { state: "not configured", note: "License commands not enabled in 1.0 packaging yet" };
+function renderLicenseHelp() {
+  return [
+    "guard license <status|activate|remove>",
+    "",
+    "Usage:",
+    "  guard license status",
+    "  guard license activate <key>",
+    "  guard license remove",
+    "",
+    "Key examples:",
+    "  pro",
+    "  pro+",
+    "  pro:2026-12-31",
+    "  pro+:2026-12-31",
+    "",
+  ].join("\n");
+}
+
+function licenseStateFromFile() {
+  const lic = readLicense();
+
+  if (lic.kind === "missing") {
+    return { state: "community (no license)", note: `path: ${lic.path}` };
+  }
+  if (lic.kind === "ok") {
+    return {
+      state: lic.edition,
+      note: lic.expiry ? `expires: ${lic.expiry}` : "no expiry",
+    };
+  }
+  if (lic.kind === "expired") {
+    return { state: `${lic.edition} (expired)`, note: `expires: ${lic.expiry}` };
+  }
+  return { state: "invalid", note: lic.reason || "invalid license file" };
 }
 
 export async function runGuard({ argv }) {
@@ -362,11 +458,15 @@ export async function runGuard({ argv }) {
       if (parsed && typeof parsed === "object") {
         policyState = {
           kind: "ok",
-          edition: parsed.edition || "unknown",
+          edition: normalizeEdition(parsed.edition || "community"),
           path: policyPath,
         };
       } else {
-        policyState = { kind: "error", reason: "policy.json is not valid JSON", path: policyPath };
+        policyState = {
+          kind: "error",
+          reason: "policy.json is not valid JSON",
+          path: policyPath,
+        };
       }
     }
 
@@ -383,12 +483,121 @@ export async function runGuard({ argv }) {
       unique_modules: driftBundle.signal?.unique_modules ?? 0,
     };
 
-    const licenseState = detectLicensePlaceholder();
+    // License
+    const licenseState = licenseStateFromFile();
+    const licObj = readLicense();
+    const licTier = licenseTier(licObj);
+    const policyEdition = policyState.kind === "ok" ? policyState.edition : "community";
+    const eff = effectiveTier({ policyEdition, licenseTierNum: licTier });
 
     return {
       exitCode: 0,
-      stdout: renderStatusText({ repoRoot, policyState, driftState, licenseState }),
+      stdout: renderStatusText({
+        repoRoot,
+        policyState,
+        driftState,
+        licenseState,
+        effective: eff,
+      }),
     };
+  }
+
+  // -------------------------
+  // license (manual activation v0)
+  // -------------------------
+  if (cmd === "license") {
+    const sub = argv[1] || "status";
+
+    if (sub === "status") {
+      const lic = readLicense();
+
+      if (lic.kind === "missing") {
+        return {
+          exitCode: 0,
+          stdout:
+            "License Status\n" +
+            "-------------\n" +
+            "state: missing\n" +
+            `path: ${lic.path}\n` +
+            "\n" +
+            "Activate:\n" +
+            "  guard license activate <key>\n",
+        };
+      }
+
+      if (lic.kind === "ok") {
+        return {
+          exitCode: 0,
+          stdout:
+            "License Status\n" +
+            "-------------\n" +
+            "state: ok\n" +
+            `edition: ${lic.edition}\n` +
+            (lic.expiry ? `expiry: ${lic.expiry}\n` : "expiry: none\n") +
+            `path: ${lic.path}\n`,
+        };
+      }
+
+      if (lic.kind === "expired") {
+        return {
+          exitCode: 0,
+          stdout:
+            "License Status\n" +
+            "-------------\n" +
+            "state: expired\n" +
+            `edition: ${lic.edition}\n` +
+            `expiry: ${lic.expiry}\n` +
+            `path: ${lic.path}\n`,
+        };
+      }
+
+      return {
+        exitCode: 0,
+        stdout:
+          "License Status\n" +
+          "-------------\n" +
+          "state: invalid\n" +
+          `reason: ${lic.reason || "unknown"}\n` +
+          `path: ${lic.path}\n`,
+      };
+    }
+
+    if (sub === "activate") {
+      const key = argv[2];
+      const res = writeLicenseFromKey(key);
+      if (!res.ok) {
+        return {
+          exitCode: EXIT_ERROR_DEFAULT,
+          stderr:
+            "Invalid license key format.\n\n" +
+            "Accepted examples:\n" +
+            "  pro\n" +
+            "  pro+\n" +
+            "  pro:2026-12-31\n" +
+            "  pro+:2026-12-31\n",
+        };
+      }
+      return {
+        exitCode: 0,
+        stdout:
+          `Activated license: ${res.edition}\n` +
+          (res.expiry ? `Expires: ${res.expiry}\n` : "") +
+          `Path: ${res.path}\n`,
+      };
+    }
+
+    if (sub === "remove") {
+      const res = removeLicense();
+      return {
+        exitCode: 0,
+        stdout:
+          res.removed
+            ? `Removed license file: ${res.path}\n`
+            : `No license file found: ${res.path}\n`,
+      };
+    }
+
+    return { exitCode: 0, stdout: renderLicenseHelp() + "\n" };
   }
 
   // -------------------------
@@ -402,23 +611,32 @@ export async function runGuard({ argv }) {
     const exists = fs.existsSync(policyPath);
 
     if (exists && !args.force) {
+      // Tip if user has higher license than community
+      const lic = readLicense();
+      const lt = licenseTier(lic);
+      const tip =
+        lt > 0
+          ? `Tip: you have a ${tierLabel(lt)} license. you can run:\n  guard init --force --edition ${tierLabel(
+              lt
+            )}\n`
+          : `Tip: re-run with --force to overwrite.\n`;
+
       return {
         exitCode: 0,
-        stdout:
-          `Guard already initialized: ${policyPath}\n` +
-          `Tip: re-run with --force to overwrite.\n`,
+        stdout: `Guard already initialized: ${policyPath}\n` + tip,
       };
     }
 
-    const policy = defaultPolicyJson();
+    let edition = args.edition ? String(args.edition).trim() : null;
+    edition = normalizeEdition(edition || "community");
+
+    const policy = defaultPolicyJson({ edition });
     const content = JSON.stringify(policy, null, 2) + "\n";
 
     if (args.dryRun) {
       return {
         exitCode: 0,
-        stdout:
-          `Dry-run: would write policy to ${policyPath}\n\n` +
-          content,
+        stdout: `Dry-run: would write policy to ${policyPath}\n\n` + content,
       };
     }
 
@@ -553,6 +771,14 @@ export async function runGuard({ argv }) {
       return { exitCode: 0, stdout: renderAssocHelp() + "\n" };
     }
 
+    // Soft gating: correlate is Pro+ monetization point, but keep output for trial/demo.
+    const lic = readLicense();
+    const lt = licenseTier(lic);
+    const gatingNote =
+      lt < 2
+        ? `[guard] analytics: correlate is a Pro+ feature. output is in trial mode. upgrade: guard license activate pro+\n`
+        : "";
+
     let bundle;
     try {
       bundle = buildAssociationBundle({
@@ -571,11 +797,12 @@ export async function runGuard({ argv }) {
     }
 
     const text = args.pretty ? JSON.stringify(bundle, null, 2) + "\n" : JSON.stringify(bundle) + "\n";
-    return { exitCode: 0, stdout: text };
+    return { exitCode: 0, stdout: text, stderr: gatingNote };
   }
 
   // -------------------------
   // Commands below REQUIRE policy (audit/snapshot/etc.)
+  // Also: dynamic import so status/license/drift/assoc never get dragged down.
   // -------------------------
   let policy;
   try {
@@ -590,25 +817,33 @@ export async function runGuard({ argv }) {
     throw err;
   }
 
-  // audit
+  // audit (dynamic import)
   if (cmd === "audit") {
+    const { runAudit } = await import("./runAudit.mjs");
     const result = await runAudit({ argv, policy });
-    return { exitCode: result.exitCode };
+    return {
+      exitCode: result?.exitCode ?? 0,
+      stdout: result?.stdout ? String(result.stdout) : "",
+      stderr: result?.stderr ? String(result.stderr) : "",
+    };
   }
 
-  // snapshot
+  // snapshot (dynamic import)
   if (cmd === "snapshot") {
+    const { runSnapshot } = await import("../../kernel/src/snapshot.mjs");
     const result = runSnapshot({ argv, policy });
     return {
-      exitCode: result.exitCode,
+      exitCode: result?.exitCode ?? 0,
       stdout: result?.stdout ? String(result.stdout).trimEnd() + "\n" : "",
       stderr: result?.stderr ? String(result.stderr).trimEnd() + "\n" : "",
     };
   }
 
-  // hooks (internal; not in help)
+  // hooks (internal; dynamic import)
   if (cmd === "hook") {
     try {
+      const { loadHookConfig } = await import("./hooks/hook_config.mjs");
+      const { invokeEnterpriseHook } = await import("./hooks/hook_invoke.mjs");
       const cfg = loadHookConfig({ repoRoot });
       const out = await invokeEnterpriseHook({ argv: argv.slice(1), config: cfg, policy });
       return { exitCode: out?.exitCode ?? 0, stdout: out?.stdout, stderr: out?.stderr };
