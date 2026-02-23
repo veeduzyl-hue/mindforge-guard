@@ -1,76 +1,153 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
-import { normalizeEdition } from "./edition.mjs";
-import { verifyLicenseV2 } from "./license_verify.mjs";
+
+// Cross-platform user-level storage:
+// Windows: C:\Users\<you>\.guard\license.json
+// macOS/Linux: /Users/<you>/.guard/license.json
+const LICENSE_DIR = path.join(os.homedir(), ".guard");
+const LICENSE_PATH = path.join(LICENSE_DIR, "license.json");
+
+function ensureDir(p) {
+  fs.mkdirSync(p, { recursive: true });
+}
+
+function todayYMD() {
+  const d = new Date();
+  const yyyy = String(d.getFullYear());
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function isExpired(expiryYMD) {
+  if (!expiryYMD) return false;
+  // lexicographic compare works for YYYY-MM-DD
+  return String(expiryYMD) < todayYMD();
+}
+
+function parseKey(keyRaw) {
+  const key = String(keyRaw || "").trim();
+  if (!key) return null;
+
+  // Accepted examples:
+  //   community
+  //   pro
+  //   pro+
+  //   pro:2026-12-31
+  //   pro+:2026-12-31
+  const parts = key.split(":");
+  const edition = parts[0];
+  const expiry = parts[1] || null;
+
+  if (!["community", "pro", "pro+"].includes(edition)) return null;
+
+  if (expiry) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(expiry)) return null;
+  }
+
+  return { edition, expiry, key };
+}
+
+/** ---------- New API (used by CLI) ---------- **/
+
+export function getLicensePath() {
+  return LICENSE_PATH;
+}
+
+export function readLicense() {
+  try {
+    if (!fs.existsSync(LICENSE_PATH)) {
+      return { kind: "missing", path: LICENSE_PATH };
+    }
+
+    const raw = fs.readFileSync(LICENSE_PATH, "utf8");
+    const obj = JSON.parse(raw);
+
+    const edition = obj?.edition;
+    const expiry = obj?.expiry || null;
+
+    if (!["community", "pro", "pro+"].includes(edition)) {
+      return { kind: "invalid", path: LICENSE_PATH, reason: "unknown edition" };
+    }
+
+    const expired = isExpired(expiry);
+
+    return {
+      kind: expired ? "expired" : "ok",
+      path: LICENSE_PATH,
+      edition,
+      expiry,
+      activated_at: obj?.activated_at || null,
+      source: obj?.source || null,
+      key_hint: obj?.key_hint || null,
+      v: obj?.v || 1,
+    };
+  } catch (err) {
+    return { kind: "invalid", path: LICENSE_PATH, reason: err?.message || "parse error" };
+  }
+}
+
+export function writeLicenseFromKey(keyRaw) {
+  const parsed = parseKey(keyRaw);
+  if (!parsed) {
+    return { ok: false, error: "invalid_key_format" };
+  }
+
+  ensureDir(LICENSE_DIR);
+
+  const payload = {
+    v: 1,
+    edition: parsed.edition,
+    expiry: parsed.expiry,
+    activated_at: new Date().toISOString(),
+    source: "manual",
+    // purely for support/debug; not a security feature
+    key_hint: parsed.key.slice(0, 8),
+  };
+
+  fs.writeFileSync(LICENSE_PATH, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  return { ok: true, path: LICENSE_PATH, edition: parsed.edition, expiry: parsed.expiry };
+}
+
+export function removeLicense() {
+  if (!fs.existsSync(LICENSE_PATH)) {
+    return { ok: true, removed: false, path: LICENSE_PATH };
+  }
+  fs.unlinkSync(LICENSE_PATH);
+  return { ok: true, removed: true, path: LICENSE_PATH };
+}
 
 /**
- * Phase 2 behavior (offline-first, hardened):
- * - Missing license => community (ok:true)
- * - v1 license => tolerated (no signature) for backward compatibility
- * - v2 license => MUST verify (ed25519 + time window)
- * - Invalid/expired/not_yet_valid => downgrade to community (ok:false)
- *
- * This preserves DS-EXIT-001 and exit contract invariance.
+ * Convenience for gating:
+ * - community: 0
+ * - pro: 1
+ * - pro+: 2
+ */
+export function licenseTier(license) {
+  const edition = license?.edition || "community";
+  if (edition === "pro+") return 2;
+  if (edition === "pro") return 1;
+  return 0;
+}
+
+/** ---------- Backward-compatible exports (do NOT remove) ----------
+ * runAudit.mjs (and possibly others) in your repo already import these.
+ * We keep them as thin wrappers over the new API.
  */
 
-export function loadGuardEditionFromLocalLicense(opts = {}) {
-  const cwd = opts.cwd || process.cwd();
-  const licenseRelPath =
-    opts.licenseRelPath || path.join(".mindforge", "license.json");
-  const licensePath = path.join(cwd, licenseRelPath);
+export function loadGuardEditionFromLocalLicense() {
+  const lic = readLicense();
+  if (lic.kind === "ok") return lic.edition;
+  // Treat missing/invalid/expired as community (safe default for execution)
+  return "community";
+}
 
-  if (!fs.existsSync(licensePath)) {
-    return { ok: true, edition: "community", source: "default_community", status: "missing" };
-  }
+export function loadGuardLicenseFromLocalLicense() {
+  // Some call sites may want the whole object
+  return readLicense();
+}
 
-  let doc;
-  try {
-    const txt = fs.readFileSync(licensePath, "utf-8");
-    doc = JSON.parse(txt);
-  } catch (e) {
-    return {
-      ok: false,
-      edition: "community",
-      source: "invalid_license_fallback",
-      status: "invalid",
-      reason: `license parse error: ${e?.message || String(e)}`
-    };
-  }
-
-  // v2: hardened verification
-  if (doc && typeof doc === "object" && doc.version === 2) {
-    const res = verifyLicenseV2(doc);
-    if (!res.ok) {
-      return {
-        ok: false,
-        edition: "community",
-        source: "invalid_license_fallback",
-        status: res.status || "invalid",
-        reason: res.reason || "license v2 invalid"
-      };
-    }
-    return {
-      ok: true,
-      edition: res.edition,
-      source: "license_file",
-      status: "valid",
-      key_id: res.key_id,
-      license_id: res.license_id
-    };
-  }
-
-  // v1: backward compatible (no signature enforcement)
-  if (doc && typeof doc === "object" && doc.version === 1) {
-    const edition = normalizeEdition(doc.edition);
-    return { ok: true, edition, source: "license_file", status: "valid_v1" };
-  }
-
-  // unknown version -> downgrade
-  return {
-    ok: false,
-    edition: "community",
-    source: "invalid_license_fallback",
-    status: "invalid",
-    reason: "unknown license version"
-  };
+export function getGuardLocalLicensePath() {
+  return LICENSE_PATH;
 }
