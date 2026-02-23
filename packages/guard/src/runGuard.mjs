@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 
 import { loadPolicy } from "../../kernel/src/policy.mjs";
 import { runAudit } from "./runAudit.mjs";
@@ -10,11 +9,6 @@ import {
   validatePolicyFile,
   defaultPolicyPath,
 } from "../../kernel/src/validatePolicy.mjs";
-import {
-  getStagedTreeHash,
-  hasAckForTree,
-  writeAckForTree,
-} from "./ackManager.mjs";
 
 // v0.24 Enterprise Hooks (minimal, internal)
 import { loadHookConfig } from "./hooks/hook_config.mjs";
@@ -23,23 +17,17 @@ import { invokeEnterpriseHook } from "./hooks/hook_invoke.mjs";
 // v0.26 Drift (signal-only)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
 
-// v0.28 NEW
+// v0.28
 import { buildTimeline } from "./runtime/drift/timeline.mjs";
 import { buildCompare } from "./runtime/drift/compare.mjs";
 
-// v0.29 NEW (signal-only analytics surface)
+// v0.29 (signal-only analytics surface)
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
 
 const GUARD_VERSION = "1.0.0";
 
 // DS-EXIT-001: keep stable defaults for packaging failures
 const EXIT_ERROR_DEFAULT = 30;
-
-function parseValue(argv, key) {
-  const pref = `${key}=`;
-  const hit = argv.find((a) => a.startsWith(pref));
-  return hit ? hit.slice(pref.length) : undefined;
-}
 
 function renderGuardHelp() {
   return [
@@ -49,6 +37,7 @@ function renderGuardHelp() {
     "  guard <command> [options]",
     "",
     "Getting started:",
+    "  guard status",
     "  guard init",
     "",
     "Core:",
@@ -72,6 +61,73 @@ function renderGuardHelp() {
     "Options:",
     "  --help, -h     Show help",
     "  --version, -v  Show version",
+    "",
+  ].join("\n");
+}
+
+function ensureDir(p) {
+  fs.mkdirSync(p, { recursive: true });
+}
+
+function writeFileAtomic(filePath, content) {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, content, "utf8");
+}
+
+function getRepoPolicyPath(repoRoot) {
+  return path.join(repoRoot, ".mindforge", "config", "policy.json");
+}
+
+function policyMissingMessage(policyPath) {
+  return (
+    "Guard is not initialized for this repo.\n" +
+    `Missing policy file: ${policyPath}\n\n` +
+    "Run:\n" +
+    "  guard init\n"
+  );
+}
+
+/**
+ * Minimal default policy (Community).
+ * Intentionally small and stable to keep 1.0 packaging crisp.
+ */
+function defaultPolicyJson() {
+  return {
+    v: 1,
+    edition: "community",
+    exit_codes: {
+      ok: 0,
+      soft_block: 10,
+      hard_block: 20,
+      error: 30,
+    },
+    limits: {
+      lines_added_soft: 900,
+      files_changed_hard: 16,
+    },
+  };
+}
+
+function parseInitArgs(argv) {
+  const out = { force: false, dryRun: false, help: false };
+  for (const t of argv) {
+    if (t === "--force") out.force = true;
+    else if (t === "--dry-run") out.dryRun = true;
+    else if (t === "--help" || t === "-h") out.help = true;
+  }
+  return out;
+}
+
+function renderInitHelp() {
+  return [
+    "guard init",
+    "",
+    "Usage:",
+    "  guard init [--force] [--dry-run]",
+    "",
+    "Options:",
+    "  --force     Overwrite existing policy file",
+    "  --dry-run   Print policy content without writing files",
     "",
   ].join("\n");
 }
@@ -127,7 +183,7 @@ Events (prev): ${bundle.explain.events_prev}
   );
 }
 
-function stableBundle({ window }) {
+function stableDriftBundle({ window }) {
   return {
     kind: "drift_signal_bundle",
     v: 2,
@@ -219,51 +275,67 @@ function stableAssocBundle({ window, bucket, x, y }) {
   };
 }
 
-function policyMissingMessage(policyPath) {
-  return (
-    "Guard is not initialized for this repo.\n" +
-    `Missing policy file: ${policyPath}\n\n` +
-    "Run:\n" +
-    "  guard init\n"
-  );
+/* -------------------------
+ * status (product UX)
+ * ------------------------- */
+
+function safeTry(fn, fallback) {
+  try {
+    return fn();
+  } catch {
+    return fallback;
+  }
 }
 
-function ensureDir(p) {
-  fs.mkdirSync(p, { recursive: true });
+function renderStatusText({ repoRoot, policyState, driftState, licenseState }) {
+  const lines = [];
+  lines.push("Guard Status");
+  lines.push("------------");
+
+  // Policy
+  if (policyState.kind === "missing") {
+    lines.push(`Policy: missing`);
+    lines.push(`  path: ${policyState.path}`);
+    lines.push(`  next: guard init`);
+  } else if (policyState.kind === "ok") {
+    lines.push(`Policy: ok`);
+    lines.push(`  edition: ${policyState.edition}`);
+    lines.push(`  path: ${policyState.path}`);
+  } else {
+    lines.push(`Policy: error`);
+    lines.push(`  reason: ${policyState.reason}`);
+  }
+
+  // Drift
+  if (driftState.kind === "ok") {
+    lines.push("");
+    lines.push(`Drift: ${driftState.trend}`);
+    lines.push(`  window: ${driftState.window}`);
+    lines.push(`  density: ${driftState.density} events/day`);
+    lines.push(`  unique_modules: ${driftState.unique_modules}`);
+  } else {
+    lines.push("");
+    lines.push(`Drift: unavailable`);
+  }
+
+  // License (placeholder until we wire real license commands)
+  lines.push("");
+  lines.push(`License: ${licenseState.state}`);
+  if (licenseState.note) lines.push(`  note: ${licenseState.note}`);
+
+  lines.push("");
+  lines.push(`Repo: ${repoRoot}`);
+
+  return lines.join("\n") + "\n";
 }
 
-function writeFileAtomic(filePath, content) {
-  ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, content, "utf8");
-}
-
-/**
- * Minimal default policy (Community).
- * This is intentionally small and stable to avoid scope creep in 1.0 packaging.
- */
-function defaultPolicyJson() {
-  return {
-    v: 1,
-    edition: "community",
-    exit_codes: {
-      ok: 0,
-      soft_block: 10,
-      hard_block: 20,
-      error: 30,
-    },
-    limits: {
-      lines_added_soft: 900,
-      files_changed_hard: 16,
-    },
-  };
-}
-
-function getRepoPolicyPath(repoRoot) {
-  return path.join(repoRoot, ".mindforge", "config", "policy.json");
+function detectLicensePlaceholder() {
+  // v1.0: we haven't shipped license commands yet in this repo.
+  // Keep a stable user-facing message.
+  return { state: "not configured", note: "License commands not enabled in 1.0 packaging yet" };
 }
 
 export async function runGuard({ argv }) {
-  // Product-level help/version (must work even if no command is given)
   if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
     return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
   }
@@ -275,23 +347,82 @@ export async function runGuard({ argv }) {
   const repoRoot = process.cwd();
 
   // -------------------------
+  // status (Day-0 UX)
+  // -------------------------
+  if (cmd === "status") {
+    const policyPath = getRepoPolicyPath(repoRoot);
+
+    // Policy state
+    let policyState;
+    if (!fs.existsSync(policyPath)) {
+      policyState = { kind: "missing", path: policyPath };
+    } else {
+      // Best-effort parse; do not explode status if policy is malformed
+      const parsed = safeTry(() => JSON.parse(fs.readFileSync(policyPath, "utf8")), null);
+      if (parsed && typeof parsed === "object") {
+        policyState = {
+          kind: "ok",
+          edition: parsed.edition || "unknown",
+          path: policyPath,
+        };
+      } else {
+        policyState = { kind: "error", reason: "policy.json is not valid JSON", path: policyPath };
+      }
+    }
+
+    // Drift state (signal-only)
+    const driftBundle = safeTry(
+      () => buildDriftStatus({ repoRoot, window: "7d" }),
+      stableDriftBundle({ window: "7d" })
+    );
+    const driftState = {
+      kind: "ok",
+      trend: driftBundle.trend,
+      window: driftBundle.window,
+      density: driftBundle.signal?.density ?? 0,
+      unique_modules: driftBundle.signal?.unique_modules ?? 0,
+    };
+
+    const licenseState = detectLicensePlaceholder();
+
+    return {
+      exitCode: 0,
+      stdout: renderStatusText({ repoRoot, policyState, driftState, licenseState }),
+    };
+  }
+
+  // -------------------------
   // init (Day-0 UX)
   // -------------------------
   if (cmd === "init") {
-    const policyPath = getRepoPolicyPath(repoRoot);
+    const args = parseInitArgs(argv.slice(1));
+    if (args.help) return { exitCode: 0, stdout: renderInitHelp() + "\n" };
 
-    // If already exists, keep idempotent
-    if (fs.existsSync(policyPath)) {
+    const policyPath = getRepoPolicyPath(repoRoot);
+    const exists = fs.existsSync(policyPath);
+
+    if (exists && !args.force) {
       return {
         exitCode: 0,
-        stdout: `Guard already initialized: ${policyPath}\n`,
+        stdout:
+          `Guard already initialized: ${policyPath}\n` +
+          `Tip: re-run with --force to overwrite.\n`,
       };
     }
 
     const policy = defaultPolicyJson();
-    writeFileAtomic(policyPath, JSON.stringify(policy, null, 2) + "\n");
+    const content = JSON.stringify(policy, null, 2) + "\n";
 
-    // Create common runtime dirs (safe/no-op if unused)
+    if (args.dryRun) {
+      return {
+        exitCode: 0,
+        stdout:
+          `Dry-run: would write policy to ${policyPath}\n\n` +
+          content,
+      };
+    }
+
+    writeFileAtomic(policyPath, content);
     ensureDir(path.join(repoRoot, ".mindforge", "drift"));
     ensureDir(path.join(repoRoot, ".mindforge", "audit"));
 
@@ -326,26 +457,19 @@ export async function runGuard({ argv }) {
     const sub = argv[1] || "status";
     const args = parseDriftArgs(argv.slice(2));
 
-    if (args.help) {
-      return { exitCode: 0, stdout: renderDriftHelp() + "\n" };
-    }
+    if (args.help) return { exitCode: 0, stdout: renderDriftHelp() + "\n" };
 
     if (sub === "status") {
       let bundle;
       try {
-        bundle = buildDriftStatus({
-          repoRoot,
-          window: args.window,
-        });
+        bundle = buildDriftStatus({ repoRoot, window: args.window });
       } catch {
-        bundle = stableBundle({ window: args.window });
+        bundle = stableDriftBundle({ window: args.window });
       }
 
       let text;
       if (args.format === "json") {
-        text = args.pretty
-          ? JSON.stringify(bundle, null, 2) + "\n"
-          : JSON.stringify(bundle) + "\n";
+        text = args.pretty ? JSON.stringify(bundle, null, 2) + "\n" : JSON.stringify(bundle) + "\n";
       } else {
         text = renderDriftText(bundle);
       }
@@ -366,7 +490,6 @@ export async function runGuard({ argv }) {
           eventsPath: path.join(repoRoot, ".mindforge", "drift", "events.jsonl"),
           window: args.window,
         });
-
         return { exitCode: 0, stdout: JSON.stringify(result, null, 2) + "\n" };
       } catch {
         return {
@@ -394,7 +517,6 @@ export async function runGuard({ argv }) {
           eventsPath: path.join(repoRoot, ".mindforge", "drift", "events.jsonl"),
           window: args.window,
         });
-
         return { exitCode: 0, stdout: JSON.stringify(result, null, 2) + "\n" };
       } catch {
         return {
@@ -445,18 +567,10 @@ export async function runGuard({ argv }) {
         auditPath: args.auditPath,
       });
     } catch {
-      bundle = stableAssocBundle({
-        window: args.window,
-        bucket: args.bucket,
-        x: args.x,
-        y: args.y,
-      });
+      bundle = stableAssocBundle({ window: args.window, bucket: args.bucket, x: args.x, y: args.y });
     }
 
-    const text = args.pretty
-      ? JSON.stringify(bundle, null, 2) + "\n"
-      : JSON.stringify(bundle) + "\n";
-
+    const text = args.pretty ? JSON.stringify(bundle, null, 2) + "\n" : JSON.stringify(bundle) + "\n";
     return { exitCode: 0, stdout: text };
   }
 
@@ -476,17 +590,13 @@ export async function runGuard({ argv }) {
     throw err;
   }
 
-  // -------------------------
   // audit
-  // -------------------------
   if (cmd === "audit") {
     const result = await runAudit({ argv, policy });
     return { exitCode: result.exitCode };
   }
 
-  // -------------------------
   // snapshot
-  // -------------------------
   if (cmd === "snapshot") {
     const result = runSnapshot({ argv, policy });
     return {
@@ -496,7 +606,7 @@ export async function runGuard({ argv }) {
     };
   }
 
-  // (keep hook path if you still use it internally; do not expose in help)
+  // hooks (internal; not in help)
   if (cmd === "hook") {
     try {
       const cfg = loadHookConfig({ repoRoot });
@@ -514,9 +624,6 @@ export async function runGuard({ argv }) {
   };
 }
 
-/**
- * CLI entrypoint
- */
 async function main() {
   const result = await runGuard({ argv: process.argv.slice(2) });
 
@@ -531,7 +638,6 @@ async function main() {
   process.exit(code);
 }
 
-// Always run main() when executed as CLI entry
 main().catch((err) => {
   const msg = err?.stack || err?.message || String(err);
   process.stderr.write(msg + "\n");
