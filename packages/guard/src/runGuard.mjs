@@ -22,7 +22,6 @@ import {
   removeLicense,
   licenseTier,
   getLicensePath,
-  installLicenseFile,
   showLicenseSummary,
 } from "./product/license.mjs";
 
@@ -608,31 +607,64 @@ export async function runGuard({ argv }) {
     if (sub === "install") {
       const file = argv[2];
       if (!file) {
-        return { exitCode: 0, stdout: renderLicenseHelp() + "\n" };
+        return { exitCode: 0, stdout: renderLicenseHelp() + "
+" };
       }
 
-      const res = installLicenseFile(file);
-      if (!res.ok) {
+      const dest = getLicensePath();
+      try {
+        // Copy raw license payload into the canonical local license path.
+        // Validation is performed by readLicense() (offline signature + validity window).
+        const raw = fs.readFileSync(file, "utf8");
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.writeFileSync(dest, raw, "utf8");
+      } catch (err) {
         return {
           exitCode: EXIT_ERROR_DEFAULT,
           stderr:
-            "License install failed.\n" +
-            `error: ${res.error}\n` +
-            (res.reason ? `reason: ${res.reason}\n` : "") +
-            (res.path ? `path: ${res.path}\n` : "") +
-            "\n" +
-            "Expected: a signed license file (version=2).\n",
+            "License install failed.
+" +
+            `error: ${(err && err.message) || String(err)}
+` +
+            `path: ${dest}
+`,
+        };
+      }
+
+      // Validate the newly installed license.
+      const lic = readLicense();
+      if (lic.kind !== "ok") {
+        return {
+          exitCode: EXIT_ERROR_DEFAULT,
+          stderr:
+            "License install failed.
+" +
+            `state: ${lic.kind}
+` +
+            (lic.reason ? `reason: ${lic.reason}
+` : "") +
+            `path: ${lic.path || dest}
+` +
+            "
+" +
+            "Expected: a valid signed license file (version=2).
+",
         };
       }
 
       return {
         exitCode: 0,
         stdout:
-          `Installed license: ${res.edition}\n` +
-          (res.not_after ? `Not after: ${res.not_after}\n` : "") +
-          (res.key_id ? `Key: ${res.key_id}\n` : "") +
-          (res.license_id ? `License ID: ${res.license_id}\n` : "") +
-          `Path: ${res.path}\n`,
+          `Installed license: ${lic.edition}
+` +
+          (lic.not_after ? `Not after: ${lic.not_after}
+` : "") +
+          (lic.key_id ? `Key: ${lic.key_id}
+` : "") +
+          (lic.license_id ? `License ID: ${lic.license_id}
+` : "") +
+          `Path: ${lic.path || dest}
+`,
       };
     }
 
