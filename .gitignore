@@ -5,3 +5,8 @@ node_modules/
 
 # Guard runtime (repo-local)
 .mindforge/
+
+tooling/license/keys/guard_ed25519_private.pem
+tooling/license/keys/*.pem
+
+tooling/
