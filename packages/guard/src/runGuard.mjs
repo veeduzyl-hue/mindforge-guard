@@ -16,14 +16,44 @@ import { buildCompare } from "./runtime/drift/compare.mjs";
 // Assoc (signal-only analytics)
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
 
-// License (manual activation v0)
+// License (offline, signed v2)
 import {
   readLicense,
-  writeLicenseFromKey,
   removeLicense,
   licenseTier,
   getLicensePath,
+  installLicenseFile,
+  showLicenseSummary,
 } from "./product/license.mjs";
+
+// Product license gating (monetization tiers)
+// NOTE: Repo policy edition (guard init --edition) is separate from account/license edition.
+const EXIT_LICENSE_REQUIRED = 21;
+
+function tierNumFromEdition(edition) {
+  if (edition === "pro+") return 2;
+  if (edition === "pro") return 1;
+  return 0;
+}
+
+function licenseGateResult({ lic, requiredEdition, feature }) {
+  const currentEdition = lic && lic.kind === "ok" ? lic.edition : "community";
+  const current = tierNumFromEdition(currentEdition);
+  const required = requiredEdition === "pro_plus" ? 2 : requiredEdition === "pro" ? 1 : 0;
+  if (current >= required) return null;
+
+  const payload = {
+    ok: false,
+    error: {
+      kind: "license_required",
+      feature: feature || "",
+      required_edition: requiredEdition === "pro_plus" ? "pro+" : requiredEdition,
+      current_edition: currentEdition,
+      hint: "Install a signed license file: guard license install <file>",
+    },
+  };
+  return { exitCode: EXIT_LICENSE_REQUIRED, stdout: JSON.stringify(payload, null, 2) + "\n" };
+}
 
 const GUARD_VERSION = "1.0.0";
 
@@ -59,9 +89,10 @@ function renderGuardHelp() {
     "                       [--eventsPath <file>] [--auditPath <file>]",
     "                       [--pretty]",
     "",
-    "License:",
+    "License (offline; signed v2):",
     "  guard license status",
-    "  guard license activate <key>",
+    "  guard license show",
+    "  guard license install <file>",
     "  guard license remove",
     "",
     "Options:",
@@ -397,18 +428,18 @@ function renderStatusText({
 
 function renderLicenseHelp() {
   return [
-    "guard license <status|activate|remove>",
+    "guard license <status|show|install|remove>",
     "",
     "Usage:",
     "  guard license status",
-    "  guard license activate <key>",
+    "  guard license show",
+    "  guard license install <file>",
     "  guard license remove",
     "",
-    "Key examples:",
-    "  pro",
-    "  pro+",
-    "  pro:2026-12-31",
-    "  pro+:2026-12-31",
+    "Notes:",
+    "  - Guard uses offline signed license (version=2, Ed25519).",
+    "  - You cannot 'activate' pro/pro+ by typing a key locally.",
+    "  - Install a license file issued by MindForge.",
     "",
   ].join("\n");
 }
@@ -420,15 +451,29 @@ function licenseStateFromFile() {
     return { state: "community (no license)", note: `path: ${lic.path}` };
   }
   if (lic.kind === "ok") {
+    const until =
+      lic.not_after ? `not_after: ${lic.not_after}` : "not_after: none";
     return {
       state: lic.edition,
-      note: lic.expiry ? `expires: ${lic.expiry}` : "no expiry",
+      note: until,
     };
   }
   if (lic.kind === "expired") {
-    return { state: `${lic.edition} (expired)`, note: `expires: ${lic.expiry}` };
+    return {
+      state: `community (expired license)`,
+      note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
+    };
   }
-  return { state: "invalid", note: lic.reason || "invalid license file" };
+  if (lic.kind === "not_yet_valid") {
+    return {
+      state: `community (not yet valid)`,
+      note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
+    };
+  }
+  return {
+    state: "community (invalid license)",
+    note: lic.reason || `path: ${lic.path}`,
+  };
 }
 
 export async function runGuard({ argv }) {
@@ -503,7 +548,7 @@ export async function runGuard({ argv }) {
   }
 
   // -------------------------
-  // license (manual activation v0)
+  // license (offline, signed v2)
   // -------------------------
   if (cmd === "license") {
     const sub = argv[1] || "status";
@@ -520,8 +565,8 @@ export async function runGuard({ argv }) {
             "state: missing\n" +
             `path: ${lic.path}\n` +
             "\n" +
-            "Activate:\n" +
-            "  guard license activate <key>\n",
+            "Install:\n" +
+            "  guard license install <file>\n",
         };
       }
 
@@ -533,20 +578,9 @@ export async function runGuard({ argv }) {
             "-------------\n" +
             "state: ok\n" +
             `edition: ${lic.edition}\n` +
-            (lic.expiry ? `expiry: ${lic.expiry}\n` : "expiry: none\n") +
-            `path: ${lic.path}\n`,
-        };
-      }
-
-      if (lic.kind === "expired") {
-        return {
-          exitCode: 0,
-          stdout:
-            "License Status\n" +
-            "-------------\n" +
-            "state: expired\n" +
-            `edition: ${lic.edition}\n` +
-            `expiry: ${lic.expiry}\n` +
+            (lic.not_after ? `not_after: ${lic.not_after}\n` : "not_after: none\n") +
+            (lic.key_id ? `key_id: ${lic.key_id}\n` : "") +
+            (lic.license_id ? `license_id: ${lic.license_id}\n` : "") +
             `path: ${lic.path}\n`,
         };
       }
@@ -556,32 +590,48 @@ export async function runGuard({ argv }) {
         stdout:
           "License Status\n" +
           "-------------\n" +
-          "state: invalid\n" +
+          `state: ${lic.kind}\n` +
           `reason: ${lic.reason || "unknown"}\n` +
-          `path: ${lic.path}\n`,
+          `path: ${lic.path}\n` +
+          "\n" +
+          "Install a valid signed license:\n" +
+          "  guard license install <file>\n",
       };
     }
 
-    if (sub === "activate") {
-      const key = argv[2];
-      const res = writeLicenseFromKey(key);
+    if (sub === "show") {
+      const info = showLicenseSummary();
+      // Show as stable JSON for copy/paste support
+      return { exitCode: 0, stdout: JSON.stringify(info, null, 2) + "\n" };
+    }
+
+    if (sub === "install") {
+      const file = argv[2];
+      if (!file) {
+        return { exitCode: 0, stdout: renderLicenseHelp() + "\n" };
+      }
+
+      const res = installLicenseFile(file);
       if (!res.ok) {
         return {
           exitCode: EXIT_ERROR_DEFAULT,
           stderr:
-            "Invalid license key format.\n\n" +
-            "Accepted examples:\n" +
-            "  pro\n" +
-            "  pro+\n" +
-            "  pro:2026-12-31\n" +
-            "  pro+:2026-12-31\n",
+            "License install failed.\n" +
+            `error: ${res.error}\n` +
+            (res.reason ? `reason: ${res.reason}\n` : "") +
+            (res.path ? `path: ${res.path}\n` : "") +
+            "\n" +
+            "Expected: a signed license file (version=2).\n",
         };
       }
+
       return {
         exitCode: 0,
         stdout:
-          `Activated license: ${res.edition}\n` +
-          (res.expiry ? `Expires: ${res.expiry}\n` : "") +
+          `Installed license: ${res.edition}\n` +
+          (res.not_after ? `Not after: ${res.not_after}\n` : "") +
+          (res.key_id ? `Key: ${res.key_id}\n` : "") +
+          (res.license_id ? `License ID: ${res.license_id}\n` : "") +
           `Path: ${res.path}\n`,
       };
     }
@@ -704,6 +754,9 @@ export async function runGuard({ argv }) {
 
     if (sub === "timeline") {
       try {
+        const gate = licenseGateResult({ lic: readLicense(), requiredEdition: "pro", feature: "drift timeline" });
+        if (gate) return gate;
+
         const result = buildTimeline({
           eventsPath: path.join(repoRoot, ".mindforge", "drift", "events.jsonl"),
           window: args.window,
@@ -731,6 +784,9 @@ export async function runGuard({ argv }) {
 
     if (sub === "compare") {
       try {
+        const gate = licenseGateResult({ lic: readLicense(), requiredEdition: "pro_plus", feature: "drift compare" });
+        if (gate) return gate;
+
         const result = buildCompare({
           eventsPath: path.join(repoRoot, ".mindforge", "drift", "events.jsonl"),
           window: args.window,
@@ -771,13 +827,10 @@ export async function runGuard({ argv }) {
       return { exitCode: 0, stdout: renderAssocHelp() + "\n" };
     }
 
-    // Soft gating: correlate is Pro+ monetization point, but keep output for trial/demo.
-    const lic = readLicense();
-    const lt = licenseTier(lic);
-    const gatingNote =
-      lt < 2
-        ? `[guard] analytics: correlate is a Pro+ feature. output is in trial mode. upgrade: guard license activate pro+\n`
-        : "";
+    // License gating: correlate is Pro+ monetization point.
+    const gate = licenseGateResult({ lic: readLicense(), requiredEdition: "pro_plus", feature: "assoc correlate" });
+    if (gate) return gate;
+
 
     let bundle;
     try {
@@ -797,7 +850,7 @@ export async function runGuard({ argv }) {
     }
 
     const text = args.pretty ? JSON.stringify(bundle, null, 2) + "\n" : JSON.stringify(bundle) + "\n";
-    return { exitCode: 0, stdout: text, stderr: gatingNote };
+    return { exitCode: 0, stdout: text };
   }
 
   // -------------------------
