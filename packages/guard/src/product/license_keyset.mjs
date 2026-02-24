@@ -12,19 +12,18 @@
  */
 
 export const LICENSE_KEYSET = {
-    "mf_k1_2026": {
-      publicKey:
-        "-----BEGIN PUBLIC KEY-----\n" +
-        "MCowBQYDK2VwAyEAK9nSHqn4DE9tdF4v/DB5TK+5XOxaGnuHHkQduMD7jy8=\n" +
-        "-----END PUBLIC KEY-----\n",
-    },
-  
-    // Example future key (placeholder):
-    // "mf_k2_2027": {
-    //   publicKey:
-    //     "-----BEGIN PUBLIC KEY-----\n" +
-    //     "...\n" +
-    //     "-----END PUBLIC KEY-----\n",
-    // },
-  };
-  
+  "mf_k1_2026": {
+    publicKey:
+      "-----BEGIN PUBLIC KEY-----\n" +
+      "MCowBQYDK2VwAyEAmjNqkemVgHqT4wE4xxmGxIwYnHtEgjNKzUQlphSCV/E=\n" +
+      "-----END PUBLIC KEY-----\n",
+  },
+
+  // Example future key (placeholder):
+  // "mf_k2_2027": {
+  //   publicKey:
+  //     "-----BEGIN PUBLIC KEY-----\n" +
+  //     "...\n" +
+  //     "-----END PUBLIC KEY-----\n",
+  // },
+};
