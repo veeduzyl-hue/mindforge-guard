@@ -22,7 +22,6 @@ import {
   removeLicense,
   licenseTier,
   getLicensePath,
-  showLicenseSummary,
 } from "./product/license.mjs";
 
 // Product license gating (monetization tiers)
@@ -58,6 +57,16 @@ const GUARD_VERSION = "1.0.0";
 
 // DS-EXIT-001: keep stable defaults for packaging failures
 const EXIT_ERROR_DEFAULT = 30;
+
+function showLicenseSummaryLocal() {
+  const lic = readLicense();
+  if (!lic || lic.kind === "missing") return "license: missing";
+  if (lic.kind === "invalid") return `license: invalid (${lic.reason || "unknown"})`;
+  if (lic.kind === "expired") return `license: expired (${lic.edition || "unknown"}) expires: ${lic.expiry || ""}`;
+  if (lic.kind === "not_yet_valid") return `license: not_yet_valid (${lic.edition || "unknown"}) starts: ${lic.not_before || ""}`;
+  if (lic.kind === "ok") return `license: ok (${lic.edition}) expires: ${lic.expiry || ""}`;
+  return `license: ${lic.kind}`;
+}
 
 function renderGuardHelp() {
   return [
@@ -599,7 +608,7 @@ export async function runGuard({ argv }) {
     }
 
     if (sub === "show") {
-      const info = showLicenseSummary();
+      const info = showLicenseSummaryLocal();
       // Show as stable JSON for copy/paste support
       return { exitCode: 0, stdout: JSON.stringify(info, null, 2) + "\n" };
     }
@@ -607,65 +616,58 @@ export async function runGuard({ argv }) {
     if (sub === "install") {
       const file = argv[2];
       if (!file) {
-        return { exitCode: 0, stdout: renderLicenseHelp() + "
-" };
+        return { exitCode: 0, stdout: renderLicenseHelp() + "\n" };
       }
 
       const dest = getLicensePath();
+
       try {
-        // Copy raw license payload into the canonical local license path.
-        // Validation is performed by readLicense() (offline signature + validity window).
         const raw = fs.readFileSync(file, "utf8");
         fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.writeFileSync(dest, raw, "utf8");
+        // keep file contents as-is (but ensure trailing newline)
+        fs.writeFileSync(dest, raw.endsWith("\n") ? raw : raw + "\n", "utf8");
+
+        // Validate immediately (signature + validity window + edition)
+        const lic = readLicense();
+        if (!lic || lic.kind !== "ok") {
+          // Roll back a bad install so we don't leave a broken state on disk
+          try {
+            removeLicense();
+          } catch {}
+
+          return {
+            exitCode: EXIT_ERROR_DEFAULT,
+            stderr:
+              "License install failed.\n" +
+              `state: ${lic?.kind || "unknown"}\n` +
+              (lic?.reason ? `reason: ${lic.reason}\n` : "") +
+              `path: ${dest}\n` +
+              "\n" +
+              "Expected: a valid signed license file (v2).\n",
+          };
+        }
+
+        return {
+          exitCode: 0,
+          stdout:
+            "Activated license:\n" +
+            `edition: ${lic.edition}\n` +
+            (lic.expiry ? `expires: ${lic.expiry}\n` : "") +
+            (lic.not_before ? `not_before: ${lic.not_before}\n` : "") +
+            (lic.not_after ? `not_after: ${lic.not_after}\n` : "") +
+            (lic.key_id ? `key_id: ${lic.key_id}\n` : "") +
+            (lic.license_id ? `license_id: ${lic.license_id}\n` : "") +
+            `path: ${dest}\n`,
+        };
       } catch (err) {
         return {
           exitCode: EXIT_ERROR_DEFAULT,
           stderr:
-            "License install failed.
-" +
-            `error: ${(err && err.message) || String(err)}
-` +
-            `path: ${dest}
-`,
+            "License install failed.\n" +
+            `error: ${err?.message || String(err)}\n` +
+            `path: ${dest}\n`,
         };
       }
-
-      // Validate the newly installed license.
-      const lic = readLicense();
-      if (lic.kind !== "ok") {
-        return {
-          exitCode: EXIT_ERROR_DEFAULT,
-          stderr:
-            "License install failed.
-" +
-            `state: ${lic.kind}
-` +
-            (lic.reason ? `reason: ${lic.reason}
-` : "") +
-            `path: ${lic.path || dest}
-` +
-            "
-" +
-            "Expected: a valid signed license file (version=2).
-",
-        };
-      }
-
-      return {
-        exitCode: 0,
-        stdout:
-          `Installed license: ${lic.edition}
-` +
-          (lic.not_after ? `Not after: ${lic.not_after}
-` : "") +
-          (lic.key_id ? `Key: ${lic.key_id}
-` : "") +
-          (lic.license_id ? `License ID: ${lic.license_id}
-` : "") +
-          `Path: ${lic.path || dest}
-`,
-      };
     }
 
     if (sub === "remove") {
