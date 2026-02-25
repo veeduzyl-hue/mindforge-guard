@@ -1,15 +1,15 @@
 # Guard
 
-**AI Coding Governance Layer**  
-Drift Intelligence · Risk Signal · License-Aware CLI
+**Deterministic Governance Boundary for AI-Generated Code**  
+Drift Intelligence · Risk Signals · License-Aware CLI
 
 Guard is the first commercial product of the **MindForge CDS (Cognitive Decision System)**.
 
-It provides deterministic, offline governance for AI-native development workflows.
+It provides a deterministic, offline governance layer between AI-generated change and production acceptance.
 
-------------------------------------------------------------------------
+---
 
-## Why Guard Exists
+## 🚀 30‑Second Overview
 
 AI coding tools accelerate development — but they also introduce:
 
@@ -18,20 +18,53 @@ AI coding tools accelerate development — but they also introduce:
 - Silent risk amplification  
 - Non-deterministic CI behavior  
 
-Guard introduces a governance layer between AI-generated change and production acceptance.
+Guard establishes a **decision boundary** between AI execution and organizational approval.
 
-It is not an observability dashboard.  
-It is a **decision boundary system**.
+It is **not** an observability dashboard.  
+It is a **governance contract for AI-native development.**
 
-------------------------------------------------------------------------
+---
 
-## Core Capabilities
+## ⚡ Quick Start (Community Mode)
+
+Run drift status:
+
+```bash
+node ./packages/guard/src/runGuard.mjs drift status
+```
+
+Try a Pro feature without a license:
+
+```bash
+node ./packages/guard/src/runGuard.mjs drift timeline; echo $?
+```
+
+You will receive:
+
+- Structured JSON error  
+- Exit code `21` (LICENSE_REQUIRED)  
+
+Install a license:
+
+```bash
+guard license install <file>
+```
+
+Then re-run:
+
+```bash
+node ./packages/guard/src/runGuard.mjs drift timeline
+```
+
+---
+
+## 🧠 Core Capabilities
 
 ### Drift Intelligence
 
 - Drift density  
 - Unique module expansion  
-- Time-bucketed drift timeline  
+- Time-bucketed timeline  
 - Window comparison  
 
 ```bash
@@ -39,8 +72,6 @@ guard drift status
 guard drift timeline
 guard drift compare
 ```
-
-------------------------------------------------------------------------
 
 ### Risk Signal Awareness
 
@@ -53,9 +84,9 @@ guard drift compare
 guard assoc correlate
 ```
 
-------------------------------------------------------------------------
+---
 
-### Deterministic Exit Codes
+## 🔐 Deterministic Exit Codes (CI‑Safe)
 
 Guard is CI-first.
 
@@ -67,11 +98,11 @@ Guard is CI-first.
 | 21   | License required |
 | 30   | License invalid / expired |
 
-Stable exit codes make Guard safe for CI/CD integration.
+These exit codes are stable and safe to rely on in CI/CD pipelines.
 
-------------------------------------------------------------------------
+---
 
-## Editions
+## 📦 Editions
 
 | Edition     | Drift Timeline | Drift Compare | Assoc Correlate |
 |------------|----------------|---------------|-----------------|
@@ -79,74 +110,39 @@ Stable exit codes make Guard safe for CI/CD integration.
 | Pro       | ✅             | ❌            | ❌              |
 | Pro+      | ✅             | ✅            | ✅              |
 
-Community is default.  
-Pro unlocks timeline.  
-Pro+ unlocks compare and correlation.
+- **Community** → Core governance runtime  
+- **Pro** → Time-series drift intelligence  
+- **Pro+** → Comparative and correlation diagnostics  
 
-------------------------------------------------------------------------
+---
 
-## Open Core Model
+## 🧩 Open-Core Architecture
 
-Guard follows an open-core architecture.
+Guard follows an **open-core model**.
 
-The core governance runtime is open source.
+The core governance engine is open source.
 
-Advanced analytics modules (Drift Timeline, Drift Compare, Association Correlation) require a signed Pro or Pro+ license.
+Advanced analytics modules require a signed Pro or Pro+ license.
 
 Licensing is:
 
 - Offline  
 - Cryptographically signed (Ed25519)  
+- Canonical JSON verified  
 - Deterministic  
 - CI-safe  
 
 Community edition remains fully usable without a license.
 
-------------------------------------------------------------------------
+---
 
-## License Model
-
-Guard uses:
-
-- Ed25519 signatures  
-- Canonical JSON signing  
-- Embedded public key verification  
-- Offline license validation  
-
-Install license:
-
-```bash
-guard license install <file>
-```
-
-Stored at:
-
-~/.guard/license.json
-
-------------------------------------------------------------------------
-
-## Quick Start
-
-Community mode:
-
-```bash
-node ./packages/guard/src/runGuard.mjs drift status
-```
-
-Activate license:
-
-```bash
-guard license install pro.license.json
-```
-
-------------------------------------------------------------------------
-
-## Architecture Positioning
+## 🏗 Architecture Positioning
 
 Guard is not:
 
-- Another agent dashboard  
+- An agent dashboard  
 - A SaaS monitoring tool  
+- A cloud-dependent service  
 
 Guard is:
 
@@ -156,18 +152,26 @@ Guard is:
 
 It sits between AI execution and organizational acceptance.
 
-------------------------------------------------------------------------
+---
 
-## Who Guard Is For
+## 👥 Who Guard Is For
 
 - AI-native solo developers  
 - Startup engineering teams  
-- CI-driven product orgs  
+- CI-driven product organizations  
 - Enterprises adopting AI coding  
 
-------------------------------------------------------------------------
+---
 
-## Status
+## 📚 Documentation
+
+- docs/LICENSE.md → Licensing guide  
+- docs/EDITIONS.md → Feature matrix  
+- docs/SECURITY.md → Signing and verification model  
+
+---
+
+## 🟢 Status
 
 - License system: stable (v2)  
 - Exit code contract: stable  
@@ -175,3 +179,9 @@ It sits between AI execution and organizational acceptance.
 - Commercial gating: active  
 
 Guard is production-ready.
+
+---
+
+## 📣 About MindForge
+
+Guard is the first commercial product in the MindForge CDS ecosystem — a Cognitive Decision System designed for deterministic governance in AI-native environments.
