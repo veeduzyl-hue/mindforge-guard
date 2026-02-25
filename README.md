@@ -178,7 +178,7 @@ It sits between AI execution and organizational acceptance.
 - Drift engine: deterministic  
 - Commercial gating: active  
 
-Guard is production-ready.
+Guard v1.0 marks the first stable open-core release of MindForge Guard.
 
 ---
 
