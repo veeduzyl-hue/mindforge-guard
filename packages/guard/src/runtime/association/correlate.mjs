@@ -209,7 +209,7 @@ function buildXYSeries({ driftDaily, riskDaily, metricX, metricY }) {
 }
 
 /**
- * v0.29 (assoc) â€” statistically rigorous signal-only correlation bundle (v2)
+ * v0.29 (assoc) â€?statistically rigorous signal-only correlation bundle (v2)
  * - single JSON object output
  * - fail-safe computation
  */

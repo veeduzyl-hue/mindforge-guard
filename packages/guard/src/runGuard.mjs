@@ -2,11 +2,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { loadPolicy } from "../../kernel/src/policy.mjs";
+import { loadPolicy } from "@veeduzyl/mindforge-kernel/src/policy.mjs";
 import {
   validatePolicyFile,
-  defaultPolicyPath,
-} from "../../kernel/src/validatePolicy.mjs";
+  defaultPolicyPath
+} from "@veeduzyl/mindforge-kernel/src/validatePolicy.mjs";
 
 // Drift (signal-only)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
@@ -70,7 +70,7 @@ function showLicenseSummaryLocal() {
 
 function renderGuardHelp() {
   return [
-    "Guard â€” AI Coding Safety Layer",
+    "Guard â€?AI Coding Safety Layer",
     "",
     "Usage:",
     "  guard <command> [options]",
@@ -917,7 +917,7 @@ export async function runGuard({ argv }) {
 
   // snapshot (dynamic import)
   if (cmd === "snapshot") {
-    const { runSnapshot } = await import("../../kernel/src/snapshot.mjs");
+    const { runSnapshot } = await import("@veeduzyl/mindforge-kernel/src/snapshot.mjs");
     const result = runSnapshot({ argv, policy });
     return {
       exitCode: result?.exitCode ?? 0,

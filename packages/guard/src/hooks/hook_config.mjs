@@ -3,8 +3,8 @@ import path from "node:path";
 import { DEFAULT_TIMEOUT_MS } from "./hook_types.mjs";
 
 function toAbsRepoPath(p) {
-  // guard 包一般在 packages/guard；config 在 repo root 的 .mindforge/hooks.json
-  // 用 process.cwd() 作为 repo root（你当前脚本基本都以 repo root 运行）
+  // guard 包一般在 packages/guard；config �?repo root �?.mindforge/hooks.json
+  // �?process.cwd() 作为 repo root（你当前脚本基本都以 repo root 运行�?
   return path.resolve(process.cwd(), p);
 }
 
@@ -18,7 +18,7 @@ function readJson(file) {
 }
 
 function resolveEnvToken(spec) {
-  // 支持 "ENV:XXX" 或 直接 token
+  // 支持 "ENV:XXX" �?直接 token
   if (!spec || typeof spec !== "string") return "";
   if (spec.startsWith("ENV:")) {
     const k = spec.slice("ENV:".length);

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // packages/guard/src/runtime/drift/driftExport.mjs
 /**
- * Drift Export (v0.25) â€” Contract-first, signal-only.
+ * Drift Export (v0.25) â€?Contract-first, signal-only.
  *
  * Guarantees:
  * - Does NOT affect risk scoring, verdicts, or exit codes of existing flows.

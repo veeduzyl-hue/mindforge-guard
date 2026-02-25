@@ -4,8 +4,8 @@ import { analyzeDrift } from "./analyzer.mjs";
 /**
  * v0.27:
  * - 透传 modules
- * - 顶层增加 dominance（永远存在，signal-only）
- * - 不改变既有字段结构
+ * - 顶层增加 dominance（永远存在，signal-only�?
+ * - 不改变既有字段结�?
  */
 export function buildDriftStatus({ repoRoot, window = "7d" }) {
   const eventsPath = path.join(

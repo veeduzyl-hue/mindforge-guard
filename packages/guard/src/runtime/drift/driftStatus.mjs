@@ -48,7 +48,7 @@ function shortenMiddle(s, maxLen = 48) {
   // keep tail to preserve meaning (paths/modules)
   const tailLen = Math.max(16, Math.floor(maxLen * 0.6));
   const headLen = Math.max(6, maxLen - tailLen - 1);
-  return `${str.slice(0, headLen)}â€¦${str.slice(str.length - tailLen)}`;
+  return `${str.slice(0, headLen)}â€?{str.slice(str.length - tailLen)}`;
 }
 
 function concentrationNote(dominanceRatio) {

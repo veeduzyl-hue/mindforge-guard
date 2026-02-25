@@ -1,9 +1,33 @@
 {
-    "name": "@mindforge/guard",
-    "version": "1.0.0",
-    "private": false,
-    "type": "module",
-    "bin": {
-      "guard": "./src/runGuard.mjs"
-    }
-  }
+  "name": "@veeduzyl/mindforge-guard",
+  "version": "1.0.0",
+  "description": "MindForge Guard - AI coding governance layer (CLI)",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "guard": "./bin/guard.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@veeduzyl/mindforge-kernel": "^0.20.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "EDITIONS.md",
+    "LICENSE"
+  ],
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/veeduzyl-hue/mindforge-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/veeduzyl-hue/mindforge-guard/issues"
+  },
+  "homepage": "https://mindforge.run"
+}

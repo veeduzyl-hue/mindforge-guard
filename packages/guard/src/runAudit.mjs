@@ -1,7 +1,7 @@
 import path from "node:path";
 import { appendFileSync } from "node:fs";
 
-import { parseArgs, ensureDir, writeFile, nowIso, uuid } from "../../kernel/src/util.mjs";
+import { parseArgs, ensureDir, writeFile, nowIso, uuid } from "@veeduzyl/mindforge-kernel/src/util.mjs";
 
 import {
   getHeadSha,
@@ -9,13 +9,13 @@ import {
   getRepoRoot,
   diffNumstat,
   diffNameOnly,
-} from "../../kernel/src/git.mjs";
+} from "@veeduzyl/mindforge-kernel/src/git.mjs";
 
-import { computeSignalsFromNumstat } from "../../kernel/src/signals.mjs";
-import { evaluateAudit } from "../../kernel/src/audit.mjs";
+import { computeSignalsFromNumstat } from "@veeduzyl/mindforge-kernel/src/signals.mjs";
+import { evaluateAudit } from "@veeduzyl/mindforge-kernel/src/audit.mjs";
 
 // v0.23 NEW (pure): Risk v1 + Spread
-import { computeRiskV1 } from "../../kernel/src/risk_v1.mjs";
+import { computeRiskV1 } from "@veeduzyl/mindforge-kernel/src/risk_v1.mjs";
 
 // productization
 import { loadGuardEditionFromLocalLicense } from "./product/license.mjs";
