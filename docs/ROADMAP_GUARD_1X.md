@@ -2,6 +2,12 @@
 
 **Deterministic Execution Authority Layer**
 
+Release boundary note:
+
+- v1.1 is deferred until after v1.0.2 release hardening
+- Canonical Action will be additive and isolated
+- existing audit, drift, risk, and exit-code behavior must remain backward-compatible
+
 ---
 
 # 0. Context

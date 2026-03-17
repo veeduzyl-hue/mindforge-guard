@@ -1,43 +1,28 @@
 # Guard Editions
 
-Guard is offered in three commercial tiers.
+MindForge Guard uses the following canonical edition model:
 
-------------------------------------------------------------------------
+- `community`
+- `pro`
+- `pro_plus`
+- `enterprise`
 
-## Community (Free)
+## Feature Matrix
 
--   Core governance enforcement
--   Policy validation
--   Stable exit-code contract
--   No advanced Drift analytics
--   No Association analytics
+| Surface | Community | Pro | Pro Plus | Enterprise |
+|---|---|---|---|---|
+| Core governance runtime | Yes | Yes | Yes | Yes |
+| Policy validation | Yes | Yes | Yes | Yes |
+| `guard audit . --staged` | Yes | Yes | Yes | Yes |
+| `guard snapshot .` | Yes | Yes | Yes | Yes |
+| `guard drift status` | Yes | Yes | Yes | Yes |
+| `guard drift timeline` | No | Yes | Yes | Yes |
+| `guard drift compare` | No | No | Yes | Yes |
+| `guard assoc correlate` | No | No | Yes | Yes |
 
-------------------------------------------------------------------------
+## Enforcement Notes
 
-## Pro
-
-Includes everything in Community, plus:
-
--   Drift Timeline
--   Drift Density metrics
--   Historical drift buckets
--   Snapshot enrichment
-
-------------------------------------------------------------------------
-
-## Pro+
-
-Includes everything in Pro, plus:
-
--   Drift Compare (window comparison)
--   Association Correlation (Drift × Risk)
--   Advanced diagnostics bundle
--   Future premium analytics modules
-
-------------------------------------------------------------------------
-
-## Upgrade Path
-
-Community → Pro → Pro+
-
-Licenses are offline signed using Ed25519.
+- Gated commands fail closed with structured JSON.
+- Missing required licenses return exit code `21`.
+- Missing required runtime data returns exit code `30`.
+- Current CLI gating is enforced at the command entrypoint.
