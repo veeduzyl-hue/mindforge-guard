@@ -1,11 +1,11 @@
 import { BUILTIN_ACTIONS } from "./registry.mjs";
 
-function normalizeText(text) {
+export function normalizeActionText(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
 function lower(text) {
-  return normalizeText(text).toLowerCase();
+  return normalizeActionText(text).toLowerCase();
 }
 
 function fileTargetFromText(text) {
@@ -14,7 +14,7 @@ function fileTargetFromText(text) {
 }
 
 export function classifyAction(input) {
-  const text = normalizeText(input?.text);
+  const text = normalizeActionText(input?.text);
   const lowered = lower(text);
 
   let actionClass = "unknown";
