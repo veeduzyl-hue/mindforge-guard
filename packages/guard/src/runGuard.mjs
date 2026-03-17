@@ -11,6 +11,7 @@ import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import { buildTimeline } from "./runtime/drift/timeline.mjs";
 import { buildCompare } from "./runtime/drift/compare.mjs";
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
+import { handleActionSubcommand } from "./cli/action.mjs";
 import {
   readLicense,
   removeLicense,
@@ -97,6 +98,7 @@ function renderGuardHelp() {
     "  guard validate-policy [--path=<file>]",
     "  guard audit . --staged",
     "  guard snapshot .",
+    "  guard action classify --text \"<string>\"",
     "",
     "Drift (signal-only; no policy required):",
     "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
@@ -408,6 +410,9 @@ async function runSnapshotCommand({ repoRoot, argv }) {
 }
 
 export async function runGuard({ argv }) {
+  if (argv && argv[0] === "action") {
+    return handleActionSubcommand(argv.slice(1));
+  }
   if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
     return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
   }
