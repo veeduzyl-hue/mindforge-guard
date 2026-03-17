@@ -7,11 +7,14 @@ It is positioned as:
 - Evolving toward a Deterministic Execution Authority Layer
 
 Guard is CLI-first, offline-capable, and built around stable exit codes plus machine-readable JSON artifacts.
+Current checkpoint release: `v1.1.0`, adding canonical action classify plus local contract hardening.
 
 ## Current Stable Release
 
-- Stable version: `v1.0.1`
-- `v1.0.2` is the next release-hardening candidate
+- Current release: `v1.1.0`
+- `v1.1.0` is the current Canonical Action checkpoint release
+- This release adds `guard action classify` and a validated `canonical_action` artifact
+- Execution-path integrations remain out of scope for this release, including audit / drift / permit / policy enforcement hookups
 
 ## Core Commands
 
@@ -30,6 +33,14 @@ node packages/guard/bin/guard.mjs validate-policy
 node packages/guard/bin/guard.mjs audit . --staged
 node packages/guard/bin/guard.mjs snapshot .
 ```
+
+New in `v1.1.0`:
+
+```bash
+node packages/guard/bin/guard.mjs action classify --text "write file README.md"
+```
+
+This returns a `canonical_action` JSON artifact with local schema validation and fail-closed behavior for invalid classify output.
 
 Signal and analytics surface:
 
@@ -70,7 +81,7 @@ Guard preserves these stable exit semantics:
 | `10` | Soft governance block |
 | `20` | Hard governance block |
 | `21` | License required |
-| `30` | Runtime, packaging, or license validation error |
+| `30` | Command-scoped validation or runtime contract error |
 
 ## Documentation
 
@@ -84,4 +95,5 @@ Guard preserves these stable exit semantics:
 
 - `guard audit . --staged` requires a git-accessible repository state.
 - `guard snapshot .` requires a previously generated audit artifact.
-- v1.1 work remains deferred until after v1.0.2 release hardening.
+- `v1.1.0` establishes a bounded Canonical Action checkpoint.
+- Execution-path integrations remain out of scope for this release.
