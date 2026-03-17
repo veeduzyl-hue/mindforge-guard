@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/canonical_action_policy_preview.v1.json",
+  "title": "Canonical Action Policy Preview v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "canonical_action_hash",
+    "policy_preview",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "canonical_action_policy_preview" },
+    "version": { "const": "v1" },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "policy_preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matched_rules", "preview_verdict"],
+      "properties": {
+        "matched_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rule_id", "severity", "message"],
+            "properties": {
+              "rule_id": { "type": "string", "minLength": 1 },
+              "severity": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "preview_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "unknown"]
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
