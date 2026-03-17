@@ -4,7 +4,7 @@
 
 This document records the current **shadow governance checkpoint** on `main`.
 
-It covers the combined, additive-only lane formed by:
+It captures the additive-only lane formed by:
 
 - canonical action classify
 - canonical action contract hardening
@@ -14,7 +14,7 @@ It covers the combined, additive-only lane formed by:
 It is:
 
 - a freeze record for the current shadow governance boundary
-- a summary of what `main` now includes
+- a summary of what `main` includes after PR #5
 - a post-merge engineering judgment
 
 It is not:
@@ -22,7 +22,7 @@ It is not:
 - an enforcement milestone
 - a permit milestone
 - a release tag note
-- a plan for the next phase
+- a next-phase implementation plan
 
 ---
 
@@ -64,16 +64,16 @@ The current checkpoint does not include any of the following:
 - no audit main-output mutation
 - no audit verdict mutation
 - no audit enforcement mutation
-- no permit hookup
-- no policy enforcement hookup
 - no drift integration
 - no snapshot integration
 - no risk integration
+- no policy enforcement hookup
+- no permit hookup
 - no new action subcommands
 - no mutation of existing v1.0.2 / v1.1.0 stable contracts
 - no DS-EXIT-001 changes
 
-This lane remains bounded to shadow artifacts and preview-only evaluation.
+This checkpoint remains bounded to shadow artifacts and preview-only governance signals.
 
 ---
 
@@ -113,19 +113,19 @@ Current engineering judgment:
 
 - yes, the current `main` state forms a new checkpoint candidate
 - the most accurate name is **shadow governance checkpoint**
-- this checkpoint is broader than the `v1.1.0` canonical action checkpoint, but still deliberately bounded
+- this checkpoint extends the `v1.1.0` canonical action checkpoint without crossing into enforcement
 
 Why this qualifies as a checkpoint:
 
-- canonical action now exists as a stable contract
+- canonical action now exists as a stable, validated contract
 - canonical action can be emitted alongside audit as an opt-in shadow artifact
 - canonical action can be evaluated against policy in a preview-only artifact
-- the new lane is exercised by dedicated verification scripts
+- the new lane is covered by dedicated verification scripts
 - no existing stable command contracts were repurposed
 
 Why this remains shadow-only:
 
-- preview output is independent from audit main output
+- shadow artifacts are independent from audit main output
 - preview output is opt-in and explicit-path only
 - preview output is explicitly marked `enforcing: false`
 - audit verdicts and existing enforcement logic remain unchanged
