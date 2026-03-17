@@ -1,8 +1,9 @@
-import { canonicalJson } from "../../canonical_json.mjs";
-import { sha256Hex } from "../../hash.mjs";
+import { createHash } from "node:crypto";
+
+import { canonicalJSONStringify } from "../../product/canonical_json.mjs";
 
 export function hashAction(action) {
   const copy = { ...action };
-  delete copy.action_hash;
-  return sha256Hex(canonicalJson(copy));
+  delete copy.canonical_action_hash;
+  return `sha256:${createHash("sha256").update(canonicalJSONStringify(copy), "utf8").digest("hex")}`;
 }
