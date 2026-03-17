@@ -1,5 +1,23 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
+
+import {
+  loadPolicy,
+  validatePolicyFile,
+  defaultPolicyPath,
+} from "./kernelCompat.mjs";
+import { buildDriftStatus } from "./runtime/drift/status.mjs";
+import { buildTimeline } from "./runtime/drift/timeline.mjs";
+import { buildCompare } from "./runtime/drift/compare.mjs";
+import { buildAssociationBundle } from "./runtime/association/index.mjs";
+import {
+  readLicense,
+  removeLicense,
+  licenseTier,
+  getLicensePath,
+} from "./product/license.mjs";
+import { normalizeEdition } from "./product/edition.mjs";
 
 function readPkgVersion() {
   try {
@@ -12,70 +30,55 @@ function readPkgVersion() {
 }
 
 const GUARD_VERSION = readPkgVersion();
-
-import path from "node:path";
-
-import { loadPolicy } from "@veeduzyl/mindforge-kernel/src/policy.mjs";
-import {
-  validatePolicyFile,
-  defaultPolicyPath
-} from "@veeduzyl/mindforge-kernel/src/validatePolicy.mjs";
-
-// Drift (signal-only)
-import { buildDriftStatus } from "./runtime/drift/status.mjs";
-import { buildTimeline } from "./runtime/drift/timeline.mjs";
-import { buildCompare } from "./runtime/drift/compare.mjs";
-
-// Assoc (signal-only analytics)
-import { buildAssociationBundle } from "./runtime/association/index.mjs";
-
-// License (offline, signed v2)
-import {
-  readLicense,
-  removeLicense,
-  licenseTier,
-  getLicensePath,
-} from "./product/license.mjs";
-
-// Product license gating (monetization tiers)
-// NOTE: Repo policy edition (guard init --edition) is separate from account/license edition.
 const EXIT_LICENSE_REQUIRED = 21;
+const EXIT_ERROR_DEFAULT = 30;
 
 function tierNumFromEdition(edition) {
-  if (edition === "pro+") return 2;
-  if (edition === "pro") return 1;
+  const normalized = normalizeEdition(edition);
+  if (normalized === "enterprise") return 3;
+  if (normalized === "pro_plus") return 2;
+  if (normalized === "pro") return 1;
   return 0;
 }
 
-function licenseGateResult({ lic, requiredEdition, feature }) {
-  const currentEdition = lic && lic.kind === "ok" ? lic.edition : "community";
-  const current = tierNumFromEdition(currentEdition);
-  const required = requiredEdition === "pro_plus" ? 2 : requiredEdition === "pro" ? 1 : 0;
-  if (current >= required) return null;
-
-  const payload = {
-    ok: false,
-    error: {
-      kind: "license_required",
-      feature: feature || "",
-      required_edition: requiredEdition === "pro_plus" ? "pro+" : requiredEdition,
-      current_edition: currentEdition,
-      hint: "Install a signed license file: guard license install <file>",
-    },
-  };
-  return { exitCode: EXIT_LICENSE_REQUIRED, stdout: JSON.stringify(payload, null, 2) + "\n" };
+function tierLabel(tier) {
+  if (tier >= 3) return "enterprise";
+  if (tier === 2) return "pro_plus";
+  if (tier === 1) return "pro";
+  return "community";
 }
 
-// DS-EXIT-001: keep stable defaults for packaging failures
-const EXIT_ERROR_DEFAULT = 30;
+function licenseGateResult({ lic, requiredEdition, feature }) {
+  const currentEdition = normalizeEdition(lic && lic.kind === "ok" ? lic.edition : "community");
+  if (tierNumFromEdition(currentEdition) >= tierNumFromEdition(requiredEdition)) return null;
+
+  return {
+    exitCode: EXIT_LICENSE_REQUIRED,
+    stdout:
+      JSON.stringify(
+        {
+          ok: false,
+          error: {
+            kind: "license_required",
+            feature: feature || "",
+            required_edition: normalizeEdition(requiredEdition),
+            current_edition: currentEdition,
+            hint: "Install a signed license file: guard license install <file>",
+          },
+        },
+        null,
+        2
+      ) + "\n",
+  };
+}
 
 function showLicenseSummaryLocal() {
   const lic = readLicense();
   if (!lic || lic.kind === "missing") return "license: missing";
   if (lic.kind === "invalid") return `license: invalid (${lic.reason || "unknown"})`;
-  if (lic.kind === "expired") return `license: expired (${lic.edition || "unknown"}) expires: ${lic.expiry || ""}`;
+  if (lic.kind === "expired") return `license: expired (${lic.edition || "unknown"}) expires: ${lic.not_after || ""}`;
   if (lic.kind === "not_yet_valid") return `license: not_yet_valid (${lic.edition || "unknown"}) starts: ${lic.not_before || ""}`;
-  if (lic.kind === "ok") return `license: ok (${lic.edition}) expires: ${lic.expiry || ""}`;
+  if (lic.kind === "ok") return `license: ok (${lic.edition}) expires: ${lic.not_after || ""}`;
   return `license: ${lic.kind}`;
 }
 
@@ -92,16 +95,16 @@ function renderGuardHelp() {
     "",
     "Core:",
     "  guard validate-policy [--path=<file>]",
-    "  guard audit .",
+    "  guard audit . --staged",
     "  guard snapshot .",
     "",
     "Drift (signal-only; no policy required):",
     "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
-    "  guard drift timeline [--window 7d|14d|30d]",
-    "  guard drift compare  [--window 7d|14d|30d]",
+    "  guard drift timeline [--window 7d|14d|30d]   (license: pro)",
+    "  guard drift compare  [--window 7d|14d|30d]   (license: pro_plus)",
     "",
     "Analytics (signal-only; no policy required):",
-    "  guard assoc correlate [--window 7d|14d|30d] [--bucket day]",
+    "  guard assoc correlate [--window 7d|14d|30d] [--bucket day] (license: pro_plus)",
     "                       [--x drift_density|drift_events|drift_unique_modules]",
     "                       [--y risk_score_avg|risk_score_p95|risk_events]",
     "                       [--lags <n>] [--subsamples <n>]",
@@ -121,8 +124,8 @@ function renderGuardHelp() {
   ].join("\n");
 }
 
-function ensureDir(p) {
-  fs.mkdirSync(p, { recursive: true });
+function ensureDir(dirPath) {
+  fs.mkdirSync(dirPath, { recursive: true });
 }
 
 function writeFileAtomic(filePath, content) {
@@ -134,6 +137,10 @@ function getRepoPolicyPath(repoRoot) {
   return path.join(repoRoot, ".mindforge", "config", "policy.json");
 }
 
+function getDriftEventsPath(repoRoot) {
+  return path.join(repoRoot, ".mindforge", "drift", "events.jsonl");
+}
+
 function policyMissingMessage(policyPath) {
   return (
     "Guard is not initialized for this repo.\n" +
@@ -143,19 +150,6 @@ function policyMissingMessage(policyPath) {
   );
 }
 
-/* -------------------------
- * Policy schema bridge
- * ------------------------- */
-
-/**
- * Legacy policy format (v=1) used by early Guard packaging:
- * {
- *   v: 1,
- *   edition: "community|pro|pro+",
- *   exit_codes: { ok, soft_block, hard_block, error },
- *   limits: { lines_added_soft, files_changed_hard }
- * }
- */
 function isLegacyPolicyV1(obj) {
   return (
     obj &&
@@ -167,16 +161,6 @@ function isLegacyPolicyV1(obj) {
   );
 }
 
-/**
- * Current policy schema expected by kernel validatePolicyFile (Guard Open-core v1.0):
- * {
- *   policy_version: "1.0",
- *   defaults: {},
- *   thresholds: {},
- *   rules: [],
- *   exit_codes: { allow, soft_block, hard_block, error }
- * }
- */
 function migrateLegacyPolicyV1ToPolicySchema(legacy) {
   const edition = normalizeEdition(legacy.edition || "community");
   const limits = legacy.limits || {};
@@ -203,17 +187,9 @@ function migrateLegacyPolicyV1ToPolicySchema(legacy) {
   };
 }
 
-function normalizeEdition(e) {
-  const s = String(e || "").trim().toLowerCase();
-  if (s === "pro_plus" || s === "pro+") return "pro+";
-  if (s === "pro") return "pro";
-  return "community";
-}
-
 function readJsonBestEffort(filePath) {
   try {
-    const raw = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(raw);
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
   } catch {
     return null;
   }
@@ -236,26 +212,38 @@ function stableDriftBundle({ window }) {
     trend: "stable",
     signal: {
       density: 0,
+      slope: 0,
+      expansion: 0,
       unique_modules: 0,
-      events_current: 0,
-      events_prev: 0,
-      expansion_modules: 0,
-      top_modules: [],
     },
-    events: [],
+    explain: {
+      events: 0,
+      events_prev: 0,
+    },
+    modules: [],
+    dominance: {
+      metric: "drift_units",
+      top_n: 5,
+      total_contribution: 0,
+      top_modules: [],
+      dominance_ratio: 0,
+      top3_share: 0,
+      cross_boundary: {
+        is_cross_boundary: false,
+        boundaries: [],
+        note: "signal-only",
+      },
+    },
+    policy: {
+      affects_exit: false,
+      affects_risk_v1: false,
+    },
   };
-}
-
-function tierLabel(t) {
-  if (t >= 2) return "pro+";
-  if (t === 1) return "pro";
-  return "community";
 }
 
 function effectiveTier({ policyEdition, licenseTierNum }) {
   const policyTier = tierNumFromEdition(policyEdition);
   const overall = Math.min(policyTier, licenseTierNum);
-  // Analytics follows license tier, enforcement follows policy tier
   return {
     enforcement: tierLabel(policyTier),
     analytics: tierLabel(licenseTierNum),
@@ -267,21 +255,20 @@ function licenseStateFromFile() {
   const lic = readLicense();
   if (!lic || lic.kind === "missing") return { state: "missing", note: "" };
   if (lic.kind === "ok") {
-    const until = lic.not_after ? `not_after: ${lic.not_after}` : "not_after: none";
     return {
       state: lic.edition,
-      note: until,
+      note: lic.not_after ? `not_after: ${lic.not_after}` : "not_after: none",
     };
   }
   if (lic.kind === "expired") {
     return {
-      state: `community (expired license)`,
+      state: "community (expired license)",
       note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
     };
   }
   if (lic.kind === "not_yet_valid") {
     return {
-      state: `community (not yet valid)`,
+      state: "community (not yet valid)",
       note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
     };
   }
@@ -328,38 +315,30 @@ function renderStatusText({ repoRoot, policyState, driftState, licenseState, eff
   return lines.join("\n");
 }
 
-/* -------------------------
- * CLI parsing helpers
- * ------------------------- */
-
 function parseInitArgs(args) {
   const out = { help: false, force: false, dryRun: false, edition: null };
-  for (const a of args) {
-    if (a === "--help" || a === "-h") out.help = true;
-    else if (a === "--force") out.force = true;
-    else if (a === "--dry-run") out.dryRun = true;
-    else if (a.startsWith("--edition=")) out.edition = a.split("=", 2)[1];
-    else if (a === "--edition") {
-      // handled in caller if needed
-    }
+  for (const arg of args) {
+    if (arg === "--help" || arg === "-h") out.help = true;
+    else if (arg === "--force") out.force = true;
+    else if (arg === "--dry-run") out.dryRun = true;
+    else if (arg.startsWith("--edition=")) out.edition = arg.split("=", 2)[1];
   }
-  // Support: --edition pro+
-  const edIdx = args.findIndex((x) => x === "--edition");
-  if (edIdx >= 0 && args[edIdx + 1]) out.edition = args[edIdx + 1];
+  const editionIndex = args.findIndex((value) => value === "--edition");
+  if (editionIndex >= 0 && args[editionIndex + 1]) out.edition = args[editionIndex + 1];
   return out;
 }
 
 function renderInitHelp() {
   return [
     "Usage:",
-    "  guard init [--force] [--edition community|pro|pro+] [--dry-run]",
+    "  guard init [--force] [--edition community|pro|pro_plus|enterprise] [--dry-run]",
     "",
     "Creates .mindforge/config/policy.json in the current repo.",
     "",
     "Examples:",
     "  guard init",
     "  guard init --force",
-    "  guard init --force --edition pro+",
+    "  guard init --force --edition pro_plus",
     "",
   ].join("\n");
 }
@@ -375,24 +354,58 @@ function renderLicenseHelp() {
   ].join("\n");
 }
 
-/* -------------------------
- * Core commands
- * ------------------------- */
-
-async function runAudit({ repoRoot, argv }) {
-  // deferred import to keep startup minimal
-  const { runAudit } = await import("./runAudit.mjs");
-  return runAudit({ repoRoot, argv });
+function buildErrorJson({ kind, message, details = {} }) {
+  return (
+    JSON.stringify(
+      {
+        ok: false,
+        error: {
+          kind,
+          message,
+          ...details,
+        },
+      },
+      null,
+      2
+    ) + "\n"
+  );
 }
 
-async function runSnapshot({ repoRoot, argv }) {
+function missingDataError({ feature, filePath }) {
+  return {
+    exitCode: EXIT_ERROR_DEFAULT,
+    stdout: buildErrorJson({
+      kind: "missing_required_input",
+      message: `${feature} requires drift event data.`,
+      details: {
+        feature,
+        path: filePath,
+      },
+    }),
+  };
+}
+
+async function runAuditCommand({ repoRoot, argv }) {
+  const { runAudit } = await import("./runAudit.mjs");
+  const policyPath = getRepoPolicyPath(repoRoot);
+  const policy = await loadPolicy({ policyPath, repoRoot });
+  const result = await runAudit({ repoRoot, argv, policy });
+  if (result?.audit) {
+    return { exitCode: result.exitCode, stdout: JSON.stringify(result.audit, null, 2) + "\n" };
+  }
+  return {
+    exitCode: result?.exitCode ?? EXIT_ERROR_DEFAULT,
+    stdout: buildErrorJson({
+      kind: "audit_failed",
+      message: result?.message || "Audit failed.",
+    }),
+  };
+}
+
+async function runSnapshotCommand({ repoRoot, argv }) {
   const { runSnapshot } = await import("./runtime/snapshot.mjs");
   return runSnapshot({ repoRoot, argv });
 }
-
-/* -------------------------
- * Main Guard router
- * ------------------------- */
 
 export async function runGuard({ argv }) {
   if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
@@ -405,41 +418,25 @@ export async function runGuard({ argv }) {
   const cmd = argv[0];
   const repoRoot = process.cwd();
 
-  // -------------------------
-  // status (Day-0 UX)
-  // -------------------------
   if (cmd === "status") {
     const policyPath = getRepoPolicyPath(repoRoot);
-
-    // Policy state
     let policyState;
     if (!fs.existsSync(policyPath)) {
       policyState = { kind: "missing", path: policyPath };
     } else {
       const parsed = readJsonBestEffort(policyPath);
       if (parsed && typeof parsed === "object") {
-        // Support both legacy v=1 and current schema
         const edition =
           (isLegacyPolicyV1(parsed) && parsed.edition) ||
-          (parsed.defaults && parsed.defaults.edition) ||
+          parsed.defaults?.edition ||
           parsed.edition ||
           "community";
-
-        policyState = {
-          kind: "ok",
-          edition: normalizeEdition(edition),
-          path: policyPath,
-        };
+        policyState = { kind: "ok", edition: normalizeEdition(edition), path: policyPath };
       } else {
-        policyState = {
-          kind: "error",
-          reason: "policy.json is not valid JSON",
-          path: policyPath,
-        };
+        policyState = { kind: "error", reason: "policy.json is not valid JSON", path: policyPath };
       }
     }
 
-    // Drift state (signal-only)
     const driftBundle = safeTry(
       () => buildDriftStatus({ repoRoot, window: "7d" }),
       stableDriftBundle({ window: "7d" })
@@ -452,12 +449,11 @@ export async function runGuard({ argv }) {
       unique_modules: driftBundle.signal?.unique_modules ?? 0,
     };
 
-    // License
     const licenseState = licenseStateFromFile();
-    const licObj = readLicense();
-    const licTier = licenseTier(licObj);
-    const policyEdition = policyState.kind === "ok" ? policyState.edition : "community";
-    const eff = effectiveTier({ policyEdition, licenseTierNum: licTier });
+    const eff = effectiveTier({
+      policyEdition: policyState.kind === "ok" ? policyState.edition : "community",
+      licenseTierNum: licenseTier(readLicense()),
+    });
 
     return {
       exitCode: 0,
@@ -471,21 +467,10 @@ export async function runGuard({ argv }) {
     };
   }
 
-  // -------------------------
-  // license (offline, signed v2)
-  // -------------------------
   if (cmd === "license") {
     const sub = argv[1] || "";
-    if (sub === "status") {
-      const s = showLicenseSummaryLocal();
-      return { exitCode: 0, stdout: s + "\n" };
-    }
-
-    if (sub === "show") {
-      const lic = readLicense();
-      return { exitCode: 0, stdout: JSON.stringify(lic, null, 2) + "\n" };
-    }
-
+    if (sub === "status") return { exitCode: 0, stdout: showLicenseSummaryLocal() + "\n" };
+    if (sub === "show") return { exitCode: 0, stdout: JSON.stringify(readLicense(), null, 2) + "\n" };
     if (sub === "install") {
       const src = argv[2];
       if (!src) {
@@ -500,16 +485,38 @@ export async function runGuard({ argv }) {
         ensureDir(path.dirname(dest));
         fs.writeFileSync(dest, buf);
         const lic = readLicense();
+        if (lic.kind !== "ok") {
+          return {
+            exitCode: EXIT_ERROR_DEFAULT,
+            stdout: buildErrorJson({
+              kind: "license_install_invalid",
+              message: "License install failed validation.",
+              details: {
+                state: lic.kind,
+                path: dest,
+                reason: lic.reason,
+              },
+            }),
+          };
+        }
         return {
           exitCode: 0,
           stdout:
-            "Installed license file.\n" +
-            (lic.kind === "ok" ? `edition: ${lic.edition}\n` : "") +
-            (lic.not_before ? `not_before: ${lic.not_before}\n` : "") +
-            (lic.not_after ? `not_after: ${lic.not_after}\n` : "") +
-            (lic.key_id ? `key_id: ${lic.key_id}\n` : "") +
-            (lic.license_id ? `license_id: ${lic.license_id}\n` : "") +
-            `path: ${dest}\n`,
+            JSON.stringify(
+              {
+                ok: true,
+                license: {
+                  edition: lic.edition,
+                  not_before: lic.not_before,
+                  not_after: lic.not_after,
+                  key_id: lic.key_id,
+                  license_id: lic.license_id,
+                  path: dest,
+                },
+              },
+              null,
+              2
+            ) + "\n",
         };
       } catch (err) {
         return {
@@ -521,196 +528,142 @@ export async function runGuard({ argv }) {
         };
       }
     }
-
     if (sub === "remove") {
       const res = removeLicense();
       return {
-        exitCode: 0,
+        exitCode: res.ok === false ? EXIT_ERROR_DEFAULT : 0,
         stdout:
-          res.removed
-            ? `Removed license file: ${res.path}\n`
-            : `No license file found: ${res.path}\n`,
+          JSON.stringify(
+            {
+              ok: res.ok !== false,
+              removed: !!res.removed,
+              path: res.path,
+              error: res.error || null,
+            },
+            null,
+            2
+          ) + "\n",
       };
     }
-
     return { exitCode: 0, stdout: renderLicenseHelp() + "\n" };
   }
 
-  // -------------------------
-  // init (Day-0 UX)
-  // -------------------------
   if (cmd === "init") {
     const args = parseInitArgs(argv.slice(1));
     if (args.help) return { exitCode: 0, stdout: renderInitHelp() + "\n" };
 
     const policyPath = getRepoPolicyPath(repoRoot);
-    const exists = fs.existsSync(policyPath);
-
-    if (exists && !args.force) {
-      // Tip if user has higher license than community
-      const lic = readLicense();
-      const lt = licenseTier(lic);
+    if (fs.existsSync(policyPath) && !args.force) {
+      const lt = licenseTier(readLicense());
       const tip =
         lt > 0
-          ? `Tip: you have a ${tierLabel(lt)} license. you can run:\n  guard init --force --edition ${tierLabel(
-              lt
-            )}\n`
-          : `Tip: re-run with --force to overwrite.\n`;
-
-      return {
-        exitCode: 0,
-        stdout: `Guard already initialized: ${policyPath}\n` + tip,
-      };
+          ? `Tip: you have a ${tierLabel(lt)} license. you can run:\n  guard init --force --edition ${tierLabel(lt)}\n`
+          : "Tip: re-run with --force to overwrite.\n";
+      return { exitCode: 0, stdout: `Guard already initialized: ${policyPath}\n${tip}` };
     }
 
-    let edition = args.edition ? String(args.edition).trim() : null;
-    edition = normalizeEdition(edition || "community");
-
+    const edition = normalizeEdition(args.edition || "community");
     const policy = defaultPolicyJson({ edition });
     const content = JSON.stringify(policy, null, 2) + "\n";
 
     if (args.dryRun) {
-      return {
-        exitCode: 0,
-        stdout: `Dry-run: would write policy to ${policyPath}\n\n` + content,
-      };
+      return { exitCode: 0, stdout: `Dry-run: would write policy to ${policyPath}\n\n${content}` };
     }
 
     writeFileAtomic(policyPath, content);
     ensureDir(path.join(repoRoot, ".mindforge", "drift"));
     ensureDir(path.join(repoRoot, ".mindforge", "audit"));
 
-    // Optional: immediately validate to avoid "init succeeded but policy invalid"
-    const v = validatePolicyFile(policyPath);
-    if (!v.ok) {
+    const validation = validatePolicyFile(policyPath);
+    if (!validation.ok) {
       let err = `[mindforge] policy invalid after init: ${policyPath}\n`;
-      for (const e of v.errors) err += `- ${e}\n`;
+      for (const item of validation.errors) err += `- ${item}\n`;
       return { exitCode: 20, stderr: err };
     }
-
-    return {
-      exitCode: 0,
-      stdout: `Initialized Guard: ${policyPath}\n`,
-    };
+    return { exitCode: 0, stdout: `Initialized Guard: ${policyPath}\n` };
   }
 
-  // -------------------------
-  // validate-policy (no need to load repo policy)
-  // -------------------------
   if (cmd === "validate-policy") {
     const args = argv.slice(1);
-    const pathArg = args.find((a) => a.startsWith("--path="));
-    const p = pathArg ? pathArg.split("=", 2)[1] : getRepoPolicyPath(repoRoot);
+    const pathArg = args.find((value) => value.startsWith("--path="));
+    const policyPath = pathArg ? pathArg.split("=", 2)[1] : getRepoPolicyPath(repoRoot);
+    if (!fs.existsSync(policyPath)) return { exitCode: 2, stderr: policyMissingMessage(policyPath) };
 
-    if (!fs.existsSync(p)) {
-      return { exitCode: 2, stderr: policyMissingMessage(p) };
-    }
-
-    // Support legacy v=1 auto-migrate (in memory) before validating with kernel schema
-    const parsed = readJsonBestEffort(p);
+    const parsed = readJsonBestEffort(policyPath);
     if (parsed && isLegacyPolicyV1(parsed)) {
       const migrated = migrateLegacyPolicyV1ToPolicySchema(parsed);
-      // validate migrated JSON via kernel by writing to a temp file? kernel validatePolicyFile wants a path.
-      // But we can validate by writing to a sibling temp file and cleaning it up.
-      const tmp = p + ".tmp.migrated.json";
+      const tmpPath = policyPath + ".tmp.migrated.json";
       try {
-        fs.writeFileSync(tmp, JSON.stringify(migrated, null, 2) + "\n", "utf8");
-        const v = validatePolicyFile(tmp);
-        fs.unlinkSync(tmp);
-        if (!v.ok) {
-          let err = `[mindforge] policy invalid: ${p}\n`;
-          err += `note: legacy v=1 migrated for validation\n`;
-          for (const e of v.errors) err += `- ${e}\n`;
+        fs.writeFileSync(tmpPath, JSON.stringify(migrated, null, 2) + "\n", "utf8");
+        const validation = validatePolicyFile(tmpPath);
+        fs.unlinkSync(tmpPath);
+        if (!validation.ok) {
+          let err = `[mindforge] policy invalid: ${policyPath}\n`;
+          err += "note: legacy v=1 migrated for validation\n";
+          for (const item of validation.errors) err += `- ${item}\n`;
           return { exitCode: 20, stderr: err };
         }
-        return { exitCode: 0, stdout: `[mindforge] policy valid: ${p}\n` };
+        return { exitCode: 0, stdout: `[mindforge] policy valid: ${policyPath}\n` };
       } catch (err) {
-        try { fs.existsSync(tmp) && fs.unlinkSync(tmp); } catch {}
+        try {
+          if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+        } catch {}
         return {
           exitCode: EXIT_ERROR_DEFAULT,
-          stderr: `[mindforge] validate-policy failed: ${p}\nerror: ${err?.message || String(err)}\n`,
+          stderr: `[mindforge] validate-policy failed: ${policyPath}\nerror: ${err?.message || String(err)}\n`,
         };
       }
     }
 
-    const v = validatePolicyFile(p);
-    if (!v.ok) {
-      let err = `[mindforge] policy invalid: ${p}\n`;
-      for (const e of v.errors) err += `- ${e}\n`;
+    const validation = validatePolicyFile(policyPath);
+    if (!validation.ok) {
+      let err = `[mindforge] policy invalid: ${policyPath}\n`;
+      for (const item of validation.errors) err += `- ${item}\n`;
       return { exitCode: 20, stderr: err };
     }
-    return { exitCode: 0, stdout: `[mindforge] policy valid: ${p}\n` };
+    return { exitCode: 0, stdout: `[mindforge] policy valid: ${policyPath}\n` };
   }
 
-  // -------------------------
-  // audit
-  // -------------------------
-  if (cmd === "audit") {
+  if (cmd === "audit" || cmd === "snapshot") {
     const policyPath = getRepoPolicyPath(repoRoot);
-    if (!fs.existsSync(policyPath)) {
-      return { exitCode: 2, stderr: policyMissingMessage(policyPath) };
-    }
+    if (!fs.existsSync(policyPath)) return { exitCode: 2, stderr: policyMissingMessage(policyPath) };
 
-    // ensure policy can be loaded (and auto-migrate legacy v=1 on disk)
     const parsed = readJsonBestEffort(policyPath);
     if (parsed && isLegacyPolicyV1(parsed)) {
       const migrated = migrateLegacyPolicyV1ToPolicySchema(parsed);
       writeFileAtomic(policyPath, JSON.stringify(migrated, null, 2) + "\n");
     }
 
-    return runAudit({ repoRoot, argv: argv.slice(1) });
+    if (cmd === "audit") return runAuditCommand({ repoRoot, argv: argv.slice(1) });
+    return runSnapshotCommand({ repoRoot, argv: argv.slice(1) });
   }
 
-  // -------------------------
-  // snapshot
-  // -------------------------
-  if (cmd === "snapshot") {
-    const policyPath = getRepoPolicyPath(repoRoot);
-    if (!fs.existsSync(policyPath)) {
-      return { exitCode: 2, stderr: policyMissingMessage(policyPath) };
-    }
-
-    // ensure policy can be loaded (and auto-migrate legacy v=1 on disk)
-    const parsed = readJsonBestEffort(policyPath);
-    if (parsed && isLegacyPolicyV1(parsed)) {
-      const migrated = migrateLegacyPolicyV1ToPolicySchema(parsed);
-      writeFileAtomic(policyPath, JSON.stringify(migrated, null, 2) + "\n");
-    }
-
-    return runSnapshot({ repoRoot, argv: argv.slice(1) });
-  }
-
-  // -------------------------
-  // drift (signal-only)
-  // -------------------------
   if (cmd === "drift") {
     const sub = argv[1] || "status";
     const args = argv.slice(2);
 
-    const windowArg = args.find((a) => a.startsWith("--window"));
     let window = "7d";
+    const windowArg = args.find((value) => value.startsWith("--window"));
     if (windowArg) {
       const parts = windowArg.includes("=") ? windowArg.split("=", 2) : null;
-      if (parts && parts[1]) window = parts[1];
-      const idx = args.findIndex((x) => x === "--window");
-      if (idx >= 0 && args[idx + 1]) window = args[idx + 1];
+      if (parts?.[1]) window = parts[1];
+      const index = args.findIndex((value) => value === "--window");
+      if (index >= 0 && args[index + 1]) window = args[index + 1];
     }
 
     if (sub === "status") {
-      const fmt =
-        args.includes("--format=json") || args.includes("--format") && args[args.indexOf("--format") + 1] === "json"
-          ? "json"
-          : "text";
+      const jsonFormat =
+        args.includes("--format=json") ||
+        (args.includes("--format") && args[args.indexOf("--format") + 1] === "json");
       const pretty = args.includes("--pretty");
-      const outIdx = args.findIndex((a) => a === "--out");
-      const outPath = outIdx >= 0 ? args[outIdx + 1] : null;
-
+      const outIndex = args.findIndex((value) => value === "--out");
+      const outPath = outIndex >= 0 ? args[outIndex + 1] : null;
       const bundle = safeTry(
         () => buildDriftStatus({ repoRoot, window }),
         stableDriftBundle({ window })
       );
 
-      if (fmt === "json") {
+      if (jsonFormat) {
         const payload = pretty ? JSON.stringify(bundle, null, 2) + "\n" : JSON.stringify(bundle) + "\n";
         if (outPath) {
           writeFileAtomic(outPath, payload);
@@ -719,34 +672,47 @@ export async function runGuard({ argv }) {
         return { exitCode: 0, stdout: payload };
       }
 
-      // text
-      const signal = bundle.signal || {};
       const lines = [];
       lines.push("Drift Status");
       lines.push("------------");
       lines.push(`Window: ${bundle.window}`);
       lines.push(`Trend: ${bundle.trend}`);
-      lines.push(`Density: ${signal.density ?? 0} events/day`);
-      lines.push(`Expansion: +${signal.expansion_modules ?? 0} modules`);
-      lines.push(`Unique Modules: ${signal.unique_modules ?? 0}`);
-      lines.push(`Events (current): ${signal.events_current ?? 0}`);
-      lines.push(`Events (prev): ${signal.events_prev ?? 0}`);
+      lines.push(`Density: ${bundle.signal?.density ?? 0} events/day`);
+      lines.push(`Expansion: +${bundle.signal?.expansion ?? 0} modules`);
+      lines.push(`Unique Modules: ${bundle.signal?.unique_modules ?? 0}`);
+      lines.push(`Events (current): ${bundle.explain?.events ?? 0}`);
+      lines.push(`Events (prev): ${bundle.explain?.events_prev ?? 0}`);
       lines.push("");
       return { exitCode: 0, stdout: lines.join("\n") + "\n" };
     }
 
-    if (sub === "timeline") {
-      const bundle = safeTry(() => buildTimeline({ repoRoot, window }), null);
-      if (!bundle) {
-        return { exitCode: EXIT_ERROR_DEFAULT, stderr: "Failed to build timeline.\n" };
-      }
-      return { exitCode: 0, stdout: JSON.stringify(bundle, null, 2) + "\n" };
-    }
+    if (sub === "timeline" || sub === "compare") {
+      const lic = readLicense();
+      const gate = licenseGateResult({
+        lic,
+        requiredEdition: sub === "timeline" ? "pro" : "pro_plus",
+        feature: sub === "timeline" ? "drift_timeline" : "drift_compare",
+      });
+      if (gate) return gate;
 
-    if (sub === "compare") {
-      const bundle = safeTry(() => buildCompare({ repoRoot, window }), null);
+      const eventsPath = getDriftEventsPath(repoRoot);
+      if (!fs.existsSync(eventsPath)) {
+        return missingDataError({
+          feature: sub === "timeline" ? "drift_timeline" : "drift_compare",
+          filePath: eventsPath,
+        });
+      }
+
+      const builder = sub === "timeline" ? buildTimeline : buildCompare;
+      const bundle = safeTry(() => builder({ eventsPath, window }), null);
       if (!bundle) {
-        return { exitCode: EXIT_ERROR_DEFAULT, stderr: "Failed to build compare.\n" };
+        return {
+          exitCode: EXIT_ERROR_DEFAULT,
+          stdout: buildErrorJson({
+            kind: sub === "timeline" ? "timeline_build_failed" : "compare_build_failed",
+            message: `Failed to build drift ${sub}.`,
+          }),
+        };
       }
       return { exitCode: 0, stdout: JSON.stringify(bundle, null, 2) + "\n" };
     }
@@ -754,18 +720,15 @@ export async function runGuard({ argv }) {
     return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
   }
 
-  // -------------------------
-  // assoc correlate (signal-only analytics)
-  // -------------------------
   if (cmd === "assoc") {
     const sub = argv[1] || "";
-    if (sub !== "correlate") {
-      return { exitCode: 2, stderr: "Usage: guard assoc correlate [options]\n" };
-    }
+    if (sub !== "correlate") return { exitCode: 2, stderr: "Usage: guard assoc correlate [options]\n" };
 
-    // Gate by license: assoc is Pro+ analytics
-    const lic = readLicense();
-    const gate = licenseGateResult({ lic, requiredEdition: "pro_plus", feature: "assoc_correlate" });
+    const gate = licenseGateResult({
+      lic: readLicense(),
+      requiredEdition: "pro_plus",
+      feature: "assoc_correlate",
+    });
     if (gate) return gate;
 
     const args = argv.slice(2);
@@ -773,31 +736,10 @@ export async function runGuard({ argv }) {
     return { exitCode: 0, stdout: JSON.stringify(bundle, null, 2) + "\n" };
   }
 
-  // default: unknown
-  return { exitCode: 2, stderr: `Unknown command: ${cmd}\n\n` + renderGuardHelp() + "\n" };
+  return { exitCode: 2, stderr: `Unknown command: ${cmd}\n\n${renderGuardHelp()}\n` };
 }
 
-/* -------------------------
- * Policy defaults
- * ------------------------- */
-
 function defaultPolicyJson({ edition }) {
-  const policyPath = defaultPolicyPath();
-  // Load kernel defaults if available; fallback to minimal schema.
-  // But we keep a deterministic default here.
-  const base = safeTry(
-    () => loadPolicy(policyPath),
-    null
-  );
-
-  if (base && typeof base === "object") {
-    // ensure defaults.edition is set
-    const copy = JSON.parse(JSON.stringify(base));
-    copy.defaults = copy.defaults || {};
-    copy.defaults.edition = normalizeEdition(edition);
-    return copy;
-  }
-
   return {
     policy_version: "1.0",
     defaults: {
@@ -817,14 +759,9 @@ function defaultPolicyJson({ edition }) {
   };
 }
 
-/* -------------------------
- * Entry
- * ------------------------- */
-
 async function main() {
   try {
-    const argv = process.argv.slice(2);
-    const res = await runGuard({ argv });
+    const res = await runGuard({ argv: process.argv.slice(2) });
     if (res?.stdout) process.stdout.write(res.stdout);
     if (res?.stderr) process.stderr.write(res.stderr);
     process.exit(res?.exitCode ?? EXIT_ERROR_DEFAULT);
