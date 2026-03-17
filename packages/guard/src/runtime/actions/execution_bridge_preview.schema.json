@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/execution_bridge_preview.v1.json",
+  "title": "Execution Bridge Preview v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "canonical_action_hash",
+    "execution_bridge",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "execution_bridge_preview" },
+    "version": { "const": "v1" },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "execution_bridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bridge_verdict",
+        "policy_preview_verdict",
+        "permit_precheck_decision",
+        "reasons"
+      ],
+      "properties": {
+        "bridge_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "policy_preview_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "unknown"]
+        },
+        "permit_precheck_decision": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "message"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 },
+              "rule_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
