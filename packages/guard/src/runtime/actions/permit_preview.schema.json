@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/permit_precheck_preview.v1.json",
+  "title": "Permit Precheck Preview v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "canonical_action_hash",
+    "permit_precheck",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "permit_precheck_preview" },
+    "version": { "const": "v1" },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "permit_precheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "reasons"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "message"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 },
+              "rule_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
