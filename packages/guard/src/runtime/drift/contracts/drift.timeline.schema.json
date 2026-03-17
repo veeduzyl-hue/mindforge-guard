@@ -4,13 +4,17 @@
     "title": "Drift Timeline v1",
     "type": "object",
     "additionalProperties": false,
-    "required": ["kind", "v", "window", "generated_at", "series"],
+    "required": ["kind", "v", "window", "bucket", "generated_at", "series"],
     "properties": {
       "kind": { "const": "drift_timeline" },
       "v": { "const": 1 },
       "window": {
         "type": "string",
         "enum": ["7d", "14d", "30d"]
+      },
+      "bucket": {
+        "type": "string",
+        "enum": ["day", "hour"]
       },
       "generated_at": {
         "type": "string",
