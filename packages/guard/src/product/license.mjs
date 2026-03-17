@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { verifyLicenseV2 } from "./license_verify.mjs";
+import { normalizeEdition } from "./edition.mjs";
 
 // Cross-platform user-level storage:
 // Windows: C:\Users\<you>\.guard\license.json
@@ -18,14 +19,6 @@ function parseIsoMs(s) {
   if (typeof s !== "string" || !s.trim()) return null;
   const ms = Date.parse(s);
   return Number.isNaN(ms) ? NaN : ms;
-}
-
-function normalizeEdition(ed) {
-  const v = String(ed || "community").trim().toLowerCase();
-  if (v === "pro_plus" || v === "proplus") return "pro+";
-  if (v === "pro+") return "pro+";
-  if (v === "pro") return "pro";
-  return "community";
 }
 
 export function getLicensePath() {
@@ -127,7 +120,8 @@ export function removeLicense() {
  */
 export function licenseTier(lic) {
   const edition = normalizeEdition(lic?.edition || "community");
-  if (edition === "pro+") return 2;
+  if (edition === "enterprise") return 3;
+  if (edition === "pro_plus") return 2;
   if (edition === "pro") return 1;
   return 0;
 }
@@ -161,4 +155,25 @@ export function installLicenseObject(doc) {
   fs.writeFileSync(LICENSE_PATH, JSON.stringify(doc, null, 2) + "\n", "utf8");
   const lic = readLicense();
   return lic;
+}
+
+export function loadGuardEditionFromLocalLicense() {
+  const lic = readLicense();
+  if (!lic || lic.kind === "missing") {
+    return { edition: "community", status: "missing", key_id: null, license_id: null };
+  }
+  if (lic.kind === "ok") {
+    return {
+      edition: normalizeEdition(lic.edition),
+      status: "valid",
+      key_id: lic.key_id ?? null,
+      license_id: lic.license_id ?? null,
+    };
+  }
+  return {
+    edition: "community",
+    status: lic.kind,
+    key_id: lic.key_id ?? null,
+    license_id: lic.license_id ?? null,
+  };
 }

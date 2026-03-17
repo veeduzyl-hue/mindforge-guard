@@ -1,21 +1,21 @@
 import path from "node:path";
 import { appendFileSync } from "node:fs";
 
-import { parseArgs, ensureDir, writeFile, nowIso, uuid } from "@veeduzyl/mindforge-kernel/src/util.mjs";
-
 import {
+  parseArgs,
+  ensureDir,
+  writeFile,
+  nowIso,
+  uuid,
   getHeadSha,
   getBranchName,
   getRepoRoot,
   diffNumstat,
   diffNameOnly,
-} from "@veeduzyl/mindforge-kernel/src/git.mjs";
-
-import { computeSignalsFromNumstat } from "@veeduzyl/mindforge-kernel/src/signals.mjs";
-import { evaluateAudit } from "@veeduzyl/mindforge-kernel/src/audit.mjs";
-
-// v0.23 NEW (pure): Risk v1 + Spread
-import { computeRiskV1 } from "@veeduzyl/mindforge-kernel/src/risk_v1.mjs";
+  computeSignalsFromNumstat,
+  evaluateAudit,
+  computeRiskV1,
+} from "./kernelCompat.mjs";
 
 // productization
 import { loadGuardEditionFromLocalLicense } from "./product/license.mjs";
@@ -212,7 +212,7 @@ export async function runAudit({ argv, policy }) {
   const jsonlPath = getGuardJsonlPath(repoRoot);
   let drift = null;
 
-  if (productization.edition === "pro") {
+  if (productization.edition !== "community") {
     drift = readDriftTrendFromAuditJsonl({
       audit_jsonl_path: jsonlPath,
       window: 14,
@@ -223,7 +223,7 @@ export async function runAudit({ argv, policy }) {
   // ---- v0.27 NEW: Drift Dominance (Pro-only; additive; fail-safe) ----
   let driftContext = null;
 
-  if (productization.edition === "pro") {
+  if (productization.edition !== "community") {
     try {
       const driftBundle = buildDriftStatus({
         repoRoot,
