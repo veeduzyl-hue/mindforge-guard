@@ -32,8 +32,10 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
+  buildExecutionBridgePreview,
   buildCanonicalActionPolicyPreview,
   buildPermitPrecheckPreview,
+  assertValidExecutionBridgePreview,
   assertValidCanonicalActionPolicyPreview,
   assertValidPermitPrecheckPreview,
 } from "./runtime/actions/index.mjs";
@@ -71,9 +73,11 @@ function readShadowOptions(argv) {
   const emitCanonicalAction = argv.includes("--emit-canonical-action");
   const emitPolicyPreview = argv.includes("--emit-policy-preview");
   const emitPermitPrecheckPreview = argv.includes("--emit-permit-precheck-preview");
+  const emitExecutionBridgePreview = argv.includes("--emit-execution-bridge-preview");
   let canonicalActionOut = null;
   let policyPreviewOut = null;
   let permitPrecheckOut = null;
+  let executionBridgeOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -92,6 +96,11 @@ function readShadowOptions(argv) {
     } else if (arg === "--permit-precheck-out" && argv[i + 1]) {
       permitPrecheckOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--execution-bridge-out=")) {
+      executionBridgeOut = arg.slice("--execution-bridge-out=".length);
+    } else if (arg === "--execution-bridge-out" && argv[i + 1]) {
+      executionBridgeOut = argv[i + 1];
+      i += 1;
     }
   }
 
@@ -102,6 +111,8 @@ function readShadowOptions(argv) {
     policyPreviewOut,
     emitPermitPrecheckPreview,
     permitPrecheckOut,
+    emitExecutionBridgePreview,
+    executionBridgeOut,
   };
 }
 
@@ -256,6 +267,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "permit precheck preview requires --emit-permit-precheck-preview",
+    };
+  }
+
+  if (shadow.emitExecutionBridgePreview && !shadow.emitPermitPrecheckPreview) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution bridge preview requires --emit-permit-precheck-preview",
+    };
+  }
+
+  if (shadow.emitExecutionBridgePreview && !shadow.executionBridgeOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution bridge preview requires --execution-bridge-out <file>",
+    };
+  }
+
+  if (!shadow.emitExecutionBridgePreview && shadow.executionBridgeOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution bridge preview requires --emit-execution-bridge-preview",
     };
   }
 
@@ -452,13 +487,25 @@ export async function runAudit({ argv, policy }) {
           );
           const permitPrecheckOutPath = path.resolve(process.cwd(), shadow.permitPrecheckOut);
           writeFile(permitPrecheckOutPath, JSON.stringify(permitPrecheckArtifact, null, 2));
+
+          if (shadow.emitExecutionBridgePreview) {
+            const executionBridgeArtifact = assertValidExecutionBridgePreview(
+              buildExecutionBridgePreview({
+                canonicalActionArtifact,
+                policyPreviewArtifact: previewArtifact,
+                permitPrecheckArtifact,
+              })
+            );
+            const executionBridgeOutPath = path.resolve(process.cwd(), shadow.executionBridgeOut);
+            writeFile(executionBridgeOutPath, JSON.stringify(executionBridgeArtifact, null, 2));
+          }
         }
       }
     } catch (err) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow, policy preview, or permit precheck preview output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow, policy preview, permit precheck preview, or execution bridge preview output failed: ${err?.message || String(err)}`,
       };
     }
   }
