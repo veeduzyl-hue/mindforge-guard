@@ -30,7 +30,11 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 
 // v0.26 NEW: Drift Snapshot Builder (Pro-only context block)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
-import { buildCanonicalActionArtifactFromAudit } from "./runtime/actions/index.mjs";
+import {
+  buildCanonicalActionArtifactFromAudit,
+  buildCanonicalActionPolicyPreview,
+  assertValidCanonicalActionPolicyPreview,
+} from "./runtime/actions/index.mjs";
 
 function deriveActions(verdict, reasons) {
   if (verdict === "hard_block") {
@@ -63,7 +67,9 @@ function appendAuditJsonlLine(jsonlPath, obj) {
 
 function readShadowOptions(argv) {
   const emitCanonicalAction = argv.includes("--emit-canonical-action");
+  const emitPolicyPreview = argv.includes("--emit-policy-preview");
   let canonicalActionOut = null;
+  let policyPreviewOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -72,12 +78,19 @@ function readShadowOptions(argv) {
     } else if (arg === "--canonical-action-out" && argv[i + 1]) {
       canonicalActionOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--policy-preview-out=")) {
+      policyPreviewOut = arg.slice("--policy-preview-out=".length);
+    } else if (arg === "--policy-preview-out" && argv[i + 1]) {
+      policyPreviewOut = argv[i + 1];
+      i += 1;
     }
   }
 
   return {
     emitCanonicalAction,
     canonicalActionOut,
+    emitPolicyPreview,
+    policyPreviewOut,
   };
 }
 
@@ -184,6 +197,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "canonical action shadow output requires --emit-canonical-action",
+    };
+  }
+
+  if (shadow.emitPolicyPreview && !shadow.emitCanonicalAction) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy preview output requires --emit-canonical-action",
+    };
+  }
+
+  if (shadow.emitPolicyPreview && !shadow.policyPreviewOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy preview output requires --policy-preview-out <file>",
+    };
+  }
+
+  if (!shadow.emitPolicyPreview && shadow.policyPreviewOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy preview output requires --emit-policy-preview",
     };
   }
 
@@ -358,13 +395,24 @@ export async function runAudit({ argv, policy }) {
   if (shadow.emitCanonicalAction) {
     try {
       const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
-      const outPath = path.resolve(process.cwd(), shadow.canonicalActionOut);
-      writeFile(outPath, JSON.stringify(canonicalActionArtifact, null, 2));
+      const canonicalActionOutPath = path.resolve(process.cwd(), shadow.canonicalActionOut);
+      writeFile(canonicalActionOutPath, JSON.stringify(canonicalActionArtifact, null, 2));
+
+      if (shadow.emitPolicyPreview) {
+        const previewArtifact = assertValidCanonicalActionPolicyPreview(
+          buildCanonicalActionPolicyPreview({
+            canonicalActionArtifact,
+            policy: effectivePolicy,
+          })
+        );
+        const policyPreviewOutPath = path.resolve(process.cwd(), shadow.policyPreviewOut);
+        writeFile(policyPreviewOutPath, JSON.stringify(previewArtifact, null, 2));
+      }
     } catch (err) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow or policy preview output failed: ${err?.message || String(err)}`,
       };
     }
   }
