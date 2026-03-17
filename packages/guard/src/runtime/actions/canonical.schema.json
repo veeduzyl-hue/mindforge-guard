@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/canonical_action.v1.json",
+  "title": "Canonical Action v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "input",
+    "action",
+    "canonical_action_hash",
+    "deterministic",
+    "side_effect_free"
+  ],
+  "properties": {
+    "kind": { "const": "canonical_action" },
+    "version": { "const": "v1" },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string" }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_class", "canonical_label", "target_type", "target_ref", "attributes"],
+      "properties": {
+        "action_class": { "type": "string" },
+        "canonical_label": { "type": "string" },
+        "target_type": { "type": "string" },
+        "target_ref": { "type": "string" },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "canonical_action_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "deterministic": { "const": true },
+    "side_effect_free": { "const": true }
+  }
+}
