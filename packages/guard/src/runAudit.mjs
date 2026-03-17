@@ -33,7 +33,9 @@ import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
   buildCanonicalActionPolicyPreview,
+  buildPermitPrecheckPreview,
   assertValidCanonicalActionPolicyPreview,
+  assertValidPermitPrecheckPreview,
 } from "./runtime/actions/index.mjs";
 
 function deriveActions(verdict, reasons) {
@@ -68,8 +70,10 @@ function appendAuditJsonlLine(jsonlPath, obj) {
 function readShadowOptions(argv) {
   const emitCanonicalAction = argv.includes("--emit-canonical-action");
   const emitPolicyPreview = argv.includes("--emit-policy-preview");
+  const emitPermitPrecheckPreview = argv.includes("--emit-permit-precheck-preview");
   let canonicalActionOut = null;
   let policyPreviewOut = null;
+  let permitPrecheckOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -83,6 +87,11 @@ function readShadowOptions(argv) {
     } else if (arg === "--policy-preview-out" && argv[i + 1]) {
       policyPreviewOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--permit-precheck-out=")) {
+      permitPrecheckOut = arg.slice("--permit-precheck-out=".length);
+    } else if (arg === "--permit-precheck-out" && argv[i + 1]) {
+      permitPrecheckOut = argv[i + 1];
+      i += 1;
     }
   }
 
@@ -91,6 +100,8 @@ function readShadowOptions(argv) {
     canonicalActionOut,
     emitPolicyPreview,
     policyPreviewOut,
+    emitPermitPrecheckPreview,
+    permitPrecheckOut,
   };
 }
 
@@ -221,6 +232,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "policy preview output requires --emit-policy-preview",
+    };
+  }
+
+  if (shadow.emitPermitPrecheckPreview && !shadow.emitPolicyPreview) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "permit precheck preview requires --emit-policy-preview",
+    };
+  }
+
+  if (shadow.emitPermitPrecheckPreview && !shadow.permitPrecheckOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "permit precheck preview requires --permit-precheck-out <file>",
+    };
+  }
+
+  if (!shadow.emitPermitPrecheckPreview && shadow.permitPrecheckOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "permit precheck preview requires --emit-permit-precheck-preview",
     };
   }
 
@@ -407,12 +442,23 @@ export async function runAudit({ argv, policy }) {
         );
         const policyPreviewOutPath = path.resolve(process.cwd(), shadow.policyPreviewOut);
         writeFile(policyPreviewOutPath, JSON.stringify(previewArtifact, null, 2));
+
+        if (shadow.emitPermitPrecheckPreview) {
+          const permitPrecheckArtifact = assertValidPermitPrecheckPreview(
+            buildPermitPrecheckPreview({
+              canonicalActionArtifact,
+              policyPreviewArtifact: previewArtifact,
+            })
+          );
+          const permitPrecheckOutPath = path.resolve(process.cwd(), shadow.permitPrecheckOut);
+          writeFile(permitPrecheckOutPath, JSON.stringify(permitPrecheckArtifact, null, 2));
+        }
       }
     } catch (err) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow or policy preview output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow, policy preview, or permit precheck preview output failed: ${err?.message || String(err)}`,
       };
     }
   }
