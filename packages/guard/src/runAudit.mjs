@@ -30,6 +30,7 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 
 // v0.26 NEW: Drift Snapshot Builder (Pro-only context block)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
+import { buildCanonicalActionArtifactFromAudit } from "./runtime/actions/index.mjs";
 
 function deriveActions(verdict, reasons) {
   if (verdict === "hard_block") {
@@ -58,6 +59,26 @@ function getGuardJsonlPath(repoRoot) {
 function appendAuditJsonlLine(jsonlPath, obj) {
   ensureDir(path.dirname(jsonlPath));
   appendFileSync(jsonlPath, JSON.stringify(obj) + "\n", "utf8");
+}
+
+function readShadowOptions(argv) {
+  const emitCanonicalAction = argv.includes("--emit-canonical-action");
+  let canonicalActionOut = null;
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg.startsWith("--canonical-action-out=")) {
+      canonicalActionOut = arg.slice("--canonical-action-out=".length);
+    } else if (arg === "--canonical-action-out" && argv[i + 1]) {
+      canonicalActionOut = argv[i + 1];
+      i += 1;
+    }
+  }
+
+  return {
+    emitCanonicalAction,
+    canonicalActionOut,
+  };
 }
 
 /**
@@ -135,6 +156,7 @@ function computeDominanceFallback(modules, metric = "drift_units", topN = 5) {
 
 export async function runAudit({ argv, policy }) {
   const args = parseArgs(argv);
+  const shadow = readShadowOptions(argv);
   const mode = args.mode === "ci" ? "ci" : "local";
 
   const head = args.head || getHeadSha();
@@ -146,6 +168,22 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "local mode requires --staged",
+    };
+  }
+
+  if (shadow.emitCanonicalAction && !shadow.canonicalActionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "canonical action shadow output requires --canonical-action-out <file>",
+    };
+  }
+
+  if (!shadow.emitCanonicalAction && shadow.canonicalActionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "canonical action shadow output requires --emit-canonical-action",
     };
   }
 
@@ -316,6 +354,20 @@ export async function runAudit({ argv, policy }) {
 
   const auditJsonPath = path.join(outdir, `audit.${head}.json`);
   writeFile(auditJsonPath, JSON.stringify(audit, null, 2));
+
+  if (shadow.emitCanonicalAction) {
+    try {
+      const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
+      const outPath = path.resolve(process.cwd(), shadow.canonicalActionOut);
+      writeFile(outPath, JSON.stringify(canonicalActionArtifact, null, 2));
+    } catch (err) {
+      return {
+        exitCode: policy.exit_codes.error ?? 30,
+        audit: null,
+        message: `canonical action shadow output failed: ${err?.message || String(err)}`,
+      };
+    }
+  }
 
   const exitCode =
     verdict === "allow"
