@@ -21,7 +21,7 @@
       "additionalProperties": false,
       "required": ["text"],
       "properties": {
-        "text": { "type": "string" }
+        "text": { "type": "string", "minLength": 1 }
       }
     },
     "action": {
@@ -29,14 +29,17 @@
       "additionalProperties": false,
       "required": ["action_class", "canonical_label", "target_type", "target_ref", "attributes"],
       "properties": {
-        "action_class": { "type": "string" },
-        "canonical_label": { "type": "string" },
-        "target_type": { "type": "string" },
+        "action_class": { "type": "string", "minLength": 1 },
+        "canonical_label": { "type": "string", "minLength": 1 },
+        "target_type": { "type": "string", "minLength": 1 },
         "target_ref": { "type": "string" },
         "attributes": {
           "type": "object",
-          "additionalProperties": {
-            "type": "string"
+          "additionalProperties": false,
+          "required": ["surface", "risk_hint"],
+          "properties": {
+            "surface": { "type": "string", "minLength": 1 },
+            "risk_hint": { "type": "string", "minLength": 1 }
           }
         }
       }
