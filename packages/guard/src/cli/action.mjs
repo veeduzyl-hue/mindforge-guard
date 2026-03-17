@@ -1,4 +1,8 @@
-import { classifyAction, hashAction } from "../runtime/actions/index.mjs";
+import {
+  classifyAction,
+  hashAction,
+  validateCanonicalActionArtifact,
+} from "../runtime/actions/index.mjs";
 
 function renderActionHelp() {
   return [
@@ -60,6 +64,27 @@ export function handleActionSubcommand(args) {
     deterministic: true,
     side_effect_free: true,
   };
+
+  const validation = validateCanonicalActionArtifact(artifact);
+  if (!validation.ok) {
+    return {
+      exitCode: 30,
+      stdout:
+        JSON.stringify(
+          {
+            ok: false,
+            error: {
+              kind: "canonical_action_contract_invalid",
+              message: "canonical_action artifact failed local validation",
+              schema_id: validation.schemaId,
+              issues: validation.errors,
+            },
+          },
+          null,
+          2
+        ) + "\n",
+    };
+  }
 
   return { exitCode: 0, stdout: JSON.stringify(artifact, null, 2) + "\n" };
 }
