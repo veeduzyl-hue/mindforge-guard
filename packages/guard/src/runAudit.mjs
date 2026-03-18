@@ -44,6 +44,8 @@ import {
   assertValidGovernanceDecisionRecord,
   buildGovernanceOutcomeBundle,
   assertValidGovernanceOutcomeBundle,
+  buildGovernanceApplicationRecord,
+  assertValidGovernanceApplicationRecord,
 } from "./runtime/governance/permit/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
@@ -168,7 +170,9 @@ function readPermitGateOptions(argv) {
   let governanceReceiptOut = null;
   let governanceDecisionRecordOut = null;
   let governanceOutcomeBundleOut = null;
+  let governanceApplicationRecordOut = null;
   let governanceOutcomeBundleOutRequested = false;
+  let governanceApplicationRecordOutRequested = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -196,6 +200,15 @@ function readPermitGateOptions(argv) {
       i += 1;
     } else if (arg === "--governance-outcome-bundle-out") {
       governanceOutcomeBundleOutRequested = true;
+    } else if (arg.startsWith("--governance-application-record-out=")) {
+      governanceApplicationRecordOutRequested = true;
+      governanceApplicationRecordOut = arg.slice("--governance-application-record-out=".length);
+    } else if (arg === "--governance-application-record-out" && argv[i + 1]) {
+      governanceApplicationRecordOutRequested = true;
+      governanceApplicationRecordOut = argv[i + 1];
+      i += 1;
+    } else if (arg === "--governance-application-record-out") {
+      governanceApplicationRecordOutRequested = true;
     }
   }
 
@@ -206,6 +219,8 @@ function readPermitGateOptions(argv) {
     governanceDecisionRecordOut,
     governanceOutcomeBundleOut,
     governanceOutcomeBundleOutRequested,
+    governanceApplicationRecordOut,
+    governanceApplicationRecordOutRequested,
   };
 }
 
@@ -555,11 +570,30 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (!permitGate.enabled && permitGate.governanceApplicationRecordOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance application record output requires --permit-gate",
+    };
+  }
+
   if (permitGate.governanceOutcomeBundleOutRequested && !permitGate.governanceOutcomeBundleOut) {
     return {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "governance outcome bundle output requires a file path",
+    };
+  }
+
+  if (
+    permitGate.governanceApplicationRecordOutRequested &&
+    !permitGate.governanceApplicationRecordOut
+  ) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance application record output requires a file path",
     };
   }
 
@@ -736,6 +770,7 @@ export async function runAudit({ argv, policy }) {
   let governanceReceipt = null;
   let governanceDecisionRecord = null;
   let governanceOutcomeBundle = null;
+  let governanceApplicationRecord = null;
 
   if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
@@ -861,6 +896,26 @@ export async function runAudit({ argv, policy }) {
             JSON.stringify(governanceOutcomeBundle, null, 2)
           );
         }
+        if (permitGate.governanceApplicationRecordOut) {
+          governanceApplicationRecord = assertValidGovernanceApplicationRecord(
+            buildGovernanceApplicationRecord({
+              audit,
+              policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
+              permitGateResult,
+              governanceReceipt,
+              governanceDecisionRecord,
+              governanceOutcomeBundle,
+            })
+          );
+          const governanceApplicationRecordOutPath = path.resolve(
+            process.cwd(),
+            permitGate.governanceApplicationRecordOut
+          );
+          writeFile(
+            governanceApplicationRecordOutPath,
+            JSON.stringify(governanceApplicationRecord, null, 2)
+          );
+        }
       }
     } catch (err) {
       return {
@@ -907,5 +962,6 @@ export async function runAudit({ argv, policy }) {
     governanceReceipt,
     governanceDecisionRecord,
     governanceOutcomeBundle,
+    governanceApplicationRecord,
   };
 }
