@@ -42,6 +42,8 @@ import {
   assertValidGovernanceReceipt,
   buildGovernanceDecisionRecord,
   assertValidGovernanceDecisionRecord,
+  buildGovernanceOutcomeBundle,
+  assertValidGovernanceOutcomeBundle,
 } from "./runtime/governance/permit/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
@@ -165,6 +167,7 @@ function readPermitGateOptions(argv) {
   let out = null;
   let governanceReceiptOut = null;
   let governanceDecisionRecordOut = null;
+  let governanceOutcomeBundleOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -183,10 +186,21 @@ function readPermitGateOptions(argv) {
     } else if (arg === "--governance-decision-record-out" && argv[i + 1]) {
       governanceDecisionRecordOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--governance-outcome-bundle-out=")) {
+      governanceOutcomeBundleOut = arg.slice("--governance-outcome-bundle-out=".length);
+    } else if (arg === "--governance-outcome-bundle-out" && argv[i + 1]) {
+      governanceOutcomeBundleOut = argv[i + 1];
+      i += 1;
     }
   }
 
-  return { enabled, out, governanceReceiptOut, governanceDecisionRecordOut };
+  return {
+    enabled,
+    out,
+    governanceReceiptOut,
+    governanceDecisionRecordOut,
+    governanceOutcomeBundleOut,
+  };
 }
 
 function buildGovernanceArtifacts({ audit, effectivePolicy }) {
@@ -527,6 +541,14 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (!permitGate.enabled && permitGate.governanceOutcomeBundleOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance outcome bundle output requires --permit-gate",
+    };
+  }
+
   const outdir =
     args.outdir ||
     path.join(process.cwd(), ".mindforge", "artifacts", mode === "ci" ? "ci" : "local");
@@ -699,6 +721,7 @@ export async function runAudit({ argv, policy }) {
   let permitGateResult = null;
   let governanceReceipt = null;
   let governanceDecisionRecord = null;
+  let governanceOutcomeBundle = null;
 
   if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
@@ -805,6 +828,25 @@ export async function runAudit({ argv, policy }) {
             JSON.stringify(governanceDecisionRecord, null, 2)
           );
         }
+        if (permitGate.governanceOutcomeBundleOut) {
+          governanceOutcomeBundle = assertValidGovernanceOutcomeBundle(
+            buildGovernanceOutcomeBundle({
+              audit,
+              policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
+              permitGateResult,
+              governanceReceipt,
+              governanceDecisionRecord,
+            })
+          );
+          const governanceOutcomeBundleOutPath = path.resolve(
+            process.cwd(),
+            permitGate.governanceOutcomeBundleOut
+          );
+          writeFile(
+            governanceOutcomeBundleOutPath,
+            JSON.stringify(governanceOutcomeBundle, null, 2)
+          );
+        }
       }
     } catch (err) {
       return {
@@ -844,5 +886,12 @@ export async function runAudit({ argv, policy }) {
     { repoRoot }
   );
 
-  return { exitCode, audit, permitGateResult, governanceReceipt, governanceDecisionRecord };
+  return {
+    exitCode,
+    audit,
+    permitGateResult,
+    governanceReceipt,
+    governanceDecisionRecord,
+    governanceOutcomeBundle,
+  };
 }

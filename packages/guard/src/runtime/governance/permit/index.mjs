@@ -35,3 +35,15 @@ export {
   validateGovernanceDecisionRecord,
   assertValidGovernanceDecisionRecord,
 } from "./governanceDecisionRecord.mjs";
+export {
+  GOVERNANCE_OUTCOME_BUNDLE_KIND,
+  GOVERNANCE_OUTCOME_BUNDLE_VERSION,
+  GOVERNANCE_OUTCOME_BUNDLE_SCHEMA_ID,
+  GOVERNANCE_OUTCOME_BUNDLE_MODE,
+  GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY,
+  GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE,
+  GOVERNANCE_OUTCOME_BUNDLE_EMITTER_SURFACE,
+  buildGovernanceOutcomeBundle,
+  validateGovernanceOutcomeBundle,
+  assertValidGovernanceOutcomeBundle,
+} from "./governanceOutcomeBundle.mjs";
