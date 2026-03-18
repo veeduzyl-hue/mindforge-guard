@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/policy_permit_bridge_contract.v1.json",
+  "title": "Policy Permit Bridge Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "canonical_action_hash",
+    "policy_permit_bridge",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "policy_permit_bridge_contract" },
+    "version": { "const": "v1" },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "policy_permit_bridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_class",
+        "policy_preview_verdict",
+        "permit_precheck_decision",
+        "execution_bridge_verdict",
+        "execution_readiness",
+        "enforcement_adjacent_decision",
+        "reason_summary"
+      ],
+      "properties": {
+        "action_class": { "type": "string", "minLength": 1 },
+        "policy_preview_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "unknown"]
+        },
+        "permit_precheck_decision": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "execution_bridge_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "execution_readiness": {
+          "type": "string",
+          "enum": ["ready", "not_ready", "unknown"]
+        },
+        "enforcement_adjacent_decision": {
+          "type": "string",
+          "enum": ["would_allow", "would_review", "would_deny", "insufficient_signal"]
+        },
+        "reason_summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "message"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 },
+              "rule_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
