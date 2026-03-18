@@ -177,6 +177,10 @@ if (deny.exitCode !== PERMIT_GATE_DENIED_EXIT_CODE) {
 const allowDisposition = readJson(allowOut);
 const allowLinkedDisposition = readJson(allowLinkedOut);
 const denyDisposition = readJson(denyOut);
+const allowReceipt = readJson(allowReceiptOut);
+const allowDecisionRecord = readJson(allowDecisionOut);
+const allowOutcomeBundle = readJson(allowBundleOut);
+const allowApplicationRecord = readJson(allowApplicationOut);
 
 for (const disposition of [allowDisposition, allowLinkedDisposition, denyDisposition]) {
   const validation = validateGovernanceDisposition(disposition);
@@ -244,6 +248,54 @@ if (!("governance_application_record_linkage" in allowLinkedDisposition)) {
   throw new Error("governance disposition should include application linkage when application record was emitted");
 }
 
+if (allowLinkedDisposition.canonical_action_hash !== allowReceipt.canonical_action_hash) {
+  throw new Error("governance disposition receipt linkage should preserve canonical action identity");
+}
+if (allowLinkedDisposition.canonical_action_hash !== allowDecisionRecord.canonical_action_hash) {
+  throw new Error("governance disposition decision linkage should preserve canonical action identity");
+}
+if (allowLinkedDisposition.canonical_action_hash !== allowOutcomeBundle.canonical_action_hash) {
+  throw new Error("governance disposition outcome bundle linkage should preserve canonical action identity");
+}
+if (allowLinkedDisposition.canonical_action_hash !== allowApplicationRecord.canonical_action_hash) {
+  throw new Error("governance disposition application linkage should preserve canonical action identity");
+}
+
+if (
+  allowLinkedDisposition.governance_receipt_linkage.consumer_surface !==
+  allowReceipt.governance_receipt.consumer_surface
+) {
+  throw new Error("governance disposition receipt linkage consumer surface mismatch");
+}
+
+if (
+  allowLinkedDisposition.governance_decision_record_linkage.consumer_surface !==
+  allowDecisionRecord.governance_decision.consumer_surface
+) {
+  throw new Error("governance disposition decision record linkage consumer surface mismatch");
+}
+
+if (
+  allowLinkedDisposition.governance_application_record_linkage.consumer_surface !==
+  allowApplicationRecord.governance_application.consumer_surface
+) {
+  throw new Error("governance disposition application linkage consumer surface mismatch");
+}
+
+if (
+  allowLinkedDisposition.governance_application_record_linkage.applied_source !==
+  allowApplicationRecord.governance_application.applied_source
+) {
+  throw new Error("governance disposition application linkage applied source mismatch");
+}
+
+if (
+  allowLinkedDisposition.permit_gate_result.source_decision !==
+  allowOutcomeBundle.permit_gate_result.source_decision
+) {
+  throw new Error("governance disposition outcome bundle linkage source decision mismatch");
+}
+
 if (allowDisposition.governance_disposition.outcome !== "allow") {
   throw new Error("governance disposition allow path did not produce allow outcome");
 }
@@ -265,6 +317,9 @@ if (denyDisposition.governance_disposition.exit_code !== PERMIT_GATE_DENIED_EXIT
 }
 if (denyDisposition.permit_gate_result.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
   throw new Error("governance disposition deny path permit linkage exit code mismatch");
+}
+if (denyDisposition.governance_disposition.audit_output_preserved !== true) {
+  throw new Error("governance disposition deny path must preserve audit output semantics");
 }
 
 process.stdout.write("governance disposition verified\n");
