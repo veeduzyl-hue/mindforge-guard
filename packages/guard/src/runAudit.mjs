@@ -32,11 +32,13 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
+  buildPolicyPermitBridgeContract,
   buildEnforcementAdjacentDecisionRecord,
   buildExecutionBridgePreview,
   buildExecutionReadinessJudgment,
   buildCanonicalActionPolicyPreview,
   buildPermitPrecheckPreview,
+  assertValidPolicyPermitBridgeContract,
   assertValidEnforcementAdjacentDecisionRecord,
   assertValidExecutionBridgePreview,
   assertValidExecutionReadinessJudgment,
@@ -80,12 +82,14 @@ function readShadowOptions(argv) {
   const emitExecutionBridgePreview = argv.includes("--emit-execution-bridge-preview");
   const emitExecutionReadiness = argv.includes("--emit-execution-readiness");
   const emitEnforcementAdjacentDecision = argv.includes("--emit-enforcement-adjacent-decision");
+  const emitPolicyPermitBridge = argv.includes("--emit-policy-permit-bridge");
   let canonicalActionOut = null;
   let policyPreviewOut = null;
   let permitPrecheckOut = null;
   let executionBridgeOut = null;
   let executionReadinessOut = null;
   let enforcementAdjacentDecisionOut = null;
+  let policyPermitBridgeOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -119,6 +123,11 @@ function readShadowOptions(argv) {
     } else if (arg === "--enforcement-adjacent-decision-out" && argv[i + 1]) {
       enforcementAdjacentDecisionOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--policy-permit-bridge-out=")) {
+      policyPermitBridgeOut = arg.slice("--policy-permit-bridge-out=".length);
+    } else if (arg === "--policy-permit-bridge-out" && argv[i + 1]) {
+      policyPermitBridgeOut = argv[i + 1];
+      i += 1;
     }
   }
 
@@ -135,6 +144,8 @@ function readShadowOptions(argv) {
     executionReadinessOut,
     emitEnforcementAdjacentDecision,
     enforcementAdjacentDecisionOut,
+    emitPolicyPermitBridge,
+    policyPermitBridgeOut,
   };
 }
 
@@ -361,6 +372,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "enforcement-adjacent decision record requires --emit-enforcement-adjacent-decision",
+    };
+  }
+
+  if (shadow.emitPolicyPermitBridge && !shadow.emitEnforcementAdjacentDecision) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy-to-permit bridge contract requires --emit-enforcement-adjacent-decision",
+    };
+  }
+
+  if (shadow.emitPolicyPermitBridge && !shadow.policyPermitBridgeOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy-to-permit bridge contract requires --policy-permit-bridge-out <file>",
+    };
+  }
+
+  if (!shadow.emitPolicyPermitBridge && shadow.policyPermitBridgeOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "policy-to-permit bridge contract requires --emit-policy-permit-bridge",
     };
   }
 
@@ -594,6 +629,27 @@ export async function runAudit({ argv, policy }) {
                   enforcementAdjacentDecisionOutPath,
                   JSON.stringify(enforcementAdjacentDecisionArtifact, null, 2)
                 );
+
+                if (shadow.emitPolicyPermitBridge) {
+                  const policyPermitBridgeArtifact = assertValidPolicyPermitBridgeContract(
+                    buildPolicyPermitBridgeContract({
+                      canonicalActionArtifact,
+                      policyPreviewArtifact: previewArtifact,
+                      permitPrecheckArtifact,
+                      executionBridgeArtifact,
+                      executionReadinessArtifact,
+                      enforcementAdjacentDecisionArtifact,
+                    })
+                  );
+                  const policyPermitBridgeOutPath = path.resolve(
+                    process.cwd(),
+                    shadow.policyPermitBridgeOut
+                  );
+                  writeFile(
+                    policyPermitBridgeOutPath,
+                    JSON.stringify(policyPermitBridgeArtifact, null, 2)
+                  );
+                }
               }
             }
           }
@@ -603,7 +659,7 @@ export async function runAudit({ argv, policy }) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, execution readiness judgment, or enforcement-adjacent decision record output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, execution readiness judgment, enforcement-adjacent decision record, or policy-to-permit bridge contract output failed: ${err?.message || String(err)}`,
       };
     }
   }
