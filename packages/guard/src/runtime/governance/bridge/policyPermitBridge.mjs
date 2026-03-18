@@ -1,5 +1,11 @@
 import schema from "./policy_permit_bridge.schema.json" with { type: "json" };
 
+export const POLICY_PERMIT_BRIDGE_KIND = "policy_permit_bridge_contract";
+export const POLICY_PERMIT_BRIDGE_VERSION = "v1";
+export const POLICY_PERMIT_BRIDGE_SCHEMA_ID = schema.$id;
+export const POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE = "guard.audit.shadow";
+export const POLICY_PERMIT_BRIDGE_NORMALIZATION = "stable_v1";
+
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -85,6 +91,26 @@ function buildReasonSummary(enforcementAdjacentDecisionArtifact) {
   });
 }
 
+export function derivePolicyPermitBridgePayload({
+  canonicalActionArtifact,
+  policyPreviewArtifact,
+  permitPrecheckArtifact,
+  executionBridgeArtifact,
+  executionReadinessArtifact,
+  enforcementAdjacentDecisionArtifact,
+}) {
+  return {
+    action_class: canonicalActionArtifact?.action?.action_class || "unknown",
+    policy_preview_verdict: policyPreviewArtifact?.policy_preview?.preview_verdict || "unknown",
+    permit_precheck_decision: permitPrecheckArtifact?.permit_precheck?.decision || "unknown",
+    execution_bridge_verdict: executionBridgeArtifact?.execution_bridge?.bridge_verdict || "unknown",
+    execution_readiness: executionReadinessArtifact?.execution_readiness?.readiness || "unknown",
+    enforcement_adjacent_decision:
+      enforcementAdjacentDecisionArtifact?.enforcement_adjacent_decision?.decision || "insufficient_signal",
+    reason_summary: buildReasonSummary(enforcementAdjacentDecisionArtifact),
+  };
+}
+
 export function buildPolicyPermitBridgeContract({
   canonicalActionArtifact,
   policyPreviewArtifact,
@@ -94,19 +120,22 @@ export function buildPolicyPermitBridgeContract({
   enforcementAdjacentDecisionArtifact,
 }) {
   return {
-    kind: "policy_permit_bridge_contract",
-    version: "v1",
+    kind: POLICY_PERMIT_BRIDGE_KIND,
+    version: POLICY_PERMIT_BRIDGE_VERSION,
+    schema_id: POLICY_PERMIT_BRIDGE_SCHEMA_ID,
     canonical_action_hash: canonicalActionArtifact.canonical_action_hash,
-    policy_permit_bridge: {
-      action_class: canonicalActionArtifact?.action?.action_class || "unknown",
-      policy_preview_verdict: policyPreviewArtifact?.policy_preview?.preview_verdict || "unknown",
-      permit_precheck_decision: permitPrecheckArtifact?.permit_precheck?.decision || "unknown",
-      execution_bridge_verdict: executionBridgeArtifact?.execution_bridge?.bridge_verdict || "unknown",
-      execution_readiness: executionReadinessArtifact?.execution_readiness?.readiness || "unknown",
-      enforcement_adjacent_decision:
-        enforcementAdjacentDecisionArtifact?.enforcement_adjacent_decision?.decision || "insufficient_signal",
-      reason_summary: buildReasonSummary(enforcementAdjacentDecisionArtifact),
+    producer: {
+      surface: POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE,
+      normalization: POLICY_PERMIT_BRIDGE_NORMALIZATION,
     },
+    policy_permit_bridge: derivePolicyPermitBridgePayload({
+      canonicalActionArtifact,
+      policyPreviewArtifact,
+      permitPrecheckArtifact,
+      executionBridgeArtifact,
+      executionReadinessArtifact,
+      enforcementAdjacentDecisionArtifact,
+    }),
     deterministic: true,
     enforcing: false,
   };

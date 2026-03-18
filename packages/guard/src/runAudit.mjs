@@ -33,7 +33,7 @@ import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildPolicyPermitBridgeContract,
   assertValidPolicyPermitBridgeContract,
-} from "./runtime/governance/bridge/policyPermitBridge.mjs";
+} from "./runtime/governance/bridge/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
   buildEnforcementAdjacentDecisionRecord,
