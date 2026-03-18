@@ -62,3 +62,17 @@ export {
   validateGovernanceApplicationRecord,
   assertValidGovernanceApplicationRecord,
 } from "./governanceApplicationRecord.mjs";
+export {
+  GOVERNANCE_DISPOSITION_KIND,
+  GOVERNANCE_DISPOSITION_VERSION,
+  GOVERNANCE_DISPOSITION_SCHEMA_ID,
+  GOVERNANCE_DISPOSITION_CONSUMER_SURFACE,
+  GOVERNANCE_DISPOSITION_PRODUCER_SURFACE,
+  GOVERNANCE_DISPOSITION_MODE,
+  GOVERNANCE_DISPOSITION_SOURCE,
+  GOVERNANCE_DISPOSITION_BOUNDARY,
+  GOVERNANCE_DISPOSITION_EMITTER_SURFACE,
+  buildGovernanceDisposition,
+  validateGovernanceDisposition,
+  assertValidGovernanceDisposition,
+} from "./governanceDisposition.mjs";
