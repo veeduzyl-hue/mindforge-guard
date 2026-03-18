@@ -19,6 +19,9 @@ export const GOVERNANCE_RECEIPT_KIND = "governance_receipt";
 export const GOVERNANCE_RECEIPT_VERSION = "v1";
 export const GOVERNANCE_RECEIPT_SCHEMA_ID = schema.$id;
 export const GOVERNANCE_RECEIPT_EMITTER_SURFACE = "guard.audit";
+export const GOVERNANCE_RECEIPT_CONSUMER_SURFACE = "guard.audit";
+export const GOVERNANCE_RECEIPT_EMISSION_MODE = "explicit_opt_in";
+export const GOVERNANCE_RECEIPT_RESULT_BOUNDARY = "parallel_artifact";
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -113,13 +116,20 @@ export function buildGovernanceReceipt({ audit, policyPermitBridgeContract, perm
       schema_id: PERMIT_GATE_RESULT_SCHEMA_ID,
       consumer_surface: PERMIT_GATE_CONSUMER_SURFACE,
       mode: PERMIT_GATE_MODE,
+      decision: gateResult.permit_gate.decision,
+      source_decision: gateResult.permit_gate.source_decision,
+      exit_code: gateResult.permit_gate.exit_code,
     },
     governance_receipt: {
       outcome: gateResult.permit_gate.decision,
-      consumer_surface: PERMIT_GATE_CONSUMER_SURFACE,
+      consumer_surface: GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
+      producer_surface: GOVERNANCE_RECEIPT_EMITTER_SURFACE,
+      emission_mode: GOVERNANCE_RECEIPT_EMISSION_MODE,
+      result_boundary: GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
       exit_code: gateResult.permit_gate.exit_code,
       audit_output_preserved: gateResult.permit_gate.audit_output_preserved,
       traceability: {
+        run_id: audit?.run?.run_id || "",
         audit_mode: audit?.run?.mode || "local",
         git_head: audit?.run?.git?.head || "",
         git_branch: audit?.run?.git?.branch || "",
