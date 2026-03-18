@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/governance/permit/governance_receipt.v1.json",
+  "title": "Governance Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "schema_id",
+    "canonical_action_hash",
+    "bridge_contract",
+    "permit_gate_result",
+    "governance_receipt",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "governance_receipt" },
+    "version": { "const": "v1" },
+    "schema_id": {
+      "const": "mindforge://schemas/governance/permit/governance_receipt.v1.json"
+    },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bridge_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "version", "schema_id", "producer_surface"],
+      "properties": {
+        "kind": { "const": "policy_permit_bridge_contract" },
+        "version": { "const": "v1" },
+        "schema_id": {
+          "const": "mindforge://schemas/governance/bridge/policy_permit_bridge_contract.v1.json"
+        },
+        "producer_surface": { "const": "guard.audit.shadow" }
+      }
+    },
+    "permit_gate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "version", "schema_id", "consumer_surface", "mode"],
+      "properties": {
+        "kind": { "const": "permit_gate_result" },
+        "version": { "const": "v1" },
+        "schema_id": {
+          "const": "mindforge://schemas/governance/permit/permit_gate_result.v1.json"
+        },
+        "consumer_surface": { "const": "guard.audit" },
+        "mode": { "const": "explicit_opt_in" }
+      }
+    },
+    "governance_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "consumer_surface",
+        "exit_code",
+        "audit_output_preserved",
+        "traceability"
+      ],
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": ["allow", "deny"]
+        },
+        "consumer_surface": { "const": "guard.audit" },
+        "exit_code": {
+          "type": "number",
+          "enum": [0, 25]
+        },
+        "audit_output_preserved": { "const": true },
+        "traceability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["audit_mode", "git_head", "git_branch", "emitted_by"],
+          "properties": {
+            "audit_mode": {
+              "type": "string",
+              "enum": ["local", "ci"]
+            },
+            "git_head": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "git_branch": {
+              "type": "string",
+              "minLength": 1
+            },
+            "emitted_by": { "const": "guard.audit" }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
