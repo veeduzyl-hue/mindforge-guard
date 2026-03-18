@@ -209,6 +209,13 @@ function assertLinkageConsistency(
       throw new Error("governance activation application record linkage requires matching outcome");
     }
     if (
+      applicationRecord.governance_application.applied_outcome !== gateResult.permit_gate.decision
+    ) {
+      throw new Error(
+        "governance activation application record linkage requires matching applied outcome"
+      );
+    }
+    if (
       applicationRecord.governance_application.applied_source !== gateResult.permit_gate.source_decision
     ) {
       throw new Error(
@@ -229,6 +236,11 @@ function assertLinkageConsistency(
   if (disposition) {
     if (disposition.governance_disposition.outcome !== gateResult.permit_gate.decision) {
       throw new Error("governance activation disposition linkage requires matching outcome");
+    }
+    if (disposition.governance_disposition.applied_outcome !== gateResult.permit_gate.decision) {
+      throw new Error(
+        "governance activation disposition linkage requires matching applied outcome"
+      );
     }
     if (disposition.governance_disposition.exit_code !== gateResult.permit_gate.exit_code) {
       throw new Error("governance activation disposition linkage requires matching exit codes");
