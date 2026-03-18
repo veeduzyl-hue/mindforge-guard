@@ -18,6 +18,7 @@ import {
   GOVERNANCE_RECEIPT_KIND,
   GOVERNANCE_RECEIPT_VERSION,
   GOVERNANCE_RECEIPT_SCHEMA_ID,
+  GOVERNANCE_RECEIPT_EMITTER_SURFACE,
   GOVERNANCE_RECEIPT_EMISSION_MODE,
   GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
   assertValidGovernanceReceipt,
@@ -26,6 +27,8 @@ import {
   GOVERNANCE_DECISION_RECORD_KIND,
   GOVERNANCE_DECISION_RECORD_VERSION,
   GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
+  GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_SOURCE,
   GOVERNANCE_DECISION_RECORD_MODE,
   GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
   assertValidGovernanceDecisionRecord,
@@ -37,6 +40,7 @@ export const GOVERNANCE_OUTCOME_BUNDLE_SCHEMA_ID = schema.$id;
 export const GOVERNANCE_OUTCOME_BUNDLE_MODE = "explicit_opt_in";
 export const GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY = "parallel_artifact";
 export const GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE = "guard.audit";
+export const GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE = "guard.audit";
 export const GOVERNANCE_OUTCOME_BUNDLE_EMITTER_SURFACE = "guard.audit";
 
 function isPlainObject(value) {
@@ -140,6 +144,7 @@ export function buildGovernanceOutcomeBundle({
       mode: GOVERNANCE_OUTCOME_BUNDLE_MODE,
       boundary: GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY,
       consumer_surface: GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE,
+      producer_surface: GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE,
       exit_code: gateResult.permit_gate.exit_code,
       audit_output_preserved: gateResult.permit_gate.audit_output_preserved,
     },
@@ -157,6 +162,7 @@ export function buildGovernanceOutcomeBundle({
       mode: PERMIT_GATE_MODE,
       decision: gateResult.permit_gate.decision,
       source_decision: gateResult.permit_gate.source_decision,
+      audit_output_preserved: gateResult.permit_gate.audit_output_preserved,
       exit_code: gateResult.permit_gate.exit_code,
     },
     traceability: {
@@ -177,6 +183,7 @@ export function buildGovernanceOutcomeBundle({
       schema_id: GOVERNANCE_RECEIPT_SCHEMA_ID,
       emission_mode: GOVERNANCE_RECEIPT_EMISSION_MODE,
       result_boundary: GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
+      producer_surface: GOVERNANCE_RECEIPT_EMITTER_SURFACE,
     };
   }
 
@@ -187,6 +194,8 @@ export function buildGovernanceOutcomeBundle({
       schema_id: GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
       decision_mode: GOVERNANCE_DECISION_RECORD_MODE,
       result_boundary: GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
+      producer_surface: GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
+      decision_source: GOVERNANCE_DECISION_RECORD_SOURCE,
     };
   }
 

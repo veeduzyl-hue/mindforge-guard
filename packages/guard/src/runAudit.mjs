@@ -168,6 +168,7 @@ function readPermitGateOptions(argv) {
   let governanceReceiptOut = null;
   let governanceDecisionRecordOut = null;
   let governanceOutcomeBundleOut = null;
+  let governanceOutcomeBundleOutRequested = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -187,10 +188,14 @@ function readPermitGateOptions(argv) {
       governanceDecisionRecordOut = argv[i + 1];
       i += 1;
     } else if (arg.startsWith("--governance-outcome-bundle-out=")) {
+      governanceOutcomeBundleOutRequested = true;
       governanceOutcomeBundleOut = arg.slice("--governance-outcome-bundle-out=".length);
     } else if (arg === "--governance-outcome-bundle-out" && argv[i + 1]) {
+      governanceOutcomeBundleOutRequested = true;
       governanceOutcomeBundleOut = argv[i + 1];
       i += 1;
+    } else if (arg === "--governance-outcome-bundle-out") {
+      governanceOutcomeBundleOutRequested = true;
     }
   }
 
@@ -200,6 +205,7 @@ function readPermitGateOptions(argv) {
     governanceReceiptOut,
     governanceDecisionRecordOut,
     governanceOutcomeBundleOut,
+    governanceOutcomeBundleOutRequested,
   };
 }
 
@@ -546,6 +552,14 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "governance outcome bundle output requires --permit-gate",
+    };
+  }
+
+  if (permitGate.governanceOutcomeBundleOutRequested && !permitGate.governanceOutcomeBundleOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance outcome bundle output requires a file path",
     };
   }
 

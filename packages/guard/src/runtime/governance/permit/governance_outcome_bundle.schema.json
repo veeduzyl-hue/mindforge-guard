@@ -33,6 +33,7 @@
         "mode",
         "boundary",
         "consumer_surface",
+        "producer_surface",
         "exit_code",
         "audit_output_preserved"
       ],
@@ -40,6 +41,7 @@
         "mode": { "const": "explicit_opt_in" },
         "boundary": { "const": "parallel_artifact" },
         "consumer_surface": { "const": "guard.audit" },
+        "producer_surface": { "const": "guard.audit" },
         "exit_code": {
           "type": "number",
           "enum": [0, 25]
@@ -89,6 +91,7 @@
           "type": "string",
           "enum": ["would_allow", "would_review", "would_deny", "insufficient_signal"]
         },
+        "audit_output_preserved": { "const": true },
         "exit_code": {
           "type": "number",
           "enum": [0, 25]
@@ -98,7 +101,14 @@
     "governance_receipt_linkage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "version", "schema_id", "emission_mode", "result_boundary"],
+      "required": [
+        "kind",
+        "version",
+        "schema_id",
+        "emission_mode",
+        "result_boundary",
+        "producer_surface"
+      ],
       "properties": {
         "kind": { "const": "governance_receipt" },
         "version": { "const": "v1" },
@@ -106,13 +116,22 @@
           "const": "mindforge://schemas/governance/permit/governance_receipt.v1.json"
         },
         "emission_mode": { "const": "explicit_opt_in" },
-        "result_boundary": { "const": "parallel_artifact" }
+        "result_boundary": { "const": "parallel_artifact" },
+        "producer_surface": { "const": "guard.audit" }
       }
     },
     "governance_decision_record_linkage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "version", "schema_id", "decision_mode", "result_boundary"],
+      "required": [
+        "kind",
+        "version",
+        "schema_id",
+        "decision_mode",
+        "result_boundary",
+        "producer_surface",
+        "decision_source"
+      ],
       "properties": {
         "kind": { "const": "governance_decision_record" },
         "version": { "const": "v1" },
@@ -120,7 +139,9 @@
           "const": "mindforge://schemas/governance/permit/governance_decision_record.v1.json"
         },
         "decision_mode": { "const": "explicit_opt_in" },
-        "result_boundary": { "const": "parallel_artifact" }
+        "result_boundary": { "const": "parallel_artifact" },
+        "producer_surface": { "const": "guard.audit" },
+        "decision_source": { "const": "permit_gate" }
       }
     },
     "traceability": {
