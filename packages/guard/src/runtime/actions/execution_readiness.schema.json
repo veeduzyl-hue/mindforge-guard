@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/actions/execution_readiness_judgment.v1.json",
+  "title": "Execution Readiness Judgment v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "canonical_action_hash",
+    "execution_readiness",
+    "deterministic",
+    "enforcing"
+  ],
+  "properties": {
+    "kind": { "const": "execution_readiness_judgment" },
+    "version": { "const": "v1" },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "execution_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readiness", "bridge_verdict", "reasons"],
+      "properties": {
+        "readiness": {
+          "type": "string",
+          "enum": ["ready", "not_ready", "unknown"]
+        },
+        "bridge_verdict": {
+          "type": "string",
+          "enum": ["allow", "review", "deny", "unknown"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "message"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 },
+              "rule_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
+  }
+}
