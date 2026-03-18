@@ -32,10 +32,12 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
+  buildEnforcementAdjacentDecisionRecord,
   buildExecutionBridgePreview,
   buildExecutionReadinessJudgment,
   buildCanonicalActionPolicyPreview,
   buildPermitPrecheckPreview,
+  assertValidEnforcementAdjacentDecisionRecord,
   assertValidExecutionBridgePreview,
   assertValidExecutionReadinessJudgment,
   assertValidCanonicalActionPolicyPreview,
@@ -77,11 +79,13 @@ function readShadowOptions(argv) {
   const emitPermitPrecheckPreview = argv.includes("--emit-permit-precheck-preview");
   const emitExecutionBridgePreview = argv.includes("--emit-execution-bridge-preview");
   const emitExecutionReadiness = argv.includes("--emit-execution-readiness");
+  const emitEnforcementAdjacentDecision = argv.includes("--emit-enforcement-adjacent-decision");
   let canonicalActionOut = null;
   let policyPreviewOut = null;
   let permitPrecheckOut = null;
   let executionBridgeOut = null;
   let executionReadinessOut = null;
+  let enforcementAdjacentDecisionOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -110,6 +114,11 @@ function readShadowOptions(argv) {
     } else if (arg === "--execution-readiness-out" && argv[i + 1]) {
       executionReadinessOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--enforcement-adjacent-decision-out=")) {
+      enforcementAdjacentDecisionOut = arg.slice("--enforcement-adjacent-decision-out=".length);
+    } else if (arg === "--enforcement-adjacent-decision-out" && argv[i + 1]) {
+      enforcementAdjacentDecisionOut = argv[i + 1];
+      i += 1;
     }
   }
 
@@ -124,6 +133,8 @@ function readShadowOptions(argv) {
     executionBridgeOut,
     emitExecutionReadiness,
     executionReadinessOut,
+    emitEnforcementAdjacentDecision,
+    enforcementAdjacentDecisionOut,
   };
 }
 
@@ -326,6 +337,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "execution readiness judgment requires --emit-execution-readiness",
+    };
+  }
+
+  if (shadow.emitEnforcementAdjacentDecision && !shadow.emitExecutionReadiness) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "enforcement-adjacent decision record requires --emit-execution-readiness",
+    };
+  }
+
+  if (shadow.emitEnforcementAdjacentDecision && !shadow.enforcementAdjacentDecisionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "enforcement-adjacent decision record requires --enforcement-adjacent-decision-out <file>",
+    };
+  }
+
+  if (!shadow.emitEnforcementAdjacentDecision && shadow.enforcementAdjacentDecisionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "enforcement-adjacent decision record requires --emit-enforcement-adjacent-decision",
     };
   }
 
@@ -543,6 +578,23 @@ export async function runAudit({ argv, policy }) {
               );
               const executionReadinessOutPath = path.resolve(process.cwd(), shadow.executionReadinessOut);
               writeFile(executionReadinessOutPath, JSON.stringify(executionReadinessArtifact, null, 2));
+
+              if (shadow.emitEnforcementAdjacentDecision) {
+                const enforcementAdjacentDecisionArtifact = assertValidEnforcementAdjacentDecisionRecord(
+                  buildEnforcementAdjacentDecisionRecord({
+                    canonicalActionArtifact,
+                    executionReadinessArtifact,
+                  })
+                );
+                const enforcementAdjacentDecisionOutPath = path.resolve(
+                  process.cwd(),
+                  shadow.enforcementAdjacentDecisionOut
+                );
+                writeFile(
+                  enforcementAdjacentDecisionOutPath,
+                  JSON.stringify(enforcementAdjacentDecisionArtifact, null, 2)
+                );
+              }
             }
           }
         }
@@ -551,7 +603,7 @@ export async function runAudit({ argv, policy }) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, or execution readiness judgment output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, execution readiness judgment, or enforcement-adjacent decision record output failed: ${err?.message || String(err)}`,
       };
     }
   }
