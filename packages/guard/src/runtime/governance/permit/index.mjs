@@ -21,3 +21,17 @@ export {
   validateGovernanceReceipt,
   assertValidGovernanceReceipt,
 } from "./governanceReceipt.mjs";
+export {
+  GOVERNANCE_DECISION_RECORD_KIND,
+  GOVERNANCE_DECISION_RECORD_VERSION,
+  GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
+  GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_SOURCE,
+  GOVERNANCE_DECISION_RECORD_MODE,
+  GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
+  GOVERNANCE_DECISION_RECORD_EMITTER_SURFACE,
+  buildGovernanceDecisionRecord,
+  validateGovernanceDecisionRecord,
+  assertValidGovernanceDecisionRecord,
+} from "./governanceDecisionRecord.mjs";
