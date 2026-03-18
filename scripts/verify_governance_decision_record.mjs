@@ -8,6 +8,7 @@ import {
   GOVERNANCE_DECISION_RECORD_VERSION,
   GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
   GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
   GOVERNANCE_DECISION_RECORD_SOURCE,
   GOVERNANCE_DECISION_RECORD_MODE,
   GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
@@ -70,12 +71,14 @@ const allowOut = path.join(tmp, "mindforge-governance-decision-record-allow.json
 const denyOut = path.join(tmp, "mindforge-governance-decision-record-deny.json");
 const allowWithReceiptOut = path.join(tmp, "mindforge-governance-decision-record-allow-with-receipt.json");
 const allowReceiptOut = path.join(tmp, "mindforge-governance-decision-record-allow-receipt.json");
+const invalidRecordDir = path.join(tmp, "mindforge-governance-decision-record-dir");
 
 for (const filePath of [allowOut, denyOut, allowWithReceiptOut, allowReceiptOut]) {
   try {
     fs.unlinkSync(filePath);
   } catch {}
 }
+fs.mkdirSync(invalidRecordDir, { recursive: true });
 
 const missingFlag = await runAudit({
   argv: [".", "--staged", `--governance-decision-record-out=${allowOut}`],
@@ -84,6 +87,15 @@ const missingFlag = await runAudit({
 
 if (!String(missingFlag?.message || "").includes("governance decision record output requires --permit-gate")) {
   throw new Error("governance decision record should require --permit-gate");
+}
+
+const invalidOut = await runAudit({
+  argv: [".", "--staged", "--permit-gate", `--governance-decision-record-out=${invalidRecordDir}`],
+  policy: basePolicy(),
+});
+
+if (!String(invalidOut?.message || "").includes("governance bridge or permit gate preparation failed")) {
+  throw new Error("governance decision record should fail closed for invalid output paths");
 }
 
 const baseline = await runAudit({
@@ -164,6 +176,9 @@ for (const record of [allowRecord, allowWithReceiptRecord, denyRecord]) {
   }
   if (record.governance_decision.consumer_surface !== GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE) {
     throw new Error("governance decision record consumer surface mismatch");
+  }
+  if (record.governance_decision.producer_surface !== GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE) {
+    throw new Error("governance decision record producer surface mismatch");
   }
   if (record.governance_decision.decision_source !== GOVERNANCE_DECISION_RECORD_SOURCE) {
     throw new Error("governance decision record source mismatch");
