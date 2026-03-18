@@ -11,7 +11,8 @@
     "canonical_action_hash",
     "bridge_contract",
     "permit_gate",
-    "deterministic"
+    "deterministic",
+    "enforcing"
   ],
   "properties": {
     "kind": { "const": "permit_gate_result" },
@@ -39,9 +40,18 @@
     "permit_gate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "decision", "source_decision", "reasons"],
+      "required": [
+        "mode",
+        "consumer_surface",
+        "decision",
+        "source_decision",
+        "exit_code",
+        "audit_output_preserved",
+        "reasons"
+      ],
       "properties": {
         "mode": { "const": "explicit_opt_in" },
+        "consumer_surface": { "const": "guard.audit" },
         "decision": {
           "type": "string",
           "enum": ["allow", "deny"]
@@ -50,6 +60,11 @@
           "type": "string",
           "enum": ["would_allow", "would_review", "would_deny", "insufficient_signal"]
         },
+        "exit_code": {
+          "type": "number",
+          "enum": [0, 25]
+        },
+        "audit_output_preserved": { "const": true },
         "reasons": {
           "type": "array",
           "items": {
@@ -65,6 +80,7 @@
         }
       }
     },
-    "deterministic": { "const": true }
+    "deterministic": { "const": true },
+    "enforcing": { "const": false }
   }
 }

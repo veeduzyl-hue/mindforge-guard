@@ -11,6 +11,7 @@ export const PERMIT_GATE_RESULT_KIND = "permit_gate_result";
 export const PERMIT_GATE_RESULT_VERSION = "v1";
 export const PERMIT_GATE_RESULT_SCHEMA_ID = schema.$id;
 export const PERMIT_GATE_MODE = "explicit_opt_in";
+export const PERMIT_GATE_CONSUMER_SURFACE = "guard.audit";
 export const PERMIT_GATE_DENIED_EXIT_CODE = 25;
 
 function isPlainObject(value) {
@@ -116,6 +117,7 @@ export function buildPermitGateResult({ policyPermitBridgeContract }) {
     bridgeContract?.policy_permit_bridge?.enforcement_adjacent_decision || "insufficient_signal";
   const decision =
     sourceDecision === "would_review" || sourceDecision === "would_deny" ? "deny" : "allow";
+  const exitCode = decision === "deny" ? PERMIT_GATE_DENIED_EXIT_CODE : 0;
 
   return {
     kind: PERMIT_GATE_RESULT_KIND,
@@ -130,11 +132,15 @@ export function buildPermitGateResult({ policyPermitBridgeContract }) {
     },
     permit_gate: {
       mode: PERMIT_GATE_MODE,
+      consumer_surface: PERMIT_GATE_CONSUMER_SURFACE,
       decision,
       source_decision: sourceDecision,
+      exit_code: exitCode,
+      audit_output_preserved: true,
       reasons: deriveGateReasons(bridgeContract, sourceDecision, decision),
     },
     deterministic: true,
+    enforcing: false,
   };
 }
 

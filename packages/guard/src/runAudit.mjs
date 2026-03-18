@@ -762,7 +762,7 @@ export async function runAudit({ argv, policy }) {
       : policy.exit_codes.error;
 
   if (permitGateResult?.permit_gate?.decision === "deny") {
-    exitCode = PERMIT_GATE_DENIED_EXIT_CODE;
+    exitCode = permitGateResult?.permit_gate?.exit_code ?? PERMIT_GATE_DENIED_EXIT_CODE;
   }
 
   // ---- Drift Collector (must never affect exit) ----
