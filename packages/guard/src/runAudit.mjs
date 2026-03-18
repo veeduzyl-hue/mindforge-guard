@@ -40,6 +40,8 @@ import {
   PERMIT_GATE_DENIED_EXIT_CODE,
   buildGovernanceReceipt,
   assertValidGovernanceReceipt,
+  buildGovernanceDecisionRecord,
+  assertValidGovernanceDecisionRecord,
 } from "./runtime/governance/permit/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
@@ -162,6 +164,7 @@ function readPermitGateOptions(argv) {
   const enabled = argv.includes("--permit-gate");
   let out = null;
   let governanceReceiptOut = null;
+  let governanceDecisionRecordOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -175,10 +178,15 @@ function readPermitGateOptions(argv) {
     } else if (arg === "--governance-receipt-out" && argv[i + 1]) {
       governanceReceiptOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--governance-decision-record-out=")) {
+      governanceDecisionRecordOut = arg.slice("--governance-decision-record-out=".length);
+    } else if (arg === "--governance-decision-record-out" && argv[i + 1]) {
+      governanceDecisionRecordOut = argv[i + 1];
+      i += 1;
     }
   }
 
-  return { enabled, out, governanceReceiptOut };
+  return { enabled, out, governanceReceiptOut, governanceDecisionRecordOut };
 }
 
 function buildGovernanceArtifacts({ audit, effectivePolicy }) {
@@ -511,6 +519,14 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (!permitGate.enabled && permitGate.governanceDecisionRecordOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance decision record output requires --permit-gate",
+    };
+  }
+
   const outdir =
     args.outdir ||
     path.join(process.cwd(), ".mindforge", "artifacts", mode === "ci" ? "ci" : "local");
@@ -682,6 +698,7 @@ export async function runAudit({ argv, policy }) {
   let governanceArtifacts = null;
   let permitGateResult = null;
   let governanceReceipt = null;
+  let governanceDecisionRecord = null;
 
   if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
@@ -770,6 +787,24 @@ export async function runAudit({ argv, policy }) {
           const governanceReceiptOutPath = path.resolve(process.cwd(), permitGate.governanceReceiptOut);
           writeFile(governanceReceiptOutPath, JSON.stringify(governanceReceipt, null, 2));
         }
+        if (permitGate.governanceDecisionRecordOut) {
+          governanceDecisionRecord = assertValidGovernanceDecisionRecord(
+            buildGovernanceDecisionRecord({
+              audit,
+              policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
+              permitGateResult,
+              governanceReceipt,
+            })
+          );
+          const governanceDecisionRecordOutPath = path.resolve(
+            process.cwd(),
+            permitGate.governanceDecisionRecordOut
+          );
+          writeFile(
+            governanceDecisionRecordOutPath,
+            JSON.stringify(governanceDecisionRecord, null, 2)
+          );
+        }
       }
     } catch (err) {
       return {
@@ -809,5 +844,5 @@ export async function runAudit({ argv, policy }) {
     { repoRoot }
   );
 
-  return { exitCode, audit, permitGateResult, governanceReceipt };
+  return { exitCode, audit, permitGateResult, governanceReceipt, governanceDecisionRecord };
 }
