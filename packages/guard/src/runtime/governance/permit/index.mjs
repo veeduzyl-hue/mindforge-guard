@@ -76,3 +76,17 @@ export {
   validateGovernanceDisposition,
   assertValidGovernanceDisposition,
 } from "./governanceDisposition.mjs";
+export {
+  GOVERNANCE_ACTIVATION_RECORD_KIND,
+  GOVERNANCE_ACTIVATION_RECORD_VERSION,
+  GOVERNANCE_ACTIVATION_RECORD_SCHEMA_ID,
+  GOVERNANCE_ACTIVATION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_ACTIVATION_RECORD_PRODUCER_SURFACE,
+  GOVERNANCE_ACTIVATION_RECORD_MODE,
+  GOVERNANCE_ACTIVATION_RECORD_SOURCE,
+  GOVERNANCE_ACTIVATION_RECORD_BOUNDARY,
+  GOVERNANCE_ACTIVATION_RECORD_EMITTER_SURFACE,
+  buildGovernanceActivationRecord,
+  validateGovernanceActivationRecord,
+  assertValidGovernanceActivationRecord,
+} from "./governanceActivationRecord.mjs";

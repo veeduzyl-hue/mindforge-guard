@@ -48,6 +48,8 @@ import {
   assertValidGovernanceApplicationRecord,
   buildGovernanceDisposition,
   assertValidGovernanceDisposition,
+  buildGovernanceActivationRecord,
+  assertValidGovernanceActivationRecord,
 } from "./runtime/governance/permit/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
@@ -174,9 +176,11 @@ function readPermitGateOptions(argv) {
   let governanceOutcomeBundleOut = null;
   let governanceApplicationRecordOut = null;
   let governanceDispositionOut = null;
+  let governanceActivationRecordOut = null;
   let governanceOutcomeBundleOutRequested = false;
   let governanceApplicationRecordOutRequested = false;
   let governanceDispositionOutRequested = false;
+  let governanceActivationRecordOutRequested = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -222,6 +226,15 @@ function readPermitGateOptions(argv) {
       i += 1;
     } else if (arg === "--governance-disposition-out") {
       governanceDispositionOutRequested = true;
+    } else if (arg.startsWith("--governance-activation-record-out=")) {
+      governanceActivationRecordOutRequested = true;
+      governanceActivationRecordOut = arg.slice("--governance-activation-record-out=".length);
+    } else if (arg === "--governance-activation-record-out" && argv[i + 1]) {
+      governanceActivationRecordOutRequested = true;
+      governanceActivationRecordOut = argv[i + 1];
+      i += 1;
+    } else if (arg === "--governance-activation-record-out") {
+      governanceActivationRecordOutRequested = true;
     }
   }
 
@@ -236,6 +249,8 @@ function readPermitGateOptions(argv) {
     governanceApplicationRecordOutRequested,
     governanceDispositionOut,
     governanceDispositionOutRequested,
+    governanceActivationRecordOut,
+    governanceActivationRecordOutRequested,
   };
 }
 
@@ -601,6 +616,14 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (!permitGate.enabled && permitGate.governanceActivationRecordOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance activation record output requires --permit-gate",
+    };
+  }
+
   if (permitGate.governanceOutcomeBundleOutRequested && !permitGate.governanceOutcomeBundleOut) {
     return {
       exitCode: policy.exit_codes.error ?? 30,
@@ -625,6 +648,17 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "governance disposition output requires a file path",
+    };
+  }
+
+  if (
+    permitGate.governanceActivationRecordOutRequested &&
+    !permitGate.governanceActivationRecordOut
+  ) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance activation record output requires a file path",
     };
   }
 
@@ -803,6 +837,7 @@ export async function runAudit({ argv, policy }) {
   let governanceOutcomeBundle = null;
   let governanceApplicationRecord = null;
   let governanceDisposition = null;
+  let governanceActivationRecord = null;
 
   if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
@@ -969,6 +1004,28 @@ export async function runAudit({ argv, policy }) {
             JSON.stringify(governanceDisposition, null, 2)
           );
         }
+        if (permitGate.governanceActivationRecordOut) {
+          governanceActivationRecord = assertValidGovernanceActivationRecord(
+            buildGovernanceActivationRecord({
+              audit,
+              policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
+              permitGateResult,
+              governanceReceipt,
+              governanceDecisionRecord,
+              governanceOutcomeBundle,
+              governanceApplicationRecord,
+              governanceDisposition,
+            })
+          );
+          const governanceActivationRecordOutPath = path.resolve(
+            process.cwd(),
+            permitGate.governanceActivationRecordOut
+          );
+          writeFile(
+            governanceActivationRecordOutPath,
+            JSON.stringify(governanceActivationRecord, null, 2)
+          );
+        }
       }
     } catch (err) {
       return {
@@ -1017,5 +1074,6 @@ export async function runAudit({ argv, policy }) {
     governanceOutcomeBundle,
     governanceApplicationRecord,
     governanceDisposition,
+    governanceActivationRecord,
   };
 }
