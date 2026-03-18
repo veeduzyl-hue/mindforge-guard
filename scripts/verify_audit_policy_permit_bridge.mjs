@@ -12,7 +12,14 @@ import {
   validateExecutionReadinessJudgment,
   validateEnforcementAdjacentDecisionRecord,
 } from "../packages/guard/src/runtime/actions/index.mjs";
-import { validatePolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/policyPermitBridge.mjs";
+import {
+  POLICY_PERMIT_BRIDGE_KIND,
+  POLICY_PERMIT_BRIDGE_VERSION,
+  POLICY_PERMIT_BRIDGE_SCHEMA_ID,
+  POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE,
+  POLICY_PERMIT_BRIDGE_NORMALIZATION,
+  validatePolicyPermitBridgeContract,
+} from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -241,6 +248,33 @@ if (JSON.stringify(decisionArtifact) !== JSON.stringify(decisionArtifactA)) {
 }
 if (contractArtifactA.enforcing !== false || contractArtifactB.enforcing !== false) {
   throw new Error("policy-to-permit bridge contract must be non-enforcing");
+}
+if (contractArtifactA.kind !== POLICY_PERMIT_BRIDGE_KIND || contractArtifactB.kind !== POLICY_PERMIT_BRIDGE_KIND) {
+  throw new Error("policy-to-permit bridge contract kind mismatch");
+}
+if (
+  contractArtifactA.version !== POLICY_PERMIT_BRIDGE_VERSION ||
+  contractArtifactB.version !== POLICY_PERMIT_BRIDGE_VERSION
+) {
+  throw new Error("policy-to-permit bridge contract version mismatch");
+}
+if (
+  contractArtifactA.schema_id !== POLICY_PERMIT_BRIDGE_SCHEMA_ID ||
+  contractArtifactB.schema_id !== POLICY_PERMIT_BRIDGE_SCHEMA_ID
+) {
+  throw new Error("policy-to-permit bridge contract schema_id mismatch");
+}
+if (
+  contractArtifactA?.producer?.surface !== POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE ||
+  contractArtifactB?.producer?.surface !== POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE
+) {
+  throw new Error("policy-to-permit bridge contract producer surface mismatch");
+}
+if (
+  contractArtifactA?.producer?.normalization !== POLICY_PERMIT_BRIDGE_NORMALIZATION ||
+  contractArtifactB?.producer?.normalization !== POLICY_PERMIT_BRIDGE_NORMALIZATION
+) {
+  throw new Error("policy-to-permit bridge contract normalization mismatch");
 }
 if (JSON.stringify(contractArtifactA) !== JSON.stringify(contractArtifactB)) {
   throw new Error("policy-to-permit bridge contract is not stable across repeated runs");
