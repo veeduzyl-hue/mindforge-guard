@@ -18,6 +18,7 @@ import {
   GOVERNANCE_RECEIPT_KIND,
   GOVERNANCE_RECEIPT_VERSION,
   GOVERNANCE_RECEIPT_SCHEMA_ID,
+  GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
   GOVERNANCE_RECEIPT_EMISSION_MODE,
   GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
   GOVERNANCE_RECEIPT_EMITTER_SURFACE,
@@ -63,6 +64,12 @@ export const GOVERNANCE_DISPOSITION_MODE = "explicit_opt_in";
 export const GOVERNANCE_DISPOSITION_SOURCE = "permit_gate_application";
 export const GOVERNANCE_DISPOSITION_BOUNDARY = "parallel_artifact";
 export const GOVERNANCE_DISPOSITION_EMITTER_SURFACE = "guard.audit";
+
+function assertAuditOutputPreserved(source, value) {
+  if (value !== true) {
+    throw new Error(`${source} linkage requires audit output preservation`);
+  }
+}
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -140,6 +147,10 @@ function assertLinkageConsistency(gateResult, receipt, decisionRecord, outcomeBu
     if (receipt.governance_receipt.exit_code !== gateResult.permit_gate.exit_code) {
       throw new Error("governance disposition receipt linkage requires matching exit codes");
     }
+    assertAuditOutputPreserved(
+      "governance disposition receipt",
+      receipt.governance_receipt.audit_output_preserved
+    );
   }
 
   if (decisionRecord) {
@@ -149,15 +160,28 @@ function assertLinkageConsistency(gateResult, receipt, decisionRecord, outcomeBu
     if (decisionRecord.governance_decision.exit_code !== gateResult.permit_gate.exit_code) {
       throw new Error("governance disposition decision record linkage requires matching exit codes");
     }
+    assertAuditOutputPreserved(
+      "governance disposition decision record",
+      decisionRecord.governance_decision.audit_output_preserved
+    );
   }
 
   if (outcomeBundle) {
     if (outcomeBundle.permit_gate_result.decision !== gateResult.permit_gate.decision) {
       throw new Error("governance disposition outcome bundle linkage requires matching decision");
     }
+    if (outcomeBundle.permit_gate_result.source_decision !== gateResult.permit_gate.source_decision) {
+      throw new Error(
+        "governance disposition outcome bundle linkage requires matching source decision"
+      );
+    }
     if (outcomeBundle.bundle.exit_code !== gateResult.permit_gate.exit_code) {
       throw new Error("governance disposition outcome bundle linkage requires matching exit codes");
     }
+    assertAuditOutputPreserved(
+      "governance disposition outcome bundle",
+      outcomeBundle.bundle.audit_output_preserved
+    );
   }
 
   if (applicationRecord) {
@@ -174,6 +198,18 @@ function assertLinkageConsistency(gateResult, receipt, decisionRecord, outcomeBu
         "governance disposition application record linkage requires matching exit codes"
       );
     }
+    if (
+      applicationRecord.governance_application.applied_source !==
+      gateResult.permit_gate.source_decision
+    ) {
+      throw new Error(
+        "governance disposition application record linkage requires matching applied source"
+      );
+    }
+    assertAuditOutputPreserved(
+      "governance disposition application record",
+      applicationRecord.governance_application.audit_output_preserved
+    );
   }
 }
 
@@ -274,6 +310,7 @@ export function buildGovernanceDisposition({
       kind: GOVERNANCE_RECEIPT_KIND,
       version: GOVERNANCE_RECEIPT_VERSION,
       schema_id: GOVERNANCE_RECEIPT_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
       emission_mode: GOVERNANCE_RECEIPT_EMISSION_MODE,
       result_boundary: GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
       producer_surface: GOVERNANCE_RECEIPT_EMITTER_SURFACE,
@@ -285,6 +322,7 @@ export function buildGovernanceDisposition({
       kind: GOVERNANCE_DECISION_RECORD_KIND,
       version: GOVERNANCE_DECISION_RECORD_VERSION,
       schema_id: GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_DISPOSITION_CONSUMER_SURFACE,
       decision_mode: GOVERNANCE_DECISION_RECORD_MODE,
       result_boundary: GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
       producer_surface: GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
@@ -309,8 +347,10 @@ export function buildGovernanceDisposition({
       kind: GOVERNANCE_APPLICATION_RECORD_KIND,
       version: GOVERNANCE_APPLICATION_RECORD_VERSION,
       schema_id: GOVERNANCE_APPLICATION_RECORD_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_DISPOSITION_CONSUMER_SURFACE,
       application_mode: GOVERNANCE_APPLICATION_RECORD_MODE,
       application_source: GOVERNANCE_APPLICATION_RECORD_SOURCE,
+      applied_source: applicationRecord.governance_application.applied_source,
       result_boundary: GOVERNANCE_APPLICATION_RECORD_BOUNDARY,
       producer_surface: GOVERNANCE_APPLICATION_RECORD_PRODUCER_SURFACE,
     };

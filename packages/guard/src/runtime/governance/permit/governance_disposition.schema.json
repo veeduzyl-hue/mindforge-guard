@@ -83,6 +83,7 @@
         "kind",
         "version",
         "schema_id",
+        "consumer_surface",
         "emission_mode",
         "result_boundary",
         "producer_surface"
@@ -93,6 +94,7 @@
         "schema_id": {
           "const": "mindforge://schemas/governance/permit/governance_receipt.v1.json"
         },
+        "consumer_surface": { "const": "guard.audit" },
         "emission_mode": { "const": "explicit_opt_in" },
         "result_boundary": { "const": "parallel_artifact" },
         "producer_surface": { "const": "guard.audit" }
@@ -105,6 +107,7 @@
         "kind",
         "version",
         "schema_id",
+        "consumer_surface",
         "decision_mode",
         "result_boundary",
         "producer_surface",
@@ -116,6 +119,7 @@
         "schema_id": {
           "const": "mindforge://schemas/governance/permit/governance_decision_record.v1.json"
         },
+        "consumer_surface": { "const": "guard.audit" },
         "decision_mode": { "const": "explicit_opt_in" },
         "result_boundary": { "const": "parallel_artifact" },
         "producer_surface": { "const": "guard.audit" },
@@ -153,8 +157,10 @@
         "kind",
         "version",
         "schema_id",
+        "consumer_surface",
         "application_mode",
         "application_source",
+        "applied_source",
         "result_boundary",
         "producer_surface"
       ],
@@ -164,8 +170,13 @@
         "schema_id": {
           "const": "mindforge://schemas/governance/permit/governance_application_record.v1.json"
         },
+        "consumer_surface": { "const": "guard.audit" },
         "application_mode": { "const": "explicit_opt_in" },
         "application_source": { "const": "permit_gate" },
+        "applied_source": {
+          "type": "string",
+          "enum": ["would_allow", "would_review", "would_deny", "insufficient_signal"]
+        },
         "result_boundary": { "const": "parallel_artifact" },
         "producer_surface": { "const": "guard.audit" }
       }
