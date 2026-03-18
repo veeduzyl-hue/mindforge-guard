@@ -22,5 +22,8 @@ It is intentionally outside the v1.1 boundary. v1.1 stops at the enforcement-adj
 - branch-status: candidate
 - release-track: v1.2-start
 - containment: relocated out of `runtime/actions`
+- phase-2: contract stabilization in progress
+- permit-gate: not included
+- enforcement: not included
 - merged: false
 - tagged: false
