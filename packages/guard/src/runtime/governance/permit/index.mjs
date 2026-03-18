@@ -48,3 +48,17 @@ export {
   validateGovernanceOutcomeBundle,
   assertValidGovernanceOutcomeBundle,
 } from "./governanceOutcomeBundle.mjs";
+export {
+  GOVERNANCE_APPLICATION_RECORD_KIND,
+  GOVERNANCE_APPLICATION_RECORD_VERSION,
+  GOVERNANCE_APPLICATION_RECORD_SCHEMA_ID,
+  GOVERNANCE_APPLICATION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_APPLICATION_RECORD_PRODUCER_SURFACE,
+  GOVERNANCE_APPLICATION_RECORD_MODE,
+  GOVERNANCE_APPLICATION_RECORD_SOURCE,
+  GOVERNANCE_APPLICATION_RECORD_BOUNDARY,
+  GOVERNANCE_APPLICATION_RECORD_EMITTER_SURFACE,
+  buildGovernanceApplicationRecord,
+  validateGovernanceApplicationRecord,
+  assertValidGovernanceApplicationRecord,
+} from "./governanceApplicationRecord.mjs";
