@@ -1,0 +1,451 @@
+import schema from "./governance_activation_record.schema.json" with { type: "json" };
+import {
+  POLICY_PERMIT_BRIDGE_KIND,
+  POLICY_PERMIT_BRIDGE_VERSION,
+  POLICY_PERMIT_BRIDGE_SCHEMA_ID,
+  POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE,
+  assertValidPolicyPermitBridgeContract,
+} from "../bridge/index.mjs";
+import {
+  PERMIT_GATE_RESULT_KIND,
+  PERMIT_GATE_RESULT_VERSION,
+  PERMIT_GATE_RESULT_SCHEMA_ID,
+  PERMIT_GATE_MODE,
+  PERMIT_GATE_CONSUMER_SURFACE,
+  assertValidPermitGateResult,
+} from "./permitGate.mjs";
+import {
+  GOVERNANCE_RECEIPT_KIND,
+  GOVERNANCE_RECEIPT_VERSION,
+  GOVERNANCE_RECEIPT_SCHEMA_ID,
+  GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
+  GOVERNANCE_RECEIPT_EMISSION_MODE,
+  GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
+  GOVERNANCE_RECEIPT_EMITTER_SURFACE,
+  assertValidGovernanceReceipt,
+} from "./governanceReceipt.mjs";
+import {
+  GOVERNANCE_DECISION_RECORD_KIND,
+  GOVERNANCE_DECISION_RECORD_VERSION,
+  GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
+  GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_MODE,
+  GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
+  GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
+  GOVERNANCE_DECISION_RECORD_SOURCE,
+  assertValidGovernanceDecisionRecord,
+} from "./governanceDecisionRecord.mjs";
+import {
+  GOVERNANCE_OUTCOME_BUNDLE_KIND,
+  GOVERNANCE_OUTCOME_BUNDLE_VERSION,
+  GOVERNANCE_OUTCOME_BUNDLE_SCHEMA_ID,
+  GOVERNANCE_OUTCOME_BUNDLE_MODE,
+  GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY,
+  GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE,
+  GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE,
+  assertValidGovernanceOutcomeBundle,
+} from "./governanceOutcomeBundle.mjs";
+import {
+  GOVERNANCE_APPLICATION_RECORD_KIND,
+  GOVERNANCE_APPLICATION_RECORD_VERSION,
+  GOVERNANCE_APPLICATION_RECORD_SCHEMA_ID,
+  GOVERNANCE_APPLICATION_RECORD_CONSUMER_SURFACE,
+  GOVERNANCE_APPLICATION_RECORD_MODE,
+  GOVERNANCE_APPLICATION_RECORD_SOURCE,
+  GOVERNANCE_APPLICATION_RECORD_BOUNDARY,
+  GOVERNANCE_APPLICATION_RECORD_PRODUCER_SURFACE,
+  assertValidGovernanceApplicationRecord,
+} from "./governanceApplicationRecord.mjs";
+import {
+  GOVERNANCE_DISPOSITION_KIND,
+  GOVERNANCE_DISPOSITION_VERSION,
+  GOVERNANCE_DISPOSITION_SCHEMA_ID,
+  GOVERNANCE_DISPOSITION_CONSUMER_SURFACE,
+  GOVERNANCE_DISPOSITION_MODE,
+  GOVERNANCE_DISPOSITION_SOURCE,
+  GOVERNANCE_DISPOSITION_BOUNDARY,
+  GOVERNANCE_DISPOSITION_PRODUCER_SURFACE,
+  assertValidGovernanceDisposition,
+} from "./governanceDisposition.mjs";
+
+export const GOVERNANCE_ACTIVATION_RECORD_KIND = "governance_activation_record";
+export const GOVERNANCE_ACTIVATION_RECORD_VERSION = "v1";
+export const GOVERNANCE_ACTIVATION_RECORD_SCHEMA_ID = schema.$id;
+export const GOVERNANCE_ACTIVATION_RECORD_CONSUMER_SURFACE = "guard.audit";
+export const GOVERNANCE_ACTIVATION_RECORD_PRODUCER_SURFACE = "guard.audit";
+export const GOVERNANCE_ACTIVATION_RECORD_MODE = "explicit_opt_in";
+export const GOVERNANCE_ACTIVATION_RECORD_SOURCE = "permit_gate";
+export const GOVERNANCE_ACTIVATION_RECORD_BOUNDARY = "parallel_artifact";
+export const GOVERNANCE_ACTIVATION_RECORD_EMITTER_SURFACE = "guard.audit";
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function joinPath(base, key) {
+  return base ? `${base}.${key}` : key;
+}
+
+function validateNode(value, nodeSchema, path, errors) {
+  if (nodeSchema.const !== undefined && value !== nodeSchema.const) {
+    errors.push(`${path || "$"} must equal ${JSON.stringify(nodeSchema.const)}`);
+    return;
+  }
+
+  if (nodeSchema.enum && !nodeSchema.enum.includes(value)) {
+    errors.push(`${path || "$"} must be one of ${nodeSchema.enum.join(", ")}`);
+    return;
+  }
+
+  if (nodeSchema.type === "object") {
+    if (!isPlainObject(value)) {
+      errors.push(`${path || "$"} must be an object`);
+      return;
+    }
+
+    const properties = nodeSchema.properties || {};
+    const required = nodeSchema.required || [];
+    for (const key of required) {
+      if (!(key in value)) errors.push(`${joinPath(path, key)} is required`);
+    }
+
+    if (nodeSchema.additionalProperties === false) {
+      for (const key of Object.keys(value)) {
+        if (!(key in properties)) errors.push(`${joinPath(path, key)} is not allowed`);
+      }
+    }
+
+    for (const [key, child] of Object.entries(properties)) {
+      if (key in value) validateNode(value[key], child, joinPath(path, key), errors);
+    }
+    return;
+  }
+
+  if (nodeSchema.type === "array") {
+    if (!Array.isArray(value)) {
+      errors.push(`${path || "$"} must be an array`);
+      return;
+    }
+    if (nodeSchema.items) {
+      value.forEach((item, index) => validateNode(item, nodeSchema.items, `${path}[${index}]`, errors));
+    }
+    return;
+  }
+
+  if (nodeSchema.type === "string") {
+    if (typeof value !== "string") {
+      errors.push(`${path || "$"} must be a string`);
+      return;
+    }
+    if (typeof nodeSchema.minLength === "number" && value.length < nodeSchema.minLength) {
+      errors.push(`${path || "$"} must be at least ${nodeSchema.minLength} characters`);
+    }
+    if (nodeSchema.pattern && !(new RegExp(nodeSchema.pattern).test(value))) {
+      errors.push(`${path || "$"} must match ${nodeSchema.pattern}`);
+    }
+  }
+}
+
+function assertAuditOutputPreserved(source, value) {
+  if (value !== true) {
+    throw new Error(`${source} linkage requires audit output preservation`);
+  }
+}
+
+function assertLinkageConsistency(
+  gateResult,
+  receipt,
+  decisionRecord,
+  outcomeBundle,
+  applicationRecord,
+  disposition
+) {
+  if (receipt) {
+    if (receipt.governance_receipt.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance activation receipt linkage requires matching outcome");
+    }
+    if (receipt.governance_receipt.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error("governance activation receipt linkage requires matching exit codes");
+    }
+    assertAuditOutputPreserved(
+      "governance activation receipt",
+      receipt.governance_receipt.audit_output_preserved
+    );
+  }
+
+  if (decisionRecord) {
+    if (decisionRecord.governance_decision.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance activation decision record linkage requires matching outcome");
+    }
+    if (decisionRecord.governance_decision.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error("governance activation decision record linkage requires matching exit codes");
+    }
+    assertAuditOutputPreserved(
+      "governance activation decision record",
+      decisionRecord.governance_decision.audit_output_preserved
+    );
+  }
+
+  if (outcomeBundle) {
+    if (outcomeBundle.permit_gate_result.decision !== gateResult.permit_gate.decision) {
+      throw new Error("governance activation outcome bundle linkage requires matching decision");
+    }
+    if (outcomeBundle.permit_gate_result.source_decision !== gateResult.permit_gate.source_decision) {
+      throw new Error(
+        "governance activation outcome bundle linkage requires matching source decision"
+      );
+    }
+    if (outcomeBundle.bundle.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error("governance activation outcome bundle linkage requires matching exit codes");
+    }
+    assertAuditOutputPreserved(
+      "governance activation outcome bundle",
+      outcomeBundle.bundle.audit_output_preserved
+    );
+  }
+
+  if (applicationRecord) {
+    if (applicationRecord.governance_application.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance activation application record linkage requires matching outcome");
+    }
+    if (
+      applicationRecord.governance_application.applied_outcome !== gateResult.permit_gate.decision
+    ) {
+      throw new Error(
+        "governance activation application record linkage requires matching applied outcome"
+      );
+    }
+    if (
+      applicationRecord.governance_application.applied_source !== gateResult.permit_gate.source_decision
+    ) {
+      throw new Error(
+        "governance activation application record linkage requires matching applied source"
+      );
+    }
+    if (applicationRecord.governance_application.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error(
+        "governance activation application record linkage requires matching exit codes"
+      );
+    }
+    assertAuditOutputPreserved(
+      "governance activation application record",
+      applicationRecord.governance_application.audit_output_preserved
+    );
+  }
+
+  if (disposition) {
+    if (disposition.governance_disposition.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance activation disposition linkage requires matching outcome");
+    }
+    if (disposition.governance_disposition.applied_outcome !== gateResult.permit_gate.decision) {
+      throw new Error(
+        "governance activation disposition linkage requires matching applied outcome"
+      );
+    }
+    if (disposition.governance_disposition.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error("governance activation disposition linkage requires matching exit codes");
+    }
+    assertAuditOutputPreserved(
+      "governance activation disposition",
+      disposition.governance_disposition.audit_output_preserved
+    );
+  }
+}
+
+function buildEnabledGovernancePaths({
+  governanceReceipt,
+  governanceDecisionRecord,
+  governanceOutcomeBundle,
+  governanceApplicationRecord,
+  governanceDisposition,
+}) {
+  const enabled = ["permit_gate"];
+  if (governanceReceipt) enabled.push("governance_receipt");
+  if (governanceDecisionRecord) enabled.push("governance_decision_record");
+  if (governanceOutcomeBundle) enabled.push("governance_outcome_bundle");
+  if (governanceApplicationRecord) enabled.push("governance_application_record");
+  if (governanceDisposition) enabled.push("governance_disposition");
+  return enabled;
+}
+
+export function buildGovernanceActivationRecord({
+  audit,
+  policyPermitBridgeContract,
+  permitGateResult,
+  governanceReceipt = null,
+  governanceDecisionRecord = null,
+  governanceOutcomeBundle = null,
+  governanceApplicationRecord = null,
+  governanceDisposition = null,
+}) {
+  const bridgeContract = assertValidPolicyPermitBridgeContract(policyPermitBridgeContract);
+  const gateResult = assertValidPermitGateResult(permitGateResult);
+  const receipt = governanceReceipt ? assertValidGovernanceReceipt(governanceReceipt) : null;
+  const decisionRecord = governanceDecisionRecord
+    ? assertValidGovernanceDecisionRecord(governanceDecisionRecord)
+    : null;
+  const outcomeBundle = governanceOutcomeBundle
+    ? assertValidGovernanceOutcomeBundle(governanceOutcomeBundle)
+    : null;
+  const applicationRecord = governanceApplicationRecord
+    ? assertValidGovernanceApplicationRecord(governanceApplicationRecord)
+    : null;
+  const disposition = governanceDisposition
+    ? assertValidGovernanceDisposition(governanceDisposition)
+    : null;
+
+  for (const artifact of [receipt, decisionRecord, outcomeBundle, applicationRecord, disposition]) {
+    if (artifact && artifact.canonical_action_hash !== gateResult.canonical_action_hash) {
+      throw new Error("governance activation linkage requires matching canonical action hashes");
+    }
+  }
+  if (bridgeContract.canonical_action_hash !== gateResult.canonical_action_hash) {
+    throw new Error("governance activation requires matching canonical action hashes");
+  }
+
+  assertLinkageConsistency(
+    gateResult,
+    receipt,
+    decisionRecord,
+    outcomeBundle,
+    applicationRecord,
+    disposition
+  );
+
+  const record = {
+    kind: GOVERNANCE_ACTIVATION_RECORD_KIND,
+    version: GOVERNANCE_ACTIVATION_RECORD_VERSION,
+    schema_id: GOVERNANCE_ACTIVATION_RECORD_SCHEMA_ID,
+    canonical_action_hash: bridgeContract.canonical_action_hash,
+    bridge_contract: {
+      kind: POLICY_PERMIT_BRIDGE_KIND,
+      version: POLICY_PERMIT_BRIDGE_VERSION,
+      schema_id: POLICY_PERMIT_BRIDGE_SCHEMA_ID,
+      producer_surface: POLICY_PERMIT_BRIDGE_PRODUCER_SURFACE,
+    },
+    permit_gate_result: {
+      kind: PERMIT_GATE_RESULT_KIND,
+      version: PERMIT_GATE_RESULT_VERSION,
+      schema_id: PERMIT_GATE_RESULT_SCHEMA_ID,
+      consumer_surface: PERMIT_GATE_CONSUMER_SURFACE,
+      mode: PERMIT_GATE_MODE,
+      decision: gateResult.permit_gate.decision,
+      source_decision: gateResult.permit_gate.source_decision,
+      exit_code: gateResult.permit_gate.exit_code,
+      audit_output_preserved: gateResult.permit_gate.audit_output_preserved,
+    },
+    governance_activation: {
+      outcome: gateResult.permit_gate.decision,
+      activation_mode: GOVERNANCE_ACTIVATION_RECORD_MODE,
+      activation_source: GOVERNANCE_ACTIVATION_RECORD_SOURCE,
+      enabled_governance_paths: buildEnabledGovernancePaths({
+        governanceReceipt: receipt,
+        governanceDecisionRecord: decisionRecord,
+        governanceOutcomeBundle: outcomeBundle,
+        governanceApplicationRecord: applicationRecord,
+        governanceDisposition: disposition,
+      }),
+      consumer_surface: GOVERNANCE_ACTIVATION_RECORD_CONSUMER_SURFACE,
+      producer_surface: GOVERNANCE_ACTIVATION_RECORD_PRODUCER_SURFACE,
+      result_boundary: GOVERNANCE_ACTIVATION_RECORD_BOUNDARY,
+      exit_code: gateResult.permit_gate.exit_code,
+      audit_output_preserved: gateResult.permit_gate.audit_output_preserved,
+    },
+    traceability: {
+      run_id: audit?.run?.run_id || "",
+      audit_mode: audit?.run?.mode || "local",
+      git_head: audit?.run?.git?.head || "",
+      git_branch: audit?.run?.git?.branch || "",
+      emitted_by: GOVERNANCE_ACTIVATION_RECORD_EMITTER_SURFACE,
+    },
+    deterministic: true,
+    enforcing: false,
+  };
+
+  if (receipt) {
+    record.governance_receipt_linkage = {
+      kind: GOVERNANCE_RECEIPT_KIND,
+      version: GOVERNANCE_RECEIPT_VERSION,
+      schema_id: GOVERNANCE_RECEIPT_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
+      emission_mode: GOVERNANCE_RECEIPT_EMISSION_MODE,
+      result_boundary: GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
+      producer_surface: GOVERNANCE_RECEIPT_EMITTER_SURFACE,
+    };
+  }
+
+  if (decisionRecord) {
+    record.governance_decision_record_linkage = {
+      kind: GOVERNANCE_DECISION_RECORD_KIND,
+      version: GOVERNANCE_DECISION_RECORD_VERSION,
+      schema_id: GOVERNANCE_DECISION_RECORD_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE,
+      decision_mode: GOVERNANCE_DECISION_RECORD_MODE,
+      result_boundary: GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
+      producer_surface: GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
+      decision_source: GOVERNANCE_DECISION_RECORD_SOURCE,
+    };
+  }
+
+  if (outcomeBundle) {
+    record.governance_outcome_bundle_linkage = {
+      kind: GOVERNANCE_OUTCOME_BUNDLE_KIND,
+      version: GOVERNANCE_OUTCOME_BUNDLE_VERSION,
+      schema_id: GOVERNANCE_OUTCOME_BUNDLE_SCHEMA_ID,
+      mode: GOVERNANCE_OUTCOME_BUNDLE_MODE,
+      boundary: GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY,
+      consumer_surface: GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE,
+      producer_surface: GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE,
+    };
+  }
+
+  if (applicationRecord) {
+    record.governance_application_record_linkage = {
+      kind: GOVERNANCE_APPLICATION_RECORD_KIND,
+      version: GOVERNANCE_APPLICATION_RECORD_VERSION,
+      schema_id: GOVERNANCE_APPLICATION_RECORD_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_APPLICATION_RECORD_CONSUMER_SURFACE,
+      application_mode: GOVERNANCE_APPLICATION_RECORD_MODE,
+      application_source: GOVERNANCE_APPLICATION_RECORD_SOURCE,
+      applied_source: applicationRecord.governance_application.applied_source,
+      result_boundary: GOVERNANCE_APPLICATION_RECORD_BOUNDARY,
+      producer_surface: GOVERNANCE_APPLICATION_RECORD_PRODUCER_SURFACE,
+    };
+  }
+
+  if (disposition) {
+    record.governance_disposition_linkage = {
+      kind: GOVERNANCE_DISPOSITION_KIND,
+      version: GOVERNANCE_DISPOSITION_VERSION,
+      schema_id: GOVERNANCE_DISPOSITION_SCHEMA_ID,
+      consumer_surface: GOVERNANCE_DISPOSITION_CONSUMER_SURFACE,
+      disposition_mode: GOVERNANCE_DISPOSITION_MODE,
+      disposition_source: GOVERNANCE_DISPOSITION_SOURCE,
+      result_boundary: GOVERNANCE_DISPOSITION_BOUNDARY,
+      producer_surface: GOVERNANCE_DISPOSITION_PRODUCER_SURFACE,
+    };
+  }
+
+  return record;
+}
+
+export function validateGovernanceActivationRecord(artifact) {
+  const errors = [];
+  validateNode(artifact, schema, "", errors);
+  return {
+    ok: errors.length === 0,
+    errors,
+    schemaId: schema.$id,
+  };
+}
+
+export function assertValidGovernanceActivationRecord(artifact) {
+  const result = validateGovernanceActivationRecord(artifact);
+  if (result.ok) return artifact;
+
+  const err = new Error(
+    `governance_activation_record failed validation: ${result.errors.join("; ")}`
+  );
+  err.validation = result;
+  throw err;
+}
