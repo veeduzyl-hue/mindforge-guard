@@ -94,6 +94,7 @@
       "required": [
         "outcome",
         "consumer_surface",
+        "producer_surface",
         "decision_mode",
         "decision_source",
         "result_boundary",
@@ -106,6 +107,7 @@
           "enum": ["allow", "deny"]
         },
         "consumer_surface": { "const": "guard.audit" },
+        "producer_surface": { "const": "guard.audit" },
         "decision_mode": { "const": "explicit_opt_in" },
         "decision_source": { "const": "permit_gate" },
         "result_boundary": { "const": "parallel_artifact" },

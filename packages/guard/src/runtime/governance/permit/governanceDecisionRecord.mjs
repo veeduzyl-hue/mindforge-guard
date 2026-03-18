@@ -27,6 +27,7 @@ export const GOVERNANCE_DECISION_RECORD_KIND = "governance_decision_record";
 export const GOVERNANCE_DECISION_RECORD_VERSION = "v1";
 export const GOVERNANCE_DECISION_RECORD_SCHEMA_ID = schema.$id;
 export const GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE = "guard.audit";
+export const GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE = "guard.audit";
 export const GOVERNANCE_DECISION_RECORD_SOURCE = "permit_gate";
 export const GOVERNANCE_DECISION_RECORD_MODE = "explicit_opt_in";
 export const GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY = "parallel_artifact";
@@ -142,6 +143,7 @@ export function buildGovernanceDecisionRecord({
     governance_decision: {
       outcome: gateResult.permit_gate.decision,
       consumer_surface: GOVERNANCE_DECISION_RECORD_CONSUMER_SURFACE,
+      producer_surface: GOVERNANCE_DECISION_RECORD_PRODUCER_SURFACE,
       decision_mode: GOVERNANCE_DECISION_RECORD_MODE,
       decision_source: GOVERNANCE_DECISION_RECORD_SOURCE,
       result_boundary: GOVERNANCE_DECISION_RECORD_RESULT_BOUNDARY,
