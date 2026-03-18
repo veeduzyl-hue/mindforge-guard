@@ -33,9 +33,11 @@ import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
   buildExecutionBridgePreview,
+  buildExecutionReadinessJudgment,
   buildCanonicalActionPolicyPreview,
   buildPermitPrecheckPreview,
   assertValidExecutionBridgePreview,
+  assertValidExecutionReadinessJudgment,
   assertValidCanonicalActionPolicyPreview,
   assertValidPermitPrecheckPreview,
 } from "./runtime/actions/index.mjs";
@@ -74,10 +76,12 @@ function readShadowOptions(argv) {
   const emitPolicyPreview = argv.includes("--emit-policy-preview");
   const emitPermitPrecheckPreview = argv.includes("--emit-permit-precheck-preview");
   const emitExecutionBridgePreview = argv.includes("--emit-execution-bridge-preview");
+  const emitExecutionReadiness = argv.includes("--emit-execution-readiness");
   let canonicalActionOut = null;
   let policyPreviewOut = null;
   let permitPrecheckOut = null;
   let executionBridgeOut = null;
+  let executionReadinessOut = null;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -101,6 +105,11 @@ function readShadowOptions(argv) {
     } else if (arg === "--execution-bridge-out" && argv[i + 1]) {
       executionBridgeOut = argv[i + 1];
       i += 1;
+    } else if (arg.startsWith("--execution-readiness-out=")) {
+      executionReadinessOut = arg.slice("--execution-readiness-out=".length);
+    } else if (arg === "--execution-readiness-out" && argv[i + 1]) {
+      executionReadinessOut = argv[i + 1];
+      i += 1;
     }
   }
 
@@ -113,6 +122,8 @@ function readShadowOptions(argv) {
     permitPrecheckOut,
     emitExecutionBridgePreview,
     executionBridgeOut,
+    emitExecutionReadiness,
+    executionReadinessOut,
   };
 }
 
@@ -291,6 +302,30 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "execution bridge preview requires --emit-execution-bridge-preview",
+    };
+  }
+
+  if (shadow.emitExecutionReadiness && !shadow.emitExecutionBridgePreview) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution readiness judgment requires --emit-execution-bridge-preview",
+    };
+  }
+
+  if (shadow.emitExecutionReadiness && !shadow.executionReadinessOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution readiness judgment requires --execution-readiness-out <file>",
+    };
+  }
+
+  if (!shadow.emitExecutionReadiness && shadow.executionReadinessOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "execution readiness judgment requires --emit-execution-readiness",
     };
   }
 
@@ -498,6 +533,17 @@ export async function runAudit({ argv, policy }) {
             );
             const executionBridgeOutPath = path.resolve(process.cwd(), shadow.executionBridgeOut);
             writeFile(executionBridgeOutPath, JSON.stringify(executionBridgeArtifact, null, 2));
+
+            if (shadow.emitExecutionReadiness) {
+              const executionReadinessArtifact = assertValidExecutionReadinessJudgment(
+                buildExecutionReadinessJudgment({
+                  canonicalActionArtifact,
+                  executionBridgeArtifact,
+                })
+              );
+              const executionReadinessOutPath = path.resolve(process.cwd(), shadow.executionReadinessOut);
+              writeFile(executionReadinessOutPath, JSON.stringify(executionReadinessArtifact, null, 2));
+            }
           }
         }
       }
@@ -505,7 +551,7 @@ export async function runAudit({ argv, policy }) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow, policy preview, permit precheck preview, or execution bridge preview output failed: ${err?.message || String(err)}`,
+        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, or execution readiness judgment output failed: ${err?.message || String(err)}`,
       };
     }
   }
