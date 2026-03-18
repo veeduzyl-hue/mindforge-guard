@@ -46,6 +46,8 @@ import {
   assertValidGovernanceOutcomeBundle,
   buildGovernanceApplicationRecord,
   assertValidGovernanceApplicationRecord,
+  buildGovernanceDisposition,
+  assertValidGovernanceDisposition,
 } from "./runtime/governance/permit/index.mjs";
 import {
   buildCanonicalActionArtifactFromAudit,
@@ -171,8 +173,10 @@ function readPermitGateOptions(argv) {
   let governanceDecisionRecordOut = null;
   let governanceOutcomeBundleOut = null;
   let governanceApplicationRecordOut = null;
+  let governanceDispositionOut = null;
   let governanceOutcomeBundleOutRequested = false;
   let governanceApplicationRecordOutRequested = false;
+  let governanceDispositionOutRequested = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -209,6 +213,15 @@ function readPermitGateOptions(argv) {
       i += 1;
     } else if (arg === "--governance-application-record-out") {
       governanceApplicationRecordOutRequested = true;
+    } else if (arg.startsWith("--governance-disposition-out=")) {
+      governanceDispositionOutRequested = true;
+      governanceDispositionOut = arg.slice("--governance-disposition-out=".length);
+    } else if (arg === "--governance-disposition-out" && argv[i + 1]) {
+      governanceDispositionOutRequested = true;
+      governanceDispositionOut = argv[i + 1];
+      i += 1;
+    } else if (arg === "--governance-disposition-out") {
+      governanceDispositionOutRequested = true;
     }
   }
 
@@ -221,6 +234,8 @@ function readPermitGateOptions(argv) {
     governanceOutcomeBundleOutRequested,
     governanceApplicationRecordOut,
     governanceApplicationRecordOutRequested,
+    governanceDispositionOut,
+    governanceDispositionOutRequested,
   };
 }
 
@@ -578,6 +593,14 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (!permitGate.enabled && permitGate.governanceDispositionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance disposition output requires --permit-gate",
+    };
+  }
+
   if (permitGate.governanceOutcomeBundleOutRequested && !permitGate.governanceOutcomeBundleOut) {
     return {
       exitCode: policy.exit_codes.error ?? 30,
@@ -594,6 +617,14 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "governance application record output requires a file path",
+    };
+  }
+
+  if (permitGate.governanceDispositionOutRequested && !permitGate.governanceDispositionOut) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "governance disposition output requires a file path",
     };
   }
 
@@ -771,6 +802,7 @@ export async function runAudit({ argv, policy }) {
   let governanceDecisionRecord = null;
   let governanceOutcomeBundle = null;
   let governanceApplicationRecord = null;
+  let governanceDisposition = null;
 
   if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
@@ -916,6 +948,27 @@ export async function runAudit({ argv, policy }) {
             JSON.stringify(governanceApplicationRecord, null, 2)
           );
         }
+        if (permitGate.governanceDispositionOut) {
+          governanceDisposition = assertValidGovernanceDisposition(
+            buildGovernanceDisposition({
+              audit,
+              policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
+              permitGateResult,
+              governanceReceipt,
+              governanceDecisionRecord,
+              governanceOutcomeBundle,
+              governanceApplicationRecord,
+            })
+          );
+          const governanceDispositionOutPath = path.resolve(
+            process.cwd(),
+            permitGate.governanceDispositionOut
+          );
+          writeFile(
+            governanceDispositionOutPath,
+            JSON.stringify(governanceDisposition, null, 2)
+          );
+        }
       }
     } catch (err) {
       return {
@@ -963,5 +1016,6 @@ export async function runAudit({ argv, policy }) {
     governanceDecisionRecord,
     governanceOutcomeBundle,
     governanceApplicationRecord,
+    governanceDisposition,
   };
 }
