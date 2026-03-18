@@ -1,9 +1,15 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { execFileSync, spawnSync } from "node:child_process";
 
 import { runAudit } from "../packages/guard/src/runAudit.mjs";
 import {
+  PERMIT_GATE_RESULT_KIND,
+  PERMIT_GATE_RESULT_VERSION,
+  PERMIT_GATE_RESULT_SCHEMA_ID,
+  PERMIT_GATE_MODE,
+  PERMIT_GATE_CONSUMER_SURFACE,
   PERMIT_GATE_DENIED_EXIT_CODE,
   validatePermitGateResult,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
@@ -113,17 +119,83 @@ for (const artifact of [allowArtifact, denyArtifact]) {
   }
 }
 
+for (const artifact of [allowArtifact, denyArtifact]) {
+  if (artifact.kind !== PERMIT_GATE_RESULT_KIND) {
+    throw new Error("permit gate result kind mismatch");
+  }
+  if (artifact.version !== PERMIT_GATE_RESULT_VERSION) {
+    throw new Error("permit gate result version mismatch");
+  }
+  if (artifact.schema_id !== PERMIT_GATE_RESULT_SCHEMA_ID) {
+    throw new Error("permit gate result schema_id mismatch");
+  }
+  if (artifact.enforcing !== false) {
+    throw new Error("permit gate result must remain non-enforcing");
+  }
+  if (artifact?.permit_gate?.mode !== PERMIT_GATE_MODE) {
+    throw new Error("permit gate mode mismatch");
+  }
+  if (artifact?.permit_gate?.consumer_surface !== PERMIT_GATE_CONSUMER_SURFACE) {
+    throw new Error("permit gate consumer surface mismatch");
+  }
+  if (artifact?.permit_gate?.audit_output_preserved !== true) {
+    throw new Error("permit gate must preserve audit output semantics");
+  }
+}
+
 if (allowArtifact.permit_gate.decision !== "allow") {
   throw new Error("permit gate allow path did not produce an allow decision");
 }
 if (allowArtifact.permit_gate.source_decision !== "insufficient_signal") {
   throw new Error("permit gate allow path should be sourced from insufficient_signal");
 }
+if (allowArtifact.permit_gate.exit_code !== 0) {
+  throw new Error("permit gate allow path should keep exit code 0");
+}
 if (denyArtifact.permit_gate.decision !== "deny") {
   throw new Error("permit gate deny path did not produce a deny decision");
 }
 if (denyArtifact.permit_gate.source_decision !== "would_deny") {
   throw new Error("permit gate deny path should be sourced from would_deny");
+}
+if (denyArtifact.permit_gate.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
+  throw new Error("permit gate deny path exit code mismatch");
+}
+
+const denyRepo = path.join(tmp, "mindforge-guard-permit-gate-deny-repo");
+try {
+  fs.rmSync(denyRepo, { recursive: true, force: true });
+} catch {}
+fs.mkdirSync(path.join(denyRepo, ".mindforge", "config"), { recursive: true });
+fs.writeFileSync(path.join(denyRepo, ".mindforge", "config", "policy.json"), JSON.stringify(denyPolicy(), null, 2));
+execFileSync("git", ["init"], { cwd: denyRepo, stdio: "ignore" });
+execFileSync("git", ["config", "user.email", "codex@example.com"], { cwd: denyRepo, stdio: "ignore" });
+execFileSync("git", ["config", "user.name", "Codex"], { cwd: denyRepo, stdio: "ignore" });
+execFileSync("git", ["add", "."], { cwd: denyRepo, stdio: "ignore" });
+execFileSync("git", ["commit", "-m", "init"], { cwd: denyRepo, stdio: "ignore" });
+
+const denyRunGuard = spawnSync(
+  process.execPath,
+  [path.join(process.cwd(), "packages/guard/src/runGuard.mjs"), "audit", ".", "--staged", "--permit-gate"],
+  {
+    cwd: denyRepo,
+    encoding: "utf8",
+  }
+);
+
+if (denyRunGuard.status !== PERMIT_GATE_DENIED_EXIT_CODE) {
+  throw new Error("runGuard deny path exit code mismatch");
+}
+
+const denyStdout = JSON.parse(denyRunGuard.stdout);
+if (denyStdout.kind !== PERMIT_GATE_RESULT_KIND) {
+  throw new Error("runGuard deny path should emit permit_gate_result");
+}
+if (denyStdout?.permit_gate?.decision !== "deny") {
+  throw new Error("runGuard deny path should emit deny decision");
+}
+if (denyStdout?.permit_gate?.audit_output_preserved !== true) {
+  throw new Error("runGuard deny path should keep audit output boundary preserved");
 }
 
 process.stdout.write("audit permit gate verified\n");
