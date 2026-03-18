@@ -240,6 +240,24 @@ if (!("governance_decision_record_linkage" in allowLinkedRecord)) {
 if (!("governance_outcome_bundle_linkage" in allowLinkedRecord)) {
   throw new Error("application record should include outcome bundle linkage when bundle was emitted");
 }
+if (allowLinkedRecord.governance_receipt_linkage.producer_surface !== "guard.audit") {
+  throw new Error("application record receipt linkage producer surface mismatch");
+}
+if (allowLinkedRecord.governance_decision_record_linkage.producer_surface !== "guard.audit") {
+  throw new Error("application record decision record linkage producer surface mismatch");
+}
+if (allowLinkedRecord.governance_decision_record_linkage.decision_source !== "permit_gate") {
+  throw new Error("application record decision record linkage source mismatch");
+}
+if (allowLinkedRecord.governance_outcome_bundle_linkage.consumer_surface !== "guard.audit") {
+  throw new Error("application record outcome bundle linkage consumer surface mismatch");
+}
+if (allowLinkedRecord.governance_outcome_bundle_linkage.producer_surface !== "guard.audit") {
+  throw new Error("application record outcome bundle linkage producer surface mismatch");
+}
+if (allowLinkedRecord.governance_outcome_bundle_linkage.boundary !== "parallel_artifact") {
+  throw new Error("application record outcome bundle linkage boundary mismatch");
+}
 
 if (allowRecord.governance_application.outcome !== "allow") {
   throw new Error("application record allow path did not produce allow outcome");
@@ -252,6 +270,9 @@ if (allowRecord.governance_application.applied_source !== "insufficient_signal")
 }
 if (allowRecord.permit_gate_result.decision !== "allow") {
   throw new Error("application record allow path permit linkage mismatch");
+}
+if (allowRecord.permit_gate_result.audit_output_preserved !== true) {
+  throw new Error("application record allow path must preserve audit output semantics");
 }
 
 if (denyRecord.governance_application.outcome !== "deny") {
@@ -268,6 +289,9 @@ if (denyRecord.governance_application.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE
 }
 if (denyRecord.permit_gate_result.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
   throw new Error("application record deny path permit linkage exit code mismatch");
+}
+if (denyRecord.permit_gate_result.audit_output_preserved !== true) {
+  throw new Error("application record deny path must preserve audit output semantics");
 }
 
 process.stdout.write("governance application record verified\n");
