@@ -392,6 +392,12 @@ async function runAuditCommand({ repoRoot, argv }) {
   const policyPath = getRepoPolicyPath(repoRoot);
   const policy = await loadPolicy({ policyPath, repoRoot });
   const result = await runAudit({ repoRoot, argv, policy });
+  if (result?.permitGateResult?.permit_gate?.decision === "deny") {
+    return {
+      exitCode: result.exitCode,
+      stdout: JSON.stringify(result.permitGateResult, null, 2) + "\n",
+    };
+  }
   if (result?.audit) {
     return { exitCode: result.exitCode, stdout: JSON.stringify(result.audit, null, 2) + "\n" };
   }

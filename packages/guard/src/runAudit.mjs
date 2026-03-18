@@ -35,6 +35,11 @@ import {
   assertValidPolicyPermitBridgeContract,
 } from "./runtime/governance/bridge/index.mjs";
 import {
+  buildPermitGateResult,
+  assertValidPermitGateResult,
+  PERMIT_GATE_DENIED_EXIT_CODE,
+} from "./runtime/governance/permit/index.mjs";
+import {
   buildCanonicalActionArtifactFromAudit,
   buildEnforcementAdjacentDecisionRecord,
   buildExecutionBridgePreview,
@@ -151,6 +156,78 @@ function readShadowOptions(argv) {
   };
 }
 
+function readPermitGateOptions(argv) {
+  const enabled = argv.includes("--permit-gate");
+  let out = null;
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg.startsWith("--permit-gate-out=")) {
+      out = arg.slice("--permit-gate-out=".length);
+    } else if (arg === "--permit-gate-out" && argv[i + 1]) {
+      out = argv[i + 1];
+      i += 1;
+    }
+  }
+
+  return { enabled, out };
+}
+
+function buildGovernanceArtifacts({ audit, effectivePolicy }) {
+  const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
+  const policyPreviewArtifact = assertValidCanonicalActionPolicyPreview(
+    buildCanonicalActionPolicyPreview({
+      canonicalActionArtifact,
+      policy: effectivePolicy,
+    })
+  );
+  const permitPrecheckArtifact = assertValidPermitPrecheckPreview(
+    buildPermitPrecheckPreview({
+      canonicalActionArtifact,
+      policyPreviewArtifact,
+    })
+  );
+  const executionBridgeArtifact = assertValidExecutionBridgePreview(
+    buildExecutionBridgePreview({
+      canonicalActionArtifact,
+      policyPreviewArtifact,
+      permitPrecheckArtifact,
+    })
+  );
+  const executionReadinessArtifact = assertValidExecutionReadinessJudgment(
+    buildExecutionReadinessJudgment({
+      canonicalActionArtifact,
+      executionBridgeArtifact,
+    })
+  );
+  const enforcementAdjacentDecisionArtifact = assertValidEnforcementAdjacentDecisionRecord(
+    buildEnforcementAdjacentDecisionRecord({
+      canonicalActionArtifact,
+      executionReadinessArtifact,
+    })
+  );
+  const policyPermitBridgeArtifact = assertValidPolicyPermitBridgeContract(
+    buildPolicyPermitBridgeContract({
+      canonicalActionArtifact,
+      policyPreviewArtifact,
+      permitPrecheckArtifact,
+      executionBridgeArtifact,
+      executionReadinessArtifact,
+      enforcementAdjacentDecisionArtifact,
+    })
+  );
+
+  return {
+    canonicalActionArtifact,
+    policyPreviewArtifact,
+    permitPrecheckArtifact,
+    executionBridgeArtifact,
+    executionReadinessArtifact,
+    enforcementAdjacentDecisionArtifact,
+    policyPermitBridgeArtifact,
+  };
+}
+
 /**
  * v0.27 fallback: compute dominance from modules if dominance is absent.
  * - pure
@@ -227,6 +304,7 @@ function computeDominanceFallback(modules, metric = "drift_units", topN = 5) {
 export async function runAudit({ argv, policy }) {
   const args = parseArgs(argv);
   const shadow = readShadowOptions(argv);
+  const permitGate = readPermitGateOptions(argv);
   const mode = args.mode === "ci" ? "ci" : "local";
 
   const head = args.head || getHeadSha();
@@ -401,6 +479,22 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (permitGate.enabled && mode !== "local") {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "permit gate phase 1 currently supports local audit mode only",
+    };
+  }
+
+  if (!permitGate.enabled && permitGate.out) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "permit gate output requires --permit-gate",
+    };
+  }
+
   const outdir =
     args.outdir ||
     path.join(process.cwd(), ".mindforge", "artifacts", mode === "ci" ? "ci" : "local");
@@ -569,104 +663,96 @@ export async function runAudit({ argv, policy }) {
   const auditJsonPath = path.join(outdir, `audit.${head}.json`);
   writeFile(auditJsonPath, JSON.stringify(audit, null, 2));
 
-  if (shadow.emitCanonicalAction) {
+  let governanceArtifacts = null;
+  let permitGateResult = null;
+
+  if (shadow.emitCanonicalAction || permitGate.enabled) {
     try {
-      const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
-      const canonicalActionOutPath = path.resolve(process.cwd(), shadow.canonicalActionOut);
-      writeFile(canonicalActionOutPath, JSON.stringify(canonicalActionArtifact, null, 2));
+      governanceArtifacts = buildGovernanceArtifacts({
+        audit,
+        effectivePolicy,
+      });
+
+      if (shadow.emitCanonicalAction) {
+        const canonicalActionOutPath = path.resolve(process.cwd(), shadow.canonicalActionOut);
+        writeFile(
+          canonicalActionOutPath,
+          JSON.stringify(governanceArtifacts.canonicalActionArtifact, null, 2)
+        );
+      }
 
       if (shadow.emitPolicyPreview) {
-        const previewArtifact = assertValidCanonicalActionPolicyPreview(
-          buildCanonicalActionPolicyPreview({
-            canonicalActionArtifact,
-            policy: effectivePolicy,
+        const policyPreviewOutPath = path.resolve(process.cwd(), shadow.policyPreviewOut);
+        writeFile(
+          policyPreviewOutPath,
+          JSON.stringify(governanceArtifacts.policyPreviewArtifact, null, 2)
+        );
+      }
+
+      if (shadow.emitPermitPrecheckPreview) {
+        const permitPrecheckOutPath = path.resolve(process.cwd(), shadow.permitPrecheckOut);
+        writeFile(
+          permitPrecheckOutPath,
+          JSON.stringify(governanceArtifacts.permitPrecheckArtifact, null, 2)
+        );
+      }
+
+      if (shadow.emitExecutionBridgePreview) {
+        const executionBridgeOutPath = path.resolve(process.cwd(), shadow.executionBridgeOut);
+        writeFile(
+          executionBridgeOutPath,
+          JSON.stringify(governanceArtifacts.executionBridgeArtifact, null, 2)
+        );
+      }
+
+      if (shadow.emitExecutionReadiness) {
+        const executionReadinessOutPath = path.resolve(process.cwd(), shadow.executionReadinessOut);
+        writeFile(
+          executionReadinessOutPath,
+          JSON.stringify(governanceArtifacts.executionReadinessArtifact, null, 2)
+        );
+      }
+
+      if (shadow.emitEnforcementAdjacentDecision) {
+        const enforcementAdjacentDecisionOutPath = path.resolve(
+          process.cwd(),
+          shadow.enforcementAdjacentDecisionOut
+        );
+        writeFile(
+          enforcementAdjacentDecisionOutPath,
+          JSON.stringify(governanceArtifacts.enforcementAdjacentDecisionArtifact, null, 2)
+        );
+      }
+
+      if (shadow.emitPolicyPermitBridge) {
+        const policyPermitBridgeOutPath = path.resolve(process.cwd(), shadow.policyPermitBridgeOut);
+        writeFile(
+          policyPermitBridgeOutPath,
+          JSON.stringify(governanceArtifacts.policyPermitBridgeArtifact, null, 2)
+        );
+      }
+
+      if (permitGate.enabled) {
+        permitGateResult = assertValidPermitGateResult(
+          buildPermitGateResult({
+            policyPermitBridgeContract: governanceArtifacts.policyPermitBridgeArtifact,
           })
         );
-        const policyPreviewOutPath = path.resolve(process.cwd(), shadow.policyPreviewOut);
-        writeFile(policyPreviewOutPath, JSON.stringify(previewArtifact, null, 2));
-
-        if (shadow.emitPermitPrecheckPreview) {
-          const permitPrecheckArtifact = assertValidPermitPrecheckPreview(
-            buildPermitPrecheckPreview({
-              canonicalActionArtifact,
-              policyPreviewArtifact: previewArtifact,
-            })
-          );
-          const permitPrecheckOutPath = path.resolve(process.cwd(), shadow.permitPrecheckOut);
-          writeFile(permitPrecheckOutPath, JSON.stringify(permitPrecheckArtifact, null, 2));
-
-          if (shadow.emitExecutionBridgePreview) {
-            const executionBridgeArtifact = assertValidExecutionBridgePreview(
-              buildExecutionBridgePreview({
-                canonicalActionArtifact,
-                policyPreviewArtifact: previewArtifact,
-                permitPrecheckArtifact,
-              })
-            );
-            const executionBridgeOutPath = path.resolve(process.cwd(), shadow.executionBridgeOut);
-            writeFile(executionBridgeOutPath, JSON.stringify(executionBridgeArtifact, null, 2));
-
-            if (shadow.emitExecutionReadiness) {
-              const executionReadinessArtifact = assertValidExecutionReadinessJudgment(
-                buildExecutionReadinessJudgment({
-                  canonicalActionArtifact,
-                  executionBridgeArtifact,
-                })
-              );
-              const executionReadinessOutPath = path.resolve(process.cwd(), shadow.executionReadinessOut);
-              writeFile(executionReadinessOutPath, JSON.stringify(executionReadinessArtifact, null, 2));
-
-              if (shadow.emitEnforcementAdjacentDecision) {
-                const enforcementAdjacentDecisionArtifact = assertValidEnforcementAdjacentDecisionRecord(
-                  buildEnforcementAdjacentDecisionRecord({
-                    canonicalActionArtifact,
-                    executionReadinessArtifact,
-                  })
-                );
-                const enforcementAdjacentDecisionOutPath = path.resolve(
-                  process.cwd(),
-                  shadow.enforcementAdjacentDecisionOut
-                );
-                writeFile(
-                  enforcementAdjacentDecisionOutPath,
-                  JSON.stringify(enforcementAdjacentDecisionArtifact, null, 2)
-                );
-
-                if (shadow.emitPolicyPermitBridge) {
-                  const policyPermitBridgeArtifact = assertValidPolicyPermitBridgeContract(
-                    buildPolicyPermitBridgeContract({
-                      canonicalActionArtifact,
-                      policyPreviewArtifact: previewArtifact,
-                      permitPrecheckArtifact,
-                      executionBridgeArtifact,
-                      executionReadinessArtifact,
-                      enforcementAdjacentDecisionArtifact,
-                    })
-                  );
-                  const policyPermitBridgeOutPath = path.resolve(
-                    process.cwd(),
-                    shadow.policyPermitBridgeOut
-                  );
-                  writeFile(
-                    policyPermitBridgeOutPath,
-                    JSON.stringify(policyPermitBridgeArtifact, null, 2)
-                  );
-                }
-              }
-            }
-          }
+        if (permitGate.out) {
+          const permitGateOutPath = path.resolve(process.cwd(), permitGate.out);
+          writeFile(permitGateOutPath, JSON.stringify(permitGateResult, null, 2));
         }
       }
     } catch (err) {
       return {
         exitCode: policy.exit_codes.error ?? 30,
         audit: null,
-        message: `canonical action shadow, policy preview, permit precheck preview, execution bridge preview, execution readiness judgment, enforcement-adjacent decision record, or policy-to-permit bridge contract output failed: ${err?.message || String(err)}`,
+        message: `governance bridge or permit gate preparation failed: ${err?.message || String(err)}`,
       };
     }
   }
 
-  const exitCode =
+  let exitCode =
     verdict === "allow"
       ? policy.exit_codes.allow
       : verdict === "soft_block"
@@ -674,6 +760,10 @@ export async function runAudit({ argv, policy }) {
       : verdict === "hard_block"
       ? policy.exit_codes.hard_block
       : policy.exit_codes.error;
+
+  if (permitGateResult?.permit_gate?.decision === "deny") {
+    exitCode = PERMIT_GATE_DENIED_EXIT_CODE;
+  }
 
   // ---- Drift Collector (must never affect exit) ----
   collectDriftEvent(
@@ -691,5 +781,5 @@ export async function runAudit({ argv, policy }) {
     { repoRoot }
   );
 
-  return { exitCode, audit };
+  return { exitCode, audit, permitGateResult };
 }

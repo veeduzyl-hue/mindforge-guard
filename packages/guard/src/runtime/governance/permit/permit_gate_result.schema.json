@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mindforge://schemas/governance/permit/permit_gate_result.v1.json",
+  "title": "Permit Gate Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "schema_id",
+    "canonical_action_hash",
+    "bridge_contract",
+    "permit_gate",
+    "deterministic"
+  ],
+  "properties": {
+    "kind": { "const": "permit_gate_result" },
+    "version": { "const": "v1" },
+    "schema_id": {
+      "const": "mindforge://schemas/governance/permit/permit_gate_result.v1.json"
+    },
+    "canonical_action_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bridge_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "version", "schema_id", "producer_surface"],
+      "properties": {
+        "kind": { "const": "policy_permit_bridge_contract" },
+        "version": { "const": "v1" },
+        "schema_id": {
+          "const": "mindforge://schemas/governance/bridge/policy_permit_bridge_contract.v1.json"
+        },
+        "producer_surface": { "const": "guard.audit.shadow" }
+      }
+    },
+    "permit_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "decision", "source_decision", "reasons"],
+      "properties": {
+        "mode": { "const": "explicit_opt_in" },
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "deny"]
+        },
+        "source_decision": {
+          "type": "string",
+          "enum": ["would_allow", "would_review", "would_deny", "insufficient_signal"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "message"],
+            "properties": {
+              "kind": { "type": "string", "minLength": 1 },
+              "message": { "type": "string", "minLength": 1 },
+              "rule_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic": { "const": true }
+  }
+}
