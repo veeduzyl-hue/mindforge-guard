@@ -9,3 +9,15 @@ export {
   validatePermitGateResult,
   assertValidPermitGateResult,
 } from "./permitGate.mjs";
+export {
+  GOVERNANCE_RECEIPT_KIND,
+  GOVERNANCE_RECEIPT_VERSION,
+  GOVERNANCE_RECEIPT_SCHEMA_ID,
+  GOVERNANCE_RECEIPT_EMITTER_SURFACE,
+  GOVERNANCE_RECEIPT_CONSUMER_SURFACE,
+  GOVERNANCE_RECEIPT_EMISSION_MODE,
+  GOVERNANCE_RECEIPT_RESULT_BOUNDARY,
+  buildGovernanceReceipt,
+  validateGovernanceReceipt,
+  assertValidGovernanceReceipt,
+} from "./governanceReceipt.mjs";

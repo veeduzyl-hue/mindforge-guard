@@ -11,7 +11,9 @@ import {
   PERMIT_GATE_MODE,
   PERMIT_GATE_CONSUMER_SURFACE,
   PERMIT_GATE_DENIED_EXIT_CODE,
+  GOVERNANCE_RECEIPT_KIND,
   validatePermitGateResult,
+  validateGovernanceReceipt,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 
 function clone(value) {
@@ -66,8 +68,10 @@ function denyPolicy() {
 const tmp = os.tmpdir();
 const allowOut = path.join(tmp, "mindforge-guard-permit-gate-allow.json");
 const denyOut = path.join(tmp, "mindforge-guard-permit-gate-deny.json");
+const allowReceiptOut = path.join(tmp, "mindforge-guard-permit-gate-allow-receipt.json");
+const denyReceiptOut = path.join(tmp, "mindforge-guard-permit-gate-deny-receipt.json");
 
-for (const filePath of [allowOut, denyOut]) {
+for (const filePath of [allowOut, denyOut, allowReceiptOut, denyReceiptOut]) {
   try {
     fs.unlinkSync(filePath);
   } catch {}
@@ -79,12 +83,24 @@ const baseline = await runAudit({
 });
 
 const allow = await runAudit({
-  argv: [".", "--staged", "--permit-gate", `--permit-gate-out=${allowOut}`],
+  argv: [
+    ".",
+    "--staged",
+    "--permit-gate",
+    `--permit-gate-out=${allowOut}`,
+    `--governance-receipt-out=${allowReceiptOut}`,
+  ],
   policy: basePolicy(),
 });
 
 const deny = await runAudit({
-  argv: [".", "--staged", "--permit-gate", `--permit-gate-out=${denyOut}`],
+  argv: [
+    ".",
+    "--staged",
+    "--permit-gate",
+    `--permit-gate-out=${denyOut}`,
+    `--governance-receipt-out=${denyReceiptOut}`,
+  ],
   policy: denyPolicy(),
 });
 
@@ -111,11 +127,26 @@ if (deny.exitCode !== PERMIT_GATE_DENIED_EXIT_CODE) {
 
 const allowArtifact = readJson(allowOut);
 const denyArtifact = readJson(denyOut);
+const allowReceipt = readJson(allowReceiptOut);
+const denyReceipt = readJson(denyReceiptOut);
 
 for (const artifact of [allowArtifact, denyArtifact]) {
   const validation = validatePermitGateResult(artifact);
   if (!validation.ok) {
     throw new Error(`permit gate validation failed: ${validation.errors.join("; ")}`);
+  }
+}
+
+for (const receipt of [allowReceipt, denyReceipt]) {
+  const validation = validateGovernanceReceipt(receipt);
+  if (!validation.ok) {
+    throw new Error(`governance receipt validation failed: ${validation.errors.join("; ")}`);
+  }
+  if (receipt.kind !== GOVERNANCE_RECEIPT_KIND) {
+    throw new Error("permit gate receipt kind mismatch");
+  }
+  if (receipt.governance_receipt.audit_output_preserved !== true) {
+    throw new Error("permit gate receipt must preserve audit output semantics");
   }
 }
 
@@ -176,7 +207,14 @@ execFileSync("git", ["commit", "-m", "init"], { cwd: denyRepo, stdio: "ignore" }
 
 const denyRunGuard = spawnSync(
   process.execPath,
-  [path.join(process.cwd(), "packages/guard/src/runGuard.mjs"), "audit", ".", "--staged", "--permit-gate"],
+  [
+    path.join(process.cwd(), "packages/guard/src/runGuard.mjs"),
+    "audit",
+    ".",
+    "--staged",
+    "--permit-gate",
+    `--governance-receipt-out=${path.join(denyRepo, "deny-receipt.json")}`,
+  ],
   {
     cwd: denyRepo,
     encoding: "utf8",
@@ -196,6 +234,17 @@ if (denyStdout?.permit_gate?.decision !== "deny") {
 }
 if (denyStdout?.permit_gate?.audit_output_preserved !== true) {
   throw new Error("runGuard deny path should keep audit output boundary preserved");
+}
+
+const denyRunGuardReceipt = readJson(path.join(denyRepo, "deny-receipt.json"));
+if (denyRunGuardReceipt.kind !== GOVERNANCE_RECEIPT_KIND) {
+  throw new Error("runGuard deny path should write governance receipt");
+}
+if (denyRunGuardReceipt.governance_receipt.outcome !== "deny") {
+  throw new Error("runGuard deny path receipt should emit deny outcome");
+}
+if (denyRunGuardReceipt.governance_receipt.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
+  throw new Error("runGuard deny path receipt exit code mismatch");
 }
 
 process.stdout.write("audit permit gate verified\n");
