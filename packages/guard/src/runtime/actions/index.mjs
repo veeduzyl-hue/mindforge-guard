@@ -3,11 +3,6 @@ export { BUILTIN_ACTIONS } from "./registry.mjs";
 export { hashAction } from "./hashAction.mjs";
 export { buildCanonicalActionArtifactFromAudit } from "./fromAudit.mjs";
 export {
-  buildPolicyPermitBridgeContract,
-  validatePolicyPermitBridgeContract,
-  assertValidPolicyPermitBridgeContract,
-} from "./policyPermitBridge.mjs";
-export {
   buildEnforcementAdjacentDecisionRecord,
   validateEnforcementAdjacentDecisionRecord,
   assertValidEnforcementAdjacentDecisionRecord,

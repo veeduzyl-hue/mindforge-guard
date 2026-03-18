@@ -31,14 +31,16 @@ import { collectDriftEvent } from "./runtime/drift/collector.mjs";
 // v0.26 NEW: Drift Snapshot Builder (Pro-only context block)
 import { buildDriftStatus } from "./runtime/drift/status.mjs";
 import {
-  buildCanonicalActionArtifactFromAudit,
   buildPolicyPermitBridgeContract,
+  assertValidPolicyPermitBridgeContract,
+} from "./runtime/governance/bridge/policyPermitBridge.mjs";
+import {
+  buildCanonicalActionArtifactFromAudit,
   buildEnforcementAdjacentDecisionRecord,
   buildExecutionBridgePreview,
   buildExecutionReadinessJudgment,
   buildCanonicalActionPolicyPreview,
   buildPermitPrecheckPreview,
-  assertValidPolicyPermitBridgeContract,
   assertValidEnforcementAdjacentDecisionRecord,
   assertValidExecutionBridgePreview,
   assertValidExecutionReadinessJudgment,
