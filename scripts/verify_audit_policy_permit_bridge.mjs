@@ -11,8 +11,8 @@ import {
   validateExecutionBridgePreview,
   validateExecutionReadinessJudgment,
   validateEnforcementAdjacentDecisionRecord,
-  validatePolicyPermitBridgeContract,
 } from "../packages/guard/src/runtime/actions/index.mjs";
+import { validatePolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/policyPermitBridge.mjs";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
