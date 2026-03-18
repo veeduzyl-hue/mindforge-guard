@@ -54,6 +54,44 @@ export const GOVERNANCE_APPLICATION_RECORD_SOURCE = "permit_gate";
 export const GOVERNANCE_APPLICATION_RECORD_BOUNDARY = "parallel_artifact";
 export const GOVERNANCE_APPLICATION_RECORD_EMITTER_SURFACE = "guard.audit";
 
+function assertLinkageConsistency(gateResult, receipt, decisionRecord, outcomeBundle) {
+  if (receipt) {
+    if (receipt.governance_receipt.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance application record receipt linkage requires matching outcome");
+    }
+    if (receipt.governance_receipt.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error("governance application record receipt linkage requires matching exit codes");
+    }
+  }
+
+  if (decisionRecord) {
+    if (decisionRecord.governance_decision.outcome !== gateResult.permit_gate.decision) {
+      throw new Error("governance application record decision record linkage requires matching outcome");
+    }
+    if (decisionRecord.governance_decision.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error(
+        "governance application record decision record linkage requires matching exit codes"
+      );
+    }
+  }
+
+  if (outcomeBundle) {
+    if (outcomeBundle.permit_gate_result.decision !== gateResult.permit_gate.decision) {
+      throw new Error("governance application record outcome bundle linkage requires matching decision");
+    }
+    if (outcomeBundle.permit_gate_result.source_decision !== gateResult.permit_gate.source_decision) {
+      throw new Error(
+        "governance application record outcome bundle linkage requires matching source decision"
+      );
+    }
+    if (outcomeBundle.bundle.exit_code !== gateResult.permit_gate.exit_code) {
+      throw new Error(
+        "governance application record outcome bundle linkage requires matching exit codes"
+      );
+    }
+  }
+}
+
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -156,6 +194,7 @@ export function buildGovernanceApplicationRecord({
       "governance application record outcome bundle linkage requires matching canonical action hashes"
     );
   }
+  assertLinkageConsistency(gateResult, receipt, decisionRecord, outcomeBundle);
 
   const record = {
     kind: GOVERNANCE_APPLICATION_RECORD_KIND,
