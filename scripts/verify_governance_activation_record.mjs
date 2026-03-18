@@ -186,6 +186,10 @@ if (deny.exitCode !== PERMIT_GATE_DENIED_EXIT_CODE) {
 const allowRecord = readJson(allowOut);
 const allowLinkedRecord = readJson(allowLinkedOut);
 const denyRecord = readJson(denyOut);
+const allowReceipt = readJson(allowReceiptOut);
+const allowDecisionRecord = readJson(allowDecisionOut);
+const allowOutcomeBundle = readJson(allowBundleOut);
+const allowApplicationRecord = readJson(allowApplicationOut);
 const allowDisposition = readJson(allowDispositionOut);
 
 for (const record of [allowRecord, allowLinkedRecord, denyRecord]) {
@@ -256,6 +260,49 @@ for (const key of [
   }
 }
 
+for (const artifact of [
+  allowReceipt,
+  allowDecisionRecord,
+  allowOutcomeBundle,
+  allowApplicationRecord,
+  allowDisposition,
+]) {
+  if (allowLinkedRecord.canonical_action_hash !== artifact.canonical_action_hash) {
+    throw new Error("activation record linked artifacts must preserve canonical action identity");
+  }
+}
+
+if (
+  allowLinkedRecord.governance_receipt_linkage.consumer_surface !==
+  allowReceipt.governance_receipt.consumer_surface
+) {
+  throw new Error("activation record receipt linkage consumer surface mismatch");
+}
+if (
+  allowLinkedRecord.governance_decision_record_linkage.consumer_surface !==
+  allowDecisionRecord.governance_decision.consumer_surface
+) {
+  throw new Error("activation record decision record linkage consumer surface mismatch");
+}
+if (
+  allowLinkedRecord.governance_application_record_linkage.consumer_surface !==
+  allowApplicationRecord.governance_application.consumer_surface
+) {
+  throw new Error("activation record application linkage consumer surface mismatch");
+}
+if (
+  allowLinkedRecord.governance_application_record_linkage.applied_source !==
+  allowApplicationRecord.governance_application.applied_source
+) {
+  throw new Error("activation record application linkage applied source mismatch");
+}
+if (
+  allowLinkedRecord.governance_outcome_bundle_linkage.consumer_surface !==
+  allowOutcomeBundle.bundle.consumer_surface
+) {
+  throw new Error("activation record outcome bundle linkage consumer surface mismatch");
+}
+
 if (!allowRecord.governance_activation.enabled_governance_paths.includes("permit_gate")) {
   throw new Error("activation record should always include permit_gate in enabled paths");
 }
@@ -289,6 +336,9 @@ if (allowLinkedRecord.canonical_action_hash !== allowDisposition.canonical_actio
 if (allowRecord.governance_activation.outcome !== "allow") {
   throw new Error("activation record allow path did not produce allow outcome");
 }
+if (allowRecord.governance_activation.enabled_governance_paths[0] !== "permit_gate") {
+  throw new Error("activation record should keep permit_gate as the first enabled path");
+}
 if (allowRecord.permit_gate_result.decision !== "allow") {
   throw new Error("activation record allow path permit linkage mismatch");
 }
@@ -301,6 +351,9 @@ if (denyRecord.governance_activation.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE)
 }
 if (denyRecord.permit_gate_result.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
   throw new Error("activation record deny path permit linkage exit code mismatch");
+}
+if (denyRecord.governance_activation.audit_output_preserved !== true) {
+  throw new Error("activation record deny path must preserve audit output semantics");
 }
 
 process.stdout.write("governance activation record verified\n");
