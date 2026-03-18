@@ -10,6 +10,7 @@ import {
   GOVERNANCE_OUTCOME_BUNDLE_MODE,
   GOVERNANCE_OUTCOME_BUNDLE_BOUNDARY,
   GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE,
+  GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE,
   GOVERNANCE_OUTCOME_BUNDLE_EMITTER_SURFACE,
   validateGovernanceOutcomeBundle,
   PERMIT_GATE_DENIED_EXIT_CODE,
@@ -86,6 +87,15 @@ const missingFlag = await runAudit({
 
 if (!String(missingFlag?.message || "").includes("governance outcome bundle output requires --permit-gate")) {
   throw new Error("governance outcome bundle should require --permit-gate");
+}
+
+const missingPath = await runAudit({
+  argv: [".", "--staged", "--permit-gate", "--governance-outcome-bundle-out"],
+  policy: basePolicy(),
+});
+
+if (!String(missingPath?.message || "").includes("governance outcome bundle output requires a file path")) {
+  throw new Error("governance outcome bundle should fail closed for missing output paths");
 }
 
 const invalidOut = await runAudit({
@@ -181,6 +191,9 @@ for (const bundle of [allowBundle, allowLinkedBundle, denyBundle]) {
   if (bundle.bundle.consumer_surface !== GOVERNANCE_OUTCOME_BUNDLE_CONSUMER_SURFACE) {
     throw new Error("governance outcome bundle consumer surface mismatch");
   }
+  if (bundle.bundle.producer_surface !== GOVERNANCE_OUTCOME_BUNDLE_PRODUCER_SURFACE) {
+    throw new Error("governance outcome bundle producer surface mismatch");
+  }
   if (bundle.bundle.audit_output_preserved !== true) {
     throw new Error("governance outcome bundle must preserve audit output semantics");
   }
@@ -202,15 +215,30 @@ if (!("governance_receipt_linkage" in allowLinkedBundle)) {
 if (!("governance_decision_record_linkage" in allowLinkedBundle)) {
   throw new Error("outcome bundle should include decision linkage when decision record was emitted");
 }
+if (allowLinkedBundle.governance_receipt_linkage.producer_surface !== "guard.audit") {
+  throw new Error("outcome bundle receipt linkage producer surface mismatch");
+}
+if (allowLinkedBundle.governance_decision_record_linkage.producer_surface !== "guard.audit") {
+  throw new Error("outcome bundle decision linkage producer surface mismatch");
+}
+if (allowLinkedBundle.governance_decision_record_linkage.decision_source !== "permit_gate") {
+  throw new Error("outcome bundle decision linkage source mismatch");
+}
 
 if (allowBundle.permit_gate_result.decision !== "allow") {
   throw new Error("outcome bundle allow path permit linkage mismatch");
+}
+if (allowBundle.permit_gate_result.audit_output_preserved !== true) {
+  throw new Error("outcome bundle allow path must preserve audit output semantics");
 }
 if (allowBundle.bundle.exit_code !== 0) {
   throw new Error("outcome bundle allow path exit code mismatch");
 }
 if (denyBundle.permit_gate_result.decision !== "deny") {
   throw new Error("outcome bundle deny path permit linkage mismatch");
+}
+if (denyBundle.permit_gate_result.audit_output_preserved !== true) {
+  throw new Error("outcome bundle deny path must preserve audit output semantics");
 }
 if (denyBundle.bundle.exit_code !== PERMIT_GATE_DENIED_EXIT_CODE) {
   throw new Error("outcome bundle deny path exit code mismatch");
