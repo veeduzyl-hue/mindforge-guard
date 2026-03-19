@@ -15,6 +15,12 @@ export const GOVERNANCE_CONSUMPTION_PROFILE_STABILITY = GOVERNANCE_SURFACE_STABI
 export const GOVERNANCE_CONSUMPTION_REQUIRED = "required";
 export const GOVERNANCE_CONSUMPTION_OPTIONAL = "optional";
 export const GOVERNANCE_CONSUMPTION_SUPPORT_ONLY = "support_only";
+export const GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS = Object.freeze([
+  GOVERNANCE_CONSUMPTION_REQUIRED,
+  GOVERNANCE_CONSUMPTION_OPTIONAL,
+  GOVERNANCE_CONSUMPTION_SUPPORT_ONLY,
+]);
+export const GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER = GOVERNANCE_SURFACE_ARTIFACT_ORDER;
 
 export const GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS = Object.freeze([
   "permit_gate_result",
@@ -30,6 +36,10 @@ export const GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS = Object.freeze([
 
 export const GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS = Object.freeze([
   "governance_receipt",
+]);
+export const GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS = Object.freeze([
+  ...GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS,
+  ...GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS,
 ]);
 
 function freezeEntry(entry) {
@@ -115,9 +125,12 @@ export const GOVERNANCE_CONSUMPTION_STABLE_EXPORT_SET = Object.freeze([
   "GOVERNANCE_CONSUMPTION_REQUIRED",
   "GOVERNANCE_CONSUMPTION_OPTIONAL",
   "GOVERNANCE_CONSUMPTION_SUPPORT_ONLY",
+  "GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS",
+  "GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER",
   "GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS",
   "GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS",
   "GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS",
+  "GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS",
   "GOVERNANCE_CONSUMPTION_ARTIFACT_IDS",
   "GOVERNANCE_CONSUMPTION_STABLE_EXPORT_SET",
   "GOVERNANCE_CONSUMPTION_PROFILE",
@@ -142,12 +155,65 @@ export function validateGovernanceConsumptionProfile() {
   const requiredSet = new Set(GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS);
   const optionalSet = new Set(GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS);
   const supportOnlySet = new Set(GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS);
-  const orderedIds = new Map(GOVERNANCE_SURFACE_ARTIFACT_ORDER.map((artifactId, index) => [artifactId, index]));
+  const consumerSafeSet = new Set(GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS);
+  const orderedIds = new Map(
+    GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER.map((artifactId, index) => [artifactId, index])
+  );
 
   assertValidGovernanceSurfaceMap();
 
   if (GOVERNANCE_SURFACE_VERSION !== "v1") {
     errors.push(`governance consumption profile requires governance surface v1`);
+  }
+  if (JSON.stringify(GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER) !== JSON.stringify(GOVERNANCE_SURFACE_ARTIFACT_ORDER)) {
+    errors.push("governance consumption artifact order drifted from governance surface");
+  }
+  if (
+    JSON.stringify(GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS) !==
+    JSON.stringify([
+      GOVERNANCE_CONSUMPTION_REQUIRED,
+      GOVERNANCE_CONSUMPTION_OPTIONAL,
+      GOVERNANCE_CONSUMPTION_SUPPORT_ONLY,
+    ])
+  ) {
+    errors.push("governance consumption requirement levels drifted");
+  }
+  if (new Set(GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS).size !== GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS.length) {
+    errors.push("governance consumption required artifacts contain duplicates");
+  }
+  if (new Set(GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS).size !== GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS.length) {
+    errors.push("governance consumption optional artifacts contain duplicates");
+  }
+  if (
+    new Set(GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS).size !==
+    GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS.length
+  ) {
+    errors.push("governance consumption support-only artifacts contain duplicates");
+  }
+  if (
+    new Set(GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS).size !==
+    GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS.length
+  ) {
+    errors.push("governance consumption consumer-safe artifacts contain duplicates");
+  }
+
+  for (const artifactId of GOVERNANCE_CONSUMPTION_ARTIFACT_IDS) {
+    if (!orderedIds.has(artifactId)) {
+      errors.push(`governance consumption artifact order is missing ${artifactId}`);
+    }
+  }
+
+  for (const profileList of [
+    GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS,
+    GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS,
+    GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS,
+  ]) {
+    for (let index = 1; index < profileList.length; index += 1) {
+      if (orderedIds.get(profileList[index - 1]) > orderedIds.get(profileList[index])) {
+        errors.push("governance consumption artifact classification order drifted");
+        break;
+      }
+    }
   }
 
   for (const artifactId of GOVERNANCE_CONSUMPTION_ARTIFACT_IDS) {
@@ -160,11 +226,12 @@ export function validateGovernanceConsumptionProfile() {
       errors.push(`governance consumption entry ${artifactId} has invalid stability`);
     }
     if (![
-      GOVERNANCE_CONSUMPTION_REQUIRED,
-      GOVERNANCE_CONSUMPTION_OPTIONAL,
-      GOVERNANCE_CONSUMPTION_SUPPORT_ONLY,
+      ...GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS,
     ].includes(entry.requirement)) {
       errors.push(`governance consumption entry ${artifactId} has invalid requirement`);
+    }
+    if (typeof entry.consumer_safe !== "boolean") {
+      errors.push(`governance consumption entry ${artifactId} must declare consumer_safe boolean`);
     }
     if (!Array.isArray(entry.consumer_safe_linkage_targets)) {
       errors.push(`governance consumption entry ${artifactId} must declare linkage targets`);
@@ -188,6 +255,9 @@ export function validateGovernanceConsumptionProfile() {
     }
     if (inSupportOnly && entry.requirement !== GOVERNANCE_CONSUMPTION_SUPPORT_ONLY) {
       errors.push(`governance consumption artifact ${artifactId} support-only profile drifted`);
+    }
+    if (entry.consumer_safe !== consumerSafeSet.has(artifactId)) {
+      errors.push(`governance consumption artifact ${artifactId} consumer-safe classification drifted`);
     }
 
     const surfaceEntry = GOVERNANCE_SURFACE_MAP[artifactId];
@@ -234,6 +304,15 @@ export function validateGovernanceConsumptionProfile() {
   ]);
   if (covered.size !== GOVERNANCE_CONSUMPTION_ARTIFACT_IDS.length) {
     errors.push("governance consumption profile must cover all governance artifacts exactly once");
+  }
+  if (
+    JSON.stringify(GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS) !==
+    JSON.stringify([
+      ...GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS,
+      ...GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS,
+    ])
+  ) {
+    errors.push("governance consumption consumer-safe artifact set drifted");
   }
 
   return {
