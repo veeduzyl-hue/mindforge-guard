@@ -11,6 +11,8 @@ import {
   SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS,
   loadSecondConsumerPilotInputs,
   buildSecondConsumerPilotSummary,
+  renderSecondConsumerPilotSummary,
+  getSecondConsumerPilotSummaryHash,
 } from "./runtime/governance/permit/index.mjs";
 
 function renderHelp() {
@@ -38,11 +40,39 @@ function renderHelp() {
     `Required artifacts: ${SECOND_CONSUMER_PILOT_REQUIRED_INPUTS.join(", ")}`,
     `Optional artifacts: ${SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS.join(", ")}`,
     `Audit-bound exclusions: ${SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS.join(", ")}`,
+    "Output encoding: utf8",
+    "Output mode: atomic_replace",
+    "Replay safety: same_inputs_same_summary",
   ].join("\n");
 }
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function writeFileAtomic(filePath, content) {
+  const dirPath = path.dirname(filePath);
+  ensureDir(dirPath);
+
+  const tempPath = path.join(
+    dirPath,
+    `.second-consumer-pilot-${process.pid}-${Date.now()}-${Math.random()
+      .toString(16)
+      .slice(2)}.tmp`
+  );
+  fs.writeFileSync(tempPath, content, "utf8");
+  try {
+    fs.renameSync(tempPath, filePath);
+  } catch {
+    try {
+      fs.rmSync(filePath, { force: true });
+    } catch {}
+    fs.renameSync(tempPath, filePath);
+  } finally {
+    try {
+      fs.rmSync(tempPath, { force: true });
+    } catch {}
+  }
 }
 
 function parseArgs(argv) {
@@ -116,11 +146,11 @@ export async function runSecondConsumerPilot({
 
     const inputs = loadSecondConsumerPilotInputs(args);
     const summary = buildSecondConsumerPilotSummary(inputs);
-    const output = `${JSON.stringify(summary, null, args.pretty ? 2 : 0)}\n`;
+    const output = renderSecondConsumerPilotSummary(summary, { pretty: args.pretty });
+    const summaryHash = getSecondConsumerPilotSummaryHash(summary, { pretty: args.pretty });
 
     if (args.out) {
-      ensureDir(path.dirname(args.out));
-      fs.writeFileSync(args.out, output, "utf8");
+      writeFileAtomic(args.out, output);
     } else if (stdout) {
       stdout.write(output);
     }
@@ -128,6 +158,7 @@ export async function runSecondConsumerPilot({
     return {
       exitCode: 0,
       summary,
+      summaryHash,
       stdout: args.out ? "" : output,
     };
   } catch (error) {

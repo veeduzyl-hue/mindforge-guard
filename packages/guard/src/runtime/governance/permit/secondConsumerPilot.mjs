@@ -36,6 +36,8 @@ import {
   SECOND_CONSUMER_CONTRACT_EXCLUDED_INPUTS,
   assertValidSecondConsumerContract,
   assertValidSecondConsumerSummary,
+  serializeSecondConsumerSummary,
+  computeSecondConsumerSummaryHash,
 } from "./secondConsumerContract.mjs";
 
 export const SECOND_CONSUMER_PILOT_ID = SECOND_CONSUMER_CONTRACT_ID;
@@ -269,4 +271,12 @@ export function buildSecondConsumerPilotSummary(inputs) {
   };
 
   return assertValidSecondConsumerSummary(summary);
+}
+
+export function renderSecondConsumerPilotSummary(summary, { pretty = false } = {}) {
+  return serializeSecondConsumerSummary(summary, { pretty });
+}
+
+export function getSecondConsumerPilotSummaryHash(summary, { pretty = false } = {}) {
+  return computeSecondConsumerSummaryHash(summary, { pretty });
 }
