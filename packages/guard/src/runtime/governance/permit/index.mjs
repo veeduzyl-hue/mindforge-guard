@@ -153,3 +153,13 @@ export {
   validateSecondConsumerReadinessProfile,
   assertValidSecondConsumerReadinessProfile,
 } from "./readiness.mjs";
+export {
+  SECOND_CONSUMER_PILOT_ID,
+  SECOND_CONSUMER_PILOT_SURFACE,
+  SECOND_CONSUMER_PILOT_MODE,
+  SECOND_CONSUMER_PILOT_REQUIRED_INPUTS,
+  SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS,
+  SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS,
+  loadSecondConsumerPilotInputs,
+  buildSecondConsumerPilotSummary,
+} from "./secondConsumerPilot.mjs";
