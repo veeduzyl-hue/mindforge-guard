@@ -40,6 +40,7 @@ import {
   PERMIT_GATE_DENIED_EXIT_CODE,
   buildEnforcementPilotResult,
   assertValidEnforcementPilotResult,
+  serializeEnforcementPilotResult,
   buildGovernanceReceipt,
   assertValidGovernanceReceipt,
   buildGovernanceDecisionRecord,
@@ -970,10 +971,7 @@ export async function runAudit({ argv, policy }) {
         );
         if (enforcementPilot.out) {
           const enforcementPilotOutPath = path.resolve(process.cwd(), enforcementPilot.out);
-          writeFile(
-            enforcementPilotOutPath,
-            JSON.stringify(enforcementPilotResult, null, 2)
-          );
+          writeFile(enforcementPilotOutPath, serializeEnforcementPilotResult(enforcementPilotResult, { pretty: true }));
         }
       }
 
