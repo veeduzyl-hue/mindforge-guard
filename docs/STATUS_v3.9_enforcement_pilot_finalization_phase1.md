@@ -38,3 +38,9 @@ This phase is a finalization pass over the stabilized stronger-enforcement pilot
 - finalized acceptance boundary is explicitly frozen
 - finalized export boundary is explicitly frozen
 - completion gates are explicitly frozen
+
+## Boundary State
+
+- finalized pilot contract is now anchored as explicit opt-in, default-off, and non-authoritative
+- finalized export set extends the stabilization export base without removing or renaming prior exports
+- finalized validators remain non-authority completion checks rather than authority or takeover gates
