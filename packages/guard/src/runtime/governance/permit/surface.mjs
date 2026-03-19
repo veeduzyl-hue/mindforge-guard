@@ -74,6 +74,20 @@ export const GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER = "external_consumer_surf
 export const GOVERNANCE_SURFACE_INTERNAL_SUPPORT_TIER = "internal_support_surface";
 export const GOVERNANCE_SURFACE_RUNTIME_ONLY_TIER = "runtime_only_support";
 export const GOVERNANCE_SURFACE_STABILITY = "stable";
+export const GOVERNANCE_SURFACE_TIERS = Object.freeze([
+  GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER,
+  GOVERNANCE_SURFACE_INTERNAL_SUPPORT_TIER,
+  GOVERNANCE_SURFACE_RUNTIME_ONLY_TIER,
+]);
+export const GOVERNANCE_SURFACE_ARTIFACT_ORDER = Object.freeze([
+  "permit_gate_result",
+  "governance_receipt",
+  "governance_decision_record",
+  "governance_outcome_bundle",
+  "governance_application_record",
+  "governance_disposition",
+  "governance_activation_record",
+]);
 
 export const GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS = Object.freeze([
   "permit_gate_result",
@@ -290,9 +304,7 @@ export const GOVERNANCE_SURFACE_MAP = Object.freeze({
   }),
 });
 
-export const GOVERNANCE_SURFACE_ARTIFACT_IDS = Object.freeze(
-  Object.keys(GOVERNANCE_SURFACE_MAP)
-);
+export const GOVERNANCE_SURFACE_ARTIFACT_IDS = GOVERNANCE_SURFACE_ARTIFACT_ORDER;
 
 export const GOVERNANCE_SURFACE_STABLE_EXPORT_SET = Object.freeze([
   ...new Set(
@@ -308,6 +320,8 @@ export const GOVERNANCE_SURFACE_META_EXPORTS = Object.freeze([
   "GOVERNANCE_SURFACE_INTERNAL_SUPPORT_TIER",
   "GOVERNANCE_SURFACE_RUNTIME_ONLY_TIER",
   "GOVERNANCE_SURFACE_STABILITY",
+  "GOVERNANCE_SURFACE_TIERS",
+  "GOVERNANCE_SURFACE_ARTIFACT_ORDER",
   "GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS",
   "GOVERNANCE_INTERNAL_SUPPORT_ARTIFACTS",
   "GOVERNANCE_RUNTIME_ONLY_SUPPORT_ARTIFACTS",
@@ -333,6 +347,8 @@ export function validateGovernanceSurfaceMap() {
   const errors = [];
   const artifactIds = new Set(GOVERNANCE_SURFACE_ARTIFACT_IDS);
   const seen = new Set();
+  const stableExportSet = new Set(GOVERNANCE_SURFACE_STABLE_EXPORT_SET);
+  const metaExportSet = new Set(GOVERNANCE_SURFACE_META_EXPORTS);
 
   for (const tierList of [
     GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS,
@@ -356,8 +372,49 @@ export function validateGovernanceSurfaceMap() {
       errors.push(`governance surface entry mismatch for ${artifactId}`);
       continue;
     }
+    if (!GOVERNANCE_SURFACE_TIERS.includes(entry.tier)) {
+      errors.push(`governance surface entry ${artifactId} has invalid tier ${entry.tier}`);
+    }
+    if (entry.stability !== GOVERNANCE_SURFACE_STABILITY) {
+      errors.push(`governance surface entry ${artifactId} has invalid stability ${entry.stability}`);
+    }
+    if (typeof entry.consumer_surface !== "string" || entry.consumer_surface.length === 0) {
+      errors.push(`governance surface entry ${artifactId} must declare consumer surface`);
+    }
+    if (typeof entry.boundary !== "string" || entry.boundary.length === 0) {
+      errors.push(`governance surface entry ${artifactId} must declare boundary`);
+    }
+    if (!entry.contract?.kind || !entry.contract?.version || !entry.contract?.schema_id) {
+      errors.push(`governance surface entry ${artifactId} must declare contract identity`);
+    }
     if (!Array.isArray(entry.stable_exports) || entry.stable_exports.length === 0) {
       errors.push(`governance surface entry ${artifactId} must declare stable exports`);
+      continue;
+    }
+    if (new Set(entry.stable_exports).size !== entry.stable_exports.length) {
+      errors.push(`governance surface entry ${artifactId} contains duplicate stable exports`);
+    }
+    for (const exportName of entry.stable_exports) {
+      if (!stableExportSet.has(exportName)) {
+        errors.push(
+          `governance surface entry ${artifactId} stable export ${exportName} is missing from stable export set`
+        );
+      }
+      if (metaExportSet.has(exportName)) {
+        errors.push(
+          `governance surface entry ${artifactId} stable export ${exportName} overlaps with meta exports`
+        );
+      }
+    }
+  }
+
+  if (seen.size !== GOVERNANCE_SURFACE_ARTIFACT_IDS.length) {
+    errors.push("governance surface tier assignment must cover all declared artifacts exactly once");
+  }
+
+  for (const exportName of GOVERNANCE_SURFACE_META_EXPORTS) {
+    if (stableExportSet.has(exportName)) {
+      errors.push(`governance surface meta export ${exportName} overlaps with stable export set`);
     }
   }
 
