@@ -37,3 +37,9 @@ This phase is a stabilization pass over the promoted stronger-enforcement pilot 
 - stabilized pilot remains non-authoritative on the audit path
 - stabilized acceptance boundary is explicitly frozen
 - stabilized export boundary is explicitly frozen
+
+## Boundary State
+
+- stabilized pilot contract is now anchored as explicit opt-in, default-off, and non-authoritative
+- stabilized export set extends the promoted export base without removing or renaming prior exports
+- stabilized validators remain pilot-only compatibility checks rather than authority or takeover gates
