@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+import {
+  SECOND_CONSUMER_PILOT_SURFACE,
+  SECOND_CONSUMER_PILOT_MODE,
+  SECOND_CONSUMER_PILOT_REQUIRED_INPUTS,
+  SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS,
+  SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS,
+  loadSecondConsumerPilotInputs,
+  buildSecondConsumerPilotSummary,
+} from "./runtime/governance/permit/index.mjs";
+
+function renderHelp() {
+  return [
+    "MindForge Guard - Second Consumer Pilot",
+    "",
+    "Usage:",
+    "  node packages/guard/src/runSecondConsumerPilot.mjs [options]",
+    "",
+    "Required:",
+    "  --permit-gate-result-in <file>",
+    "  --governance-decision-record-in <file>",
+    "  --governance-activation-record-in <file>",
+    "",
+    "Optional:",
+    "  --governance-outcome-bundle-in <file>",
+    "  --governance-application-record-in <file>",
+    "  --governance-disposition-in <file>",
+    "  --out <file>",
+    "  --pretty",
+    "  --help",
+    "",
+    `Pilot surface: ${SECOND_CONSUMER_PILOT_SURFACE}`,
+    `Pilot mode: ${SECOND_CONSUMER_PILOT_MODE}`,
+    `Required artifacts: ${SECOND_CONSUMER_PILOT_REQUIRED_INPUTS.join(", ")}`,
+    `Optional artifacts: ${SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS.join(", ")}`,
+    `Audit-bound exclusions: ${SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS.join(", ")}`,
+  ].join("\n");
+}
+
+function ensureDir(dirPath) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function parseArgs(argv) {
+  const args = {
+    pretty: false,
+    out: null,
+    permitGateResultPath: null,
+    governanceDecisionRecordPath: null,
+    governanceActivationRecordPath: null,
+    governanceOutcomeBundlePath: null,
+    governanceApplicationRecordPath: null,
+    governanceDispositionPath: null,
+    governanceReceiptPath: null,
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    const next = argv[index + 1];
+
+    if (token === "--help" || token === "-h") {
+      args.help = true;
+      continue;
+    }
+    if (token === "--pretty") {
+      args.pretty = true;
+      continue;
+    }
+
+    if (token === "--out") {
+      if (!next || next.startsWith("--")) throw new Error("--out requires a file path");
+      args.out = next;
+      index += 1;
+      continue;
+    }
+
+    const mapping = {
+      "--permit-gate-result-in": "permitGateResultPath",
+      "--governance-decision-record-in": "governanceDecisionRecordPath",
+      "--governance-activation-record-in": "governanceActivationRecordPath",
+      "--governance-outcome-bundle-in": "governanceOutcomeBundlePath",
+      "--governance-application-record-in": "governanceApplicationRecordPath",
+      "--governance-disposition-in": "governanceDispositionPath",
+      "--governance-receipt-in": "governanceReceiptPath",
+    };
+
+    if (token in mapping) {
+      if (!next || next.startsWith("--")) throw new Error(`${token} requires a file path`);
+      args[mapping[token]] = next;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`unknown argument: ${token}`);
+  }
+
+  return args;
+}
+
+export async function runSecondConsumerPilot({
+  argv = process.argv.slice(2),
+  stdout = process.stdout,
+  stderr = process.stderr,
+} = {}) {
+  try {
+    const args = parseArgs(argv);
+    if (args.help) {
+      const message = `${renderHelp()}\n`;
+      if (stdout) stdout.write(message);
+      return { exitCode: 0, stdout: message };
+    }
+
+    const inputs = loadSecondConsumerPilotInputs(args);
+    const summary = buildSecondConsumerPilotSummary(inputs);
+    const output = `${JSON.stringify(summary, null, args.pretty ? 2 : 0)}\n`;
+
+    if (args.out) {
+      ensureDir(path.dirname(args.out));
+      fs.writeFileSync(args.out, output, "utf8");
+    } else if (stdout) {
+      stdout.write(output);
+    }
+
+    return {
+      exitCode: 0,
+      summary,
+      stdout: args.out ? "" : output,
+    };
+  } catch (error) {
+    const message = `${error?.message || String(error)}\n`;
+    if (stderr) stderr.write(message);
+    return {
+      exitCode: 1,
+      message: error?.message || String(error),
+      stderr: message,
+    };
+  }
+}
+
+const isMain =
+  process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
+
+if (isMain) {
+  const result = await runSecondConsumerPilot();
+  process.exitCode = result.exitCode;
+}
