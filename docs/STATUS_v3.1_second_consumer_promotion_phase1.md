@@ -25,3 +25,11 @@ Freeze the released second consumer pilot into a promoted second-consumer contra
 ## Phase Position
 
 This phase is a promotion and boundary-tightening pass over the released standalone second consumer pilot from `v3.0.0`.
+
+## Boundary Freeze
+
+- promoted second consumer contract remains standalone and non-audit
+- required, optional, and excluded input sets are explicitly frozen
+- `governance_receipt` remains audit-bound and excluded
+- second consumer output remains a runtime summary, not a governance object
+- no second main-path takeover is included in this phase
