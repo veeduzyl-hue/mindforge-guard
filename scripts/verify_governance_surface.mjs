@@ -113,7 +113,7 @@ for (const artifactId of GOVERNANCE_SURFACE_ARTIFACT_IDS) {
   }
 }
 
-if (GOVERNANCE_RUNTIME_ONLY_TIER !== "runtime_only_support") {
+if (GOVERNANCE_SURFACE_RUNTIME_ONLY_TIER !== "runtime_only_support") {
   throw new Error("governance runtime-only tier label mismatch");
 }
 
