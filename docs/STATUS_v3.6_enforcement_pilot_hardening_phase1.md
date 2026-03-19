@@ -26,3 +26,12 @@ Stabilize the explicit opt-in stronger-enforcement pilot as a release-safe, non-
 ## Phase Position
 
 Phase 1 exists only to harden the stronger-enforcement pilot boundary so it remains explicit opt-in, default-off, non-enforcing, and safe to consume as a stable sidecar.
+
+## Boundary Freeze
+
+- hardened contract remains explicit opt-in only
+- hardened contract remains default-off
+- hardened contract remains non-enforcing
+- hardened contract remains sidecar-only
+- hardened contract does not claim audit exit authority
+- audit main output and audit main verdict remain unchanged
