@@ -57,6 +57,12 @@ export const SECOND_CONSUMER_CONTRACT_OUTPUT_EOL = "\n";
 export const SECOND_CONSUMER_CONTRACT_PRETTY_INDENT = 2;
 export const SECOND_CONSUMER_CONTRACT_OUTPUT_MODE = "atomic_replace";
 export const SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY = "same_inputs_same_summary";
+export const SECOND_CONSUMER_CONTRACT_EXIT_SUCCESS = 0;
+export const SECOND_CONSUMER_CONTRACT_EXIT_FAILURE = 1;
+export const SECOND_CONSUMER_CONTRACT_HELP_EXIT = 0;
+export const SECOND_CONSUMER_CONTRACT_STDOUT_MODE = "help_or_summary";
+export const SECOND_CONSUMER_CONTRACT_STDERR_MODE = "single_line_error";
+export const SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE = "write_only_on_success";
 export const SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE = Object.freeze({
   consumer: Object.freeze(["consumer_id", "surface", "mode", "non_audit"]),
   governance: Object.freeze([
@@ -107,6 +113,12 @@ export const SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET = Object.freeze([
   "SECOND_CONSUMER_CONTRACT_PRETTY_INDENT",
   "SECOND_CONSUMER_CONTRACT_OUTPUT_MODE",
   "SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY",
+  "SECOND_CONSUMER_CONTRACT_EXIT_SUCCESS",
+  "SECOND_CONSUMER_CONTRACT_EXIT_FAILURE",
+  "SECOND_CONSUMER_CONTRACT_HELP_EXIT",
+  "SECOND_CONSUMER_CONTRACT_STDOUT_MODE",
+  "SECOND_CONSUMER_CONTRACT_STDERR_MODE",
+  "SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE",
   "SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE",
   "SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET",
   "validateSecondConsumerContract",
@@ -330,4 +342,9 @@ export function computeSecondConsumerSummaryHash(summary, { pretty = false } = {
     .createHash("sha256")
     .update(serialized, SECOND_CONSUMER_CONTRACT_OUTPUT_ENCODING)
     .digest("hex")}`;
+}
+
+export function formatSecondConsumerRuntimeError(error) {
+  const message = error?.message || String(error);
+  return `${message.replace(/[\r\n]+/g, " ").trim()}${SECOND_CONSUMER_CONTRACT_OUTPUT_EOL}`;
 }
