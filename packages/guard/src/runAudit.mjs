@@ -38,6 +38,8 @@ import {
   buildPermitGateResult,
   assertValidPermitGateResult,
   PERMIT_GATE_DENIED_EXIT_CODE,
+  buildEnforcementPilotResult,
+  assertValidEnforcementPilotResult,
   buildGovernanceReceipt,
   assertValidGovernanceReceipt,
   buildGovernanceDecisionRecord,
@@ -254,6 +256,32 @@ function readPermitGateOptions(argv) {
   };
 }
 
+function readEnforcementPilotOptions(argv) {
+  const enabled = argv.includes("--enforcement-pilot");
+  let out = null;
+  let outRequested = false;
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg.startsWith("--enforcement-pilot-out=")) {
+      outRequested = true;
+      out = arg.slice("--enforcement-pilot-out=".length);
+    } else if (arg === "--enforcement-pilot-out" && argv[i + 1]) {
+      outRequested = true;
+      out = argv[i + 1];
+      i += 1;
+    } else if (arg === "--enforcement-pilot-out") {
+      outRequested = true;
+    }
+  }
+
+  return {
+    enabled,
+    out,
+    outRequested,
+  };
+}
+
 function buildGovernanceArtifacts({ audit, effectivePolicy }) {
   const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
   const policyPreviewArtifact = assertValidCanonicalActionPolicyPreview(
@@ -386,6 +414,7 @@ export async function runAudit({ argv, policy }) {
   const args = parseArgs(argv);
   const shadow = readShadowOptions(argv);
   const permitGate = readPermitGateOptions(argv);
+  const enforcementPilot = readEnforcementPilotOptions(argv);
   const mode = args.mode === "ci" ? "ci" : "local";
 
   const head = args.head || getHeadSha();
@@ -565,6 +594,29 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "permit gate phase 1 currently supports local audit mode only",
+    };
+  }
+
+  if (enforcementPilot.enabled && mode !== "local") {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "stronger enforcement pilot phase 1 currently supports local audit mode only",
+    };
+  }
+
+  if (!enforcementPilot.enabled && enforcementPilot.out) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "stronger enforcement pilot output requires --enforcement-pilot",
+    };
+  }
+  if (enforcementPilot.outRequested && !enforcementPilot.out) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "stronger enforcement pilot output requires a file path",
     };
   }
 
@@ -832,6 +884,7 @@ export async function runAudit({ argv, policy }) {
 
   let governanceArtifacts = null;
   let permitGateResult = null;
+  let enforcementPilotResult = null;
   let governanceReceipt = null;
   let governanceDecisionRecord = null;
   let governanceOutcomeBundle = null;
@@ -839,7 +892,7 @@ export async function runAudit({ argv, policy }) {
   let governanceDisposition = null;
   let governanceActivationRecord = null;
 
-  if (shadow.emitCanonicalAction || permitGate.enabled) {
+  if (shadow.emitCanonicalAction || permitGate.enabled || enforcementPilot.enabled) {
     try {
       governanceArtifacts = buildGovernanceArtifacts({
         audit,
@@ -903,6 +956,25 @@ export async function runAudit({ argv, policy }) {
           policyPermitBridgeOutPath,
           JSON.stringify(governanceArtifacts.policyPermitBridgeArtifact, null, 2)
         );
+      }
+
+      if (enforcementPilot.enabled) {
+        enforcementPilotResult = assertValidEnforcementPilotResult(
+          buildEnforcementPilotResult({
+            audit,
+            canonicalActionArtifact: governanceArtifacts.canonicalActionArtifact,
+            executionReadinessArtifact: governanceArtifacts.executionReadinessArtifact,
+            enforcementAdjacentDecisionArtifact:
+              governanceArtifacts.enforcementAdjacentDecisionArtifact,
+          })
+        );
+        if (enforcementPilot.out) {
+          const enforcementPilotOutPath = path.resolve(process.cwd(), enforcementPilot.out);
+          writeFile(
+            enforcementPilotOutPath,
+            JSON.stringify(enforcementPilotResult, null, 2)
+          );
+        }
       }
 
       if (permitGate.enabled) {
@@ -1069,6 +1141,7 @@ export async function runAudit({ argv, policy }) {
     exitCode,
     audit,
     permitGateResult,
+    enforcementPilotResult,
     governanceReceipt,
     governanceDecisionRecord,
     governanceOutcomeBundle,
