@@ -63,6 +63,18 @@ export const SECOND_CONSUMER_CONTRACT_HELP_EXIT = 0;
 export const SECOND_CONSUMER_CONTRACT_STDOUT_MODE = "help_or_summary";
 export const SECOND_CONSUMER_CONTRACT_STDERR_MODE = "single_line_error";
 export const SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE = "write_only_on_success";
+export const SECOND_CONSUMER_CONTRACT_FINALIZATION_STAGE = "standalone_runtime_final";
+export const SECOND_CONSUMER_CONTRACT_ACCEPTANCE_BOUNDARY =
+  "stable_non_audit_standalone_runtime";
+export const SECOND_CONSUMER_CONTRACT_COMPLETION_GATES = Object.freeze([
+  "standalone_runtime_only",
+  "non_audit_only",
+  "required_optional_excluded_inputs_frozen",
+  "runtime_summary_only",
+  "summary_hash_not_identity",
+  "final_exports_frozen",
+  "runtime_exit_output_write_discipline_frozen",
+]);
 export const SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE = Object.freeze({
   consumer: Object.freeze(["consumer_id", "surface", "mode", "non_audit"]),
   governance: Object.freeze([
@@ -128,6 +140,10 @@ export const SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET = Object.freeze([
   "serializeSecondConsumerSummary",
   "computeSecondConsumerSummaryHash",
 ]);
+export const SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET = Object.freeze([
+  ...SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET,
+  "formatSecondConsumerRuntimeError",
+]);
 
 export function validateSecondConsumerContract() {
   const errors = [];
@@ -190,6 +206,18 @@ export function validateSecondConsumerContract() {
     SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET.length
   ) {
     errors.push("second consumer contract stable export set contains duplicates");
+  }
+  if (
+    new Set(SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET).size !==
+    SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET.length
+  ) {
+    errors.push("second consumer contract final export set contains duplicates");
+  }
+  if (
+    new Set(SECOND_CONSUMER_CONTRACT_COMPLETION_GATES).size !==
+    SECOND_CONSUMER_CONTRACT_COMPLETION_GATES.length
+  ) {
+    errors.push("second consumer contract completion gates contain duplicates");
   }
 
   for (const section of SECOND_CONSUMER_CONTRACT_SUMMARY_SECTIONS) {
@@ -347,4 +375,59 @@ export function computeSecondConsumerSummaryHash(summary, { pretty = false } = {
 export function formatSecondConsumerRuntimeError(error) {
   const message = error?.message || String(error);
   return `${message.replace(/[\r\n]+/g, " ").trim()}${SECOND_CONSUMER_CONTRACT_OUTPUT_EOL}`;
+}
+
+export function validateSecondConsumerFinalization() {
+  const errors = [];
+  const contractValidation = validateSecondConsumerContract();
+
+  if (!contractValidation.ok) {
+    errors.push(...contractValidation.errors);
+  }
+  if (SECOND_CONSUMER_CONTRACT_FINALIZATION_STAGE !== "standalone_runtime_final") {
+    errors.push("second consumer contract finalization stage drifted");
+  }
+  if (
+    SECOND_CONSUMER_CONTRACT_ACCEPTANCE_BOUNDARY !==
+    "stable_non_audit_standalone_runtime"
+  ) {
+    errors.push("second consumer contract acceptance boundary drifted");
+  }
+  if (
+    !SECOND_CONSUMER_CONTRACT_COMPLETION_GATES.includes("summary_hash_not_identity")
+  ) {
+    errors.push("second consumer contract completion gates must preserve summary hash non-identity");
+  }
+  if (
+    JSON.stringify(SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET.slice(0, SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET.length)) !==
+    JSON.stringify(SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET)
+  ) {
+    errors.push("second consumer contract final export set drifted from stable export base");
+  }
+  if (
+    SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET[
+      SECOND_CONSUMER_CONTRACT_FINAL_EXPORT_SET.length - 1
+    ] !== "formatSecondConsumerRuntimeError"
+  ) {
+    errors.push("second consumer contract final export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidSecondConsumerFinalization() {
+  const result = validateSecondConsumerFinalization();
+  if (result.ok) {
+    return {
+      stage: SECOND_CONSUMER_CONTRACT_FINALIZATION_STAGE,
+      boundary: SECOND_CONSUMER_CONTRACT_ACCEPTANCE_BOUNDARY,
+    };
+  }
+
+  const err = new Error(`second consumer finalization invalid: ${result.errors.join("; ")}`);
+  err.validation = result;
+  throw err;
 }
