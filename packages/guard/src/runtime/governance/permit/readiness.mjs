@@ -45,6 +45,9 @@ export const GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS = Object.freeze([
 export const GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS = Object.freeze([
   "governance_receipt",
 ]);
+export const GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS = Object.freeze([
+  ...GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS,
+]);
 
 export const GOVERNANCE_SECOND_CONSUMER_NEUTRAL_ARTIFACTS = Object.freeze([
   ...GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS,
@@ -157,6 +160,7 @@ export const GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET = Object.freeze([
   "GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_SUPPORT",
   "GOVERNANCE_SECOND_CONSUMER_READINESS_LEVELS",
   "GOVERNANCE_SECOND_CONSUMER_ARTIFACT_ORDER",
+  "GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS",
   "GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS",
   "GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS",
   "GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS",
@@ -186,6 +190,7 @@ export function validateSecondConsumerReadinessProfile() {
   const optionalSet = new Set(GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS);
   const auditBoundSet = new Set(GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS);
   const neutralSet = new Set(GOVERNANCE_SECOND_CONSUMER_NEUTRAL_ARTIFACTS);
+  const minimalSet = new Set(GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS);
   const orderedIds = new Map(
     GOVERNANCE_SECOND_CONSUMER_ARTIFACT_ORDER.map((artifactId, index) => [artifactId, index])
   );
@@ -223,8 +228,15 @@ export function validateSecondConsumerReadinessProfile() {
   ) {
     errors.push("second consumer readiness neutral artifacts drifted from governance consumption");
   }
+  if (
+    JSON.stringify(GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS) !==
+    JSON.stringify(GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS)
+  ) {
+    errors.push("second consumer readiness minimal artifacts drifted from required artifacts");
+  }
 
   for (const group of [
+    GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS,
     GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS,
     GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS,
     GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS,
@@ -293,8 +305,32 @@ export function validateSecondConsumerReadinessProfile() {
     if (entry.audit_bound !== auditBoundSet.has(artifactId)) {
       errors.push(`second consumer readiness artifact ${artifactId} audit-bound classification drifted`);
     }
-    if (entry.minimal_for_second_consumer !== requiredSet.has(artifactId)) {
+    if (entry.minimal_for_second_consumer !== minimalSet.has(artifactId)) {
       errors.push(`second consumer readiness artifact ${artifactId} minimal profile drifted`);
+    }
+    if (entry.consumer_neutral === entry.audit_bound) {
+      errors.push(`second consumer readiness artifact ${artifactId} must be exactly one of neutral or audit-bound`);
+    }
+    if (
+      entry.readiness === GOVERNANCE_SECOND_CONSUMER_NEUTRAL_REQUIRED &&
+      (!entry.consumer_neutral || entry.audit_bound)
+    ) {
+      errors.push(`second consumer readiness artifact ${artifactId} required neutrality flags drifted`);
+    }
+    if (
+      entry.readiness === GOVERNANCE_SECOND_CONSUMER_NEUTRAL_OPTIONAL &&
+      (!entry.consumer_neutral || entry.audit_bound)
+    ) {
+      errors.push(`second consumer readiness artifact ${artifactId} optional neutrality flags drifted`);
+    }
+    if (
+      entry.readiness === GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_SUPPORT &&
+      (entry.consumer_neutral || !entry.audit_bound)
+    ) {
+      errors.push(`second consumer readiness artifact ${artifactId} audit-bound flags drifted`);
+    }
+    if (entry.audit_bound && entry.allowed_dependency_targets.length !== 0) {
+      errors.push(`second consumer readiness artifact ${artifactId} audit-bound dependency set must remain empty`);
     }
 
     const surfaceEntry = GOVERNANCE_SURFACE_MAP[artifactId];
@@ -337,6 +373,11 @@ export function validateSecondConsumerReadinessProfile() {
     GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET.length
   ) {
     errors.push("second consumer readiness stable export set contains duplicates");
+  }
+  for (const exportName of GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET) {
+    if (typeof exportName !== "string" || exportName.length === 0) {
+      errors.push("second consumer readiness stable export set contains invalid export names");
+    }
   }
 
   return {
