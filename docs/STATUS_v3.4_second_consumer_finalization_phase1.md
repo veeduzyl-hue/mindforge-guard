@@ -24,3 +24,10 @@ Freeze the finalized standalone boundary of the second consumer runtime without 
 ## Phase Position
 
 This phase is a finalization pass over the stabilized second consumer runtime from `v3.3.0`.
+
+## Boundary Freeze
+
+- final standalone boundary is explicitly frozen
+- final export boundary is explicitly frozen
+- completion gates are explicitly frozen
+- `summaryHash` remains a reproducibility signal rather than an identity surface
