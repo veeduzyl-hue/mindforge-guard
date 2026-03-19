@@ -22,6 +22,7 @@ import {
   GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_SUPPORT,
   GOVERNANCE_SECOND_CONSUMER_READINESS_LEVELS,
   GOVERNANCE_SECOND_CONSUMER_ARTIFACT_ORDER,
+  GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS,
   GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS,
   GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS,
   GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS,
@@ -90,6 +91,12 @@ if (
 ) {
   throw new Error("second consumer readiness neutral profile drifted");
 }
+if (
+  JSON.stringify(GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS) !==
+  JSON.stringify(GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS)
+) {
+  throw new Error("second consumer readiness minimal profile drifted");
+}
 
 const entries = listSecondConsumerReadinessEntries();
 if (entries.length !== GOVERNANCE_SURFACE_ARTIFACT_IDS.length) {
@@ -112,11 +119,17 @@ for (const entry of entries) {
   if (entry.readiness !== GOVERNANCE_SECOND_CONSUMER_NEUTRAL_REQUIRED && entry.minimal_for_second_consumer) {
     throw new Error(`second consumer readiness non-required entry ${entry.artifact_id} cannot become minimal`);
   }
+  if (entry.consumer_neutral === entry.audit_bound) {
+    throw new Error(`second consumer readiness entry ${entry.artifact_id} flag partition drifted`);
+  }
   if (entry.consumer_neutral && entry.surface_tier !== GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER) {
     throw new Error(`second consumer readiness entry ${entry.artifact_id} must stay external`);
   }
   if (entry.audit_bound && entry.surface_tier !== GOVERNANCE_SURFACE_INTERNAL_SUPPORT_TIER) {
     throw new Error(`second consumer readiness entry ${entry.artifact_id} must stay internal`);
+  }
+  if (entry.audit_bound && entry.allowed_dependency_targets.length !== 0) {
+    throw new Error(`second consumer readiness audit-bound entry ${entry.artifact_id} cannot gain dependencies`);
   }
 }
 
@@ -144,6 +157,24 @@ if (
 ) {
   throw new Error("second consumer audit-bound receipt dependency profile drifted");
 }
+if (
+  JSON.stringify(GOVERNANCE_SECOND_CONSUMER_READINESS_PROFILE.governance_application_record.allowed_dependency_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record", "governance_outcome_bundle"])
+) {
+  throw new Error("second consumer application dependency profile drifted");
+}
+if (
+  JSON.stringify(GOVERNANCE_SECOND_CONSUMER_READINESS_PROFILE.governance_disposition.allowed_dependency_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record", "governance_application_record"])
+) {
+  throw new Error("second consumer disposition dependency profile drifted");
+}
+if (
+  JSON.stringify(GOVERNANCE_SECOND_CONSUMER_READINESS_PROFILE.governance_outcome_bundle.allowed_dependency_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record"])
+) {
+  throw new Error("second consumer outcome bundle dependency profile drifted");
+}
 
 for (const exportName of GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
@@ -156,6 +187,18 @@ if (
   GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET.length
 ) {
   throw new Error("second consumer readiness stable export set contains duplicates");
+}
+
+for (const group of [
+  GOVERNANCE_SECOND_CONSUMER_REQUIRED_ARTIFACTS,
+  GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS,
+  GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS,
+  GOVERNANCE_SECOND_CONSUMER_NEUTRAL_ARTIFACTS,
+  GOVERNANCE_SECOND_CONSUMER_MINIMAL_ARTIFACTS,
+]) {
+  if (new Set(group).size !== group.length) {
+    throw new Error("second consumer readiness artifact group contains duplicates");
+  }
 }
 
 process.stdout.write("second consumer readiness verified\n");
