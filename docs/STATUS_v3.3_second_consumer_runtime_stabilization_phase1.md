@@ -25,3 +25,11 @@ Freeze the stable runtime boundary of the promoted second consumer runtime witho
 ## Phase Position
 
 This phase is a runtime stabilization pass over the operationally hardened second consumer runtime from `v3.2.0`.
+
+## Boundary Freeze
+
+- second consumer runtime remains standalone and non-audit
+- invocation, output, and exit discipline are explicitly frozen
+- write-only-on-success behavior is explicitly frozen
+- `summaryHash` remains a reproducibility signal and not an identity surface
+- no second main-path takeover is included in this phase
