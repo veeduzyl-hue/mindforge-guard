@@ -27,23 +27,24 @@ import {
   GOVERNANCE_SECOND_CONSUMER_READINESS_VERSION,
   assertValidSecondConsumerReadinessProfile,
 } from "./readiness.mjs";
+import {
+  SECOND_CONSUMER_CONTRACT_ID,
+  SECOND_CONSUMER_CONTRACT_SURFACE,
+  SECOND_CONSUMER_CONTRACT_MODE,
+  SECOND_CONSUMER_CONTRACT_REQUIRED_INPUTS,
+  SECOND_CONSUMER_CONTRACT_OPTIONAL_INPUTS,
+  SECOND_CONSUMER_CONTRACT_EXCLUDED_INPUTS,
+  assertValidSecondConsumerContract,
+  assertValidSecondConsumerSummary,
+} from "./secondConsumerContract.mjs";
 
-export const SECOND_CONSUMER_PILOT_ID = "second_consumer_pilot";
-export const SECOND_CONSUMER_PILOT_SURFACE = "guard.second_consumer_pilot";
-export const SECOND_CONSUMER_PILOT_MODE = "explicit_file_input";
-export const SECOND_CONSUMER_PILOT_REQUIRED_INPUTS = Object.freeze([
-  "permit_gate_result",
-  "governance_decision_record",
-  "governance_activation_record",
-]);
-export const SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS = Object.freeze([
-  "governance_outcome_bundle",
-  "governance_application_record",
-  "governance_disposition",
-]);
-export const SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS = Object.freeze([
-  ...GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS,
-]);
+export const SECOND_CONSUMER_PILOT_ID = SECOND_CONSUMER_CONTRACT_ID;
+export const SECOND_CONSUMER_PILOT_SURFACE = SECOND_CONSUMER_CONTRACT_SURFACE;
+export const SECOND_CONSUMER_PILOT_MODE = SECOND_CONSUMER_CONTRACT_MODE;
+export const SECOND_CONSUMER_PILOT_REQUIRED_INPUTS = SECOND_CONSUMER_CONTRACT_REQUIRED_INPUTS;
+export const SECOND_CONSUMER_PILOT_OPTIONAL_INPUTS = SECOND_CONSUMER_CONTRACT_OPTIONAL_INPUTS;
+export const SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS =
+  SECOND_CONSUMER_CONTRACT_EXCLUDED_INPUTS;
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -83,6 +84,7 @@ export function loadSecondConsumerPilotInputs({
   governanceReceiptPath = null,
 }) {
   assertValidSecondConsumerReadinessProfile();
+  assertValidSecondConsumerContract();
 
   if (governanceReceiptPath) {
     throw new Error(
@@ -202,6 +204,7 @@ export function loadSecondConsumerPilotInputs({
 
 export function buildSecondConsumerPilotSummary(inputs) {
   assertValidSecondConsumerReadinessProfile();
+  assertValidSecondConsumerContract();
 
   const {
     permitGateResult,
@@ -226,7 +229,7 @@ export function buildSecondConsumerPilotSummary(inputs) {
     SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS.includes(path)
   );
 
-  return {
+  const summary = {
     consumer: {
       consumer_id: SECOND_CONSUMER_PILOT_ID,
       surface: SECOND_CONSUMER_PILOT_SURFACE,
@@ -264,4 +267,6 @@ export function buildSecondConsumerPilotSummary(inputs) {
       activation_record_surface: governanceActivationRecord.governance_activation.consumer_surface,
     },
   };
+
+  return assertValidSecondConsumerSummary(summary);
 }
