@@ -11,6 +11,9 @@ export const ENFORCEMENT_PILOT_PROMOTION_BOUNDARY =
 export const ENFORCEMENT_PILOT_STABILIZATION_STAGE = "stable_pilot_v1";
 export const ENFORCEMENT_PILOT_ACCEPTANCE_BOUNDARY =
   "stable_explicit_opt_in_non_authority_audit_adjacent_pilot";
+export const ENFORCEMENT_PILOT_FINALIZATION_STAGE = "finalized_non_authority_pilot_v1";
+export const ENFORCEMENT_PILOT_FINAL_ACCEPTANCE_BOUNDARY =
+  "final_explicit_opt_in_non_authority_audit_adjacent_sidecar_pilot";
 export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
 export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
 export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
@@ -53,6 +56,13 @@ export const ENFORCEMENT_PILOT_STABILIZATION_GUARDS = Object.freeze([
   "stable_promoted_export_base_frozen",
   "stable_non_authority_pilot_only",
   "stable_audit_adjacent_sidecar_only",
+]);
+export const ENFORCEMENT_PILOT_FINALIZATION_GATES = Object.freeze([
+  "final_acceptance_boundary_frozen",
+  "final_export_boundary_frozen",
+  "final_non_authority_pilot_only",
+  "final_audit_adjacent_sidecar_only",
+  "final_default_off_explicit_opt_in_only",
 ]);
 export const ENFORCEMENT_PILOT_SUPPORTED_DECISIONS = Object.freeze([
   "would_allow",
@@ -100,6 +110,15 @@ export const ENFORCEMENT_PILOT_STABILIZATION_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_PILOT_STABILIZATION_EXPORT_SET",
   "validateEnforcementPilotStabilization",
   "assertValidEnforcementPilotStabilization",
+]);
+export const ENFORCEMENT_PILOT_FINAL_EXPORT_SET = Object.freeze([
+  ...ENFORCEMENT_PILOT_STABILIZATION_EXPORT_SET,
+  "ENFORCEMENT_PILOT_FINALIZATION_STAGE",
+  "ENFORCEMENT_PILOT_FINAL_ACCEPTANCE_BOUNDARY",
+  "ENFORCEMENT_PILOT_FINALIZATION_GATES",
+  "ENFORCEMENT_PILOT_FINAL_EXPORT_SET",
+  "validateEnforcementPilotFinalization",
+  "assertValidEnforcementPilotFinalization",
 ]);
 
 function isPlainObject(value) {
@@ -429,8 +448,87 @@ export function assertValidEnforcementPilotStabilization(result) {
   throw err;
 }
 
+export function validateEnforcementPilotFinalization(result) {
+  const errors = [];
+  const validation = validateEnforcementPilotStabilization(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (ENFORCEMENT_PILOT_FINALIZATION_STAGE !== "finalized_non_authority_pilot_v1") {
+    errors.push("enforcement pilot finalization stage drifted");
+  }
+  if (
+    ENFORCEMENT_PILOT_FINAL_ACCEPTANCE_BOUNDARY !==
+    "final_explicit_opt_in_non_authority_audit_adjacent_sidecar_pilot"
+  ) {
+    errors.push("enforcement pilot final acceptance boundary drifted");
+  }
+  for (const gate of [
+    "final_acceptance_boundary_frozen",
+    "final_export_boundary_frozen",
+    "final_non_authority_pilot_only",
+    "final_audit_adjacent_sidecar_only",
+    "final_default_off_explicit_opt_in_only",
+  ]) {
+    if (!ENFORCEMENT_PILOT_FINALIZATION_GATES.includes(gate)) {
+      errors.push(`enforcement pilot finalization gate missing: ${gate}`);
+    }
+  }
+  if (
+    JSON.stringify(
+      ENFORCEMENT_PILOT_FINAL_EXPORT_SET.slice(
+        0,
+        ENFORCEMENT_PILOT_STABILIZATION_EXPORT_SET.length
+      )
+    ) !== JSON.stringify(ENFORCEMENT_PILOT_STABILIZATION_EXPORT_SET)
+  ) {
+    errors.push(
+      "enforcement pilot final export set drifted from stabilization export base"
+    );
+  }
+  if (
+    new Set(ENFORCEMENT_PILOT_FINALIZATION_GATES).size !==
+    ENFORCEMENT_PILOT_FINALIZATION_GATES.length
+  ) {
+    errors.push("enforcement pilot finalization gates contain duplicates");
+  }
+  if (
+    new Set(ENFORCEMENT_PILOT_FINAL_EXPORT_SET).size !==
+    ENFORCEMENT_PILOT_FINAL_EXPORT_SET.length
+  ) {
+    errors.push("enforcement pilot final export set contains duplicates");
+  }
+  if (
+    ENFORCEMENT_PILOT_FINAL_EXPORT_SET[
+      ENFORCEMENT_PILOT_FINAL_EXPORT_SET.length - 2
+    ] !== "validateEnforcementPilotFinalization" ||
+    ENFORCEMENT_PILOT_FINAL_EXPORT_SET[
+      ENFORCEMENT_PILOT_FINAL_EXPORT_SET.length - 1
+    ] !== "assertValidEnforcementPilotFinalization"
+  ) {
+    errors.push("enforcement pilot final export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidEnforcementPilotFinalization(result) {
+  const validation = validateEnforcementPilotFinalization(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `enforcement pilot finalization invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
 export function serializeEnforcementPilotResult(result, { pretty = false } = {}) {
-  const validated = assertValidEnforcementPilotStabilization(result);
+  const validated = assertValidEnforcementPilotFinalization(result);
   const payload = validated.enforcement_pilot;
   const ordered = {
     kind: validated.kind,
