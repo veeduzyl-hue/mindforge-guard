@@ -166,12 +166,20 @@ export {
   SECOND_CONSUMER_CONTRACT_MINIMAL_INPUTS,
   SECOND_CONSUMER_CONTRACT_NEUTRAL_INPUTS,
   SECOND_CONSUMER_CONTRACT_SUMMARY_SECTIONS,
+  SECOND_CONSUMER_CONTRACT_INVOCATION_FLAGS,
+  SECOND_CONSUMER_CONTRACT_OUTPUT_ENCODING,
+  SECOND_CONSUMER_CONTRACT_OUTPUT_EOL,
+  SECOND_CONSUMER_CONTRACT_PRETTY_INDENT,
+  SECOND_CONSUMER_CONTRACT_OUTPUT_MODE,
+  SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY,
   SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE,
   SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET,
   validateSecondConsumerContract,
   assertValidSecondConsumerContract,
   validateSecondConsumerSummary,
   assertValidSecondConsumerSummary,
+  serializeSecondConsumerSummary,
+  computeSecondConsumerSummaryHash,
 } from "./secondConsumerContract.mjs";
 export {
   SECOND_CONSUMER_PILOT_ID,
@@ -182,4 +190,6 @@ export {
   SECOND_CONSUMER_PILOT_AUDIT_BOUND_EXCLUSIONS,
   loadSecondConsumerPilotInputs,
   buildSecondConsumerPilotSummary,
+  renderSecondConsumerPilotSummary,
+  getSecondConsumerPilotSummaryHash,
 } from "./secondConsumerPilot.mjs";

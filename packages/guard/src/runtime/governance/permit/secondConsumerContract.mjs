@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 import {
   GOVERNANCE_SECOND_CONSUMER_READINESS_STABILITY,
   GOVERNANCE_SECOND_CONSUMER_READINESS_VERSION,
@@ -38,6 +40,23 @@ export const SECOND_CONSUMER_CONTRACT_SUMMARY_SECTIONS = Object.freeze([
   "dependencies",
   "contracts",
 ]);
+export const SECOND_CONSUMER_CONTRACT_INVOCATION_FLAGS = Object.freeze([
+  "--permit-gate-result-in",
+  "--governance-decision-record-in",
+  "--governance-activation-record-in",
+  "--governance-outcome-bundle-in",
+  "--governance-application-record-in",
+  "--governance-disposition-in",
+  "--governance-receipt-in",
+  "--out",
+  "--pretty",
+  "--help",
+]);
+export const SECOND_CONSUMER_CONTRACT_OUTPUT_ENCODING = "utf8";
+export const SECOND_CONSUMER_CONTRACT_OUTPUT_EOL = "\n";
+export const SECOND_CONSUMER_CONTRACT_PRETTY_INDENT = 2;
+export const SECOND_CONSUMER_CONTRACT_OUTPUT_MODE = "atomic_replace";
+export const SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY = "same_inputs_same_summary";
 export const SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE = Object.freeze({
   consumer: Object.freeze(["consumer_id", "surface", "mode", "non_audit"]),
   governance: Object.freeze([
@@ -82,12 +101,20 @@ export const SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET = Object.freeze([
   "SECOND_CONSUMER_CONTRACT_MINIMAL_INPUTS",
   "SECOND_CONSUMER_CONTRACT_NEUTRAL_INPUTS",
   "SECOND_CONSUMER_CONTRACT_SUMMARY_SECTIONS",
+  "SECOND_CONSUMER_CONTRACT_INVOCATION_FLAGS",
+  "SECOND_CONSUMER_CONTRACT_OUTPUT_ENCODING",
+  "SECOND_CONSUMER_CONTRACT_OUTPUT_EOL",
+  "SECOND_CONSUMER_CONTRACT_PRETTY_INDENT",
+  "SECOND_CONSUMER_CONTRACT_OUTPUT_MODE",
+  "SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY",
   "SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE",
   "SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET",
   "validateSecondConsumerContract",
   "assertValidSecondConsumerContract",
   "validateSecondConsumerSummary",
   "assertValidSecondConsumerSummary",
+  "serializeSecondConsumerSummary",
+  "computeSecondConsumerSummaryHash",
 ]);
 
 export function validateSecondConsumerContract() {
@@ -139,6 +166,7 @@ export function validateSecondConsumerContract() {
     SECOND_CONSUMER_CONTRACT_MINIMAL_INPUTS,
     SECOND_CONSUMER_CONTRACT_NEUTRAL_INPUTS,
     SECOND_CONSUMER_CONTRACT_SUMMARY_SECTIONS,
+    SECOND_CONSUMER_CONTRACT_INVOCATION_FLAGS,
   ]) {
     if (new Set(list).size !== list.length) {
       errors.push("second consumer contract contains duplicate stable entries");
@@ -283,4 +311,23 @@ export function assertValidSecondConsumerSummary(summary) {
   const err = new Error(`second consumer summary invalid: ${result.errors.join("; ")}`);
   err.validation = result;
   throw err;
+}
+
+export function serializeSecondConsumerSummary(summary, { pretty = false } = {}) {
+  const validated = assertValidSecondConsumerSummary(summary);
+  return (
+    JSON.stringify(
+      validated,
+      null,
+      pretty ? SECOND_CONSUMER_CONTRACT_PRETTY_INDENT : 0
+    ) + SECOND_CONSUMER_CONTRACT_OUTPUT_EOL
+  );
+}
+
+export function computeSecondConsumerSummaryHash(summary, { pretty = false } = {}) {
+  const serialized = serializeSecondConsumerSummary(summary, { pretty });
+  return `sha256:${crypto
+    .createHash("sha256")
+    .update(serialized, SECOND_CONSUMER_CONTRACT_OUTPUT_ENCODING)
+    .digest("hex")}`;
 }
