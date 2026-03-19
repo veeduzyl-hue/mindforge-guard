@@ -172,6 +172,12 @@ export {
   SECOND_CONSUMER_CONTRACT_PRETTY_INDENT,
   SECOND_CONSUMER_CONTRACT_OUTPUT_MODE,
   SECOND_CONSUMER_CONTRACT_REPLAY_SAFETY,
+  SECOND_CONSUMER_CONTRACT_EXIT_SUCCESS,
+  SECOND_CONSUMER_CONTRACT_EXIT_FAILURE,
+  SECOND_CONSUMER_CONTRACT_HELP_EXIT,
+  SECOND_CONSUMER_CONTRACT_STDOUT_MODE,
+  SECOND_CONSUMER_CONTRACT_STDERR_MODE,
+  SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE,
   SECOND_CONSUMER_CONTRACT_SUMMARY_SHAPE,
   SECOND_CONSUMER_CONTRACT_STABLE_EXPORT_SET,
   validateSecondConsumerContract,
@@ -180,6 +186,7 @@ export {
   assertValidSecondConsumerSummary,
   serializeSecondConsumerSummary,
   computeSecondConsumerSummaryHash,
+  formatSecondConsumerRuntimeError,
 } from "./secondConsumerContract.mjs";
 export {
   SECOND_CONSUMER_PILOT_ID,
@@ -192,4 +199,5 @@ export {
   buildSecondConsumerPilotSummary,
   renderSecondConsumerPilotSummary,
   getSecondConsumerPilotSummaryHash,
+  formatSecondConsumerPilotError,
 } from "./secondConsumerPilot.mjs";

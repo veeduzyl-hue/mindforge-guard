@@ -13,6 +13,13 @@ import {
   buildSecondConsumerPilotSummary,
   renderSecondConsumerPilotSummary,
   getSecondConsumerPilotSummaryHash,
+  formatSecondConsumerPilotError,
+  SECOND_CONSUMER_CONTRACT_EXIT_SUCCESS,
+  SECOND_CONSUMER_CONTRACT_EXIT_FAILURE,
+  SECOND_CONSUMER_CONTRACT_HELP_EXIT,
+  SECOND_CONSUMER_CONTRACT_STDOUT_MODE,
+  SECOND_CONSUMER_CONTRACT_STDERR_MODE,
+  SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE,
 } from "./runtime/governance/permit/index.mjs";
 
 function renderHelp() {
@@ -43,6 +50,9 @@ function renderHelp() {
     "Output encoding: utf8",
     "Output mode: atomic_replace",
     "Replay safety: same_inputs_same_summary",
+    `Stdout mode: ${SECOND_CONSUMER_CONTRACT_STDOUT_MODE}`,
+    `Stderr mode: ${SECOND_CONSUMER_CONTRACT_STDERR_MODE}`,
+    `Output write rule: ${SECOND_CONSUMER_CONTRACT_OUTPUT_WRITE_RULE}`,
   ].join("\n");
 }
 
@@ -141,7 +151,7 @@ export async function runSecondConsumerPilot({
     if (args.help) {
       const message = `${renderHelp()}\n`;
       if (stdout) stdout.write(message);
-      return { exitCode: 0, stdout: message };
+      return { exitCode: SECOND_CONSUMER_CONTRACT_HELP_EXIT, stdout: message };
     }
 
     const inputs = loadSecondConsumerPilotInputs(args);
@@ -156,16 +166,16 @@ export async function runSecondConsumerPilot({
     }
 
     return {
-      exitCode: 0,
+      exitCode: SECOND_CONSUMER_CONTRACT_EXIT_SUCCESS,
       summary,
       summaryHash,
       stdout: args.out ? "" : output,
     };
   } catch (error) {
-    const message = `${error?.message || String(error)}\n`;
+    const message = formatSecondConsumerPilotError(error);
     if (stderr) stderr.write(message);
     return {
-      exitCode: 1,
+      exitCode: SECOND_CONSUMER_CONTRACT_EXIT_FAILURE,
       message: error?.message || String(error),
       stderr: message,
     };
