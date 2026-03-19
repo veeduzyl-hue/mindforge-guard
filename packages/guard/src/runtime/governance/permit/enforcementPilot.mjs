@@ -4,6 +4,38 @@ export const ENFORCEMENT_PILOT_MODE = "explicit_opt_in";
 export const ENFORCEMENT_PILOT_DEFAULT_STATE = "disabled";
 export const ENFORCEMENT_PILOT_CONSUMER_SURFACE = "guard.audit";
 export const ENFORCEMENT_PILOT_RESULT_BOUNDARY = "non_enforcing_sidecar";
+export const ENFORCEMENT_PILOT_HARDENING_STAGE = "stable_sidecar_v1";
+export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
+export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
+export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
+export const ENFORCEMENT_PILOT_TOP_LEVEL_FIELDS = Object.freeze([
+  "kind",
+  "version",
+  "canonical_action_hash",
+  "enforcement_pilot",
+  "deterministic",
+  "enforcing",
+]);
+export const ENFORCEMENT_PILOT_PAYLOAD_FIELDS = Object.freeze([
+  "mode",
+  "default_state",
+  "consumer_surface",
+  "result_boundary",
+  "decision",
+  "readiness",
+  "bridge_verdict",
+  "current_audit_verdict",
+  "current_audit_exit_code",
+  "reasons",
+]);
+export const ENFORCEMENT_PILOT_COMPATIBILITY_GUARDS = Object.freeze([
+  "explicit_opt_in_only",
+  "default_off_only",
+  "non_enforcing_sidecar_only",
+  "no_audit_output_mutation",
+  "no_audit_verdict_mutation",
+  "no_exit_code_authority_claim",
+]);
 export const ENFORCEMENT_PILOT_SUPPORTED_DECISIONS = Object.freeze([
   "would_allow",
   "would_review",
@@ -17,11 +49,21 @@ export const ENFORCEMENT_PILOT_STABLE_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_PILOT_DEFAULT_STATE",
   "ENFORCEMENT_PILOT_CONSUMER_SURFACE",
   "ENFORCEMENT_PILOT_RESULT_BOUNDARY",
+  "ENFORCEMENT_PILOT_HARDENING_STAGE",
+  "ENFORCEMENT_PILOT_OUTPUT_ENCODING",
+  "ENFORCEMENT_PILOT_OUTPUT_EOL",
+  "ENFORCEMENT_PILOT_PRETTY_INDENT",
+  "ENFORCEMENT_PILOT_TOP_LEVEL_FIELDS",
+  "ENFORCEMENT_PILOT_PAYLOAD_FIELDS",
+  "ENFORCEMENT_PILOT_COMPATIBILITY_GUARDS",
   "ENFORCEMENT_PILOT_SUPPORTED_DECISIONS",
   "ENFORCEMENT_PILOT_STABLE_EXPORT_SET",
   "buildEnforcementPilotResult",
   "validateEnforcementPilotResult",
   "assertValidEnforcementPilotResult",
+  "validateEnforcementPilotHardening",
+  "assertValidEnforcementPilotHardening",
+  "serializeEnforcementPilotResult",
 ]);
 
 function isPlainObject(value) {
@@ -87,6 +129,9 @@ export function validateEnforcementPilotResult(result) {
     errors.push("enforcement pilot payload must be an object");
   } else {
     const payload = result.enforcement_pilot;
+    if (JSON.stringify(Object.keys(payload)) !== JSON.stringify(ENFORCEMENT_PILOT_PAYLOAD_FIELDS)) {
+      errors.push("enforcement pilot payload field order drifted");
+    }
     if (payload.mode !== ENFORCEMENT_PILOT_MODE) {
       errors.push("enforcement pilot mode drifted");
     }
@@ -115,6 +160,9 @@ export function validateEnforcementPilotResult(result) {
   if (result.enforcement_pilot?.current_audit_exit_code !== null) {
     errors.push("enforcement pilot result must not claim authority over audit exit code");
   }
+  if (JSON.stringify(Object.keys(result)) !== JSON.stringify(ENFORCEMENT_PILOT_TOP_LEVEL_FIELDS)) {
+    errors.push("enforcement pilot top-level field order drifted");
+  }
 
   return {
     ok: errors.length === 0,
@@ -131,4 +179,91 @@ export function assertValidEnforcementPilotResult(result) {
   );
   err.validation = validation;
   throw err;
+}
+
+export function validateEnforcementPilotHardening(result) {
+  const errors = [];
+  const validation = validateEnforcementPilotResult(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (ENFORCEMENT_PILOT_HARDENING_STAGE !== "stable_sidecar_v1") {
+    errors.push("enforcement pilot hardening stage drifted");
+  }
+  for (const guard of [
+    "explicit_opt_in_only",
+    "default_off_only",
+    "non_enforcing_sidecar_only",
+    "no_audit_output_mutation",
+    "no_audit_verdict_mutation",
+    "no_exit_code_authority_claim",
+  ]) {
+    if (!ENFORCEMENT_PILOT_COMPATIBILITY_GUARDS.includes(guard)) {
+      errors.push(`enforcement pilot compatibility guard missing: ${guard}`);
+    }
+  }
+  if (
+    new Set(ENFORCEMENT_PILOT_STABLE_EXPORT_SET).size !==
+    ENFORCEMENT_PILOT_STABLE_EXPORT_SET.length
+  ) {
+    errors.push("enforcement pilot stable export set contains duplicates");
+  }
+  if (
+    new Set(ENFORCEMENT_PILOT_TOP_LEVEL_FIELDS).size !==
+    ENFORCEMENT_PILOT_TOP_LEVEL_FIELDS.length
+  ) {
+    errors.push("enforcement pilot top-level fields contain duplicates");
+  }
+  if (
+    new Set(ENFORCEMENT_PILOT_PAYLOAD_FIELDS).size !==
+    ENFORCEMENT_PILOT_PAYLOAD_FIELDS.length
+  ) {
+    errors.push("enforcement pilot payload fields contain duplicates");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidEnforcementPilotHardening(result) {
+  const validation = validateEnforcementPilotHardening(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `enforcement pilot hardening invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
+export function serializeEnforcementPilotResult(result, { pretty = false } = {}) {
+  const validated = assertValidEnforcementPilotHardening(result);
+  const payload = validated.enforcement_pilot;
+  const ordered = {
+    kind: validated.kind,
+    version: validated.version,
+    canonical_action_hash: validated.canonical_action_hash,
+    enforcement_pilot: {
+      mode: payload.mode,
+      default_state: payload.default_state,
+      consumer_surface: payload.consumer_surface,
+      result_boundary: payload.result_boundary,
+      decision: payload.decision,
+      readiness: payload.readiness,
+      bridge_verdict: payload.bridge_verdict,
+      current_audit_verdict: payload.current_audit_verdict,
+      current_audit_exit_code: payload.current_audit_exit_code,
+      reasons: payload.reasons,
+    },
+    deterministic: validated.deterministic,
+    enforcing: validated.enforcing,
+  };
+
+  return (
+    JSON.stringify(ordered, null, pretty ? ENFORCEMENT_PILOT_PRETTY_INDENT : 0) +
+    ENFORCEMENT_PILOT_OUTPUT_EOL
+  );
 }
