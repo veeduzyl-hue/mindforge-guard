@@ -13,9 +13,12 @@ import {
   GOVERNANCE_CONSUMPTION_REQUIRED,
   GOVERNANCE_CONSUMPTION_OPTIONAL,
   GOVERNANCE_CONSUMPTION_SUPPORT_ONLY,
+  GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS,
+  GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER,
   GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS,
   GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS,
   GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS,
+  GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS,
   GOVERNANCE_CONSUMPTION_ARTIFACT_IDS,
   GOVERNANCE_CONSUMPTION_STABLE_EXPORT_SET,
   GOVERNANCE_CONSUMPTION_PROFILE,
@@ -34,6 +37,12 @@ if (GOVERNANCE_CONSUMPTION_PROFILE_VERSION !== "v1") {
 if (GOVERNANCE_CONSUMPTION_PROFILE_STABILITY !== "stable") {
   throw new Error("governance consumption profile stability mismatch");
 }
+if (
+  JSON.stringify(GOVERNANCE_CONSUMPTION_REQUIREMENT_LEVELS) !==
+  JSON.stringify(["required", "optional", "support_only"])
+) {
+  throw new Error("governance consumption requirement levels drifted");
+}
 
 assertValidGovernanceSurfaceMap();
 assertValidGovernanceConsumptionProfile();
@@ -49,6 +58,14 @@ const expectedOptional = [
   "governance_disposition",
 ];
 const expectedSupportOnly = ["governance_receipt"];
+const expectedConsumerSafe = [
+  "permit_gate_result",
+  "governance_decision_record",
+  "governance_activation_record",
+  "governance_outcome_bundle",
+  "governance_application_record",
+  "governance_disposition",
+];
 
 if (JSON.stringify(GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS) !== JSON.stringify(expectedRequired)) {
   throw new Error("governance consumption required artifact profile drifted");
@@ -59,8 +76,24 @@ if (JSON.stringify(GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS) !== JSON.stringify
 if (JSON.stringify(GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS) !== JSON.stringify(expectedSupportOnly)) {
   throw new Error("governance consumption support-only artifact profile drifted");
 }
+if (JSON.stringify(GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS) !== JSON.stringify(expectedConsumerSafe)) {
+  throw new Error("governance consumption consumer-safe artifact profile drifted");
+}
 if (JSON.stringify(GOVERNANCE_CONSUMPTION_ARTIFACT_IDS) !== JSON.stringify(GOVERNANCE_SURFACE_ARTIFACT_IDS)) {
   throw new Error("governance consumption artifact ids drifted from governance surface");
+}
+if (JSON.stringify(GOVERNANCE_CONSUMPTION_ARTIFACT_ORDER) !== JSON.stringify(GOVERNANCE_SURFACE_ARTIFACT_IDS)) {
+  throw new Error("governance consumption artifact order drifted");
+}
+
+for (const artifactGroup of [
+  GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS,
+  GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS,
+  GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS,
+]) {
+  if (new Set(artifactGroup).size !== artifactGroup.length) {
+    throw new Error("governance consumption artifact group contains duplicates");
+  }
 }
 
 const entries = listGovernanceConsumptionEntries();
@@ -84,6 +117,9 @@ for (const entry of entries) {
   if (entry.requirement === GOVERNANCE_CONSUMPTION_SUPPORT_ONLY && entry.consumer_safe) {
     throw new Error(`support-only governance consumption entry ${entry.artifact_id} cannot become consumer-safe`);
   }
+  if (entry.consumer_safe !== GOVERNANCE_CONSUMPTION_CONSUMER_SAFE_ARTIFACTS.includes(entry.artifact_id)) {
+    throw new Error(`governance consumption entry ${entry.artifact_id} consumer-safe flag drifted`);
+  }
   if (entry.consumer_safe && entry.surface_tier !== GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER) {
     throw new Error(`consumer-safe governance consumption entry ${entry.artifact_id} must stay external`);
   }
@@ -106,6 +142,24 @@ if (
   JSON.stringify(["permit_gate_result", "governance_decision_record"])
 ) {
   throw new Error("governance activation record consumption linkage drifted");
+}
+if (
+  JSON.stringify(GOVERNANCE_CONSUMPTION_PROFILE.governance_application_record.consumer_safe_linkage_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record", "governance_outcome_bundle"])
+) {
+  throw new Error("governance application record consumption linkage drifted");
+}
+if (
+  JSON.stringify(GOVERNANCE_CONSUMPTION_PROFILE.governance_disposition.consumer_safe_linkage_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record", "governance_application_record"])
+) {
+  throw new Error("governance disposition consumption linkage drifted");
+}
+if (
+  JSON.stringify(GOVERNANCE_CONSUMPTION_PROFILE.governance_outcome_bundle.consumer_safe_linkage_targets) !==
+  JSON.stringify(["permit_gate_result", "governance_decision_record"])
+) {
+  throw new Error("governance outcome bundle consumption linkage drifted");
 }
 
 for (const exportName of GOVERNANCE_CONSUMPTION_STABLE_EXPORT_SET) {
