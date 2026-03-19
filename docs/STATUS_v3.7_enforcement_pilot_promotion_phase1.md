@@ -37,3 +37,9 @@ This phase is a promotion pass over the hardened stronger-enforcement pilot from
 - promoted pilot remains non-authoritative on the audit path
 - promoted export boundary is explicitly frozen
 - promoted sidecar/result surface is explicitly frozen
+
+## Boundary State
+
+- promoted pilot contract is now anchored as explicit opt-in, default-off, and sidecar-only
+- promoted export set extends the hardened export base without removing or renaming prior exports
+- promoted validators remain contract-only checks rather than authority or takeover gates
