@@ -25,3 +25,11 @@ Freeze the operational boundary of the promoted second consumer runtime without 
 ## Phase Position
 
 This phase is an operational hardening pass over the promoted second-consumer contract from `v3.1.0`.
+
+## Boundary Freeze
+
+- second consumer runtime remains standalone and non-audit
+- invocation flags and output-writing rules are explicitly frozen
+- summary reproducibility is explicitly frozen
+- replay-safe repeated output behavior is explicitly frozen
+- no second main-path takeover is included in this phase
