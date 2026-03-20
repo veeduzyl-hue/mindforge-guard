@@ -1,17 +1,21 @@
 import * as permitExports from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import {
   APPROVAL_FINAL_ACCEPTANCE_BOUNDARY,
-  APPROVAL_FINAL_ACCEPTANCE_READY,
-  APPROVAL_STABILIZATION_KIND,
-  APPROVAL_STABILIZATION_SCHEMA_ID,
-  APPROVAL_STABILIZATION_STAGE,
-  APPROVAL_STABILIZATION_STABLE_EXPORT_SET,
-  APPROVAL_STABILIZATION_VERSION,
+  ENFORCEMENT_CONSUMER_SURFACE,
+  ENFORCEMENT_READINESS_BOUNDARY,
+  ENFORCEMENT_READINESS_KIND,
+  ENFORCEMENT_READINESS_SCHEMA_ID,
+  ENFORCEMENT_READINESS_STAGE,
+  ENFORCEMENT_READINESS_STABLE_EXPORT_SET,
+  ENFORCEMENT_READINESS_VERSION,
+  ENFORCEMENT_SCOPE_REVIEW_ONLY,
   ENFORCEMENT_SURFACE_MAP,
+  ENFORCEMENT_SURFACE_STABLE_EXPORT_SET,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
   buildApprovalStabilizationProfile,
+  buildEnforcementReadinessProfile,
   buildGovernanceDecisionRecord,
   buildJudgmentCompatibilityContract,
   buildJudgmentProfile,
@@ -19,7 +23,7 @@ import {
   buildJudgmentStabilizationProfile,
   buildLimitedEnforcementAuthorityResult,
   buildPermitGateResult,
-  validateApprovalStabilizationProfile,
+  validateEnforcementReadinessProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -27,7 +31,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -62,7 +66,7 @@ function buildArtifacts(decision) {
         run_id: "run",
         mode: "local",
         git: {
-          head: "cccccccccccccccccccccccccccccccccccccccc",
+          head: "ffffffffffffffffffffffffffffffffffffffff",
           branch: "branch",
         },
       },
@@ -119,7 +123,11 @@ function buildArtifacts(decision) {
     approvalReceiptProfile: approvalReceipt,
   });
 
-  return { approvalStabilization };
+  return {
+    enforcementReadiness: buildEnforcementReadinessProfile({
+      approvalStabilizationProfile: approvalStabilization,
+    }),
+  };
 }
 
 for (const decision of [
@@ -129,94 +137,99 @@ for (const decision of [
   "would_deny",
 ]) {
   const artifactSet = buildArtifacts(decision);
-  const validation = validateApprovalStabilizationProfile(
-    artifactSet.approvalStabilization
+  const validation = validateEnforcementReadinessProfile(
+    artifactSet.enforcementReadiness
   );
   if (!validation.ok) {
     throw new Error(
-      `approval stabilization validation failed: ${validation.errors.join("; ")}`
+      `enforcement readiness validation failed: ${validation.errors.join("; ")}`
     );
   }
-  if (artifactSet.approvalStabilization.kind !== APPROVAL_STABILIZATION_KIND) {
-    throw new Error("approval stabilization kind drifted");
+
+  const artifact = artifactSet.enforcementReadiness;
+  if (artifact.kind !== ENFORCEMENT_READINESS_KIND) {
+    throw new Error("enforcement readiness kind drifted");
+  }
+  if (artifact.version !== ENFORCEMENT_READINESS_VERSION) {
+    throw new Error("enforcement readiness version drifted");
+  }
+  if (artifact.schema_id !== ENFORCEMENT_READINESS_SCHEMA_ID) {
+    throw new Error("enforcement readiness schema id drifted");
+  }
+  if (artifact.enforcement_readiness.stage !== ENFORCEMENT_READINESS_STAGE) {
+    throw new Error("enforcement readiness stage drifted");
   }
   if (
-    artifactSet.approvalStabilization.version !== APPROVAL_STABILIZATION_VERSION
+    artifact.enforcement_readiness.consumer_surface !==
+    ENFORCEMENT_CONSUMER_SURFACE
   ) {
-    throw new Error("approval stabilization version drifted");
+    throw new Error("enforcement readiness consumer surface drifted");
   }
   if (
-    artifactSet.approvalStabilization.schema_id !==
-    APPROVAL_STABILIZATION_SCHEMA_ID
+    artifact.enforcement_readiness.boundary !== ENFORCEMENT_READINESS_BOUNDARY
   ) {
-    throw new Error("approval stabilization schema id drifted");
+    throw new Error("enforcement readiness boundary drifted");
   }
   if (
-    artifactSet.approvalStabilization.approval_stabilization.stage !==
-    APPROVAL_STABILIZATION_STAGE
-  ) {
-    throw new Error("approval stabilization stage drifted");
-  }
-  if (
-    artifactSet.approvalStabilization.approval_stabilization.boundary !==
+    artifact.enforcement_readiness.approval_ref.boundary !==
     APPROVAL_FINAL_ACCEPTANCE_BOUNDARY
   ) {
-    throw new Error("approval stabilization boundary drifted");
+    throw new Error("enforcement readiness approval boundary drifted");
   }
-  const contract =
-    artifactSet.approvalStabilization.approval_stabilization.final_consumer_contract;
+  const scope = artifact.enforcement_readiness.scope_contract;
   if (
-    contract.acceptance_level !== APPROVAL_FINAL_ACCEPTANCE_READY ||
-    contract.recommendation_only !== true ||
-    contract.additive_only !== true ||
-    contract.override_execution_available !== false ||
-    contract.audit_output_preserved !== true ||
-    contract.audit_verdict_preserved !== true ||
-    contract.actual_exit_code_preserved !== true
+    scope.recommendation_only !== true ||
+    scope.additive_only !== true ||
+    scope.execution_enabled !== false ||
+    scope.default_on !== false ||
+    scope.authority_scope !== ENFORCEMENT_SCOPE_REVIEW_ONLY ||
+    scope.authority_scope_expansion !== false
   ) {
-    throw new Error("approval stabilization final consumer contract drifted");
+    throw new Error("enforcement readiness scope contract drifted");
   }
-  if (contract.denied_exit_code_preserved !== 25) {
-    throw new Error("approval stabilization deny exit code drifted");
-  }
+  const preservation = artifact.enforcement_readiness.preservation_contract;
   if (
-    contract.authority_scope !== "review_gate_deny_exit_recommendation_only"
+    preservation.audit_output_preserved !== true ||
+    preservation.audit_verdict_preserved !== true ||
+    preservation.actual_exit_code_preserved !== true ||
+    preservation.permit_gate_semantics_preserved !== true ||
+    preservation.enforcement_pilot_semantics_preserved !== true ||
+    preservation.limited_authority_semantics_preserved !== true ||
+    preservation.approval_semantics_preserved !== true ||
+    preservation.governance_object_addition !== false
   ) {
-    throw new Error("approval stabilization authority scope drifted");
+    throw new Error("enforcement readiness preservation contract drifted");
   }
-  if (contract.governance_object_addition !== false) {
-    throw new Error("approval stabilization governance object boundary drifted");
-  }
-  const semantics =
-    artifactSet.approvalStabilization.approval_stabilization.preserved_semantics;
-  if (
-    semantics.permit_gate_semantics_preserved !== true ||
-    semantics.enforcement_pilot_semantics_preserved !== true ||
-    semantics.limited_authority_semantics_preserved !== true ||
-    semantics.approval_exception_contract_preserved !== true ||
-    semantics.approval_waiver_contract_preserved !== true ||
-    semantics.approval_override_record_preserved !== true ||
-    semantics.approval_receipt_stable !== true
-  ) {
-    throw new Error("approval stabilization preserved semantics drifted");
+  if (preservation.denied_exit_code_preserved !== 25) {
+    throw new Error("enforcement readiness deny exit code drifted");
   }
 }
 
-for (const exportName of APPROVAL_STABILIZATION_STABLE_EXPORT_SET) {
+const surfaceEntry = ENFORCEMENT_SURFACE_MAP.bounded_enforcement_readiness;
+if (!surfaceEntry) {
+  throw new Error("enforcement surface entry missing");
+}
+if (surfaceEntry.contract.kind !== ENFORCEMENT_READINESS_KIND) {
+  throw new Error("enforcement surface contract kind drifted");
+}
+if (surfaceEntry.scope_contract.boundary !== "bounded_recommendation_only_scope_guard") {
+  throw new Error("enforcement surface scope boundary drifted");
+}
+
+for (const exportName of ENFORCEMENT_READINESS_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `approval stabilization export missing from permit index: ${exportName}`
+      `enforcement readiness export missing from permit index: ${exportName}`
     );
   }
 }
 
-if (
-  ENFORCEMENT_SURFACE_MAP.bounded_enforcement_readiness.contract.kind !==
-  "bounded_enforcement_readiness_profile"
-) {
-  throw new Error(
-    "approval stabilization downstream enforcement surface drifted"
-  );
+for (const exportName of ENFORCEMENT_SURFACE_STABLE_EXPORT_SET) {
+  if (!(exportName in permitExports)) {
+    throw new Error(
+      `enforcement surface export missing from permit index: ${exportName}`
+    );
+  }
 }
 
-process.stdout.write("governance approval stabilization verified\n");
+process.stdout.write("governance enforcement readiness verified\n");
