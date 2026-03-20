@@ -1,5 +1,7 @@
 import * as permitExports from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import {
+  APPROVAL_ARTIFACT_KIND,
+  APPROVAL_SURFACE_MAP,
   buildPermitGateResult,
   buildGovernanceDecisionRecord,
   buildLimitedEnforcementAuthorityResult,
@@ -250,6 +252,10 @@ if (
   review.profile.judgment_profile.limited_authority.current_audit_exit_code !== null
 ) {
   throw new Error("judgment stabilization current audit exit preservation drifted");
+}
+
+if (APPROVAL_SURFACE_MAP.approval_artifact.contract.kind !== APPROVAL_ARTIFACT_KIND) {
+  throw new Error("approval artifact surface contract drifted");
 }
 
 for (const exportName of JUDGMENT_STABILIZATION_STABLE_EXPORT_SET) {
