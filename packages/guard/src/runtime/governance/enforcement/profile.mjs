@@ -39,6 +39,7 @@ export const ENFORCEMENT_READINESS_PAYLOAD_FIELDS = Object.freeze([
   "approval_ref",
   "scope_contract",
   "preservation_contract",
+  "compatibility_refs",
 ]);
 export const ENFORCEMENT_READINESS_STABLE_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_READINESS_KIND",
@@ -106,6 +107,11 @@ export function buildEnforcementReadinessProfile({
         limited_authority_semantics_preserved: true,
         approval_semantics_preserved: true,
         governance_object_addition: false,
+      },
+      compatibility_refs: {
+        compatibility_profile_available: true,
+        authority_proof_contract_available: true,
+        rollback_safety_contract_available: true,
       },
     },
     deterministic: true,
@@ -252,6 +258,23 @@ export function validateEnforcementReadinessProfile(profile) {
     }
     if (contract.governance_object_addition !== false) {
       errors.push("enforcement readiness must not add governance objects");
+    }
+  }
+  if (!isPlainObject(payload.compatibility_refs)) {
+    errors.push("enforcement compatibility refs must be an object");
+  } else {
+    if (payload.compatibility_refs.compatibility_profile_available !== true) {
+      errors.push("enforcement compatibility profile availability drifted");
+    }
+    if (
+      payload.compatibility_refs.authority_proof_contract_available !== true
+    ) {
+      errors.push("enforcement authority proof availability drifted");
+    }
+    if (
+      payload.compatibility_refs.rollback_safety_contract_available !== true
+    ) {
+      errors.push("enforcement rollback safety availability drifted");
     }
   }
 

@@ -17,6 +17,38 @@ export {
   assertValidEnforcementReadinessProfile,
 } from "./profile.mjs";
 export {
+  AUTHORITY_PROOF_CONTRACT_KIND,
+  AUTHORITY_PROOF_CONTRACT_VERSION,
+  AUTHORITY_PROOF_CONTRACT_BOUNDARY,
+  buildAuthorityProofContract,
+  validateAuthorityProofContract,
+  assertValidAuthorityProofContract,
+} from "./proof.mjs";
+export {
+  ROLLBACK_SAFETY_CONTRACT_KIND,
+  ROLLBACK_SAFETY_CONTRACT_VERSION,
+  ROLLBACK_SAFETY_CONTRACT_BOUNDARY,
+  buildRollbackSafetyContract,
+  validateRollbackSafetyContract,
+  assertValidRollbackSafetyContract,
+} from "./rollback.mjs";
+export {
+  ENFORCEMENT_COMPATIBILITY_KIND,
+  ENFORCEMENT_COMPATIBILITY_VERSION,
+  ENFORCEMENT_COMPATIBILITY_SCHEMA_ID,
+  ENFORCEMENT_COMPATIBILITY_STAGE,
+  ENFORCEMENT_COMPATIBILITY_BOUNDARY,
+  ENFORCEMENT_RECEIPT_READY,
+  ENFORCEMENT_CONSUMER_COMPATIBLE,
+  ENFORCEMENT_COMPATIBILITY_LEVELS,
+  ENFORCEMENT_COMPATIBILITY_TOP_LEVEL_FIELDS,
+  ENFORCEMENT_COMPATIBILITY_PAYLOAD_FIELDS,
+  ENFORCEMENT_COMPATIBILITY_STABLE_EXPORT_SET,
+  buildEnforcementCompatibilityProfile,
+  validateEnforcementCompatibilityProfile,
+  assertValidEnforcementCompatibilityProfile,
+} from "./compatibility.mjs";
+export {
   ENFORCEMENT_SURFACE_VERSION,
   ENFORCEMENT_SURFACE_STABILITY,
   ENFORCEMENT_SURFACE_CONSUMER_TIER,

@@ -1,20 +1,27 @@
 import * as permitExports from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import {
-  APPROVAL_FINAL_ACCEPTANCE_BOUNDARY,
-  ENFORCEMENT_CONSUMER_SURFACE,
-  ENFORCEMENT_READINESS_BOUNDARY,
-  ENFORCEMENT_READINESS_KIND,
-  ENFORCEMENT_READINESS_SCHEMA_ID,
-  ENFORCEMENT_READINESS_STAGE,
-  ENFORCEMENT_READINESS_STABLE_EXPORT_SET,
-  ENFORCEMENT_READINESS_VERSION,
+  AUTHORITY_PROOF_CONTRACT_BOUNDARY,
+  AUTHORITY_PROOF_CONTRACT_KIND,
+  AUTHORITY_PROOF_CONTRACT_VERSION,
+  ENFORCEMENT_COMPATIBILITY_BOUNDARY,
+  ENFORCEMENT_COMPATIBILITY_KIND,
+  ENFORCEMENT_COMPATIBILITY_SCHEMA_ID,
+  ENFORCEMENT_COMPATIBILITY_STAGE,
+  ENFORCEMENT_COMPATIBILITY_STABLE_EXPORT_SET,
+  ENFORCEMENT_COMPATIBILITY_VERSION,
+  ENFORCEMENT_CONSUMER_COMPATIBLE,
+  ENFORCEMENT_RECEIPT_READY,
   ENFORCEMENT_SCOPE_REVIEW_ONLY,
   ENFORCEMENT_SURFACE_MAP,
   ENFORCEMENT_SURFACE_STABLE_EXPORT_SET,
+  ROLLBACK_SAFETY_CONTRACT_BOUNDARY,
+  ROLLBACK_SAFETY_CONTRACT_KIND,
+  ROLLBACK_SAFETY_CONTRACT_VERSION,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
   buildApprovalStabilizationProfile,
+  buildEnforcementCompatibilityProfile,
   buildEnforcementReadinessProfile,
   buildGovernanceDecisionRecord,
   buildJudgmentCompatibilityContract,
@@ -23,7 +30,7 @@ import {
   buildJudgmentStabilizationProfile,
   buildLimitedEnforcementAuthorityResult,
   buildPermitGateResult,
-  validateEnforcementReadinessProfile,
+  validateEnforcementCompatibilityProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -31,7 +38,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "sha256:abababababababababababababababababababababababababababababababab",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -66,7 +73,7 @@ function buildArtifacts(decision) {
         run_id: "run",
         mode: "local",
         git: {
-          head: "ffffffffffffffffffffffffffffffffffffffff",
+          head: "1212121212121212121212121212121212121212",
           branch: "branch",
         },
       },
@@ -122,10 +129,13 @@ function buildArtifacts(decision) {
     approvalReadinessProfile: approvalReadiness,
     approvalReceiptProfile: approvalReceipt,
   });
+  const enforcementReadiness = buildEnforcementReadinessProfile({
+    approvalStabilizationProfile: approvalStabilization,
+  });
 
   return {
-    enforcementReadiness: buildEnforcementReadinessProfile({
-      approvalStabilizationProfile: approvalStabilization,
+    enforcementCompatibility: buildEnforcementCompatibilityProfile({
+      enforcementReadinessProfile: enforcementReadiness,
     }),
   };
 }
@@ -137,92 +147,101 @@ for (const decision of [
   "would_deny",
 ]) {
   const artifactSet = buildArtifacts(decision);
-  const validation = validateEnforcementReadinessProfile(
-    artifactSet.enforcementReadiness
+  const validation = validateEnforcementCompatibilityProfile(
+    artifactSet.enforcementCompatibility
   );
   if (!validation.ok) {
     throw new Error(
-      `enforcement readiness validation failed: ${validation.errors.join("; ")}`
+      `enforcement compatibility validation failed: ${validation.errors.join("; ")}`
     );
   }
 
-  const artifact = artifactSet.enforcementReadiness;
-  if (artifact.kind !== ENFORCEMENT_READINESS_KIND) {
-    throw new Error("enforcement readiness kind drifted");
+  const artifact = artifactSet.enforcementCompatibility;
+  if (artifact.kind !== ENFORCEMENT_COMPATIBILITY_KIND) {
+    throw new Error("enforcement compatibility kind drifted");
   }
-  if (artifact.version !== ENFORCEMENT_READINESS_VERSION) {
-    throw new Error("enforcement readiness version drifted");
+  if (artifact.version !== ENFORCEMENT_COMPATIBILITY_VERSION) {
+    throw new Error("enforcement compatibility version drifted");
   }
-  if (artifact.schema_id !== ENFORCEMENT_READINESS_SCHEMA_ID) {
-    throw new Error("enforcement readiness schema id drifted");
-  }
-  if (artifact.enforcement_readiness.stage !== ENFORCEMENT_READINESS_STAGE) {
-    throw new Error("enforcement readiness stage drifted");
+  if (artifact.schema_id !== ENFORCEMENT_COMPATIBILITY_SCHEMA_ID) {
+    throw new Error("enforcement compatibility schema id drifted");
   }
   if (
-    artifact.enforcement_readiness.consumer_surface !==
-    ENFORCEMENT_CONSUMER_SURFACE
+    artifact.enforcement_compatibility.stage !== ENFORCEMENT_COMPATIBILITY_STAGE
   ) {
-    throw new Error("enforcement readiness consumer surface drifted");
+    throw new Error("enforcement compatibility stage drifted");
   }
   if (
-    artifact.enforcement_readiness.boundary !== ENFORCEMENT_READINESS_BOUNDARY
+    artifact.enforcement_compatibility.boundary !==
+    ENFORCEMENT_COMPATIBILITY_BOUNDARY
   ) {
-    throw new Error("enforcement readiness boundary drifted");
+    throw new Error("enforcement compatibility boundary drifted");
   }
+
+  const proof = artifact.enforcement_compatibility.authority_proof_contract;
   if (
-    artifact.enforcement_readiness.approval_ref.boundary !==
-    APPROVAL_FINAL_ACCEPTANCE_BOUNDARY
+    proof.kind !== AUTHORITY_PROOF_CONTRACT_KIND ||
+    proof.version !== AUTHORITY_PROOF_CONTRACT_VERSION ||
+    proof.boundary !== AUTHORITY_PROOF_CONTRACT_BOUNDARY ||
+    proof.recommendation_only !== true ||
+    proof.additive_only !== true ||
+    proof.execution_enabled !== false ||
+    proof.default_on !== false ||
+    proof.authority_scope !== ENFORCEMENT_SCOPE_REVIEW_ONLY ||
+    proof.authority_scope_expansion !== false ||
+    proof.proof_ready !== true
   ) {
-    throw new Error("enforcement readiness approval boundary drifted");
+    throw new Error("authority proof contract drifted");
   }
-  const scope = artifact.enforcement_readiness.scope_contract;
+
+  const rollback = artifact.enforcement_compatibility.rollback_safety_contract;
   if (
-    scope.recommendation_only !== true ||
-    scope.additive_only !== true ||
-    scope.execution_enabled !== false ||
-    scope.default_on !== false ||
-    scope.authority_scope !== ENFORCEMENT_SCOPE_REVIEW_ONLY ||
-    scope.authority_scope_expansion !== false
+    rollback.kind !== ROLLBACK_SAFETY_CONTRACT_KIND ||
+    rollback.version !== ROLLBACK_SAFETY_CONTRACT_VERSION ||
+    rollback.boundary !== ROLLBACK_SAFETY_CONTRACT_BOUNDARY ||
+    rollback.rollback_execution_enabled !== false ||
+    rollback.override_execution_enabled !== false ||
+    rollback.audit_output_preserved !== true ||
+    rollback.audit_verdict_preserved !== true ||
+    rollback.actual_exit_code_preserved !== true ||
+    rollback.denied_exit_code_preserved !== 25 ||
+    rollback.governance_object_addition !== false ||
+    rollback.rollback_safe !== true
   ) {
-    throw new Error("enforcement readiness scope contract drifted");
+    throw new Error("rollback safety contract drifted");
   }
-  const preservation = artifact.enforcement_readiness.preservation_contract;
+
+  const receipt = artifact.enforcement_compatibility.receipt_readiness;
   if (
-    preservation.audit_output_preserved !== true ||
-    preservation.audit_verdict_preserved !== true ||
-    preservation.actual_exit_code_preserved !== true ||
-    preservation.permit_gate_semantics_preserved !== true ||
-    preservation.enforcement_pilot_semantics_preserved !== true ||
-    preservation.limited_authority_semantics_preserved !== true ||
-    preservation.approval_semantics_preserved !== true ||
-    preservation.governance_object_addition !== false
+    receipt.level !== ENFORCEMENT_RECEIPT_READY ||
+    receipt.proof_ready !== true ||
+    receipt.rollback_safe !== true ||
+    receipt.recommendation_only !== true
   ) {
-    throw new Error("enforcement readiness preservation contract drifted");
+    throw new Error("enforcement receipt readiness drifted");
   }
-  if (preservation.denied_exit_code_preserved !== 25) {
-    throw new Error("enforcement readiness deny exit code drifted");
+
+  const compatibility = artifact.enforcement_compatibility.consumer_compatibility;
+  if (
+    compatibility.level !== ENFORCEMENT_CONSUMER_COMPATIBLE ||
+    compatibility.additive_only !== true ||
+    compatibility.non_executing !== true ||
+    compatibility.default_off !== true ||
+    compatibility.authority_scope !== ENFORCEMENT_SCOPE_REVIEW_ONLY ||
+    compatibility.denied_exit_code_preserved !== 25
+  ) {
+    throw new Error("enforcement consumer compatibility drifted");
   }
 }
 
-const surfaceEntry = ENFORCEMENT_SURFACE_MAP.bounded_enforcement_readiness;
-if (!surfaceEntry) {
-  throw new Error("enforcement surface entry missing");
-}
-if (surfaceEntry.contract.kind !== ENFORCEMENT_READINESS_KIND) {
-  throw new Error("enforcement surface contract kind drifted");
-}
-if (surfaceEntry.scope_contract.boundary !== "bounded_recommendation_only_scope_guard") {
-  throw new Error("enforcement surface scope boundary drifted");
-}
 if (!ENFORCEMENT_SURFACE_MAP.enforcement_compatibility) {
   throw new Error("enforcement compatibility surface entry missing");
 }
 
-for (const exportName of ENFORCEMENT_READINESS_STABLE_EXPORT_SET) {
+for (const exportName of ENFORCEMENT_COMPATIBILITY_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `enforcement readiness export missing from permit index: ${exportName}`
+      `enforcement compatibility export missing from permit index: ${exportName}`
     );
   }
 }
@@ -235,4 +254,4 @@ for (const exportName of ENFORCEMENT_SURFACE_STABLE_EXPORT_SET) {
   }
 }
 
-process.stdout.write("governance enforcement readiness verified\n");
+process.stdout.write("governance enforcement compatibility verified\n");
