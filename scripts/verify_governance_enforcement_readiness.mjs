@@ -218,6 +218,9 @@ if (surfaceEntry.scope_contract.boundary !== "bounded_recommendation_only_scope_
 if (!ENFORCEMENT_SURFACE_MAP.enforcement_compatibility) {
   throw new Error("enforcement compatibility surface entry missing");
 }
+if (!ENFORCEMENT_SURFACE_MAP.enforcement_stabilization) {
+  throw new Error("enforcement stabilization surface entry missing");
+}
 
 for (const exportName of ENFORCEMENT_READINESS_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
