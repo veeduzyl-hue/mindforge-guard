@@ -31,6 +31,10 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_STAGE =
   "promoted_limited_authority_pilot_v1";
 export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_BOUNDARY =
   "promoted_explicit_opt_in_recommendation_only_authority_sidecar";
+export const LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_STAGE =
+  "stable_limited_authority_pilot_v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_ACCEPTANCE_BOUNDARY =
+  "stable_explicit_opt_in_recommendation_only_authority_sidecar";
 export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
 export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
 export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
@@ -133,6 +137,12 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS = Object.freeze([
   "promoted_recommendation_scope_only",
   "promoted_non_executing_authority_only",
 ]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_GUARDS = Object.freeze([
+  "stable_acceptance_boundary_frozen",
+  "stable_promoted_export_base_frozen",
+  "stable_recommendation_only_authority_only",
+  "stable_non_executing_audit_adjacent_sidecar_only",
+]);
 export const ENFORCEMENT_PILOT_SUPPORTED_DECISIONS = Object.freeze([
   "would_allow",
   "would_review",
@@ -228,6 +238,16 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET = Object.freeze([
   "validateLimitedEnforcementAuthorityPromotion",
   "assertValidLimitedEnforcementAuthorityPromotion",
 ]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET =
+  Object.freeze([
+    ...LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET,
+    "LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_STAGE",
+    "LIMITED_ENFORCEMENT_AUTHORITY_ACCEPTANCE_BOUNDARY",
+    "LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_GUARDS",
+    "LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET",
+    "validateLimitedEnforcementAuthorityStabilization",
+    "assertValidLimitedEnforcementAuthorityStabilization",
+  ]);
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -1020,6 +1040,93 @@ export function assertValidLimitedEnforcementAuthorityPromotion(result) {
   throw err;
 }
 
+export function validateLimitedEnforcementAuthorityStabilization(result) {
+  const errors = [];
+  const validation = validateLimitedEnforcementAuthorityPromotion(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_STAGE !==
+    "stable_limited_authority_pilot_v1"
+  ) {
+    errors.push("limited enforcement authority stabilization stage drifted");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_ACCEPTANCE_BOUNDARY !==
+    "stable_explicit_opt_in_recommendation_only_authority_sidecar"
+  ) {
+    errors.push("limited enforcement authority acceptance boundary drifted");
+  }
+  for (const guard of [
+    "stable_acceptance_boundary_frozen",
+    "stable_promoted_export_base_frozen",
+    "stable_recommendation_only_authority_only",
+    "stable_non_executing_audit_adjacent_sidecar_only",
+  ]) {
+    if (!LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_GUARDS.includes(guard)) {
+      errors.push(
+        `limited enforcement authority stabilization guard missing: ${guard}`
+      );
+    }
+  }
+  if (
+    JSON.stringify(
+      LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET.slice(
+        0,
+        LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length
+      )
+    ) !== JSON.stringify(LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET)
+  ) {
+    errors.push(
+      "limited enforcement authority stabilization export set drifted from promotion export base"
+    );
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_GUARDS).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_GUARDS.length
+  ) {
+    errors.push(
+      "limited enforcement authority stabilization guards contain duplicates"
+    );
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET.length
+  ) {
+    errors.push(
+      "limited enforcement authority stabilization export set contains duplicates"
+    );
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET.length - 2
+    ] !== "validateLimitedEnforcementAuthorityStabilization" ||
+    LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_STABILIZATION_EXPORT_SET.length - 1
+    ] !== "assertValidLimitedEnforcementAuthorityStabilization"
+  ) {
+    errors.push("limited enforcement authority stabilization export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidLimitedEnforcementAuthorityStabilization(result) {
+  const validation = validateLimitedEnforcementAuthorityStabilization(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `limited enforcement authority stabilization invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
 export function serializeEnforcementPilotResult(result, { pretty = false } = {}) {
   const validated = assertValidEnforcementPilotFinalization(result);
   const payload = validated.enforcement_pilot;
@@ -1053,7 +1160,7 @@ export function serializeLimitedEnforcementAuthorityResult(
   result,
   { pretty = false } = {}
 ) {
-  const validated = assertValidLimitedEnforcementAuthorityPromotion(result);
+  const validated = assertValidLimitedEnforcementAuthorityStabilization(result);
   const payload = validated.limited_enforcement_authority;
   const ordered = {
     kind: validated.kind,
