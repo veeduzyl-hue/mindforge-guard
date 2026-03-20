@@ -27,6 +27,10 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_SCOPE =
 export const LIMITED_ENFORCEMENT_AUTHORITY_STAGE = "limited_authority_pilot_v1";
 export const LIMITED_ENFORCEMENT_AUTHORITY_HARDENING_STAGE =
   "stable_limited_authority_sidecar_v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_STAGE =
+  "promoted_limited_authority_pilot_v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_BOUNDARY =
+  "promoted_explicit_opt_in_recommendation_only_authority_sidecar";
 export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
 export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
 export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
@@ -123,6 +127,12 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_HARDENING_GUARDS = Object.freeze([
   "stable_recommendation_scope_frozen",
   "stable_non_executing_authority_only",
 ]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS = Object.freeze([
+  "promoted_contract_only",
+  "promoted_export_boundary_frozen",
+  "promoted_recommendation_scope_only",
+  "promoted_non_executing_authority_only",
+]);
 export const ENFORCEMENT_PILOT_SUPPORTED_DECISIONS = Object.freeze([
   "would_allow",
   "would_review",
@@ -195,6 +205,8 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET = Object.freeze([
   "LIMITED_ENFORCEMENT_AUTHORITY_SCOPE",
   "LIMITED_ENFORCEMENT_AUTHORITY_STAGE",
   "LIMITED_ENFORCEMENT_AUTHORITY_HARDENING_STAGE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_STAGE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_BOUNDARY",
   "LIMITED_ENFORCEMENT_AUTHORITY_OUTPUT_ENCODING",
   "LIMITED_ENFORCEMENT_AUTHORITY_OUTPUT_EOL",
   "LIMITED_ENFORCEMENT_AUTHORITY_PRETTY_INDENT",
@@ -202,6 +214,7 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET = Object.freeze([
   "LIMITED_ENFORCEMENT_AUTHORITY_PAYLOAD_FIELDS",
   "LIMITED_ENFORCEMENT_AUTHORITY_GUARDS",
   "LIMITED_ENFORCEMENT_AUTHORITY_HARDENING_GUARDS",
+  "LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS",
   "LIMITED_ENFORCEMENT_AUTHORITY_STATUSES",
   "LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET",
   "buildLimitedEnforcementAuthorityResult",
@@ -212,6 +225,8 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET = Object.freeze([
   "assertValidLimitedEnforcementAuthorityPilot",
   "validateLimitedEnforcementAuthorityHardening",
   "assertValidLimitedEnforcementAuthorityHardening",
+  "validateLimitedEnforcementAuthorityPromotion",
+  "assertValidLimitedEnforcementAuthorityPromotion",
 ]);
 
 function isPlainObject(value) {
@@ -915,14 +930,14 @@ export function validateLimitedEnforcementAuthorityHardening(result) {
     errors.push("limited enforcement authority export set contains duplicates");
   }
   if (
-    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
-      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 2
-    ] !== "validateLimitedEnforcementAuthorityHardening" ||
-    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
-      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 1
-    ] !== "assertValidLimitedEnforcementAuthorityHardening"
+    !LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.includes(
+      "validateLimitedEnforcementAuthorityHardening"
+    ) ||
+    !LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.includes(
+      "assertValidLimitedEnforcementAuthorityHardening"
+    )
   ) {
-    errors.push("limited enforcement authority hardening export tail drifted");
+    errors.push("limited enforcement authority hardening exports drifted");
   }
 
   return {
@@ -937,6 +952,69 @@ export function assertValidLimitedEnforcementAuthorityHardening(result) {
 
   const err = new Error(
     `limited enforcement authority hardening invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
+export function validateLimitedEnforcementAuthorityPromotion(result) {
+  const errors = [];
+  const validation = validateLimitedEnforcementAuthorityHardening(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_STAGE !==
+    "promoted_limited_authority_pilot_v1"
+  ) {
+    errors.push("limited enforcement authority promotion stage drifted");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_BOUNDARY !==
+    "promoted_explicit_opt_in_recommendation_only_authority_sidecar"
+  ) {
+    errors.push("limited enforcement authority promotion boundary drifted");
+  }
+  for (const guard of [
+    "promoted_contract_only",
+    "promoted_export_boundary_frozen",
+    "promoted_recommendation_scope_only",
+    "promoted_non_executing_authority_only",
+  ]) {
+    if (!LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS.includes(guard)) {
+      errors.push(`limited enforcement authority promotion guard missing: ${guard}`);
+    }
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_PROMOTION_GUARDS.length
+  ) {
+    errors.push("limited enforcement authority promotion guards contain duplicates");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 2
+    ] !== "validateLimitedEnforcementAuthorityPromotion" ||
+    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 1
+    ] !== "assertValidLimitedEnforcementAuthorityPromotion"
+  ) {
+    errors.push("limited enforcement authority promotion export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidLimitedEnforcementAuthorityPromotion(result) {
+  const validation = validateLimitedEnforcementAuthorityPromotion(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `limited enforcement authority promotion invalid: ${validation.errors.join("; ")}`
   );
   err.validation = validation;
   throw err;
@@ -975,7 +1053,7 @@ export function serializeLimitedEnforcementAuthorityResult(
   result,
   { pretty = false } = {}
 ) {
-  const validated = assertValidLimitedEnforcementAuthorityHardening(result);
+  const validated = assertValidLimitedEnforcementAuthorityPromotion(result);
   const payload = validated.limited_enforcement_authority;
   const ordered = {
     kind: validated.kind,
