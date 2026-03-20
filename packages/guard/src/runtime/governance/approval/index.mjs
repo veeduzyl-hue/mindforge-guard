@@ -61,3 +61,17 @@ export {
   validateApprovalReceiptProfile,
   assertValidApprovalReceiptProfile,
 } from "./receipt.mjs";
+export {
+  APPROVAL_STABILIZATION_KIND,
+  APPROVAL_STABILIZATION_VERSION,
+  APPROVAL_STABILIZATION_SCHEMA_ID,
+  APPROVAL_STABILIZATION_STAGE,
+  APPROVAL_FINAL_ACCEPTANCE_BOUNDARY,
+  APPROVAL_FINAL_ACCEPTANCE_READY,
+  APPROVAL_STABILIZATION_TOP_LEVEL_FIELDS,
+  APPROVAL_STABILIZATION_PAYLOAD_FIELDS,
+  APPROVAL_STABILIZATION_STABLE_EXPORT_SET,
+  buildApprovalStabilizationProfile,
+  validateApprovalStabilizationProfile,
+  assertValidApprovalStabilizationProfile,
+} from "./stabilization.mjs";
