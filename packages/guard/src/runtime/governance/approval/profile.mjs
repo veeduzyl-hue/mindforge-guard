@@ -47,6 +47,7 @@ export const APPROVAL_ARTIFACT_PAYLOAD_FIELDS = Object.freeze([
   "judgment_refs",
   "approval_profile",
   "exception_contract",
+  "readiness_refs",
 ]);
 export const APPROVAL_ARTIFACT_STABLE_EXPORT_SET = Object.freeze([
   "APPROVAL_ARTIFACT_KIND",
@@ -139,6 +140,11 @@ export function buildApprovalArtifactProfile({
         actual_exit_code_preserved: true,
         denied_exit_code_preserved: 25,
         authority_scope: "review_gate_deny_exit_recommendation_only",
+      },
+      readiness_refs: {
+        readiness_profile_available: true,
+        approval_receipt_available: true,
+        override_record_contract: "approval_override_record",
       },
     },
     deterministic: true,
@@ -281,6 +287,22 @@ export function validateApprovalArtifactProfile(profile) {
       "review_gate_deny_exit_recommendation_only"
     ) {
       errors.push("approval exception contract authority scope drifted");
+    }
+  }
+  if (!isPlainObject(payload.readiness_refs)) {
+    errors.push("approval readiness refs must be an object");
+  } else {
+    if (payload.readiness_refs.readiness_profile_available !== true) {
+      errors.push("approval readiness profile availability drifted");
+    }
+    if (payload.readiness_refs.approval_receipt_available !== true) {
+      errors.push("approval receipt availability drifted");
+    }
+    if (
+      payload.readiness_refs.override_record_contract !==
+      "approval_override_record"
+    ) {
+      errors.push("approval override record contract drifted");
     }
   }
 
