@@ -14,6 +14,17 @@ export const ENFORCEMENT_PILOT_ACCEPTANCE_BOUNDARY =
 export const ENFORCEMENT_PILOT_FINALIZATION_STAGE = "finalized_non_authority_pilot_v1";
 export const ENFORCEMENT_PILOT_FINAL_ACCEPTANCE_BOUNDARY =
   "final_explicit_opt_in_non_authority_audit_adjacent_sidecar_pilot";
+export const LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND =
+  "limited_enforcement_authority_result";
+export const LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION = "v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_MODE = "explicit_opt_in";
+export const LIMITED_ENFORCEMENT_AUTHORITY_DEFAULT_STATE = "disabled";
+export const LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE = "guard.audit";
+export const LIMITED_ENFORCEMENT_AUTHORITY_BOUNDARY =
+  "explicit_opt_in_limited_authority_sidecar";
+export const LIMITED_ENFORCEMENT_AUTHORITY_SCOPE =
+  "review_gate_deny_exit_recommendation_only";
+export const LIMITED_ENFORCEMENT_AUTHORITY_STAGE = "limited_authority_pilot_v1";
 export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
 export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
 export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
@@ -35,6 +46,29 @@ export const ENFORCEMENT_PILOT_PAYLOAD_FIELDS = Object.freeze([
   "bridge_verdict",
   "current_audit_verdict",
   "current_audit_exit_code",
+  "reasons",
+]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_TOP_LEVEL_FIELDS = Object.freeze([
+  "kind",
+  "version",
+  "canonical_action_hash",
+  "limited_enforcement_authority",
+  "deterministic",
+  "authority_active",
+]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_PAYLOAD_FIELDS = Object.freeze([
+  "mode",
+  "default_state",
+  "consumer_surface",
+  "authority_boundary",
+  "authority_scope",
+  "authority_status",
+  "decision",
+  "readiness",
+  "bridge_verdict",
+  "current_audit_verdict",
+  "current_audit_exit_code",
+  "proposed_audit_exit_code",
   "reasons",
 ]);
 export const ENFORCEMENT_PILOT_COMPATIBILITY_GUARDS = Object.freeze([
@@ -64,11 +98,26 @@ export const ENFORCEMENT_PILOT_FINALIZATION_GATES = Object.freeze([
   "final_audit_adjacent_sidecar_only",
   "final_default_off_explicit_opt_in_only",
 ]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_GUARDS = Object.freeze([
+  "explicit_opt_in_only",
+  "default_off_only",
+  "local_audit_only",
+  "audit_adjacent_sidecar_only",
+  "no_audit_output_mutation",
+  "no_audit_verdict_mutation",
+  "no_exit_code_mutation",
+  "review_gate_deny_exit_recommendation_only",
+]);
 export const ENFORCEMENT_PILOT_SUPPORTED_DECISIONS = Object.freeze([
   "would_allow",
   "would_review",
   "would_deny",
   "insufficient_signal",
+]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_STATUSES = Object.freeze([
+  "inactive",
+  "would_require_review",
+  "would_apply_deny_exit_code",
 ]);
 export const ENFORCEMENT_PILOT_STABLE_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_PILOT_RESULT_KIND",
@@ -120,6 +169,28 @@ export const ENFORCEMENT_PILOT_FINAL_EXPORT_SET = Object.freeze([
   "validateEnforcementPilotFinalization",
   "assertValidEnforcementPilotFinalization",
 ]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET = Object.freeze([
+  ...ENFORCEMENT_PILOT_FINAL_EXPORT_SET,
+  "LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND",
+  "LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION",
+  "LIMITED_ENFORCEMENT_AUTHORITY_MODE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_DEFAULT_STATE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_BOUNDARY",
+  "LIMITED_ENFORCEMENT_AUTHORITY_SCOPE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_STAGE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_TOP_LEVEL_FIELDS",
+  "LIMITED_ENFORCEMENT_AUTHORITY_PAYLOAD_FIELDS",
+  "LIMITED_ENFORCEMENT_AUTHORITY_GUARDS",
+  "LIMITED_ENFORCEMENT_AUTHORITY_STATUSES",
+  "LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET",
+  "buildLimitedEnforcementAuthorityResult",
+  "serializeLimitedEnforcementAuthorityResult",
+  "validateLimitedEnforcementAuthorityResult",
+  "assertValidLimitedEnforcementAuthorityResult",
+  "validateLimitedEnforcementAuthorityPilot",
+  "assertValidLimitedEnforcementAuthorityPilot",
+]);
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -162,6 +233,59 @@ export function buildEnforcementPilotResult({
     },
     deterministic: true,
     enforcing: false,
+  };
+}
+
+export function buildLimitedEnforcementAuthorityResult({
+  audit,
+  canonicalActionArtifact,
+  executionReadinessArtifact,
+  enforcementAdjacentDecisionArtifact,
+  deniedExitCode = 25,
+}) {
+  const decision =
+    enforcementAdjacentDecisionArtifact?.enforcement_adjacent_decision?.decision ||
+    "insufficient_signal";
+  const readiness =
+    executionReadinessArtifact?.execution_readiness?.readiness || "unknown";
+  const bridgeVerdict =
+    executionReadinessArtifact?.execution_readiness?.bridge_verdict || "unknown";
+  const reasons = Array.isArray(
+    enforcementAdjacentDecisionArtifact?.enforcement_adjacent_decision?.reasons
+  )
+    ? enforcementAdjacentDecisionArtifact.enforcement_adjacent_decision.reasons
+    : [];
+
+  let authorityStatus = "inactive";
+  let proposedAuditExitCode = null;
+  if (decision === "would_deny") {
+    authorityStatus = "would_apply_deny_exit_code";
+    proposedAuditExitCode = deniedExitCode;
+  } else if (decision === "would_review") {
+    authorityStatus = "would_require_review";
+  }
+
+  return {
+    kind: LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND,
+    version: LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION,
+    canonical_action_hash: canonicalActionArtifact?.canonical_action_hash,
+    limited_enforcement_authority: {
+      mode: LIMITED_ENFORCEMENT_AUTHORITY_MODE,
+      default_state: LIMITED_ENFORCEMENT_AUTHORITY_DEFAULT_STATE,
+      consumer_surface: LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE,
+      authority_boundary: LIMITED_ENFORCEMENT_AUTHORITY_BOUNDARY,
+      authority_scope: LIMITED_ENFORCEMENT_AUTHORITY_SCOPE,
+      authority_status: authorityStatus,
+      decision,
+      readiness,
+      bridge_verdict: bridgeVerdict,
+      current_audit_verdict: audit?.evaluation?.verdict || "unknown",
+      current_audit_exit_code: null,
+      proposed_audit_exit_code: proposedAuditExitCode,
+      reasons,
+    },
+    deterministic: true,
+    authority_active: authorityStatus !== "inactive",
   };
 }
 
@@ -231,6 +355,116 @@ export function assertValidEnforcementPilotResult(result) {
 
   const err = new Error(
     `enforcement pilot result invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
+export function validateLimitedEnforcementAuthorityResult(result) {
+  const errors = [];
+
+  if (!isPlainObject(result)) {
+    return {
+      ok: false,
+      errors: ["limited enforcement authority result must be an object"],
+    };
+  }
+  if (result.kind !== LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND) {
+    errors.push("limited enforcement authority result kind drifted");
+  }
+  if (result.version !== LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION) {
+    errors.push("limited enforcement authority result version drifted");
+  }
+  if (
+    typeof result.canonical_action_hash !== "string" ||
+    result.canonical_action_hash.length === 0
+  ) {
+    errors.push("limited enforcement authority canonical_action_hash is required");
+  }
+  if (!isPlainObject(result.limited_enforcement_authority)) {
+    errors.push("limited enforcement authority payload must be an object");
+  } else {
+    const payload = result.limited_enforcement_authority;
+    if (
+      JSON.stringify(Object.keys(payload)) !==
+      JSON.stringify(LIMITED_ENFORCEMENT_AUTHORITY_PAYLOAD_FIELDS)
+    ) {
+      errors.push("limited enforcement authority payload field order drifted");
+    }
+    if (payload.mode !== LIMITED_ENFORCEMENT_AUTHORITY_MODE) {
+      errors.push("limited enforcement authority mode drifted");
+    }
+    if (payload.default_state !== LIMITED_ENFORCEMENT_AUTHORITY_DEFAULT_STATE) {
+      errors.push("limited enforcement authority default state drifted");
+    }
+    if (
+      payload.consumer_surface !== LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE
+    ) {
+      errors.push("limited enforcement authority consumer surface drifted");
+    }
+    if (payload.authority_boundary !== LIMITED_ENFORCEMENT_AUTHORITY_BOUNDARY) {
+      errors.push("limited enforcement authority boundary drifted");
+    }
+    if (payload.authority_scope !== LIMITED_ENFORCEMENT_AUTHORITY_SCOPE) {
+      errors.push("limited enforcement authority scope drifted");
+    }
+    if (
+      !LIMITED_ENFORCEMENT_AUTHORITY_STATUSES.includes(payload.authority_status)
+    ) {
+      errors.push("limited enforcement authority status is invalid");
+    }
+    if (!ENFORCEMENT_PILOT_SUPPORTED_DECISIONS.includes(payload.decision)) {
+      errors.push("limited enforcement authority decision is invalid");
+    }
+    if (!Array.isArray(payload.reasons)) {
+      errors.push("limited enforcement authority reasons must be an array");
+    }
+    if (payload.current_audit_exit_code !== null) {
+      errors.push("limited enforcement authority must not claim current audit exit code");
+    }
+    if (
+      payload.authority_status === "would_apply_deny_exit_code" &&
+      payload.proposed_audit_exit_code !== 25
+    ) {
+      errors.push("limited enforcement authority deny recommendation drifted");
+    }
+    if (
+      payload.authority_status !== "would_apply_deny_exit_code" &&
+      payload.proposed_audit_exit_code !== null
+    ) {
+      errors.push(
+        "limited enforcement authority proposed audit exit code must remain null outside deny recommendation"
+      );
+    }
+  }
+  if (result.deterministic !== true) {
+    errors.push("limited enforcement authority result must remain deterministic");
+  }
+  if (
+    result.authority_active !==
+    (result.limited_enforcement_authority?.authority_status !== "inactive")
+  ) {
+    errors.push("limited enforcement authority activation state drifted");
+  }
+  if (
+    JSON.stringify(Object.keys(result)) !==
+    JSON.stringify(LIMITED_ENFORCEMENT_AUTHORITY_TOP_LEVEL_FIELDS)
+  ) {
+    errors.push("limited enforcement authority top-level field order drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidLimitedEnforcementAuthorityResult(result) {
+  const validation = validateLimitedEnforcementAuthorityResult(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `limited enforcement authority result invalid: ${validation.errors.join("; ")}`
   );
   err.validation = validation;
   throw err;
@@ -527,6 +761,82 @@ export function assertValidEnforcementPilotFinalization(result) {
   throw err;
 }
 
+export function validateLimitedEnforcementAuthorityPilot(result) {
+  const errors = [];
+  const validation = validateLimitedEnforcementAuthorityResult(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (LIMITED_ENFORCEMENT_AUTHORITY_STAGE !== "limited_authority_pilot_v1") {
+    errors.push("limited enforcement authority stage drifted");
+  }
+  for (const guard of [
+    "explicit_opt_in_only",
+    "default_off_only",
+    "local_audit_only",
+    "audit_adjacent_sidecar_only",
+    "no_audit_output_mutation",
+    "no_audit_verdict_mutation",
+    "no_exit_code_mutation",
+    "review_gate_deny_exit_recommendation_only",
+  ]) {
+    if (!LIMITED_ENFORCEMENT_AUTHORITY_GUARDS.includes(guard)) {
+      errors.push(`limited enforcement authority guard missing: ${guard}`);
+    }
+  }
+  if (
+    JSON.stringify(
+      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.slice(
+        0,
+        ENFORCEMENT_PILOT_FINAL_EXPORT_SET.length
+      )
+    ) !== JSON.stringify(ENFORCEMENT_PILOT_FINAL_EXPORT_SET)
+  ) {
+    errors.push(
+      "limited enforcement authority export set drifted from enforcement pilot final export base"
+    );
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_GUARDS).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_GUARDS.length
+  ) {
+    errors.push("limited enforcement authority guards contain duplicates");
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length
+  ) {
+    errors.push("limited enforcement authority export set contains duplicates");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 2
+    ] !== "validateLimitedEnforcementAuthorityPilot" ||
+    LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_EXPORT_SET.length - 1
+    ] !== "assertValidLimitedEnforcementAuthorityPilot"
+  ) {
+    errors.push("limited enforcement authority export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidLimitedEnforcementAuthorityPilot(result) {
+  const validation = validateLimitedEnforcementAuthorityPilot(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `limited enforcement authority pilot invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
 export function serializeEnforcementPilotResult(result, { pretty = false } = {}) {
   const validated = assertValidEnforcementPilotFinalization(result);
   const payload = validated.enforcement_pilot;
@@ -548,6 +858,41 @@ export function serializeEnforcementPilotResult(result, { pretty = false } = {})
     },
     deterministic: validated.deterministic,
     enforcing: validated.enforcing,
+  };
+
+  return (
+    JSON.stringify(ordered, null, pretty ? ENFORCEMENT_PILOT_PRETTY_INDENT : 0) +
+    ENFORCEMENT_PILOT_OUTPUT_EOL
+  );
+}
+
+export function serializeLimitedEnforcementAuthorityResult(
+  result,
+  { pretty = false } = {}
+) {
+  const validated = assertValidLimitedEnforcementAuthorityPilot(result);
+  const payload = validated.limited_enforcement_authority;
+  const ordered = {
+    kind: validated.kind,
+    version: validated.version,
+    canonical_action_hash: validated.canonical_action_hash,
+    limited_enforcement_authority: {
+      mode: payload.mode,
+      default_state: payload.default_state,
+      consumer_surface: payload.consumer_surface,
+      authority_boundary: payload.authority_boundary,
+      authority_scope: payload.authority_scope,
+      authority_status: payload.authority_status,
+      decision: payload.decision,
+      readiness: payload.readiness,
+      bridge_verdict: payload.bridge_verdict,
+      current_audit_verdict: payload.current_audit_verdict,
+      current_audit_exit_code: payload.current_audit_exit_code,
+      proposed_audit_exit_code: payload.proposed_audit_exit_code,
+      reasons: payload.reasons,
+    },
+    deterministic: validated.deterministic,
+    authority_active: validated.authority_active,
   };
 
   return (
