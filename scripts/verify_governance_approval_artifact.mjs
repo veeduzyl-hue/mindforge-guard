@@ -18,6 +18,9 @@ import {
   APPROVAL_SURFACE_MAP,
   assertValidApprovalSurface,
   buildApprovalArtifactProfile,
+  buildApprovalReadinessProfile,
+  buildApprovalReceiptProfile,
+  buildApprovalStabilizationProfile,
   buildGovernanceDecisionRecord,
   buildJudgmentCompatibilityContract,
   buildJudgmentProfile,
@@ -114,8 +117,20 @@ function buildArtifacts(decision) {
     judgmentProfile,
     judgmentStabilizationProfile: stabilization,
   });
+  const approvalReadiness = buildApprovalReadinessProfile({
+    approvalArtifactProfile: approval,
+  });
+  const approvalReceipt = buildApprovalReceiptProfile({
+    approvalArtifactProfile: approval,
+    approvalReadinessProfile: approvalReadiness,
+  });
+  const approvalStabilization = buildApprovalStabilizationProfile({
+    approvalArtifactProfile: approval,
+    approvalReadinessProfile: approvalReadiness,
+    approvalReceiptProfile: approvalReceipt,
+  });
 
-  return { judgmentProfile, approval };
+  return { judgmentProfile, approval, approvalStabilization };
 }
 
 assertValidApprovalSurface();
@@ -208,6 +223,16 @@ for (const artifactSet of [insufficient, allow, review, deny]) {
     readinessRefs.override_record_contract !== "approval_override_record"
   ) {
     throw new Error("approval readiness refs drifted");
+  }
+  const finalContract =
+    artifactSet.approvalStabilization.approval_stabilization.final_consumer_contract;
+  if (
+    finalContract.acceptance_level !== "final_consumer_ready" ||
+    finalContract.recommendation_only !== true ||
+    finalContract.additive_only !== true ||
+    finalContract.override_execution_available !== false
+  ) {
+    throw new Error("approval stabilization final contract drifted");
   }
 }
 
