@@ -41,6 +41,9 @@ import {
   buildEnforcementPilotResult,
   assertValidEnforcementPilotResult,
   serializeEnforcementPilotResult,
+  buildLimitedEnforcementAuthorityResult,
+  assertValidLimitedEnforcementAuthorityPilot,
+  serializeLimitedEnforcementAuthorityResult,
   buildGovernanceReceipt,
   assertValidGovernanceReceipt,
   buildGovernanceDecisionRecord,
@@ -283,6 +286,32 @@ function readEnforcementPilotOptions(argv) {
   };
 }
 
+function readLimitedEnforcementAuthorityOptions(argv) {
+  const enabled = argv.includes("--limited-enforcement-authority");
+  let out = null;
+  let outRequested = false;
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg.startsWith("--limited-enforcement-authority-out=")) {
+      outRequested = true;
+      out = arg.slice("--limited-enforcement-authority-out=".length);
+    } else if (arg === "--limited-enforcement-authority-out" && argv[i + 1]) {
+      outRequested = true;
+      out = argv[i + 1];
+      i += 1;
+    } else if (arg === "--limited-enforcement-authority-out") {
+      outRequested = true;
+    }
+  }
+
+  return {
+    enabled,
+    out,
+    outRequested,
+  };
+}
+
 function buildGovernanceArtifacts({ audit, effectivePolicy }) {
   const canonicalActionArtifact = buildCanonicalActionArtifactFromAudit(audit);
   const policyPreviewArtifact = assertValidCanonicalActionPolicyPreview(
@@ -416,6 +445,7 @@ export async function runAudit({ argv, policy }) {
   const shadow = readShadowOptions(argv);
   const permitGate = readPermitGateOptions(argv);
   const enforcementPilot = readEnforcementPilotOptions(argv);
+  const limitedEnforcementAuthority = readLimitedEnforcementAuthorityOptions(argv);
   const mode = args.mode === "ci" ? "ci" : "local";
 
   const head = args.head || getHeadSha();
@@ -606,6 +636,14 @@ export async function runAudit({ argv, policy }) {
     };
   }
 
+  if (limitedEnforcementAuthority.enabled && mode !== "local") {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "limited enforcement authority pilot phase 1 currently supports local audit mode only",
+    };
+  }
+
   if (!enforcementPilot.enabled && enforcementPilot.out) {
     return {
       exitCode: policy.exit_codes.error ?? 30,
@@ -618,6 +656,24 @@ export async function runAudit({ argv, policy }) {
       exitCode: policy.exit_codes.error ?? 30,
       audit: null,
       message: "stronger enforcement pilot output requires a file path",
+    };
+  }
+
+  if (!limitedEnforcementAuthority.enabled && limitedEnforcementAuthority.out) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "limited enforcement authority output requires --limited-enforcement-authority",
+    };
+  }
+  if (
+    limitedEnforcementAuthority.outRequested &&
+    !limitedEnforcementAuthority.out
+  ) {
+    return {
+      exitCode: policy.exit_codes.error ?? 30,
+      audit: null,
+      message: "limited enforcement authority output requires a file path",
     };
   }
 
@@ -886,6 +942,7 @@ export async function runAudit({ argv, policy }) {
   let governanceArtifacts = null;
   let permitGateResult = null;
   let enforcementPilotResult = null;
+  let limitedEnforcementAuthorityResult = null;
   let governanceReceipt = null;
   let governanceDecisionRecord = null;
   let governanceOutcomeBundle = null;
@@ -893,7 +950,12 @@ export async function runAudit({ argv, policy }) {
   let governanceDisposition = null;
   let governanceActivationRecord = null;
 
-  if (shadow.emitCanonicalAction || permitGate.enabled || enforcementPilot.enabled) {
+  if (
+    shadow.emitCanonicalAction ||
+    permitGate.enabled ||
+    enforcementPilot.enabled ||
+    limitedEnforcementAuthority.enabled
+  ) {
     try {
       governanceArtifacts = buildGovernanceArtifacts({
         audit,
@@ -972,6 +1034,32 @@ export async function runAudit({ argv, policy }) {
         if (enforcementPilot.out) {
           const enforcementPilotOutPath = path.resolve(process.cwd(), enforcementPilot.out);
           writeFile(enforcementPilotOutPath, serializeEnforcementPilotResult(enforcementPilotResult, { pretty: true }));
+        }
+      }
+
+      if (limitedEnforcementAuthority.enabled) {
+        limitedEnforcementAuthorityResult = assertValidLimitedEnforcementAuthorityPilot(
+          buildLimitedEnforcementAuthorityResult({
+            audit,
+            canonicalActionArtifact: governanceArtifacts.canonicalActionArtifact,
+            executionReadinessArtifact: governanceArtifacts.executionReadinessArtifact,
+            enforcementAdjacentDecisionArtifact:
+              governanceArtifacts.enforcementAdjacentDecisionArtifact,
+            deniedExitCode: PERMIT_GATE_DENIED_EXIT_CODE,
+          })
+        );
+        if (limitedEnforcementAuthority.out) {
+          const limitedEnforcementAuthorityOutPath = path.resolve(
+            process.cwd(),
+            limitedEnforcementAuthority.out
+          );
+          writeFile(
+            limitedEnforcementAuthorityOutPath,
+            serializeLimitedEnforcementAuthorityResult(
+              limitedEnforcementAuthorityResult,
+              { pretty: true }
+            )
+          );
         }
       }
 
@@ -1140,6 +1228,7 @@ export async function runAudit({ argv, policy }) {
     audit,
     permitGateResult,
     enforcementPilotResult,
+    limitedEnforcementAuthorityResult,
     governanceReceipt,
     governanceDecisionRecord,
     governanceOutcomeBundle,
