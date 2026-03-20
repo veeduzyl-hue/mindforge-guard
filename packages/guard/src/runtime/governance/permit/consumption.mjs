@@ -32,6 +32,7 @@ export const GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS = Object.freeze([
   "governance_outcome_bundle",
   "governance_application_record",
   "governance_disposition",
+  "limited_enforcement_authority_result",
 ]);
 
 export const GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS = Object.freeze([
@@ -113,6 +114,18 @@ export const GOVERNANCE_CONSUMPTION_PROFILE = Object.freeze({
     surface_tier: GOVERNANCE_SURFACE_MAP.governance_activation_record.tier,
     stability: GOVERNANCE_CONSUMPTION_PROFILE_STABILITY,
     consumer_safe_linkage_targets: ["permit_gate_result", "governance_decision_record"],
+  }),
+  limited_enforcement_authority_result: freezeEntry({
+    artifact_id: "limited_enforcement_authority_result",
+    requirement: GOVERNANCE_CONSUMPTION_OPTIONAL,
+    consumer_safe: true,
+    surface_tier: GOVERNANCE_SURFACE_MAP.limited_enforcement_authority_result.tier,
+    stability: GOVERNANCE_CONSUMPTION_PROFILE_STABILITY,
+    consumer_safe_linkage_targets: [
+      "permit_gate_result",
+      "governance_decision_record",
+      "governance_activation_record",
+    ],
   }),
 });
 

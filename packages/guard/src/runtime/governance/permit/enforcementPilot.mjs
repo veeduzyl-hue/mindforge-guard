@@ -17,6 +17,8 @@ export const ENFORCEMENT_PILOT_FINAL_ACCEPTANCE_BOUNDARY =
 export const LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND =
   "limited_enforcement_authority_result";
 export const LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION = "v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_RESULT_SCHEMA_ID =
+  "mindforge/limited-enforcement-authority-result/v1";
 export const LIMITED_ENFORCEMENT_AUTHORITY_MODE = "explicit_opt_in";
 export const LIMITED_ENFORCEMENT_AUTHORITY_DEFAULT_STATE = "disabled";
 export const LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE = "guard.audit";
@@ -39,6 +41,10 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_FINALIZATION_STAGE =
   "finalized_limited_authority_pilot_v1";
 export const LIMITED_ENFORCEMENT_AUTHORITY_FINAL_ACCEPTANCE_BOUNDARY =
   "final_explicit_opt_in_recommendation_only_authority_sidecar";
+export const LIMITED_ENFORCEMENT_AUTHORITY_SURFACE_CONSOLIDATION_STAGE =
+  "consolidated_limited_authority_surface_v1";
+export const LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY =
+  "external_consumer_release_grade_authority_surface";
 export const ENFORCEMENT_PILOT_OUTPUT_ENCODING = "utf8";
 export const ENFORCEMENT_PILOT_OUTPUT_EOL = "\n";
 export const ENFORCEMENT_PILOT_PRETTY_INDENT = 2;
@@ -267,6 +273,15 @@ export const LIMITED_ENFORCEMENT_AUTHORITY_FINAL_EXPORT_SET = Object.freeze([
   "LIMITED_ENFORCEMENT_AUTHORITY_FINAL_EXPORT_SET",
   "validateLimitedEnforcementAuthorityFinalization",
   "assertValidLimitedEnforcementAuthorityFinalization",
+]);
+export const LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET = Object.freeze([
+  ...LIMITED_ENFORCEMENT_AUTHORITY_FINAL_EXPORT_SET,
+  "LIMITED_ENFORCEMENT_AUTHORITY_RESULT_SCHEMA_ID",
+  "LIMITED_ENFORCEMENT_AUTHORITY_SURFACE_CONSOLIDATION_STAGE",
+  "LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY",
+  "LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET",
+  "validateLimitedEnforcementAuthoritySurface",
+  "assertValidLimitedEnforcementAuthoritySurface",
 ]);
 
 function isPlainObject(value) {
@@ -1224,6 +1239,77 @@ export function assertValidLimitedEnforcementAuthorityFinalization(result) {
 
   const err = new Error(
     `limited enforcement authority finalization invalid: ${validation.errors.join("; ")}`
+  );
+  err.validation = validation;
+  throw err;
+}
+
+export function validateLimitedEnforcementAuthoritySurface(result) {
+  const errors = [];
+  const validation = validateLimitedEnforcementAuthorityFinalization(result);
+
+  if (!validation.ok) {
+    errors.push(...validation.errors);
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_RESULT_SCHEMA_ID !==
+    "mindforge/limited-enforcement-authority-result/v1"
+  ) {
+    errors.push("limited enforcement authority schema id drifted");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_SURFACE_CONSOLIDATION_STAGE !==
+    "consolidated_limited_authority_surface_v1"
+  ) {
+    errors.push("limited enforcement authority surface consolidation stage drifted");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY !==
+    "external_consumer_release_grade_authority_surface"
+  ) {
+    errors.push("limited enforcement authority consumer surface boundary drifted");
+  }
+  if (
+    JSON.stringify(
+      LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET.slice(
+        0,
+        LIMITED_ENFORCEMENT_AUTHORITY_FINAL_EXPORT_SET.length
+      )
+    ) !== JSON.stringify(LIMITED_ENFORCEMENT_AUTHORITY_FINAL_EXPORT_SET)
+  ) {
+    errors.push(
+      "limited enforcement authority public export set drifted from final export base"
+    );
+  }
+  if (
+    new Set(LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET).size !==
+    LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET.length
+  ) {
+    errors.push("limited enforcement authority public export set contains duplicates");
+  }
+  if (
+    LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET.length - 2
+    ] !== "validateLimitedEnforcementAuthoritySurface" ||
+    LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET[
+      LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET.length - 1
+    ] !== "assertValidLimitedEnforcementAuthoritySurface"
+  ) {
+    errors.push("limited enforcement authority public export tail drifted");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function assertValidLimitedEnforcementAuthoritySurface(result) {
+  const validation = validateLimitedEnforcementAuthoritySurface(result);
+  if (validation.ok) return result;
+
+  const err = new Error(
+    `limited enforcement authority surface invalid: ${validation.errors.join("; ")}`
   );
   err.validation = validation;
   throw err;

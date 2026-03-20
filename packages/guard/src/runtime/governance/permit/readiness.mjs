@@ -40,6 +40,7 @@ export const GOVERNANCE_SECOND_CONSUMER_OPTIONAL_ARTIFACTS = Object.freeze([
   "governance_outcome_bundle",
   "governance_application_record",
   "governance_disposition",
+  "limited_enforcement_authority_result",
 ]);
 
 export const GOVERNANCE_SECOND_CONSUMER_AUDIT_BOUND_ARTIFACTS = Object.freeze([
@@ -146,6 +147,22 @@ export const GOVERNANCE_SECOND_CONSUMER_READINESS_PROFILE = Object.freeze({
     consumption_requirement: GOVERNANCE_CONSUMPTION_PROFILE.governance_activation_record.requirement,
     stability: GOVERNANCE_SECOND_CONSUMER_READINESS_STABILITY,
     allowed_dependency_targets: ["permit_gate_result", "governance_decision_record"],
+  }),
+  limited_enforcement_authority_result: freezeEntry({
+    artifact_id: "limited_enforcement_authority_result",
+    readiness: GOVERNANCE_SECOND_CONSUMER_NEUTRAL_OPTIONAL,
+    consumer_neutral: true,
+    audit_bound: false,
+    minimal_for_second_consumer: false,
+    surface_tier: GOVERNANCE_SURFACE_MAP.limited_enforcement_authority_result.tier,
+    consumption_requirement:
+      GOVERNANCE_CONSUMPTION_PROFILE.limited_enforcement_authority_result.requirement,
+    stability: GOVERNANCE_SECOND_CONSUMER_READINESS_STABILITY,
+    allowed_dependency_targets: [
+      "permit_gate_result",
+      "governance_decision_record",
+      "governance_activation_record",
+    ],
   }),
 });
 
