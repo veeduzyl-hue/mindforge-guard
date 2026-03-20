@@ -15,6 +15,8 @@ export const APPROVAL_SURFACE_STABILITY = "stable";
 export const APPROVAL_SURFACE_CONSUMER_TIER = "approval_adjacent_surface";
 export const APPROVAL_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "approval_artifact",
+  "approval_readiness",
+  "approval_receipt",
 ]);
 export const APPROVAL_SURFACE_META_EXPORTS = Object.freeze([
   "APPROVAL_SURFACE_VERSION",
@@ -52,6 +54,34 @@ export const APPROVAL_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  approval_readiness: Object.freeze({
+    artifact_id: "approval_readiness",
+    consumer_surface: APPROVAL_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: "approval_readiness_profile",
+      version: "v1",
+      schema_id: "mindforge/approval-readiness/v1",
+      stage: "approval_readiness_phase2_v1",
+      boundary: "waiver_override_receipt_readiness_contract",
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
+  approval_receipt: Object.freeze({
+    artifact_id: "approval_receipt",
+    consumer_surface: APPROVAL_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: "approval_receipt_profile",
+      version: "v1",
+      schema_id: "mindforge/approval-receipt/v1",
+      stage: "approval_receipt_phase2_v1",
+      boundary: "non_executing_approval_receipt_record",
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -82,7 +112,7 @@ export function validateApprovalSurface() {
   }
   if (
     JSON.stringify(APPROVAL_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["approval_artifact"])
+    JSON.stringify(["approval_artifact", "approval_readiness", "approval_receipt"])
   ) {
     errors.push("approval surface artifact order drifted");
   }
@@ -139,6 +169,29 @@ export function validateApprovalSurface() {
     }
     if (artifact.executing !== false) {
       errors.push("approval surface must remain non-executing");
+    }
+  }
+  for (const artifactId of ["approval_readiness", "approval_receipt"]) {
+    const artifact = APPROVAL_SURFACE_MAP[artifactId];
+    if (!isPlainObject(artifact)) {
+      errors.push(`approval surface ${artifactId} entry must be an object`);
+      continue;
+    }
+    if (artifact.consumer_surface !== APPROVAL_CONSUMER_SURFACE) {
+      errors.push(`approval surface ${artifactId} consumer surface drifted`);
+    }
+    if (!isPlainObject(artifact.contract)) {
+      errors.push(`approval surface ${artifactId} contract entry must be an object`);
+      continue;
+    }
+    if (artifact.recommendation_only !== true) {
+      errors.push(`approval surface ${artifactId} recommendation boundary drifted`);
+    }
+    if (artifact.additive_only !== true) {
+      errors.push(`approval surface ${artifactId} additive boundary drifted`);
+    }
+    if (artifact.executing !== false) {
+      errors.push(`approval surface ${artifactId} executing boundary drifted`);
     }
   }
 

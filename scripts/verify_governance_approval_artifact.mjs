@@ -12,6 +12,7 @@ import {
   APPROVAL_STATUS_APPROVAL_REQUIRED,
   APPROVAL_STATUS_EXCEPTION_POSSIBLE,
   APPROVAL_STATUS_NOT_REQUESTED,
+  APPROVAL_SURFACE_ARTIFACT_ORDER,
   APPROVAL_SURFACE_CONSUMER_TIER,
   APPROVAL_SURFACE_STABLE_EXPORT_SET,
   APPROVAL_SURFACE_MAP,
@@ -123,9 +124,21 @@ if (APPROVAL_SURFACE_CONSUMER_TIER !== "approval_adjacent_surface") {
   throw new Error("approval surface consumer tier drifted");
 }
 if (
+  JSON.stringify(APPROVAL_SURFACE_ARTIFACT_ORDER) !==
+  JSON.stringify(["approval_artifact", "approval_readiness", "approval_receipt"])
+) {
+  throw new Error("approval surface artifact order drifted");
+}
+if (
   APPROVAL_SURFACE_MAP.approval_artifact.contract.kind !== APPROVAL_ARTIFACT_KIND
 ) {
   throw new Error("approval surface contract kind drifted");
+}
+if (APPROVAL_SURFACE_MAP.approval_readiness.contract.kind !== "approval_readiness_profile") {
+  throw new Error("approval readiness surface contract drifted");
+}
+if (APPROVAL_SURFACE_MAP.approval_receipt.contract.kind !== "approval_receipt_profile") {
+  throw new Error("approval receipt surface contract drifted");
 }
 
 const insufficient = buildArtifacts("insufficient_signal");
@@ -187,6 +200,14 @@ for (const artifactSet of [insufficient, allow, review, deny]) {
     "review_gate_deny_exit_recommendation_only"
   ) {
     throw new Error("approval exception contract authority scope drifted");
+  }
+  const readinessRefs = artifactSet.approval.approval_artifact.readiness_refs;
+  if (
+    readinessRefs.readiness_profile_available !== true ||
+    readinessRefs.approval_receipt_available !== true ||
+    readinessRefs.override_record_contract !== "approval_override_record"
+  ) {
+    throw new Error("approval readiness refs drifted");
   }
 }
 
