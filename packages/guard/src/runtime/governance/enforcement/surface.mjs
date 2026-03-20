@@ -16,6 +16,7 @@ export const ENFORCEMENT_SURFACE_CONSUMER_TIER =
   "bounded_enforcement_readiness_surface";
 export const ENFORCEMENT_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "bounded_enforcement_readiness",
+  "enforcement_compatibility",
 ]);
 export const ENFORCEMENT_SURFACE_META_EXPORTS = Object.freeze([
   "ENFORCEMENT_SURFACE_VERSION",
@@ -48,6 +49,30 @@ export const ENFORCEMENT_SURFACE_MAP = Object.freeze({
       kind: ENFORCEMENT_SCOPE_CONTRACT_KIND,
       version: ENFORCEMENT_SCOPE_CONTRACT_VERSION,
       boundary: ENFORCEMENT_SCOPE_CONTRACT_BOUNDARY,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
+  enforcement_compatibility: Object.freeze({
+    artifact_id: "enforcement_compatibility",
+    consumer_surface: ENFORCEMENT_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: "enforcement_compatibility_readiness_profile",
+      version: "v1",
+      schema_id: "mindforge/enforcement-compatibility/v1",
+      stage: "enforcement_compatibility_phase2_v1",
+      boundary: "authority_proof_and_rollback_safety_consumer_compatibility",
+    }),
+    proof_contract: Object.freeze({
+      kind: "authority_proof_contract",
+      version: "v1",
+      boundary: "bounded_non_executing_authority_proof",
+    }),
+    rollback_contract: Object.freeze({
+      kind: "rollback_safety_contract",
+      version: "v1",
+      boundary: "bounded_non_executing_rollback_safety",
     }),
     recommendation_only: true,
     additive_only: true,
@@ -86,7 +111,7 @@ export function validateEnforcementSurface() {
   }
   if (
     JSON.stringify(ENFORCEMENT_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["bounded_enforcement_readiness"])
+    JSON.stringify(["bounded_enforcement_readiness", "enforcement_compatibility"])
   ) {
     errors.push("enforcement surface artifact order drifted");
   }
@@ -143,6 +168,33 @@ export function validateEnforcementSurface() {
   }
   if (artifact.executing !== false) {
     errors.push("enforcement surface must remain non-executing");
+  }
+
+  const compatibility = ENFORCEMENT_SURFACE_MAP.enforcement_compatibility;
+  if (!isPlainObject(compatibility)) {
+    errors.push("enforcement compatibility surface entry must be an object");
+    return { ok: errors.length === 0, errors };
+  }
+  if (compatibility.consumer_surface !== ENFORCEMENT_CONSUMER_SURFACE) {
+    errors.push("enforcement compatibility consumer surface drifted");
+  }
+  if (!isPlainObject(compatibility.contract)) {
+    errors.push("enforcement compatibility contract must be an object");
+  }
+  if (!isPlainObject(compatibility.proof_contract)) {
+    errors.push("enforcement compatibility proof contract must be an object");
+  }
+  if (!isPlainObject(compatibility.rollback_contract)) {
+    errors.push("enforcement compatibility rollback contract must be an object");
+  }
+  if (compatibility.recommendation_only !== true) {
+    errors.push("enforcement compatibility must remain recommendation-only");
+  }
+  if (compatibility.additive_only !== true) {
+    errors.push("enforcement compatibility must remain additive-only");
+  }
+  if (compatibility.executing !== false) {
+    errors.push("enforcement compatibility must remain non-executing");
   }
 
   return { ok: errors.length === 0, errors };
