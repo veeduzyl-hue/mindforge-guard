@@ -175,6 +175,14 @@ if (
 ) {
   throw new Error("second consumer outcome bundle dependency profile drifted");
 }
+if (
+  JSON.stringify(
+    GOVERNANCE_SECOND_CONSUMER_READINESS_PROFILE.limited_enforcement_authority_result
+      .allowed_dependency_targets
+  ) !== JSON.stringify(["permit_gate_result", "governance_decision_record", "governance_activation_record"])
+) {
+  throw new Error("second consumer limited authority dependency profile drifted");
+}
 
 for (const exportName of GOVERNANCE_SECOND_CONSUMER_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
