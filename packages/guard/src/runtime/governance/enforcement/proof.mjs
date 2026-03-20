@@ -37,6 +37,7 @@ export function buildAuthorityProofContract({ enforcementReadinessProfile }) {
     authority_scope: scope.authority_scope,
     authority_scope_expansion: scope.authority_scope_expansion,
     proof_ready: scope.authority_scope === ENFORCEMENT_SCOPE_REVIEW_ONLY,
+    non_executing: true,
   };
 }
 
@@ -92,6 +93,9 @@ export function validateAuthorityProofContract(contract) {
   }
   if (contract.proof_ready !== true) {
     errors.push("authority proof readiness drifted");
+  }
+  if (contract.non_executing !== true) {
+    errors.push("authority proof non-executing boundary drifted");
   }
 
   return { ok: errors.length === 0, errors };

@@ -56,6 +56,7 @@ export const ENFORCEMENT_COMPATIBILITY_PAYLOAD_FIELDS = Object.freeze([
   "rollback_safety_contract",
   "receipt_readiness",
   "consumer_compatibility",
+  "stabilization_refs",
 ]);
 export const ENFORCEMENT_COMPATIBILITY_STABLE_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_COMPATIBILITY_KIND",
@@ -121,6 +122,10 @@ export function buildEnforcementCompatibilityProfile({
         default_off: true,
         authority_scope: authorityProof.authority_scope,
         denied_exit_code_preserved: rollbackSafety.denied_exit_code_preserved,
+      },
+      stabilization_refs: {
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
     },
     deterministic: true,
@@ -255,6 +260,20 @@ export function validateEnforcementCompatibilityProfile(profile) {
     }
     if (payload.consumer_compatibility.denied_exit_code_preserved !== 25) {
       errors.push("enforcement consumer deny exit drifted");
+    }
+  }
+  if (!isPlainObject(payload.stabilization_refs)) {
+    errors.push("enforcement stabilization refs must be an object");
+  } else {
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("enforcement compatibility stabilization availability drifted");
+    }
+    if (
+      payload.stabilization_refs.final_acceptance_boundary_available !== true
+    ) {
+      errors.push(
+        "enforcement compatibility final acceptance availability drifted"
+      );
     }
   }
 

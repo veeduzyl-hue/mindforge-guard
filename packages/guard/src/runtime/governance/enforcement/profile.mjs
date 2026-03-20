@@ -40,6 +40,7 @@ export const ENFORCEMENT_READINESS_PAYLOAD_FIELDS = Object.freeze([
   "scope_contract",
   "preservation_contract",
   "compatibility_refs",
+  "stabilization_refs",
 ]);
 export const ENFORCEMENT_READINESS_STABLE_EXPORT_SET = Object.freeze([
   "ENFORCEMENT_READINESS_KIND",
@@ -112,6 +113,10 @@ export function buildEnforcementReadinessProfile({
         compatibility_profile_available: true,
         authority_proof_contract_available: true,
         rollback_safety_contract_available: true,
+      },
+      stabilization_refs: {
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
     },
     deterministic: true,
@@ -275,6 +280,18 @@ export function validateEnforcementReadinessProfile(profile) {
       payload.compatibility_refs.rollback_safety_contract_available !== true
     ) {
       errors.push("enforcement rollback safety availability drifted");
+    }
+  }
+  if (!isPlainObject(payload.stabilization_refs)) {
+    errors.push("enforcement stabilization refs must be an object");
+  } else {
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("enforcement stabilization profile availability drifted");
+    }
+    if (
+      payload.stabilization_refs.final_acceptance_boundary_available !== true
+    ) {
+      errors.push("enforcement final acceptance boundary availability drifted");
     }
   }
 
