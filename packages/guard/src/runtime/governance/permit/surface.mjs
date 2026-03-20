@@ -68,6 +68,15 @@ import {
   GOVERNANCE_ACTIVATION_RECORD_BOUNDARY,
   GOVERNANCE_ACTIVATION_RECORD_EMITTER_SURFACE,
 } from "./governanceActivationRecord.mjs";
+import {
+  LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND,
+  LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION,
+  LIMITED_ENFORCEMENT_AUTHORITY_RESULT_SCHEMA_ID,
+  LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE,
+  LIMITED_ENFORCEMENT_AUTHORITY_MODE,
+  LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY,
+  LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET,
+} from "./enforcementPilot.mjs";
 
 export const GOVERNANCE_SURFACE_VERSION = "v1";
 export const GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER = "external_consumer_surface";
@@ -87,6 +96,7 @@ export const GOVERNANCE_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_application_record",
   "governance_disposition",
   "governance_activation_record",
+  "limited_enforcement_authority_result",
 ]);
 
 export const GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS = Object.freeze([
@@ -96,6 +106,7 @@ export const GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS = Object.freeze([
   "governance_application_record",
   "governance_disposition",
   "governance_activation_record",
+  "limited_enforcement_authority_result",
 ]);
 
 export const GOVERNANCE_INTERNAL_SUPPORT_ARTIFACTS = Object.freeze(["governance_receipt"]);
@@ -301,6 +312,20 @@ export const GOVERNANCE_SURFACE_MAP = Object.freeze({
       "validateGovernanceActivationRecord",
       "assertValidGovernanceActivationRecord",
     ],
+  }),
+  limited_enforcement_authority_result: freezeEntry({
+    artifact_id: "limited_enforcement_authority_result",
+    tier: GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER,
+    stability: GOVERNANCE_SURFACE_STABILITY,
+    contract: {
+      kind: LIMITED_ENFORCEMENT_AUTHORITY_RESULT_KIND,
+      version: LIMITED_ENFORCEMENT_AUTHORITY_RESULT_VERSION,
+      schema_id: LIMITED_ENFORCEMENT_AUTHORITY_RESULT_SCHEMA_ID,
+    },
+    consumer_surface: LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE,
+    mode: LIMITED_ENFORCEMENT_AUTHORITY_MODE,
+    boundary: LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY,
+    stable_exports: LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET,
   }),
 });
 
