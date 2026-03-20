@@ -17,6 +17,7 @@ export const ENFORCEMENT_SURFACE_CONSUMER_TIER =
 export const ENFORCEMENT_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "bounded_enforcement_readiness",
   "enforcement_compatibility",
+  "enforcement_stabilization",
 ]);
 export const ENFORCEMENT_SURFACE_META_EXPORTS = Object.freeze([
   "ENFORCEMENT_SURFACE_VERSION",
@@ -78,6 +79,20 @@ export const ENFORCEMENT_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  enforcement_stabilization: Object.freeze({
+    artifact_id: "enforcement_stabilization",
+    consumer_surface: ENFORCEMENT_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: "enforcement_stabilization_profile",
+      version: "v1",
+      schema_id: "mindforge/enforcement-stabilization/v1",
+      stage: "enforcement_stabilization_phase3_v1",
+      boundary: "final_bounded_enforcement_consumer_contract",
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -111,7 +126,11 @@ export function validateEnforcementSurface() {
   }
   if (
     JSON.stringify(ENFORCEMENT_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["bounded_enforcement_readiness", "enforcement_compatibility"])
+    JSON.stringify([
+      "bounded_enforcement_readiness",
+      "enforcement_compatibility",
+      "enforcement_stabilization",
+    ])
   ) {
     errors.push("enforcement surface artifact order drifted");
   }
@@ -195,6 +214,27 @@ export function validateEnforcementSurface() {
   }
   if (compatibility.executing !== false) {
     errors.push("enforcement compatibility must remain non-executing");
+  }
+
+  const stabilization = ENFORCEMENT_SURFACE_MAP.enforcement_stabilization;
+  if (!isPlainObject(stabilization)) {
+    errors.push("enforcement stabilization surface entry must be an object");
+    return { ok: errors.length === 0, errors };
+  }
+  if (stabilization.consumer_surface !== ENFORCEMENT_CONSUMER_SURFACE) {
+    errors.push("enforcement stabilization consumer surface drifted");
+  }
+  if (!isPlainObject(stabilization.contract)) {
+    errors.push("enforcement stabilization contract must be an object");
+  }
+  if (stabilization.recommendation_only !== true) {
+    errors.push("enforcement stabilization must remain recommendation-only");
+  }
+  if (stabilization.additive_only !== true) {
+    errors.push("enforcement stabilization must remain additive-only");
+  }
+  if (stabilization.executing !== false) {
+    errors.push("enforcement stabilization must remain non-executing");
   }
 
   return { ok: errors.length === 0, errors };

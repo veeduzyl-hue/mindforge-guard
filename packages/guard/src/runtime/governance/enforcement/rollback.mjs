@@ -27,6 +27,7 @@ export function buildRollbackSafetyContract({ enforcementReadinessProfile }) {
     denied_exit_code_preserved: preservation.denied_exit_code_preserved,
     governance_object_addition: preservation.governance_object_addition,
     rollback_safe: true,
+    non_executing: true,
   };
 }
 
@@ -68,6 +69,9 @@ export function validateRollbackSafetyContract(contract) {
   }
   if (contract.rollback_safe !== true) {
     errors.push("rollback safety readiness drifted");
+  }
+  if (contract.non_executing !== true) {
+    errors.push("rollback safety non-executing boundary drifted");
   }
 
   return { ok: errors.length === 0, errors };
