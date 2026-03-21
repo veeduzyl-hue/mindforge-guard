@@ -116,6 +116,8 @@ export function buildGovernanceEvidenceProfile({ policyStabilizationProfile }) {
         artifact_linkage_contract_available: true,
         replay_readiness_profile_available: true,
         compare_compatibility_contract_available: true,
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
       preserved_semantics: {
         policy_semantics_preserved: true,
@@ -291,6 +293,12 @@ export function validateGovernanceEvidenceProfile(profile) {
     }
     if (payload.compatibility_refs.compare_compatibility_contract_available !== true) {
       errors.push("governance evidence compare compatibility availability drifted");
+    }
+    if (payload.compatibility_refs.stabilization_profile_available !== true) {
+      errors.push("governance evidence stabilization availability drifted");
+    }
+    if (payload.compatibility_refs.final_acceptance_boundary_available !== true) {
+      errors.push("governance evidence final acceptance availability drifted");
     }
   }
   if (!isPlainObject(payload.preserved_semantics)) {

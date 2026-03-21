@@ -46,6 +46,7 @@ export const GOVERNANCE_EVIDENCE_REPLAY_PAYLOAD_FIELDS = Object.freeze([
   "artifact_linkage_contract",
   "receipt_readiness",
   "consumer_compatibility",
+  "stabilization_refs",
 ]);
 export const GOVERNANCE_EVIDENCE_REPLAY_STABLE_EXPORT_SET = Object.freeze([
   "GOVERNANCE_EVIDENCE_REPLAY_KIND",
@@ -102,6 +103,10 @@ export function buildGovernanceEvidenceReplayProfile({ governanceEvidenceProfile
         default_off: true,
         authority_scope: "review_gate_deny_exit_recommendation_only",
         denied_exit_code_preserved: 25,
+      },
+      stabilization_refs: {
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
     },
     deterministic: true,
@@ -222,6 +227,18 @@ export function validateGovernanceEvidenceReplayProfile(profile) {
     }
     if (payload.consumer_compatibility.denied_exit_code_preserved !== 25) {
       errors.push("governance evidence consumer deny exit drifted");
+    }
+  }
+  if (!isPlainObject(payload.stabilization_refs)) {
+    errors.push("governance evidence replay stabilization refs missing");
+  } else {
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("governance evidence replay stabilization availability drifted");
+    }
+    if (
+      payload.stabilization_refs.final_acceptance_boundary_available !== true
+    ) {
+      errors.push("governance evidence replay final acceptance availability drifted");
     }
   }
   return { ok: errors.length === 0, errors };
