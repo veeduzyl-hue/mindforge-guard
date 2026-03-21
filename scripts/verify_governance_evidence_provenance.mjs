@@ -1,20 +1,25 @@
 import * as permitExports from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import {
-  POLICY_COMPATIBILITY_BOUNDARY,
-  POLICY_COMPATIBILITY_KIND,
-  POLICY_COMPATIBILITY_STAGE,
-  POLICY_COMPATIBILITY_VERSION,
+  GOVERNANCE_EVIDENCE_CONSUMER_SURFACE,
+  GOVERNANCE_EVIDENCE_PROFILE_BOUNDARY,
+  GOVERNANCE_EVIDENCE_PROFILE_KIND,
+  GOVERNANCE_EVIDENCE_PROFILE_SCHEMA_ID,
+  GOVERNANCE_EVIDENCE_PROFILE_STAGE,
+  GOVERNANCE_EVIDENCE_PROFILE_VERSION,
+  GOVERNANCE_EVIDENCE_STABLE_EXPORT_SET,
+  GOVERNANCE_EVIDENCE_SURFACE_MAP,
+  GOVERNANCE_EVIDENCE_SURFACE_STABLE_EXPORT_SET,
+  GOVERNANCE_LINEAGE_CONTRACT_BOUNDARY,
+  GOVERNANCE_LINEAGE_CONTRACT_KIND,
+  GOVERNANCE_LINEAGE_CONTRACT_VERSION,
+  GOVERNANCE_PROVENANCE_CONTRACT_BOUNDARY,
+  GOVERNANCE_PROVENANCE_CONTRACT_KIND,
+  GOVERNANCE_PROVENANCE_CONTRACT_VERSION,
   POLICY_CONSUMER_SURFACE,
   POLICY_FINAL_ACCEPTANCE_BOUNDARY,
-  POLICY_FINAL_ACCEPTANCE_READY,
   POLICY_STABILIZATION_KIND,
-  POLICY_STABILIZATION_SCHEMA_ID,
   POLICY_STABILIZATION_STAGE,
-  POLICY_STABILIZATION_STABLE_EXPORT_SET,
   POLICY_STABILIZATION_VERSION,
-  POLICY_SURFACE_MAP,
-  POLICY_SURFACE_STABLE_EXPORT_SET,
-  GOVERNANCE_EVIDENCE_SURFACE_MAP,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
@@ -23,6 +28,7 @@ import {
   buildEnforcementReadinessProfile,
   buildEnforcementStabilizationProfile,
   buildGovernanceDecisionRecord,
+  buildGovernanceEvidenceProfile,
   buildJudgmentCompatibilityContract,
   buildJudgmentProfile,
   buildJudgmentReadinessProfile,
@@ -32,7 +38,7 @@ import {
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
   buildPolicyStabilizationProfile,
-  validatePolicyStabilizationProfile,
+  validateGovernanceEvidenceProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -40,7 +46,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:abababababababababababababababababababababababababababababababab",
+        "sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -66,7 +72,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildPolicyStabilization(decision) {
+function buildEvidence(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -74,7 +80,7 @@ function buildPolicyStabilization(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: { head: "8888888888888888888888888888888888888888", branch: "branch" },
+        git: { head: "9999999999999999999999999999999999999999", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -141,9 +147,12 @@ function buildPolicyStabilization(decision) {
     enforcementStabilizationProfile: enforcementStabilization,
   });
   const policyCompatibility = buildPolicyCompatibilityProfile({ policyProfile });
-
-  return buildPolicyStabilizationProfile({
+  const policyStabilization = buildPolicyStabilizationProfile({
     policyCompatibilityProfile: policyCompatibility,
+  });
+
+  return buildGovernanceEvidenceProfile({
+    policyStabilizationProfile: policyStabilization,
   });
 }
 
@@ -153,88 +162,120 @@ for (const decision of [
   "would_review",
   "would_deny",
 ]) {
-  const artifact = buildPolicyStabilization(decision);
-  const validation = validatePolicyStabilizationProfile(artifact);
+  const artifact = buildEvidence(decision);
+  const validation = validateGovernanceEvidenceProfile(artifact);
   if (!validation.ok) {
     throw new Error(
-      `policy stabilization validation failed: ${validation.errors.join("; ")}`
+      `governance evidence validation failed: ${validation.errors.join("; ")}`
     );
   }
-  if (artifact.kind !== POLICY_STABILIZATION_KIND) {
-    throw new Error("policy stabilization kind drifted");
+  if (artifact.kind !== GOVERNANCE_EVIDENCE_PROFILE_KIND) {
+    throw new Error("governance evidence kind drifted");
   }
-  if (artifact.version !== POLICY_STABILIZATION_VERSION) {
-    throw new Error("policy stabilization version drifted");
+  if (artifact.version !== GOVERNANCE_EVIDENCE_PROFILE_VERSION) {
+    throw new Error("governance evidence version drifted");
   }
-  if (artifact.schema_id !== POLICY_STABILIZATION_SCHEMA_ID) {
-    throw new Error("policy stabilization schema id drifted");
-  }
-  if (artifact.policy_stabilization.stage !== POLICY_STABILIZATION_STAGE) {
-    throw new Error("policy stabilization stage drifted");
+  if (artifact.schema_id !== GOVERNANCE_EVIDENCE_PROFILE_SCHEMA_ID) {
+    throw new Error("governance evidence schema drifted");
   }
   if (
-    artifact.policy_stabilization.consumer_surface !== POLICY_CONSUMER_SURFACE
+    artifact.governance_evidence.stage !== GOVERNANCE_EVIDENCE_PROFILE_STAGE
   ) {
-    throw new Error("policy stabilization consumer surface drifted");
+    throw new Error("governance evidence stage drifted");
   }
   if (
-    artifact.policy_stabilization.boundary !== POLICY_FINAL_ACCEPTANCE_BOUNDARY
+    artifact.governance_evidence.consumer_surface !==
+    GOVERNANCE_EVIDENCE_CONSUMER_SURFACE
   ) {
-    throw new Error("policy stabilization boundary drifted");
+    throw new Error("governance evidence consumer surface drifted");
   }
-  const ref = artifact.policy_stabilization.compatibility_ref;
   if (
-    ref.kind !== POLICY_COMPATIBILITY_KIND ||
-    ref.version !== POLICY_COMPATIBILITY_VERSION ||
-    ref.stage !== POLICY_COMPATIBILITY_STAGE ||
-    ref.boundary !== POLICY_COMPATIBILITY_BOUNDARY
+    artifact.governance_evidence.boundary !== GOVERNANCE_EVIDENCE_PROFILE_BOUNDARY
   ) {
-    throw new Error("policy stabilization compatibility ref drifted");
+    throw new Error("governance evidence boundary drifted");
   }
-  const contract = artifact.policy_stabilization.final_consumer_contract;
+  const ref = artifact.governance_evidence.policy_ref;
   if (
-    contract.acceptance_level !== POLICY_FINAL_ACCEPTANCE_READY ||
-    contract.recommendation_only !== true ||
-    contract.additive_only !== true ||
-    contract.execution_enabled !== false ||
-    contract.default_on !== false ||
-    contract.audit_output_preserved !== true ||
-    contract.audit_verdict_preserved !== true ||
-    contract.actual_exit_code_preserved !== true ||
-    contract.denied_exit_code_preserved !== 25 ||
-    contract.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
-    contract.governance_object_addition !== false
+    ref.kind !== POLICY_STABILIZATION_KIND ||
+    ref.version !== POLICY_STABILIZATION_VERSION ||
+    ref.stage !== POLICY_STABILIZATION_STAGE ||
+    ref.boundary !== POLICY_FINAL_ACCEPTANCE_BOUNDARY ||
+    ref.source_surface !== POLICY_CONSUMER_SURFACE
   ) {
-    throw new Error("policy stabilization final consumer contract drifted");
+    throw new Error("governance evidence policy ref drifted");
+  }
+  const evidenceContract = artifact.governance_evidence.evidence_contract;
+  if (
+    evidenceContract.recommendation_only !== true ||
+    evidenceContract.additive_only !== true ||
+    evidenceContract.non_executing !== true ||
+    evidenceContract.default_on !== false
+  ) {
+    throw new Error("governance evidence contract drifted");
+  }
+  const provenance = artifact.governance_evidence.provenance_contract;
+  if (
+    provenance.kind !== GOVERNANCE_PROVENANCE_CONTRACT_KIND ||
+    provenance.version !== GOVERNANCE_PROVENANCE_CONTRACT_VERSION ||
+    provenance.boundary !== GOVERNANCE_PROVENANCE_CONTRACT_BOUNDARY ||
+    provenance.provenance_preserved !== true ||
+    provenance.source_profile_kind !== POLICY_STABILIZATION_KIND ||
+    provenance.canonical_lineage_preserved !== true
+  ) {
+    throw new Error("governance provenance contract drifted");
+  }
+  const lineage = artifact.governance_evidence.lineage_contract;
+  if (
+    lineage.kind !== GOVERNANCE_LINEAGE_CONTRACT_KIND ||
+    lineage.version !== GOVERNANCE_LINEAGE_CONTRACT_VERSION ||
+    lineage.boundary !== GOVERNANCE_LINEAGE_CONTRACT_BOUNDARY ||
+    lineage.bounded_lineage !== true ||
+    lineage.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
+    lineage.authority_scope_expansion !== false
+  ) {
+    throw new Error("governance lineage contract drifted");
+  }
+  const semantics = artifact.governance_evidence.preserved_semantics;
+  if (
+    semantics.policy_semantics_preserved !== true ||
+    semantics.enforcement_semantics_preserved !== true ||
+    semantics.approval_semantics_preserved !== true ||
+    semantics.judgment_semantics_preserved !== true ||
+    semantics.permit_gate_semantics_preserved !== true ||
+    semantics.audit_output_preserved !== true ||
+    semantics.audit_verdict_preserved !== true ||
+    semantics.actual_exit_code_preserved !== true ||
+    semantics.denied_exit_code_preserved !== 25 ||
+    semantics.governance_object_addition !== false ||
+    semantics.main_path_takeover !== false
+  ) {
+    throw new Error("governance evidence preserved semantics drifted");
   }
 }
 
-if (!POLICY_SURFACE_MAP.policy_stabilization) {
-  throw new Error("policy stabilization surface entry missing");
-}
-if (
-  POLICY_SURFACE_MAP.policy_stabilization.contract.kind !==
-  POLICY_STABILIZATION_KIND
-) {
-  throw new Error("policy stabilization surface contract kind drifted");
-}
 if (!GOVERNANCE_EVIDENCE_SURFACE_MAP.governance_evidence) {
   throw new Error("governance evidence surface entry missing");
 }
+if (
+  GOVERNANCE_EVIDENCE_SURFACE_MAP.governance_evidence.contract.kind !==
+  GOVERNANCE_EVIDENCE_PROFILE_KIND
+) {
+  throw new Error("governance evidence surface contract kind drifted");
+}
 
-for (const exportName of POLICY_STABILIZATION_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_EVIDENCE_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `policy stabilization export missing from permit index: ${exportName}`
+      `governance evidence export missing from permit index: ${exportName}`
     );
   }
 }
-for (const exportName of POLICY_SURFACE_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_EVIDENCE_SURFACE_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `policy surface export missing from permit index: ${exportName}`
+      `governance evidence surface export missing from permit index: ${exportName}`
     );
   }
 }
 
-process.stdout.write("governance policy stabilization verified\n");
+process.stdout.write("governance evidence provenance verified\n");
