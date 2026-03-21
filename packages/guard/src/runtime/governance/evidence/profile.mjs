@@ -43,6 +43,7 @@ export const GOVERNANCE_EVIDENCE_PAYLOAD_FIELDS = Object.freeze([
   "evidence_contract",
   "provenance_contract",
   "lineage_contract",
+  "compatibility_refs",
   "preserved_semantics",
 ]);
 export const GOVERNANCE_EVIDENCE_STABLE_EXPORT_SET = Object.freeze([
@@ -110,6 +111,11 @@ export function buildGovernanceEvidenceProfile({ policyStabilizationProfile }) {
         bounded_lineage: true,
         authority_scope: "review_gate_deny_exit_recommendation_only",
         authority_scope_expansion: false,
+      },
+      compatibility_refs: {
+        artifact_linkage_contract_available: true,
+        replay_readiness_profile_available: true,
+        compare_compatibility_contract_available: true,
       },
       preserved_semantics: {
         policy_semantics_preserved: true,
@@ -272,6 +278,19 @@ export function validateGovernanceEvidenceProfile(profile) {
     }
     if (payload.lineage_contract.authority_scope_expansion !== false) {
       errors.push("governance lineage authority expansion drifted");
+    }
+  }
+  if (!isPlainObject(payload.compatibility_refs)) {
+    errors.push("governance evidence compatibility refs must be an object");
+  } else {
+    if (payload.compatibility_refs.artifact_linkage_contract_available !== true) {
+      errors.push("governance evidence artifact linkage availability drifted");
+    }
+    if (payload.compatibility_refs.replay_readiness_profile_available !== true) {
+      errors.push("governance evidence replay readiness availability drifted");
+    }
+    if (payload.compatibility_refs.compare_compatibility_contract_available !== true) {
+      errors.push("governance evidence compare compatibility availability drifted");
     }
   }
   if (!isPlainObject(payload.preserved_semantics)) {
