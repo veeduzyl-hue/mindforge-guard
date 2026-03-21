@@ -12,6 +12,19 @@ import {
   GOVERNANCE_PROVENANCE_CONTRACT_KIND,
   GOVERNANCE_PROVENANCE_CONTRACT_VERSION,
 } from "./profile.mjs";
+import {
+  GOVERNANCE_EVIDENCE_REPLAY_BOUNDARY,
+  GOVERNANCE_EVIDENCE_REPLAY_KIND,
+  GOVERNANCE_EVIDENCE_REPLAY_STAGE,
+  GOVERNANCE_EVIDENCE_REPLAY_VERSION,
+  GOVERNANCE_EVIDENCE_RECEIPT_READY,
+  GOVERNANCE_EVIDENCE_CONSUMER_COMPATIBLE,
+} from "./replay.mjs";
+import {
+  GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_BOUNDARY,
+  GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_KIND,
+  GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_VERSION,
+} from "./compare.mjs";
 
 export const GOVERNANCE_EVIDENCE_SURFACE_VERSION = "v1";
 export const GOVERNANCE_EVIDENCE_SURFACE_STABILITY = "stable";
@@ -19,6 +32,7 @@ export const GOVERNANCE_EVIDENCE_SURFACE_CONSUMER_TIER =
   "governance_evidence_surface";
 export const GOVERNANCE_EVIDENCE_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_evidence",
+  "governance_evidence_replay",
 ]);
 export const GOVERNANCE_EVIDENCE_SURFACE_META_EXPORTS = Object.freeze([
   "GOVERNANCE_EVIDENCE_SURFACE_VERSION",
@@ -61,6 +75,27 @@ export const GOVERNANCE_EVIDENCE_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  governance_evidence_replay: Object.freeze({
+    artifact_id: "governance_evidence_replay",
+    consumer_surface: GOVERNANCE_EVIDENCE_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: GOVERNANCE_EVIDENCE_REPLAY_KIND,
+      version: GOVERNANCE_EVIDENCE_REPLAY_VERSION,
+      schema_id: "mindforge/governance-evidence-replay/v1",
+      stage: GOVERNANCE_EVIDENCE_REPLAY_STAGE,
+      boundary: GOVERNANCE_EVIDENCE_REPLAY_BOUNDARY,
+    }),
+    compare_contract: Object.freeze({
+      kind: GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_KIND,
+      version: GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_VERSION,
+      boundary: GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_BOUNDARY,
+      receipt_level: GOVERNANCE_EVIDENCE_RECEIPT_READY,
+      compatibility_level: GOVERNANCE_EVIDENCE_CONSUMER_COMPATIBLE,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -93,7 +128,7 @@ export function validateGovernanceEvidenceSurface() {
   }
   if (
     JSON.stringify(GOVERNANCE_EVIDENCE_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["governance_evidence"])
+    JSON.stringify(["governance_evidence", "governance_evidence_replay"])
   ) {
     errors.push("governance evidence surface artifact order drifted");
   }
@@ -139,6 +174,29 @@ export function validateGovernanceEvidenceSurface() {
   }
   if (artifact.executing !== false) {
     errors.push("governance evidence surface execution boundary drifted");
+  }
+  const replayArtifact = GOVERNANCE_EVIDENCE_SURFACE_MAP.governance_evidence_replay;
+  if (!isPlainObject(replayArtifact)) {
+    errors.push("governance evidence replay surface entry must be an object");
+  } else {
+    if (replayArtifact.contract.kind !== GOVERNANCE_EVIDENCE_REPLAY_KIND) {
+      errors.push("governance evidence replay surface contract kind drifted");
+    }
+    if (
+      replayArtifact.compare_contract.kind !==
+      GOVERNANCE_COMPARE_COMPATIBILITY_CONTRACT_KIND
+    ) {
+      errors.push("governance evidence compare contract kind drifted");
+    }
+    if (replayArtifact.recommendation_only !== true) {
+      errors.push("governance evidence replay recommendation boundary drifted");
+    }
+    if (replayArtifact.additive_only !== true) {
+      errors.push("governance evidence replay additive boundary drifted");
+    }
+    if (replayArtifact.executing !== false) {
+      errors.push("governance evidence replay execution boundary drifted");
+    }
   }
 
   return { ok: errors.length === 0, errors };
