@@ -6,6 +6,7 @@ import {
   POLICY_COMPATIBILITY_VERSION,
   POLICY_CONSUMER_COMPATIBLE,
   POLICY_CONSUMER_SURFACE,
+  POLICY_FINAL_ACCEPTANCE_BOUNDARY,
   POLICY_INHERITANCE_CONTRACT_BOUNDARY,
   POLICY_INHERITANCE_CONTRACT_KIND,
   POLICY_INHERITANCE_CONTRACT_VERSION,
@@ -280,6 +281,9 @@ if (!POLICY_SURFACE_MAP.policy_profile) {
 if (!POLICY_SURFACE_MAP.policy_compatibility) {
   throw new Error("policy compatibility surface entry missing");
 }
+if (!POLICY_SURFACE_MAP.policy_stabilization) {
+  throw new Error("policy stabilization surface entry missing");
+}
 if (POLICY_SURFACE_MAP.policy_profile.contract.kind !== POLICY_PROFILE_KIND) {
   throw new Error("policy surface contract kind drifted");
 }
@@ -288,6 +292,12 @@ if (
   POLICY_COMPATIBILITY_KIND
 ) {
   throw new Error("policy compatibility surface contract kind drifted");
+}
+if (
+  POLICY_SURFACE_MAP.policy_stabilization.contract.boundary !==
+  POLICY_FINAL_ACCEPTANCE_BOUNDARY
+) {
+  throw new Error("policy stabilization surface boundary drifted");
 }
 
 for (const exportName of POLICY_PROFILE_STABLE_EXPORT_SET) {

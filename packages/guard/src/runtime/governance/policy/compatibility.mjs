@@ -51,6 +51,7 @@ export const POLICY_COMPATIBILITY_PAYLOAD_FIELDS = Object.freeze([
   "migration_readiness_profile",
   "receipt_readiness",
   "consumer_compatibility",
+  "stabilization_refs",
 ]);
 export const POLICY_COMPATIBILITY_STABLE_EXPORT_SET = Object.freeze([
   "POLICY_COMPATIBILITY_KIND",
@@ -102,6 +103,10 @@ export function buildPolicyCompatibilityProfile({ policyProfile }) {
       receipt_readiness: migration.policy_migration_readiness.receipt_readiness,
       consumer_compatibility:
         migration.policy_migration_readiness.consumer_compatibility,
+      stabilization_refs: {
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
+      },
     },
     deterministic: true,
     enforcing: false,
@@ -232,6 +237,18 @@ export function validatePolicyCompatibilityProfile(profile) {
     }
     if (payload.consumer_compatibility.denied_exit_code_preserved !== 25) {
       errors.push("policy compatibility deny exit drifted");
+    }
+  }
+  if (!isPlainObject(payload.stabilization_refs)) {
+    errors.push("policy stabilization refs must be an object");
+  } else {
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("policy stabilization profile availability drifted");
+    }
+    if (
+      payload.stabilization_refs.final_acceptance_boundary_available !== true
+    ) {
+      errors.push("policy final acceptance availability drifted");
     }
   }
 

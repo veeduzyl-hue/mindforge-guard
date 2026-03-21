@@ -30,6 +30,13 @@ import {
   POLICY_COMPATIBILITY_STAGE,
   POLICY_COMPATIBILITY_VERSION,
 } from "./compatibility.mjs";
+import {
+  POLICY_FINAL_ACCEPTANCE_BOUNDARY,
+  POLICY_FINAL_ACCEPTANCE_READY,
+  POLICY_STABILIZATION_KIND,
+  POLICY_STABILIZATION_STAGE,
+  POLICY_STABILIZATION_VERSION,
+} from "./stabilization.mjs";
 
 export const POLICY_SURFACE_VERSION = "v1";
 export const POLICY_SURFACE_STABILITY = "stable";
@@ -37,6 +44,7 @@ export const POLICY_SURFACE_CONSUMER_TIER = "policy_lifecycle_surface";
 export const POLICY_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "policy_profile",
   "policy_compatibility",
+  "policy_stabilization",
 ]);
 export const POLICY_SURFACE_META_EXPORTS = Object.freeze([
   "POLICY_SURFACE_VERSION",
@@ -105,6 +113,26 @@ export const POLICY_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  policy_stabilization: Object.freeze({
+    artifact_id: "policy_stabilization",
+    consumer_surface: POLICY_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: POLICY_STABILIZATION_KIND,
+      version: POLICY_STABILIZATION_VERSION,
+      schema_id: "mindforge/policy-stabilization/v1",
+      stage: POLICY_STABILIZATION_STAGE,
+      boundary: POLICY_FINAL_ACCEPTANCE_BOUNDARY,
+    }),
+    compatibility_contract: Object.freeze({
+      kind: POLICY_COMPATIBILITY_KIND,
+      version: POLICY_COMPATIBILITY_VERSION,
+      boundary: POLICY_COMPATIBILITY_BOUNDARY,
+      acceptance_level: POLICY_FINAL_ACCEPTANCE_READY,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -135,7 +163,11 @@ export function validatePolicySurface() {
   }
   if (
     JSON.stringify(POLICY_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["policy_profile", "policy_compatibility"])
+    JSON.stringify([
+      "policy_profile",
+      "policy_compatibility",
+      "policy_stabilization",
+    ])
   ) {
     errors.push("policy surface artifact order drifted");
   }
@@ -209,6 +241,29 @@ export function validatePolicySurface() {
     }
     if (compatibilityArtifact.executing !== false) {
       errors.push("policy compatibility execution boundary drifted");
+    }
+  }
+  const stabilizationArtifact = POLICY_SURFACE_MAP.policy_stabilization;
+  if (!isPlainObject(stabilizationArtifact)) {
+    errors.push("policy stabilization surface artifact entry must be an object");
+  } else {
+    if (stabilizationArtifact.contract.kind !== POLICY_STABILIZATION_KIND) {
+      errors.push("policy stabilization contract kind drifted");
+    }
+    if (
+      stabilizationArtifact.compatibility_contract.kind !==
+      POLICY_COMPATIBILITY_KIND
+    ) {
+      errors.push("policy stabilization compatibility contract kind drifted");
+    }
+    if (stabilizationArtifact.recommendation_only !== true) {
+      errors.push("policy stabilization recommendation boundary drifted");
+    }
+    if (stabilizationArtifact.additive_only !== true) {
+      errors.push("policy stabilization additive boundary drifted");
+    }
+    if (stabilizationArtifact.executing !== false) {
+      errors.push("policy stabilization execution boundary drifted");
     }
   }
 
