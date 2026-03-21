@@ -21,6 +21,7 @@ import {
   GOVERNANCE_EVIDENCE_REPLAY_VERSION,
   GOVERNANCE_EVIDENCE_SURFACE_MAP,
   GOVERNANCE_EVIDENCE_SURFACE_STABLE_EXPORT_SET,
+  GOVERNANCE_EVIDENCE_FINAL_ACCEPTANCE_BOUNDARY,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
@@ -280,6 +281,15 @@ if (
   GOVERNANCE_EVIDENCE_REPLAY_KIND
 ) {
   throw new Error("governance evidence replay surface contract kind drifted");
+}
+if (!GOVERNANCE_EVIDENCE_SURFACE_MAP.governance_evidence_stabilization) {
+  throw new Error("governance evidence stabilization surface entry missing");
+}
+if (
+  GOVERNANCE_EVIDENCE_SURFACE_MAP.governance_evidence_stabilization.contract
+    .boundary !== GOVERNANCE_EVIDENCE_FINAL_ACCEPTANCE_BOUNDARY
+) {
+  throw new Error("governance evidence stabilization surface boundary drifted");
 }
 
 for (const exportName of GOVERNANCE_EVIDENCE_REPLAY_STABLE_EXPORT_SET) {
