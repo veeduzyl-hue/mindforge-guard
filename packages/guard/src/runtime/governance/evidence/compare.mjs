@@ -37,6 +37,7 @@ export function buildGovernanceCompareCompatibilityContract({
     additive_only: true,
     execution_enabled: false,
     default_on: false,
+    compare_execution_available: false,
     audit_output_preserved: true,
     audit_verdict_preserved: true,
     actual_exit_code_preserved: true,
@@ -92,6 +93,9 @@ export function validateGovernanceCompareCompatibilityContract(contract) {
   }
   if (contract.default_on !== false) {
     errors.push("governance compare default-on drifted");
+  }
+  if (contract.compare_execution_available !== false) {
+    errors.push("governance compare execution availability drifted");
   }
   if (contract.audit_output_preserved !== true) {
     errors.push("governance compare audit output drifted");

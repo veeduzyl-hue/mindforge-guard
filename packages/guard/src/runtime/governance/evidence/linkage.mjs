@@ -34,6 +34,7 @@ export function buildGovernanceArtifactLinkageContract({
     recommendation_only: true,
     additive_only: true,
     execution_enabled: false,
+    replay_execution_available: false,
     authority_scope: "review_gate_deny_exit_recommendation_only",
     authority_scope_expansion: false,
     canonical_action_hash: evidence.canonical_action_hash,
@@ -81,6 +82,9 @@ export function validateGovernanceArtifactLinkageContract(contract) {
   }
   if (contract.execution_enabled !== false) {
     errors.push("governance artifact linkage execution boundary drifted");
+  }
+  if (contract.replay_execution_available !== false) {
+    errors.push("governance artifact linkage replay execution drifted");
   }
   if (
     contract.authority_scope !== "review_gate_deny_exit_recommendation_only"
