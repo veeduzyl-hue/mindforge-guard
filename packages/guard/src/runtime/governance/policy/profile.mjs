@@ -40,6 +40,7 @@ export const POLICY_PROFILE_PAYLOAD_FIELDS = Object.freeze([
   "policy_contract",
   "inheritance_contract",
   "rollout_readiness_contract",
+  "compatibility_refs",
   "preserved_semantics",
 ]);
 export const POLICY_PROFILE_STABLE_EXPORT_SET = Object.freeze([
@@ -112,6 +113,11 @@ export function buildPolicyProfile({ enforcementStabilizationProfile }) {
         actual_exit_code_preserved: true,
         denied_exit_code_preserved: 25,
         governance_object_addition: false,
+      },
+      compatibility_refs: {
+        compatibility_profile_available: true,
+        pinning_contract_available: true,
+        migration_readiness_profile_available: true,
       },
       preserved_semantics: {
         permit_gate_semantics_preserved: true,
@@ -294,6 +300,21 @@ export function validatePolicyProfile(profile) {
       payload.rollout_readiness_contract.governance_object_addition !== false
     ) {
       errors.push("policy rollout governance object boundary drifted");
+    }
+  }
+  if (!isPlainObject(payload.compatibility_refs)) {
+    errors.push("policy compatibility refs must be an object");
+  } else {
+    if (payload.compatibility_refs.compatibility_profile_available !== true) {
+      errors.push("policy compatibility availability drifted");
+    }
+    if (payload.compatibility_refs.pinning_contract_available !== true) {
+      errors.push("policy pinning availability drifted");
+    }
+    if (
+      payload.compatibility_refs.migration_readiness_profile_available !== true
+    ) {
+      errors.push("policy migration readiness availability drifted");
     }
   }
   if (!isPlainObject(payload.preserved_semantics)) {

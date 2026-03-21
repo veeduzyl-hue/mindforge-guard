@@ -12,11 +12,32 @@ import {
   POLICY_ROLLOUT_READINESS_CONTRACT_KIND,
   POLICY_ROLLOUT_READINESS_CONTRACT_VERSION,
 } from "./profile.mjs";
+import {
+  POLICY_PINNING_CONTRACT_BOUNDARY,
+  POLICY_PINNING_CONTRACT_KIND,
+  POLICY_PINNING_CONTRACT_VERSION,
+} from "./pinning.mjs";
+import {
+  POLICY_MIGRATION_READINESS_BOUNDARY,
+  POLICY_MIGRATION_READINESS_KIND,
+  POLICY_MIGRATION_READINESS_VERSION,
+  POLICY_MIGRATION_READY,
+  POLICY_CONSUMER_COMPATIBLE,
+} from "./migration.mjs";
+import {
+  POLICY_COMPATIBILITY_BOUNDARY,
+  POLICY_COMPATIBILITY_KIND,
+  POLICY_COMPATIBILITY_STAGE,
+  POLICY_COMPATIBILITY_VERSION,
+} from "./compatibility.mjs";
 
 export const POLICY_SURFACE_VERSION = "v1";
 export const POLICY_SURFACE_STABILITY = "stable";
 export const POLICY_SURFACE_CONSUMER_TIER = "policy_lifecycle_surface";
-export const POLICY_SURFACE_ARTIFACT_ORDER = Object.freeze(["policy_profile"]);
+export const POLICY_SURFACE_ARTIFACT_ORDER = Object.freeze([
+  "policy_profile",
+  "policy_compatibility",
+]);
 export const POLICY_SURFACE_META_EXPORTS = Object.freeze([
   "POLICY_SURFACE_VERSION",
   "POLICY_SURFACE_STABILITY",
@@ -58,6 +79,32 @@ export const POLICY_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  policy_compatibility: Object.freeze({
+    artifact_id: "policy_compatibility",
+    consumer_surface: POLICY_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: POLICY_COMPATIBILITY_KIND,
+      version: POLICY_COMPATIBILITY_VERSION,
+      schema_id: "mindforge/policy-compatibility/v1",
+      stage: POLICY_COMPATIBILITY_STAGE,
+      boundary: POLICY_COMPATIBILITY_BOUNDARY,
+    }),
+    pinning_contract: Object.freeze({
+      kind: POLICY_PINNING_CONTRACT_KIND,
+      version: POLICY_PINNING_CONTRACT_VERSION,
+      boundary: POLICY_PINNING_CONTRACT_BOUNDARY,
+    }),
+    migration_contract: Object.freeze({
+      kind: POLICY_MIGRATION_READINESS_KIND,
+      version: POLICY_MIGRATION_READINESS_VERSION,
+      boundary: POLICY_MIGRATION_READINESS_BOUNDARY,
+      readiness_level: POLICY_MIGRATION_READY,
+      compatibility_level: POLICY_CONSUMER_COMPATIBLE,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -88,7 +135,7 @@ export function validatePolicySurface() {
   }
   if (
     JSON.stringify(POLICY_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["policy_profile"])
+    JSON.stringify(["policy_profile", "policy_compatibility"])
   ) {
     errors.push("policy surface artifact order drifted");
   }
@@ -134,6 +181,35 @@ export function validatePolicySurface() {
   }
   if (artifact.executing !== false) {
     errors.push("policy surface executing boundary drifted");
+  }
+  const compatibilityArtifact = POLICY_SURFACE_MAP.policy_compatibility;
+  if (!isPlainObject(compatibilityArtifact)) {
+    errors.push("policy compatibility surface artifact entry must be an object");
+  } else {
+    if (compatibilityArtifact.contract.kind !== POLICY_COMPATIBILITY_KIND) {
+      errors.push("policy compatibility contract kind drifted");
+    }
+    if (
+      compatibilityArtifact.pinning_contract.kind !==
+      POLICY_PINNING_CONTRACT_KIND
+    ) {
+      errors.push("policy pinning contract kind drifted");
+    }
+    if (
+      compatibilityArtifact.migration_contract.kind !==
+      POLICY_MIGRATION_READINESS_KIND
+    ) {
+      errors.push("policy migration contract kind drifted");
+    }
+    if (compatibilityArtifact.recommendation_only !== true) {
+      errors.push("policy compatibility recommendation boundary drifted");
+    }
+    if (compatibilityArtifact.additive_only !== true) {
+      errors.push("policy compatibility additive boundary drifted");
+    }
+    if (compatibilityArtifact.executing !== false) {
+      errors.push("policy compatibility execution boundary drifted");
+    }
   }
 
   return { ok: errors.length === 0, errors };
