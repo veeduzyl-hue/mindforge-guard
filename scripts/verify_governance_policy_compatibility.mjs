@@ -5,10 +5,6 @@ import {
   POLICY_COMPATIBILITY_STABLE_EXPORT_SET,
   POLICY_COMPATIBILITY_VERSION,
   POLICY_CONSUMER_COMPATIBLE,
-  POLICY_CONSUMER_SURFACE,
-  POLICY_INHERITANCE_CONTRACT_BOUNDARY,
-  POLICY_INHERITANCE_CONTRACT_KIND,
-  POLICY_INHERITANCE_CONTRACT_VERSION,
   POLICY_MIGRATION_READINESS_BOUNDARY,
   POLICY_MIGRATION_READINESS_KIND,
   POLICY_MIGRATION_READINESS_VERSION,
@@ -16,15 +12,6 @@ import {
   POLICY_PINNING_CONTRACT_BOUNDARY,
   POLICY_PINNING_CONTRACT_KIND,
   POLICY_PINNING_CONTRACT_VERSION,
-  POLICY_PROFILE_BOUNDARY,
-  POLICY_PROFILE_KIND,
-  POLICY_PROFILE_SCHEMA_ID,
-  POLICY_PROFILE_STAGE,
-  POLICY_PROFILE_STABLE_EXPORT_SET,
-  POLICY_PROFILE_VERSION,
-  POLICY_ROLLOUT_READINESS_CONTRACT_BOUNDARY,
-  POLICY_ROLLOUT_READINESS_CONTRACT_KIND,
-  POLICY_ROLLOUT_READINESS_CONTRACT_VERSION,
   POLICY_SURFACE_MAP,
   POLICY_SURFACE_STABLE_EXPORT_SET,
   buildApprovalArtifactProfile,
@@ -43,7 +30,7 @@ import {
   buildPermitGateResult,
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
-  validatePolicyProfile,
+  validatePolicyCompatibilityProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -51,7 +38,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+        "sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -77,7 +64,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildArtifacts(decision) {
+function buildPolicyCompatibility(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -85,10 +72,7 @@ function buildArtifacts(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: {
-          head: "5656565656565656565656565656565656565656",
-          branch: "branch",
-        },
+        git: { head: "7777777777777777777777777777777777777777", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -151,13 +135,11 @@ function buildArtifacts(decision) {
   const enforcementStabilization = buildEnforcementStabilizationProfile({
     enforcementCompatibilityProfile: enforcementCompatibility,
   });
+  const policyProfile = buildPolicyProfile({
+    enforcementStabilizationProfile: enforcementStabilization,
+  });
 
-  return {
-    policyProfile: buildPolicyProfile({
-      enforcementStabilizationProfile: enforcementStabilization,
-    }),
-    policyCompatibility: null,
-  };
+  return buildPolicyCompatibilityProfile({ policyProfile });
 }
 
 for (const decision of [
@@ -166,87 +148,23 @@ for (const decision of [
   "would_review",
   "would_deny",
 ]) {
-  const artifactSet = buildArtifacts(decision);
-  artifactSet.policyCompatibility = buildPolicyCompatibilityProfile({
-    policyProfile: artifactSet.policyProfile,
-  });
-  const validation = validatePolicyProfile(artifactSet.policyProfile);
+  const artifact = buildPolicyCompatibility(decision);
+  const validation = validatePolicyCompatibilityProfile(artifact);
   if (!validation.ok) {
     throw new Error(
-      `policy profile validation failed: ${validation.errors.join("; ")}`
+      `policy compatibility validation failed: ${validation.errors.join("; ")}`
     );
   }
-  const artifact = artifactSet.policyProfile;
-  if (artifact.kind !== POLICY_PROFILE_KIND) {
-    throw new Error("policy profile kind drifted");
-  }
-  if (artifact.version !== POLICY_PROFILE_VERSION) {
-    throw new Error("policy profile version drifted");
-  }
-  if (artifact.schema_id !== POLICY_PROFILE_SCHEMA_ID) {
-    throw new Error("policy profile schema id drifted");
-  }
-  if (artifact.policy_profile.stage !== POLICY_PROFILE_STAGE) {
-    throw new Error("policy profile stage drifted");
-  }
-  if (artifact.policy_profile.consumer_surface !== POLICY_CONSUMER_SURFACE) {
-    throw new Error("policy consumer surface drifted");
-  }
-  if (artifact.policy_profile.boundary !== POLICY_PROFILE_BOUNDARY) {
-    throw new Error("policy profile boundary drifted");
-  }
-  const inheritance = artifact.policy_profile.inheritance_contract;
-  if (
-    inheritance.kind !== POLICY_INHERITANCE_CONTRACT_KIND ||
-    inheritance.version !== POLICY_INHERITANCE_CONTRACT_VERSION ||
-    inheritance.boundary !== POLICY_INHERITANCE_CONTRACT_BOUNDARY ||
-    inheritance.bounded_inheritance !== true ||
-    inheritance.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
-    inheritance.authority_scope_expansion !== false
-  ) {
-    throw new Error("policy inheritance contract drifted");
-  }
-  const rollout = artifact.policy_profile.rollout_readiness_contract;
-  if (
-    rollout.kind !== POLICY_ROLLOUT_READINESS_CONTRACT_KIND ||
-    rollout.version !== POLICY_ROLLOUT_READINESS_CONTRACT_VERSION ||
-    rollout.boundary !== POLICY_ROLLOUT_READINESS_CONTRACT_BOUNDARY ||
-    rollout.readiness_only !== true ||
-    rollout.execution_enabled !== false ||
-    rollout.audit_output_preserved !== true ||
-    rollout.audit_verdict_preserved !== true ||
-    rollout.actual_exit_code_preserved !== true ||
-    rollout.denied_exit_code_preserved !== 25 ||
-    rollout.governance_object_addition !== false
-  ) {
-    throw new Error("policy rollout readiness contract drifted");
-  }
-  if (artifact.policy_profile.compatibility_refs.compatibility_profile_available !== true) {
-    throw new Error("policy compatibility availability drifted");
-  }
-  if (artifact.policy_profile.compatibility_refs.pinning_contract_available !== true) {
-    throw new Error("policy pinning availability drifted");
-  }
-  if (
-    artifact.policy_profile.compatibility_refs
-      .migration_readiness_profile_available !== true
-  ) {
-    throw new Error("policy migration availability drifted");
-  }
-  const compatibility = artifactSet.policyCompatibility;
-  if (compatibility.kind !== POLICY_COMPATIBILITY_KIND) {
+  if (artifact.kind !== POLICY_COMPATIBILITY_KIND) {
     throw new Error("policy compatibility kind drifted");
   }
-  if (compatibility.version !== POLICY_COMPATIBILITY_VERSION) {
+  if (artifact.version !== POLICY_COMPATIBILITY_VERSION) {
     throw new Error("policy compatibility version drifted");
   }
-  if (
-    compatibility.policy_compatibility.boundary !==
-    POLICY_COMPATIBILITY_BOUNDARY
-  ) {
+  if (artifact.policy_compatibility.boundary !== POLICY_COMPATIBILITY_BOUNDARY) {
     throw new Error("policy compatibility boundary drifted");
   }
-  const pinning = compatibility.policy_compatibility.pinning_contract;
+  const pinning = artifact.policy_compatibility.pinning_contract;
   if (
     pinning.kind !== POLICY_PINNING_CONTRACT_KIND ||
     pinning.version !== POLICY_PINNING_CONTRACT_VERSION ||
@@ -254,8 +172,7 @@ for (const decision of [
   ) {
     throw new Error("policy pinning contract drifted");
   }
-  const migration =
-    compatibility.policy_compatibility.migration_readiness_profile;
+  const migration = artifact.policy_compatibility.migration_readiness_profile;
   if (
     migration.kind !== POLICY_MIGRATION_READINESS_KIND ||
     migration.version !== POLICY_MIGRATION_READINESS_VERSION ||
@@ -264,47 +181,21 @@ for (const decision of [
   ) {
     throw new Error("policy migration readiness drifted");
   }
+  if (artifact.policy_compatibility.receipt_readiness.level !== POLICY_MIGRATION_READY) {
+    throw new Error("policy receipt readiness level drifted");
+  }
   if (
-    compatibility.policy_compatibility.receipt_readiness.level !==
-      POLICY_MIGRATION_READY ||
-    compatibility.policy_compatibility.consumer_compatibility.level !==
-      POLICY_CONSUMER_COMPATIBLE
+    artifact.policy_compatibility.consumer_compatibility.level !==
+    POLICY_CONSUMER_COMPATIBLE
   ) {
-    throw new Error("policy compatibility readiness levels drifted");
+    throw new Error("policy consumer compatibility level drifted");
   }
 }
 
-if (!POLICY_SURFACE_MAP.policy_profile) {
-  throw new Error("policy surface entry missing");
-}
 if (!POLICY_SURFACE_MAP.policy_compatibility) {
   throw new Error("policy compatibility surface entry missing");
 }
-if (POLICY_SURFACE_MAP.policy_profile.contract.kind !== POLICY_PROFILE_KIND) {
-  throw new Error("policy surface contract kind drifted");
-}
-if (
-  POLICY_SURFACE_MAP.policy_compatibility.contract.kind !==
-  POLICY_COMPATIBILITY_KIND
-) {
-  throw new Error("policy compatibility surface contract kind drifted");
-}
 
-for (const exportName of POLICY_PROFILE_STABLE_EXPORT_SET) {
-  if (!(exportName in permitExports)) {
-    throw new Error(
-      `policy profile export missing from permit index: ${exportName}`
-    );
-  }
-}
-
-for (const exportName of POLICY_SURFACE_STABLE_EXPORT_SET) {
-  if (!(exportName in permitExports)) {
-    throw new Error(
-      `policy surface export missing from permit index: ${exportName}`
-    );
-  }
-}
 for (const exportName of POLICY_COMPATIBILITY_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
@@ -312,5 +203,12 @@ for (const exportName of POLICY_COMPATIBILITY_STABLE_EXPORT_SET) {
     );
   }
 }
+for (const exportName of POLICY_SURFACE_STABLE_EXPORT_SET) {
+  if (!(exportName in permitExports)) {
+    throw new Error(
+      `policy surface export missing from permit index: ${exportName}`
+    );
+  }
+}
 
-process.stdout.write("governance policy rollout verified\n");
+process.stdout.write("governance policy compatibility verified\n");
