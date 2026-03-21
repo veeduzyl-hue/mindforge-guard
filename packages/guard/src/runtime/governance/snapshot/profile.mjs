@@ -44,6 +44,7 @@ export const GOVERNANCE_SNAPSHOT_PAYLOAD_FIELDS = Object.freeze([
   "snapshot_contract",
   "explainability_contract",
   "rationale_contract",
+  "compatibility_refs",
   "preserved_semantics",
 ]);
 export const GOVERNANCE_SNAPSHOT_STABLE_EXPORT_SET = Object.freeze([
@@ -115,6 +116,11 @@ export function buildGovernanceSnapshotProfile({
         rationale_available: true,
         descriptive_only: true,
         canonical_rationale_preserved: true,
+      },
+      compatibility_refs: {
+        review_pack_contract_available: true,
+        rationale_bundle_profile_available: true,
+        export_compatibility_contract_available: true,
       },
       preserved_semantics: {
         evidence_semantics_preserved: true,
@@ -286,6 +292,19 @@ export function validateGovernanceSnapshotProfile(profile) {
     }
     if (payload.rationale_contract.canonical_rationale_preserved !== true) {
       errors.push("governance rationale canonical preservation drifted");
+    }
+  }
+  if (!isPlainObject(payload.compatibility_refs)) {
+    errors.push("governance snapshot compatibility refs must be an object");
+  } else {
+    if (payload.compatibility_refs.review_pack_contract_available !== true) {
+      errors.push("governance snapshot review pack availability drifted");
+    }
+    if (payload.compatibility_refs.rationale_bundle_profile_available !== true) {
+      errors.push("governance snapshot rationale bundle availability drifted");
+    }
+    if (payload.compatibility_refs.export_compatibility_contract_available !== true) {
+      errors.push("governance snapshot export compatibility availability drifted");
     }
   }
   if (!isPlainObject(payload.preserved_semantics)) {
