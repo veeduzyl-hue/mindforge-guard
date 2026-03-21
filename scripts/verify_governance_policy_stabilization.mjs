@@ -2,17 +2,16 @@ import * as permitExports from "../packages/guard/src/runtime/governance/permit/
 import {
   POLICY_COMPATIBILITY_BOUNDARY,
   POLICY_COMPATIBILITY_KIND,
-  POLICY_COMPATIBILITY_STABLE_EXPORT_SET,
+  POLICY_COMPATIBILITY_STAGE,
   POLICY_COMPATIBILITY_VERSION,
-  POLICY_CONSUMER_COMPATIBLE,
+  POLICY_CONSUMER_SURFACE,
   POLICY_FINAL_ACCEPTANCE_BOUNDARY,
-  POLICY_MIGRATION_READINESS_BOUNDARY,
-  POLICY_MIGRATION_READINESS_KIND,
-  POLICY_MIGRATION_READINESS_VERSION,
-  POLICY_MIGRATION_READY,
-  POLICY_PINNING_CONTRACT_BOUNDARY,
-  POLICY_PINNING_CONTRACT_KIND,
-  POLICY_PINNING_CONTRACT_VERSION,
+  POLICY_FINAL_ACCEPTANCE_READY,
+  POLICY_STABILIZATION_KIND,
+  POLICY_STABILIZATION_SCHEMA_ID,
+  POLICY_STABILIZATION_STAGE,
+  POLICY_STABILIZATION_STABLE_EXPORT_SET,
+  POLICY_STABILIZATION_VERSION,
   POLICY_SURFACE_MAP,
   POLICY_SURFACE_STABLE_EXPORT_SET,
   buildApprovalArtifactProfile,
@@ -31,7 +30,8 @@ import {
   buildPermitGateResult,
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
-  validatePolicyCompatibilityProfile,
+  buildPolicyStabilizationProfile,
+  validatePolicyStabilizationProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -39,7 +39,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "sha256:abababababababababababababababababababababababababababababababab",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -65,7 +65,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildPolicyCompatibility(decision) {
+function buildPolicyStabilization(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -73,7 +73,7 @@ function buildPolicyCompatibility(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: { head: "7777777777777777777777777777777777777777", branch: "branch" },
+        git: { head: "8888888888888888888888888888888888888888", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -139,8 +139,11 @@ function buildPolicyCompatibility(decision) {
   const policyProfile = buildPolicyProfile({
     enforcementStabilizationProfile: enforcementStabilization,
   });
+  const policyCompatibility = buildPolicyCompatibilityProfile({ policyProfile });
 
-  return buildPolicyCompatibilityProfile({ policyProfile });
+  return buildPolicyStabilizationProfile({
+    policyCompatibilityProfile: policyCompatibility,
+  });
 }
 
 for (const decision of [
@@ -149,79 +152,76 @@ for (const decision of [
   "would_review",
   "would_deny",
 ]) {
-  const artifact = buildPolicyCompatibility(decision);
-  const validation = validatePolicyCompatibilityProfile(artifact);
+  const artifact = buildPolicyStabilization(decision);
+  const validation = validatePolicyStabilizationProfile(artifact);
   if (!validation.ok) {
     throw new Error(
-      `policy compatibility validation failed: ${validation.errors.join("; ")}`
+      `policy stabilization validation failed: ${validation.errors.join("; ")}`
     );
   }
-  if (artifact.kind !== POLICY_COMPATIBILITY_KIND) {
-    throw new Error("policy compatibility kind drifted");
+  if (artifact.kind !== POLICY_STABILIZATION_KIND) {
+    throw new Error("policy stabilization kind drifted");
   }
-  if (artifact.version !== POLICY_COMPATIBILITY_VERSION) {
-    throw new Error("policy compatibility version drifted");
+  if (artifact.version !== POLICY_STABILIZATION_VERSION) {
+    throw new Error("policy stabilization version drifted");
   }
-  if (artifact.policy_compatibility.boundary !== POLICY_COMPATIBILITY_BOUNDARY) {
-    throw new Error("policy compatibility boundary drifted");
+  if (artifact.schema_id !== POLICY_STABILIZATION_SCHEMA_ID) {
+    throw new Error("policy stabilization schema id drifted");
   }
-  const pinning = artifact.policy_compatibility.pinning_contract;
-  if (
-    pinning.kind !== POLICY_PINNING_CONTRACT_KIND ||
-    pinning.version !== POLICY_PINNING_CONTRACT_VERSION ||
-    pinning.boundary !== POLICY_PINNING_CONTRACT_BOUNDARY
-  ) {
-    throw new Error("policy pinning contract drifted");
-  }
-  const migration = artifact.policy_compatibility.migration_readiness_profile;
-  if (
-    migration.kind !== POLICY_MIGRATION_READINESS_KIND ||
-    migration.version !== POLICY_MIGRATION_READINESS_VERSION ||
-    migration.policy_migration_readiness.boundary !==
-      POLICY_MIGRATION_READINESS_BOUNDARY
-  ) {
-    throw new Error("policy migration readiness drifted");
-  }
-  if (artifact.policy_compatibility.receipt_readiness.level !== POLICY_MIGRATION_READY) {
-    throw new Error("policy receipt readiness level drifted");
+  if (artifact.policy_stabilization.stage !== POLICY_STABILIZATION_STAGE) {
+    throw new Error("policy stabilization stage drifted");
   }
   if (
-    artifact.policy_compatibility.consumer_compatibility.level !==
-    POLICY_CONSUMER_COMPATIBLE
+    artifact.policy_stabilization.consumer_surface !== POLICY_CONSUMER_SURFACE
   ) {
-    throw new Error("policy consumer compatibility level drifted");
+    throw new Error("policy stabilization consumer surface drifted");
   }
   if (
-    artifact.policy_compatibility.stabilization_refs
-      .stabilization_profile_available !== true
+    artifact.policy_stabilization.boundary !== POLICY_FINAL_ACCEPTANCE_BOUNDARY
   ) {
-    throw new Error("policy stabilization availability drifted");
+    throw new Error("policy stabilization boundary drifted");
   }
+  const ref = artifact.policy_stabilization.compatibility_ref;
   if (
-    artifact.policy_compatibility.stabilization_refs
-      .final_acceptance_boundary_available !== true
+    ref.kind !== POLICY_COMPATIBILITY_KIND ||
+    ref.version !== POLICY_COMPATIBILITY_VERSION ||
+    ref.stage !== POLICY_COMPATIBILITY_STAGE ||
+    ref.boundary !== POLICY_COMPATIBILITY_BOUNDARY
   ) {
-    throw new Error("policy final acceptance availability drifted");
+    throw new Error("policy stabilization compatibility ref drifted");
+  }
+  const contract = artifact.policy_stabilization.final_consumer_contract;
+  if (
+    contract.acceptance_level !== POLICY_FINAL_ACCEPTANCE_READY ||
+    contract.recommendation_only !== true ||
+    contract.additive_only !== true ||
+    contract.execution_enabled !== false ||
+    contract.default_on !== false ||
+    contract.audit_output_preserved !== true ||
+    contract.audit_verdict_preserved !== true ||
+    contract.actual_exit_code_preserved !== true ||
+    contract.denied_exit_code_preserved !== 25 ||
+    contract.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
+    contract.governance_object_addition !== false
+  ) {
+    throw new Error("policy stabilization final consumer contract drifted");
   }
 }
 
-if (!POLICY_SURFACE_MAP.policy_compatibility) {
-  throw new Error("policy compatibility surface entry missing");
-}
 if (!POLICY_SURFACE_MAP.policy_stabilization) {
   throw new Error("policy stabilization surface entry missing");
 }
 if (
-  POLICY_SURFACE_MAP.policy_stabilization.contract.boundary !==
-  POLICY_FINAL_ACCEPTANCE_BOUNDARY
+  POLICY_SURFACE_MAP.policy_stabilization.contract.kind !==
+  POLICY_STABILIZATION_KIND
 ) {
-  throw new Error("policy stabilization surface boundary drifted");
+  throw new Error("policy stabilization surface contract kind drifted");
 }
 
-for (const exportName of POLICY_COMPATIBILITY_STABLE_EXPORT_SET) {
+for (const exportName of POLICY_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `policy compatibility export missing from permit index: ${exportName}`
+      `policy stabilization export missing from permit index: ${exportName}`
     );
   }
 }
@@ -233,4 +233,4 @@ for (const exportName of POLICY_SURFACE_STABLE_EXPORT_SET) {
   }
 }
 
-process.stdout.write("governance policy compatibility verified\n");
+process.stdout.write("governance policy stabilization verified\n");
