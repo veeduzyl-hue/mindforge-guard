@@ -108,6 +108,8 @@ export function buildGovernanceRationaleBundleProfile({
       },
       stabilization_refs: {
         export_compatibility_contract_available: true,
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
     },
     deterministic: true,
@@ -232,10 +234,16 @@ export function validateGovernanceRationaleBundleProfile(profile) {
   }
   if (!isPlainObject(payload.stabilization_refs)) {
     errors.push("governance rationale bundle stabilization refs missing");
-  } else if (
-    payload.stabilization_refs.export_compatibility_contract_available !== true
-  ) {
-    errors.push("governance rationale bundle export compatibility availability drifted");
+  } else {
+    if (payload.stabilization_refs.export_compatibility_contract_available !== true) {
+      errors.push("governance rationale bundle export compatibility availability drifted");
+    }
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("governance rationale bundle stabilization availability drifted");
+    }
+    if (payload.stabilization_refs.final_acceptance_boundary_available !== true) {
+      errors.push("governance rationale bundle final acceptance availability drifted");
+    }
   }
   return { ok: errors.length === 0, errors };
 }
