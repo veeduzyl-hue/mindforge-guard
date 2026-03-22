@@ -25,6 +25,12 @@ export function consumeGovernanceCaseReviewDecision({
     linked_resolution_ids: context.linked_resolution_ids,
     linked_escalation_ids: context.linked_escalation_ids,
     linked_closure_ids: context.linked_closure_ids,
+    supersedes_review_decision_id: context.supersedes_review_decision_id ?? null,
+    superseded_by_review_decision_id:
+      context.superseded_by_review_decision_id ?? null,
+    review_decision_sequence: context.review_decision_sequence ?? 1,
+    continuity_mode: context.continuity_mode ?? "standalone",
+    supersession_reason: context.supersession_reason ?? null,
     supporting_artifact_only: contract.supporting_artifact_only === true,
     recommendation_only: contract.recommendation_only === true,
     additive_only: contract.additive_only === true,
