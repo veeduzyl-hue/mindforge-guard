@@ -1,30 +1,30 @@
 import * as permitExports from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import {
-  GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_BOUNDARY,
-  GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_KIND,
-  GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_VERSION,
-  GOVERNANCE_CASE_ESCALATION_CONSUMER_SURFACE,
-  GOVERNANCE_CASE_ESCALATION_CONTRACT_BOUNDARY,
-  GOVERNANCE_CASE_ESCALATION_CONTRACT_KIND,
-  GOVERNANCE_CASE_ESCALATION_CONTRACT_VERSION,
-  GOVERNANCE_CASE_ESCALATION_CLOSURE_READY,
-  GOVERNANCE_CASE_ESCALATION_LANE_REVIEW_COUNCIL,
-  GOVERNANCE_CASE_ESCALATION_MODE_RECOMMENDATION_ONLY,
-  GOVERNANCE_CASE_ESCALATION_PROFILE_BOUNDARY,
-  GOVERNANCE_CASE_ESCALATION_PROFILE_KIND,
-  GOVERNANCE_CASE_ESCALATION_PROFILE_SCHEMA_ID,
-  GOVERNANCE_CASE_ESCALATION_PROFILE_STAGE,
-  GOVERNANCE_CASE_ESCALATION_PROFILE_VERSION,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_BOUNDARY,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_KIND,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_READY,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_SCHEMA_ID,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_STAGE,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_STABLE_EXPORT_SET,
-  GOVERNANCE_CASE_ESCALATION_STABILIZATION_VERSION,
-  GOVERNANCE_CASE_ESCALATION_STATUS_DOCUMENTED,
-  GOVERNANCE_CASE_ESCALATION_SURFACE_MAP,
-  GOVERNANCE_CASE_ESCALATION_SURFACE_STABLE_EXPORT_SET,
+  GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_BOUNDARY,
+  GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_KIND,
+  GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_VERSION,
+  GOVERNANCE_CASE_CLOSURE_CONSUMER_SURFACE,
+  GOVERNANCE_CASE_CLOSURE_CONTRACT_BOUNDARY,
+  GOVERNANCE_CASE_CLOSURE_CONTRACT_KIND,
+  GOVERNANCE_CASE_CLOSURE_CONTRACT_VERSION,
+  GOVERNANCE_CASE_CLOSURE_MODE_RECOMMENDATION_ONLY,
+  GOVERNANCE_CASE_CLOSURE_PROFILE_BOUNDARY,
+  GOVERNANCE_CASE_CLOSURE_PROFILE_KIND,
+  GOVERNANCE_CASE_CLOSURE_PROFILE_SCHEMA_ID,
+  GOVERNANCE_CASE_CLOSURE_PROFILE_STAGE,
+  GOVERNANCE_CASE_CLOSURE_PROFILE_VERSION,
+  GOVERNANCE_CASE_POST_CLOSURE_OBSERVATION_READY,
+  GOVERNANCE_CASE_CLOSURE_READY,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_BOUNDARY,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_KIND,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_READY,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_SCHEMA_ID,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_STAGE,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_STABLE_EXPORT_SET,
+  GOVERNANCE_CASE_CLOSURE_STABILIZATION_VERSION,
+  GOVERNANCE_CASE_CLOSURE_STATUS_DOCUMENTED,
+  GOVERNANCE_CASE_CLOSURE_SURFACE_MAP,
+  GOVERNANCE_CASE_CLOSURE_SURFACE_STABLE_EXPORT_SET,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
@@ -32,6 +32,10 @@ import {
   buildEnforcementCompatibilityProfile,
   buildEnforcementReadinessProfile,
   buildEnforcementStabilizationProfile,
+  buildGovernanceCaseClosureCompatibilityContract,
+  buildGovernanceCaseClosureContract,
+  buildGovernanceCaseClosureProfile,
+  buildGovernanceCaseClosureStabilizationProfile,
   buildGovernanceCaseEscalationCompatibilityContract,
   buildGovernanceCaseEscalationContract,
   buildGovernanceCaseEscalationProfile,
@@ -63,8 +67,8 @@ import {
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
   buildPolicyStabilizationProfile,
-  consumeGovernanceCaseEscalation,
-  validateGovernanceCaseEscalationBundle,
+  consumeGovernanceCaseClosure,
+  validateGovernanceCaseClosureBundle,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -72,7 +76,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:ddddeeeeddddeeeeddddeeeeddddeeeeddddeeeeddddeeeeddddeeeeddddeeee",
+        "sha256:eeeeffffeeeeffffeeeeffffeeeeffffeeeeffffeeeeffffeeeeffffeeeeffff",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -98,7 +102,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildCaseEscalation(decision) {
+function buildCaseClosure(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -106,7 +110,7 @@ function buildCaseEscalation(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: { head: "dddddddddddddddddddddddddddddddddddddddd", branch: "branch" },
+        git: { head: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -251,16 +255,34 @@ function buildCaseEscalation(decision) {
     governanceCaseEscalationProfile: escalationProfile,
     governanceCaseEscalationCompatibilityContract: escalationCompatibility,
   });
-  const consumed = consumeGovernanceCaseEscalation({
-    governanceCaseEscalationProfile: escalationProfile,
-    governanceCaseEscalationCompatibilityContract: escalationCompatibility,
+  const closureProfile = buildGovernanceCaseClosureProfile({
     governanceCaseEscalationStabilizationProfile: escalationStabilization,
+    caseId: `case-${decision}`,
+    linkedExceptionIds: [`exception-${decision}`],
+    linkedOverrideRecordIds: [`override-${decision}`],
+    linkedResolutionIds: [`resolution-${decision}`],
+    linkedEscalationIds: [`escalation-${decision}`],
+  });
+  const closureContract = buildGovernanceCaseClosureContract({
+    governanceCaseClosureProfile: closureProfile,
+  });
+  const closureCompatibility = buildGovernanceCaseClosureCompatibilityContract({
+    governanceCaseClosureContract: closureContract,
+  });
+  const closureStabilization = buildGovernanceCaseClosureStabilizationProfile({
+    governanceCaseClosureProfile: closureProfile,
+    governanceCaseClosureCompatibilityContract: closureCompatibility,
+  });
+  const consumed = consumeGovernanceCaseClosure({
+    governanceCaseClosureProfile: closureProfile,
+    governanceCaseClosureCompatibilityContract: closureCompatibility,
+    governanceCaseClosureStabilizationProfile: closureStabilization,
   });
   return {
-    escalationProfile,
-    escalationContract,
-    escalationCompatibility,
-    escalationStabilization,
+    closureProfile,
+    closureContract,
+    closureCompatibility,
+    closureStabilization,
     consumed,
   };
 }
@@ -272,149 +294,148 @@ for (const decision of [
   "would_deny",
 ]) {
   const {
-    escalationProfile,
-    escalationContract,
-    escalationCompatibility,
-    escalationStabilization,
+    closureProfile,
+    closureContract,
+    closureCompatibility,
+    closureStabilization,
     consumed,
-  } = buildCaseEscalation(decision);
+  } = buildCaseClosure(decision);
 
-  const validation = validateGovernanceCaseEscalationBundle({
-    governanceCaseEscalationProfile: escalationProfile,
-    governanceCaseEscalationContract: escalationContract,
-    governanceCaseEscalationCompatibilityContract: escalationCompatibility,
-    governanceCaseEscalationStabilizationProfile: escalationStabilization,
-    consumedCaseEscalation: consumed,
+  const validation = validateGovernanceCaseClosureBundle({
+    governanceCaseClosureProfile: closureProfile,
+    governanceCaseClosureContract: closureContract,
+    governanceCaseClosureCompatibilityContract: closureCompatibility,
+    governanceCaseClosureStabilizationProfile: closureStabilization,
+    consumedCaseClosure: consumed,
   });
   if (!validation.ok) {
     throw new Error(
-      `governance case escalation validation failed: ${validation.errors.join("; ")}`
+      `governance case closure validation failed: ${validation.errors.join("; ")}`
     );
   }
 
   if (
-    escalationProfile.kind !== GOVERNANCE_CASE_ESCALATION_PROFILE_KIND ||
-    escalationProfile.version !== GOVERNANCE_CASE_ESCALATION_PROFILE_VERSION ||
-    escalationProfile.schema_id !== GOVERNANCE_CASE_ESCALATION_PROFILE_SCHEMA_ID ||
-    escalationProfile.governance_case_escalation.stage !==
-      GOVERNANCE_CASE_ESCALATION_PROFILE_STAGE ||
-    escalationProfile.governance_case_escalation.consumer_surface !==
-      GOVERNANCE_CASE_ESCALATION_CONSUMER_SURFACE ||
-    escalationProfile.governance_case_escalation.boundary !==
-      GOVERNANCE_CASE_ESCALATION_PROFILE_BOUNDARY
+    closureProfile.kind !== GOVERNANCE_CASE_CLOSURE_PROFILE_KIND ||
+    closureProfile.version !== GOVERNANCE_CASE_CLOSURE_PROFILE_VERSION ||
+    closureProfile.schema_id !== GOVERNANCE_CASE_CLOSURE_PROFILE_SCHEMA_ID ||
+    closureProfile.governance_case_closure.stage !==
+      GOVERNANCE_CASE_CLOSURE_PROFILE_STAGE ||
+    closureProfile.governance_case_closure.consumer_surface !==
+      GOVERNANCE_CASE_CLOSURE_CONSUMER_SURFACE ||
+    closureProfile.governance_case_closure.boundary !==
+      GOVERNANCE_CASE_CLOSURE_PROFILE_BOUNDARY
   ) {
-    throw new Error("governance case escalation profile envelope drifted");
+    throw new Error("governance case closure profile envelope drifted");
   }
 
-  const context = escalationProfile.governance_case_escalation.escalation_context;
+  const context = closureProfile.governance_case_closure.closure_context;
   if (
-    context.escalation_status !== GOVERNANCE_CASE_ESCALATION_STATUS_DOCUMENTED ||
-    context.escalation_mode !==
-      GOVERNANCE_CASE_ESCALATION_MODE_RECOMMENDATION_ONLY ||
-    context.recommended_escalation_lane.lane !==
-      GOVERNANCE_CASE_ESCALATION_LANE_REVIEW_COUNCIL ||
-    context.recommended_escalation_lane.recommendation_only !== true ||
-    context.recommended_escalation_lane.actual_routing !== false ||
-    context.closure_readiness.level !== GOVERNANCE_CASE_ESCALATION_CLOSURE_READY
+    context.closure_status !== GOVERNANCE_CASE_CLOSURE_STATUS_DOCUMENTED ||
+    context.closure_mode !== GOVERNANCE_CASE_CLOSURE_MODE_RECOMMENDATION_ONLY ||
+    context.closure_readiness.level !== GOVERNANCE_CASE_CLOSURE_READY ||
+    context.closure_readiness.recommendation_only !== true ||
+    context.closure_readiness.actual_closure_execution !== false ||
+    context.closure_readiness.workflow_transition !== false ||
+    context.post_closure_observation_readiness.level !==
+      GOVERNANCE_CASE_POST_CLOSURE_OBSERVATION_READY
   ) {
-    throw new Error("governance case escalation context drifted");
-  }
-
-  if (
-    escalationContract.kind !== GOVERNANCE_CASE_ESCALATION_CONTRACT_KIND ||
-    escalationContract.version !== GOVERNANCE_CASE_ESCALATION_CONTRACT_VERSION ||
-    escalationContract.boundary !== GOVERNANCE_CASE_ESCALATION_CONTRACT_BOUNDARY ||
-    escalationContract.recommendation_only !== true ||
-    escalationContract.additive_only !== true ||
-    escalationContract.execution_enabled !== false ||
-    escalationContract.default_on !== false ||
-    escalationContract.actual_escalation_execution !== false ||
-    escalationContract.actual_routing !== false ||
-    escalationContract.actual_closure_execution !== false
-  ) {
-    throw new Error("governance case escalation contract drifted");
+    throw new Error("governance case closure context drifted");
   }
 
   if (
-    escalationCompatibility.kind !==
-      GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_KIND ||
-    escalationCompatibility.version !==
-      GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_VERSION ||
-    escalationCompatibility.boundary !==
-      GOVERNANCE_CASE_ESCALATION_COMPATIBILITY_CONTRACT_BOUNDARY ||
-    escalationCompatibility.consumer_compatible !== true ||
-    escalationCompatibility.escalation_lane_available !== true ||
-    escalationCompatibility.closure_readiness_available !== true ||
-    escalationCompatibility.recommendation_only !== true ||
-    escalationCompatibility.additive_only !== true ||
-    escalationCompatibility.execution_enabled !== false ||
-    escalationCompatibility.default_on !== false ||
-    escalationCompatibility.actual_escalation_execution !== false ||
-    escalationCompatibility.actual_routing !== false ||
-    escalationCompatibility.actual_closure_execution !== false ||
-    escalationCompatibility.audit_output_preserved !== true ||
-    escalationCompatibility.audit_verdict_preserved !== true ||
-    escalationCompatibility.actual_exit_code_preserved !== true ||
-    escalationCompatibility.denied_exit_code_preserved !== 25 ||
-    escalationCompatibility.main_path_takeover !== false
+    closureContract.kind !== GOVERNANCE_CASE_CLOSURE_CONTRACT_KIND ||
+    closureContract.version !== GOVERNANCE_CASE_CLOSURE_CONTRACT_VERSION ||
+    closureContract.boundary !== GOVERNANCE_CASE_CLOSURE_CONTRACT_BOUNDARY ||
+    closureContract.recommendation_only !== true ||
+    closureContract.additive_only !== true ||
+    closureContract.execution_enabled !== false ||
+    closureContract.default_on !== false ||
+    closureContract.actual_closure_execution !== false ||
+    closureContract.actual_routing !== false ||
+    closureContract.workflow_transition !== false
   ) {
-    throw new Error("governance case escalation compatibility drifted");
+    throw new Error("governance case closure contract drifted");
+  }
+
+  if (
+    closureCompatibility.kind !==
+      GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_KIND ||
+    closureCompatibility.version !==
+      GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_VERSION ||
+    closureCompatibility.boundary !==
+      GOVERNANCE_CASE_CLOSURE_COMPATIBILITY_CONTRACT_BOUNDARY ||
+    closureCompatibility.consumer_compatible !== true ||
+    closureCompatibility.closure_readiness_available !== true ||
+    closureCompatibility.post_closure_observation_readiness_available !== true ||
+    closureCompatibility.recommendation_only !== true ||
+    closureCompatibility.additive_only !== true ||
+    closureCompatibility.execution_enabled !== false ||
+    closureCompatibility.default_on !== false ||
+    closureCompatibility.actual_closure_execution !== false ||
+    closureCompatibility.actual_routing !== false ||
+    closureCompatibility.workflow_transition !== false ||
+    closureCompatibility.audit_output_preserved !== true ||
+    closureCompatibility.audit_verdict_preserved !== true ||
+    closureCompatibility.actual_exit_code_preserved !== true ||
+    closureCompatibility.denied_exit_code_preserved !== 25 ||
+    closureCompatibility.main_path_takeover !== false
+  ) {
+    throw new Error("governance case closure compatibility drifted");
   }
 
   const stabilizationPayload =
-    escalationStabilization.governance_case_escalation_stabilization;
+    closureStabilization.governance_case_closure_stabilization;
   if (
-    escalationStabilization.kind !== GOVERNANCE_CASE_ESCALATION_STABILIZATION_KIND ||
-    escalationStabilization.version !==
-      GOVERNANCE_CASE_ESCALATION_STABILIZATION_VERSION ||
-    escalationStabilization.schema_id !==
-      GOVERNANCE_CASE_ESCALATION_STABILIZATION_SCHEMA_ID ||
-    stabilizationPayload.stage !== GOVERNANCE_CASE_ESCALATION_STABILIZATION_STAGE ||
+    closureStabilization.kind !== GOVERNANCE_CASE_CLOSURE_STABILIZATION_KIND ||
+    closureStabilization.version !==
+      GOVERNANCE_CASE_CLOSURE_STABILIZATION_VERSION ||
+    closureStabilization.schema_id !==
+      GOVERNANCE_CASE_CLOSURE_STABILIZATION_SCHEMA_ID ||
+    stabilizationPayload.stage !== GOVERNANCE_CASE_CLOSURE_STABILIZATION_STAGE ||
     stabilizationPayload.boundary !==
-      GOVERNANCE_CASE_ESCALATION_STABILIZATION_BOUNDARY ||
+      GOVERNANCE_CASE_CLOSURE_STABILIZATION_BOUNDARY ||
     stabilizationPayload.stabilization_contract.readiness_level !==
-      GOVERNANCE_CASE_ESCALATION_STABILIZATION_READY ||
-    stabilizationPayload.stabilization_contract.actual_routing !== false
+      GOVERNANCE_CASE_CLOSURE_STABILIZATION_READY ||
+    stabilizationPayload.stabilization_contract.actual_closure_execution !== false ||
+    stabilizationPayload.stabilization_contract.actual_routing !== false ||
+    stabilizationPayload.stabilization_contract.workflow_transition !== false
   ) {
-    throw new Error("governance case escalation stabilization drifted");
+    throw new Error("governance case closure stabilization drifted");
   }
 
   if (
-    consumed.consumer_surface !== GOVERNANCE_CASE_ESCALATION_CONSUMER_SURFACE ||
+    consumed.consumer_surface !== GOVERNANCE_CASE_CLOSURE_CONSUMER_SURFACE ||
     consumed.recommendation_only !== true ||
     consumed.additive_only !== true ||
     consumed.executing !== false ||
-    consumed.recommended_escalation_lane.actual_routing !== false
+    consumed.closure_readiness.actual_closure_execution !== false
   ) {
-    throw new Error("governance case escalation consumer drifted");
+    throw new Error("governance case closure consumer drifted");
   }
 }
 
-if (!GOVERNANCE_CASE_ESCALATION_SURFACE_MAP.governance_case_escalation) {
-  throw new Error("governance case escalation surface entry missing");
+if (!GOVERNANCE_CASE_CLOSURE_SURFACE_MAP.governance_case_closure) {
+  throw new Error("governance case closure surface entry missing");
 }
 if (
-  !GOVERNANCE_CASE_ESCALATION_SURFACE_MAP.governance_case_escalation_stabilization
+  !GOVERNANCE_CASE_CLOSURE_SURFACE_MAP.governance_case_closure_stabilization
 ) {
-  throw new Error("governance case escalation stabilization surface entry missing");
-}
-if (!permitExports.GOVERNANCE_CASE_CLOSURE_SURFACE_MAP?.governance_case_closure) {
-  throw new Error("governance case closure downstream surface entry missing");
+  throw new Error("governance case closure stabilization surface entry missing");
 }
 
-for (const exportName of GOVERNANCE_CASE_ESCALATION_STABILIZATION_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_CASE_CLOSURE_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `governance case escalation stabilization export missing from permit index: ${exportName}`
+      `governance case closure stabilization export missing from permit index: ${exportName}`
     );
   }
 }
-for (const exportName of GOVERNANCE_CASE_ESCALATION_SURFACE_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_CASE_CLOSURE_SURFACE_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `governance case escalation surface export missing from permit index: ${exportName}`
+      `governance case closure surface export missing from permit index: ${exportName}`
     );
   }
 }
 
-process.stdout.write("governance case escalation boundary verified\n");
+process.stdout.write("governance case closure boundary verified\n");
