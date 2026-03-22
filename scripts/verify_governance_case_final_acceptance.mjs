@@ -67,6 +67,10 @@ import {
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
@@ -332,7 +336,13 @@ for (const decision of ["insufficient_signal", "would_allow", "would_review", "w
     payload.final_acceptance_contract.workflow_engine_emergence !== false ||
     payload.resolution_ref.kind !== GOVERNANCE_CASE_RESOLUTION_STABILIZATION_KIND ||
     payload.escalation_ref.kind !== GOVERNANCE_CASE_ESCALATION_STABILIZATION_KIND ||
-    payload.closure_ref.kind !== GOVERNANCE_CASE_CLOSURE_STABILIZATION_KIND
+    payload.closure_ref.kind !== GOVERNANCE_CASE_CLOSURE_STABILIZATION_KIND ||
+    payload.continuity.case_linkage_continuity !== true ||
+    payload.continuity.exception_override_compatibility_continuity !== true ||
+    payload.continuity.additive_only_continuity !== true ||
+    payload.continuity.recommendation_only_continuity !== true ||
+    payload.continuity.non_executing_continuity !== true ||
+    payload.continuity.default_off_continuity !== true
   ) {
     throw new Error("governance case final acceptance contract drifted");
   }
@@ -366,6 +376,254 @@ for (const decision of ["insufficient_signal", "would_allow", "would_review", "w
     exportSurface.release_summary.default_off !== true
   ) {
     throw new Error("governance case final acceptance release summary drifted");
+  }
+
+  const mismatchHashResolution = cloneJson(
+    buildFinalAcceptance(decision).finalAcceptance
+  );
+  const mismatchHashEscalation = cloneJson(
+    buildFinalAcceptance(decision).finalAcceptance
+  );
+  const mismatchHashClosure = cloneJson(
+    buildFinalAcceptance(decision).finalAcceptance
+  );
+  void mismatchHashResolution;
+  void mismatchHashEscalation;
+  void mismatchHashClosure;
+}
+
+{
+  const bridge = buildBridge("would_allow");
+  const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
+  const governance = buildGovernanceDecisionRecord({
+    audit: {
+      run: {
+        run_id: "negative-run",
+        mode: "local",
+        git: { head: "ffffffffffffffffffffffffffffffffffffffff", branch: "branch" },
+      },
+    },
+    policyPermitBridgeContract: bridge,
+    permitGateResult: permit,
+  });
+  const authority = buildLimitedEnforcementAuthorityResult({
+    audit: { evaluation: { verdict: "allow" } },
+    canonicalActionArtifact: { canonical_action_hash: bridge.canonical_action_hash },
+    executionReadinessArtifact: {
+      execution_readiness: {
+        readiness: bridge.policy_permit_bridge.execution_readiness,
+        bridge_verdict: bridge.policy_permit_bridge.execution_bridge_verdict,
+      },
+    },
+    enforcementAdjacentDecisionArtifact: {
+      enforcement_adjacent_decision: {
+        decision: "would_allow",
+        reasons: bridge.policy_permit_bridge.reason_summary,
+      },
+    },
+  });
+  const judgmentProfile = buildJudgmentProfile({
+    policyPermitBridgeContract: bridge,
+    permitGateResult: permit,
+    governanceDecisionRecord: governance,
+    limitedEnforcementAuthorityResult: authority,
+  });
+  const judgmentReadiness = buildJudgmentReadinessProfile({ judgmentProfile });
+  const judgmentCompatibility = buildJudgmentCompatibilityContract({
+    judgmentProfile,
+    judgmentReadinessProfile: judgmentReadiness,
+  });
+  const judgmentStabilization = buildJudgmentStabilizationProfile({
+    judgmentProfile,
+    judgmentReadinessProfile: judgmentReadiness,
+    judgmentCompatibilityContract: judgmentCompatibility,
+  });
+  const approvalArtifact = buildApprovalArtifactProfile({
+    judgmentProfile,
+    judgmentStabilizationProfile: judgmentStabilization,
+  });
+  const approvalReadiness = buildApprovalReadinessProfile({
+    approvalArtifactProfile: approvalArtifact,
+  });
+  const approvalReceipt = buildApprovalReceiptProfile({
+    approvalArtifactProfile: approvalArtifact,
+    approvalReadinessProfile: approvalReadiness,
+  });
+  const approvalStabilization = buildApprovalStabilizationProfile({
+    approvalArtifactProfile: approvalArtifact,
+    approvalReadinessProfile: approvalReadiness,
+    approvalReceiptProfile: approvalReceipt,
+  });
+  const enforcementReadiness = buildEnforcementReadinessProfile({
+    approvalStabilizationProfile: approvalStabilization,
+  });
+  const enforcementCompatibility = buildEnforcementCompatibilityProfile({
+    enforcementReadinessProfile: enforcementReadiness,
+  });
+  const enforcementStabilization = buildEnforcementStabilizationProfile({
+    enforcementCompatibilityProfile: enforcementCompatibility,
+  });
+  const policyProfile = buildPolicyProfile({
+    enforcementStabilizationProfile: enforcementStabilization,
+  });
+  const policyCompatibility = buildPolicyCompatibilityProfile({ policyProfile });
+  const policyStabilization = buildPolicyStabilizationProfile({
+    policyCompatibilityProfile: policyCompatibility,
+  });
+  const evidenceProfile = buildGovernanceEvidenceProfile({
+    policyStabilizationProfile: policyStabilization,
+  });
+  const evidenceReplay = buildGovernanceEvidenceReplayProfile({
+    governanceEvidenceProfile: evidenceProfile,
+  });
+  const evidenceCompare = buildGovernanceCompareCompatibilityContract({
+    governanceEvidenceReplayProfile: evidenceReplay,
+  });
+  const evidenceStabilization = buildGovernanceEvidenceStabilizationProfile({
+    governanceEvidenceReplayProfile: evidenceReplay,
+    governanceCompareCompatibilityContract: evidenceCompare,
+  });
+  const snapshot = buildGovernanceSnapshotProfile({
+    governanceEvidenceStabilizationProfile: evidenceStabilization,
+  });
+  const rationaleBundle = buildGovernanceRationaleBundleProfile({
+    governanceSnapshotProfile: snapshot,
+  });
+  const exportCompatibility = buildGovernanceSnapshotExportCompatibilityContract({
+    governanceRationaleBundleProfile: rationaleBundle,
+  });
+  const snapshotStabilization = buildGovernanceSnapshotStabilizationProfile({
+    governanceRationaleBundleProfile: rationaleBundle,
+    governanceSnapshotExportCompatibilityContract: exportCompatibility,
+  });
+  const exceptionProfile = buildGovernanceExceptionProfile({
+    governanceSnapshotStabilizationProfile: snapshotStabilization,
+  });
+  buildGovernanceOverrideRecordContract({
+    governanceExceptionProfile: exceptionProfile,
+  });
+  const caseLinkage = buildGovernanceCaseLinkageProfile({
+    governanceExceptionProfile: exceptionProfile,
+  });
+  const exceptionCompatibility = buildGovernanceExceptionCompatibilityContract({
+    governanceCaseLinkageProfile: caseLinkage,
+  });
+  const exceptionStabilization = buildGovernanceExceptionStabilizationProfile({
+    governanceCaseLinkageProfile: caseLinkage,
+    governanceExceptionCompatibilityContract: exceptionCompatibility,
+  });
+  const resolutionProfile = buildGovernanceCaseResolutionProfile({
+    governanceExceptionStabilizationProfile: exceptionStabilization,
+    caseId: "case-negative",
+    linkedExceptionIds: ["exception-negative"],
+    linkedOverrideRecordIds: ["override-negative"],
+  });
+  const resolutionContract = buildGovernanceCaseResolutionContract({
+    governanceCaseResolutionProfile: resolutionProfile,
+  });
+  const resolutionCompatibility = buildGovernanceCaseResolutionCompatibilityContract({
+    governanceCaseResolutionContract: resolutionContract,
+  });
+  const resolutionStabilization = buildGovernanceCaseResolutionStabilizationProfile({
+    governanceCaseResolutionProfile: resolutionProfile,
+    governanceCaseResolutionCompatibilityContract: resolutionCompatibility,
+  });
+  const escalationProfile = buildGovernanceCaseEscalationProfile({
+    governanceCaseResolutionStabilizationProfile: resolutionStabilization,
+    caseId: "case-negative",
+    linkedExceptionIds: ["exception-negative"],
+    linkedOverrideRecordIds: ["override-negative"],
+    linkedResolutionIds: ["resolution-negative"],
+  });
+  const escalationContract = buildGovernanceCaseEscalationContract({
+    governanceCaseEscalationProfile: escalationProfile,
+  });
+  const escalationCompatibility = buildGovernanceCaseEscalationCompatibilityContract({
+    governanceCaseEscalationContract: escalationContract,
+  });
+  const escalationStabilization = buildGovernanceCaseEscalationStabilizationProfile({
+    governanceCaseEscalationProfile: escalationProfile,
+    governanceCaseEscalationCompatibilityContract: escalationCompatibility,
+  });
+  const closureProfile = buildGovernanceCaseClosureProfile({
+    governanceCaseEscalationStabilizationProfile: escalationStabilization,
+    caseId: "case-negative",
+    linkedExceptionIds: ["exception-negative"],
+    linkedOverrideRecordIds: ["override-negative"],
+    linkedResolutionIds: ["resolution-negative"],
+    linkedEscalationIds: ["escalation-negative"],
+  });
+  const closureContract = buildGovernanceCaseClosureContract({
+    governanceCaseClosureProfile: closureProfile,
+  });
+  const closureCompatibility = buildGovernanceCaseClosureCompatibilityContract({
+    governanceCaseClosureContract: closureContract,
+  });
+  const closureStabilization = buildGovernanceCaseClosureStabilizationProfile({
+    governanceCaseClosureProfile: closureProfile,
+    governanceCaseClosureCompatibilityContract: closureCompatibility,
+  });
+
+  const mismatchedHashResolution = cloneJson(resolutionStabilization);
+  mismatchedHashResolution.canonical_action_hash =
+    "sha256:mismatch-resolution-canonical-action-hash";
+  let hashMismatchRejected = false;
+  try {
+    buildGovernanceCaseFinalAcceptanceBoundary({
+      governanceCaseResolutionStabilizationProfile: mismatchedHashResolution,
+      governanceCaseEscalationStabilizationProfile: escalationStabilization,
+      governanceCaseClosureStabilizationProfile: closureStabilization,
+    });
+  } catch (error) {
+    if (String(error.message).includes("canonical lineage mismatch")) {
+      hashMismatchRejected = true;
+    }
+  }
+  if (!hashMismatchRejected) {
+    throw new Error("governance case final acceptance must reject canonical lineage mismatch");
+  }
+
+  const mismatchedCaseClosure = cloneJson(closureStabilization);
+  mismatchedCaseClosure.governance_case_closure_stabilization.continuity_ref.case_id =
+    "case-negative-mismatch";
+  let caseMismatchRejected = false;
+  try {
+    buildGovernanceCaseFinalAcceptanceBoundary({
+      governanceCaseResolutionStabilizationProfile: resolutionStabilization,
+      governanceCaseEscalationStabilizationProfile: escalationStabilization,
+      governanceCaseClosureStabilizationProfile: mismatchedCaseClosure,
+    });
+  } catch (error) {
+    if (String(error.message).includes("case continuity mismatch")) {
+      caseMismatchRejected = true;
+    }
+  }
+  if (!caseMismatchRejected) {
+    throw new Error("governance case final acceptance must reject case continuity mismatch");
+  }
+
+  const mismatchedOverrideEscalation = cloneJson(escalationStabilization);
+  mismatchedOverrideEscalation.governance_case_escalation_stabilization.continuity_ref.linked_override_record_ids =
+    ["override-mismatch"];
+  let overrideMismatchRejected = false;
+  try {
+    buildGovernanceCaseFinalAcceptanceBoundary({
+      governanceCaseResolutionStabilizationProfile: resolutionStabilization,
+      governanceCaseEscalationStabilizationProfile: mismatchedOverrideEscalation,
+      governanceCaseClosureStabilizationProfile: closureStabilization,
+    });
+  } catch (error) {
+    if (
+      String(error.message).includes("override continuity mismatch") ||
+      String(error.message).includes("exception continuity mismatch")
+    ) {
+      overrideMismatchRejected = true;
+    }
+  }
+  if (!overrideMismatchRejected) {
+    throw new Error(
+      "governance case final acceptance must reject exception or override continuity basis mismatch"
+    );
   }
 }
 
