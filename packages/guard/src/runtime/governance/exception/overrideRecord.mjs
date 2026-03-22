@@ -45,6 +45,7 @@ export function buildGovernanceOverrideRecordContract({
     additive_only: true,
     execution_enabled: false,
     override_execution_available: false,
+    final_acceptance_boundary_available: true,
     authority_scope: "review_gate_deny_exit_recommendation_only",
     authority_scope_expansion: false,
     canonical_action_hash: exceptionProfile.canonical_action_hash,
@@ -117,6 +118,9 @@ export function validateGovernanceOverrideRecordContract(contract) {
   }
   if (contract.override_execution_available !== false) {
     errors.push("governance override record execution availability drifted");
+  }
+  if (contract.final_acceptance_boundary_available !== true) {
+    errors.push("governance override record final acceptance availability drifted");
   }
   if (
     contract.authority_scope !== "review_gate_deny_exit_recommendation_only"

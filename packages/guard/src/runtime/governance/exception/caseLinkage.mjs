@@ -112,6 +112,8 @@ export function buildGovernanceCaseLinkageProfile({
       },
       stabilization_refs: {
         compatibility_contract_available: true,
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
     },
     deterministic: true,
@@ -239,10 +241,16 @@ export function validateGovernanceCaseLinkageProfile(profile) {
   }
   if (!isPlainObject(payload.stabilization_refs)) {
     errors.push("governance case linkage stabilization refs missing");
-  } else if (
-    payload.stabilization_refs.compatibility_contract_available !== true
-  ) {
-    errors.push("governance case linkage compatibility availability drifted");
+  } else {
+    if (payload.stabilization_refs.compatibility_contract_available !== true) {
+      errors.push("governance case linkage compatibility availability drifted");
+    }
+    if (payload.stabilization_refs.stabilization_profile_available !== true) {
+      errors.push("governance case linkage stabilization availability drifted");
+    }
+    if (payload.stabilization_refs.final_acceptance_boundary_available !== true) {
+      errors.push("governance case linkage final acceptance availability drifted");
+    }
   }
   return { ok: errors.length === 0, errors };
 }

@@ -37,6 +37,8 @@ export function buildGovernanceExceptionCompatibilityContract({
     additive_only: true,
     execution_enabled: false,
     default_on: false,
+    override_execution_available: false,
+    waiver_execution_available: false,
     audit_output_preserved: true,
     audit_verdict_preserved: true,
     actual_exit_code_preserved: true,
@@ -97,6 +99,12 @@ export function validateGovernanceExceptionCompatibilityContract(contract) {
   }
   if (contract.default_on !== false) {
     errors.push("governance exception compatibility default-on drifted");
+  }
+  if (contract.override_execution_available !== false) {
+    errors.push("governance exception compatibility override execution drifted");
+  }
+  if (contract.waiver_execution_available !== false) {
+    errors.push("governance exception compatibility waiver execution drifted");
   }
   if (contract.audit_output_preserved !== true) {
     errors.push("governance exception compatibility audit output drifted");
