@@ -284,6 +284,9 @@ for (const decision of [
 if (!GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception) {
   throw new Error("governance exception surface entry missing");
 }
+if (!permitExports.GOVERNANCE_EXCEPTION_SURFACE_MAP?.governance_exception_stabilization) {
+  throw new Error("governance exception stabilization surface entry missing");
+}
 if (!permitExports.GOVERNANCE_EXCEPTION_SURFACE_MAP?.governance_exception_override_record) {
   throw new Error("governance exception override surface entry missing");
 }

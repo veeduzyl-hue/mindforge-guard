@@ -26,6 +26,14 @@ import {
   GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND as EXCEPTION_COMPATIBILITY_KIND,
   GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION as EXCEPTION_COMPATIBILITY_VERSION,
 } from "./compatibility.mjs";
+import {
+  GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_BOUNDARY,
+  GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_READY,
+  GOVERNANCE_EXCEPTION_STABILIZATION_KIND,
+  GOVERNANCE_EXCEPTION_STABILIZATION_SCHEMA_ID,
+  GOVERNANCE_EXCEPTION_STABILIZATION_STAGE,
+  GOVERNANCE_EXCEPTION_STABILIZATION_VERSION,
+} from "./stabilization.mjs";
 
 export const GOVERNANCE_EXCEPTION_SURFACE_VERSION = "v1";
 export const GOVERNANCE_EXCEPTION_SURFACE_STABILITY = "stable";
@@ -34,6 +42,7 @@ export const GOVERNANCE_EXCEPTION_SURFACE_CONSUMER_TIER =
 export const GOVERNANCE_EXCEPTION_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_exception",
   "governance_exception_override_record",
+  "governance_exception_stabilization",
 ]);
 export const GOVERNANCE_EXCEPTION_SURFACE_META_EXPORTS = Object.freeze([
   "GOVERNANCE_EXCEPTION_SURFACE_VERSION",
@@ -97,6 +106,24 @@ export const GOVERNANCE_EXCEPTION_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  governance_exception_stabilization: Object.freeze({
+    artifact_id: "governance_exception_stabilization",
+    consumer_surface: GOVERNANCE_EXCEPTION_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: GOVERNANCE_EXCEPTION_STABILIZATION_KIND,
+      version: GOVERNANCE_EXCEPTION_STABILIZATION_VERSION,
+      schema_id: GOVERNANCE_EXCEPTION_STABILIZATION_SCHEMA_ID,
+      stage: GOVERNANCE_EXCEPTION_STABILIZATION_STAGE,
+      boundary: GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_BOUNDARY,
+    }),
+    final_consumer_contract: Object.freeze({
+      acceptance_level: GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_READY,
+      compatibility_boundary: EXCEPTION_COMPATIBILITY_BOUNDARY,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -130,7 +157,11 @@ export function validateGovernanceExceptionSurface() {
   }
   if (
     JSON.stringify(GOVERNANCE_EXCEPTION_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["governance_exception", "governance_exception_override_record"])
+    JSON.stringify([
+      "governance_exception",
+      "governance_exception_override_record",
+      "governance_exception_stabilization",
+    ])
   ) {
     errors.push("governance exception surface artifact order drifted");
   }
@@ -198,6 +229,32 @@ export function validateGovernanceExceptionSurface() {
     }
     if (overrideArtifact.executing !== false) {
       errors.push("governance exception override execution boundary drifted");
+    }
+  }
+  const stabilizationArtifact =
+    GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_stabilization;
+  if (!isPlainObject(stabilizationArtifact)) {
+    errors.push("governance exception stabilization surface entry must be an object");
+  } else {
+    if (
+      stabilizationArtifact.contract.kind !== GOVERNANCE_EXCEPTION_STABILIZATION_KIND
+    ) {
+      errors.push("governance exception stabilization contract kind drifted");
+    }
+    if (
+      stabilizationArtifact.final_consumer_contract.acceptance_level !==
+      GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_READY
+    ) {
+      errors.push("governance exception stabilization acceptance level drifted");
+    }
+    if (stabilizationArtifact.recommendation_only !== true) {
+      errors.push("governance exception stabilization recommendation boundary drifted");
+    }
+    if (stabilizationArtifact.additive_only !== true) {
+      errors.push("governance exception stabilization additive boundary drifted");
+    }
+    if (stabilizationArtifact.executing !== false) {
+      errors.push("governance exception stabilization execution boundary drifted");
     }
   }
 

@@ -2,21 +2,21 @@ import * as permitExports from "../packages/guard/src/runtime/governance/permit/
 import {
   GOVERNANCE_CASE_LINKAGE_BOUNDARY,
   GOVERNANCE_CASE_LINKAGE_KIND,
-  GOVERNANCE_CASE_LINKAGE_SCHEMA_ID,
   GOVERNANCE_CASE_LINKAGE_STAGE,
-  GOVERNANCE_CASE_LINKAGE_STABLE_EXPORT_SET,
   GOVERNANCE_CASE_LINKAGE_VERSION,
   GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_BOUNDARY,
   GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND,
   GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION,
-  GOVERNANCE_EXCEPTION_CONSUMER_COMPATIBLE,
   GOVERNANCE_EXCEPTION_CONSUMER_SURFACE,
-  GOVERNANCE_EXCEPTION_RECEIPT_READY,
+  GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_BOUNDARY,
+  GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_READY,
+  GOVERNANCE_EXCEPTION_STABILIZATION_KIND,
+  GOVERNANCE_EXCEPTION_STABILIZATION_SCHEMA_ID,
+  GOVERNANCE_EXCEPTION_STABILIZATION_STAGE,
+  GOVERNANCE_EXCEPTION_STABILIZATION_STABLE_EXPORT_SET,
+  GOVERNANCE_EXCEPTION_STABILIZATION_VERSION,
   GOVERNANCE_EXCEPTION_SURFACE_MAP,
   GOVERNANCE_EXCEPTION_SURFACE_STABLE_EXPORT_SET,
-  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_BOUNDARY,
-  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_KIND,
-  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_VERSION,
   buildApprovalArtifactProfile,
   buildApprovalReadinessProfile,
   buildApprovalReceiptProfile,
@@ -32,8 +32,10 @@ import {
   buildGovernanceEvidenceStabilizationProfile,
   buildGovernanceExceptionCompatibilityContract,
   buildGovernanceExceptionProfile,
+  buildGovernanceExceptionStabilizationProfile,
   buildGovernanceOverrideRecordContract,
   buildGovernanceRationaleBundleProfile,
+  buildGovernanceReviewPackContract,
   buildGovernanceSnapshotExportCompatibilityContract,
   buildGovernanceSnapshotProfile,
   buildGovernanceSnapshotStabilizationProfile,
@@ -46,9 +48,7 @@ import {
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
   buildPolicyStabilizationProfile,
-  validateGovernanceCaseLinkageProfile,
-  validateGovernanceExceptionCompatibilityContract,
-  validateGovernanceOverrideRecordContract,
+  validateGovernanceExceptionStabilizationProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -56,7 +56,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "sha256:bbbbccccbbbbccccbbbbccccbbbbccccbbbbccccbbbbccccbbbbccccbbbbcccc",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -82,7 +82,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildOverrideArtifacts(decision) {
+function buildExceptionStabilization(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -90,7 +90,7 @@ function buildOverrideArtifacts(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: { head: "dddddddddddddddddddddddddddddddddddddddd", branch: "branch" },
+        git: { head: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -176,6 +176,9 @@ function buildOverrideArtifacts(decision) {
   const snapshot = buildGovernanceSnapshotProfile({
     governanceEvidenceStabilizationProfile: evidenceStabilization,
   });
+  const reviewPack = buildGovernanceReviewPackContract({
+    governanceSnapshotProfile: snapshot,
+  });
   const rationaleBundle = buildGovernanceRationaleBundleProfile({
     governanceSnapshotProfile: snapshot,
   });
@@ -198,7 +201,10 @@ function buildOverrideArtifacts(decision) {
   const compatibility = buildGovernanceExceptionCompatibilityContract({
     governanceCaseLinkageProfile: caseLinkage,
   });
-  return { overrideRecord, caseLinkage, compatibility };
+  return buildGovernanceExceptionStabilizationProfile({
+    governanceCaseLinkageProfile: caseLinkage,
+    governanceExceptionCompatibilityContract: compatibility,
+  });
 }
 
 for (const decision of [
@@ -207,122 +213,114 @@ for (const decision of [
   "would_review",
   "would_deny",
 ]) {
-  const { overrideRecord, caseLinkage, compatibility } =
-    buildOverrideArtifacts(decision);
-
-  const overrideValidation =
-    validateGovernanceOverrideRecordContract(overrideRecord);
-  if (!overrideValidation.ok) {
+  const artifact = buildExceptionStabilization(decision);
+  const validation = validateGovernanceExceptionStabilizationProfile(artifact);
+  if (!validation.ok) {
     throw new Error(
-      `governance override record validation failed: ${overrideValidation.errors.join("; ")}`
+      `governance exception stabilization validation failed: ${validation.errors.join("; ")}`
     );
   }
-  const linkageValidation = validateGovernanceCaseLinkageProfile(caseLinkage);
-  if (!linkageValidation.ok) {
-    throw new Error(
-      `governance case linkage validation failed: ${linkageValidation.errors.join("; ")}`
-    );
+  if (artifact.kind !== GOVERNANCE_EXCEPTION_STABILIZATION_KIND) {
+    throw new Error("governance exception stabilization kind drifted");
   }
-  const compatibilityValidation =
-    validateGovernanceExceptionCompatibilityContract(compatibility);
-  if (!compatibilityValidation.ok) {
-    throw new Error(
-      `governance exception compatibility validation failed: ${compatibilityValidation.errors.join("; ")}`
-    );
+  if (artifact.version !== GOVERNANCE_EXCEPTION_STABILIZATION_VERSION) {
+    throw new Error("governance exception stabilization version drifted");
   }
-
+  if (artifact.schema_id !== GOVERNANCE_EXCEPTION_STABILIZATION_SCHEMA_ID) {
+    throw new Error("governance exception stabilization schema drifted");
+  }
   if (
-    overrideRecord.kind !== GOVERNANCE_OVERRIDE_RECORD_CONTRACT_KIND ||
-    overrideRecord.version !== GOVERNANCE_OVERRIDE_RECORD_CONTRACT_VERSION ||
-    overrideRecord.boundary !== GOVERNANCE_OVERRIDE_RECORD_CONTRACT_BOUNDARY ||
-    overrideRecord.override_record_ready !== true ||
-    overrideRecord.case_linkage_available !== true ||
-    overrideRecord.recommendation_only !== true ||
-    overrideRecord.additive_only !== true ||
-    overrideRecord.execution_enabled !== false ||
-    overrideRecord.override_execution_available !== false ||
-    overrideRecord.final_acceptance_boundary_available !== true ||
-    overrideRecord.authority_scope !==
-      "review_gate_deny_exit_recommendation_only" ||
-    overrideRecord.authority_scope_expansion !== false
+    artifact.governance_exception_stabilization.stage !==
+    GOVERNANCE_EXCEPTION_STABILIZATION_STAGE
   ) {
-    throw new Error("governance override record contract drifted");
+    throw new Error("governance exception stabilization stage drifted");
   }
-
   if (
-    caseLinkage.kind !== GOVERNANCE_CASE_LINKAGE_KIND ||
-    caseLinkage.version !== GOVERNANCE_CASE_LINKAGE_VERSION ||
-    caseLinkage.schema_id !== GOVERNANCE_CASE_LINKAGE_SCHEMA_ID ||
-    caseLinkage.governance_case_linkage.stage !== GOVERNANCE_CASE_LINKAGE_STAGE ||
-    caseLinkage.governance_case_linkage.consumer_surface !==
-      GOVERNANCE_EXCEPTION_CONSUMER_SURFACE ||
-    caseLinkage.governance_case_linkage.boundary !==
-      GOVERNANCE_CASE_LINKAGE_BOUNDARY
+    artifact.governance_exception_stabilization.consumer_surface !==
+    GOVERNANCE_EXCEPTION_CONSUMER_SURFACE
   ) {
-    throw new Error("governance case linkage envelope drifted");
+    throw new Error("governance exception stabilization consumer surface drifted");
   }
-  const receiptReadiness = caseLinkage.governance_case_linkage.receipt_readiness;
   if (
-    receiptReadiness.level !== GOVERNANCE_EXCEPTION_RECEIPT_READY ||
-    receiptReadiness.override_record_ready !== true ||
-    receiptReadiness.case_linkage_ready !== true ||
-    receiptReadiness.recommendation_only !== true
+    artifact.governance_exception_stabilization.boundary !==
+    GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_BOUNDARY
   ) {
-    throw new Error("governance case linkage receipt readiness drifted");
+    throw new Error("governance exception stabilization boundary drifted");
   }
-  const consumerCompatibility =
-    caseLinkage.governance_case_linkage.consumer_compatibility;
+  const caseLinkageRef = artifact.governance_exception_stabilization.case_linkage_ref;
   if (
-    consumerCompatibility.level !== GOVERNANCE_EXCEPTION_CONSUMER_COMPATIBLE ||
-    consumerCompatibility.additive_only !== true ||
-    consumerCompatibility.non_executing !== true ||
-    consumerCompatibility.default_off !== true ||
-    consumerCompatibility.authority_scope !==
-      "review_gate_deny_exit_recommendation_only" ||
-    consumerCompatibility.denied_exit_code_preserved !== 25
+    caseLinkageRef.kind !== GOVERNANCE_CASE_LINKAGE_KIND ||
+    caseLinkageRef.version !== GOVERNANCE_CASE_LINKAGE_VERSION ||
+    caseLinkageRef.stage !== GOVERNANCE_CASE_LINKAGE_STAGE ||
+    caseLinkageRef.boundary !== GOVERNANCE_CASE_LINKAGE_BOUNDARY
   ) {
-    throw new Error("governance case linkage consumer compatibility drifted");
+    throw new Error("governance exception stabilization case linkage ref drifted");
   }
-
+  const compatibilityRef =
+    artifact.governance_exception_stabilization.compatibility_ref;
   if (
-    compatibility.kind !== GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND ||
-    compatibility.version !== GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION ||
-    compatibility.boundary !== GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_BOUNDARY ||
-    compatibility.consumer_compatible !== true ||
-    compatibility.override_record_ready !== true ||
-    compatibility.recommendation_only !== true ||
-    compatibility.additive_only !== true ||
-    compatibility.execution_enabled !== false ||
-    compatibility.default_on !== false ||
-    compatibility.override_execution_available !== false ||
-    compatibility.waiver_execution_available !== false ||
-    compatibility.audit_output_preserved !== true ||
-    compatibility.audit_verdict_preserved !== true ||
-    compatibility.actual_exit_code_preserved !== true ||
-    compatibility.denied_exit_code_preserved !== 25 ||
-    compatibility.authority_scope !==
-      "review_gate_deny_exit_recommendation_only" ||
-    compatibility.governance_object_addition !== false ||
-    compatibility.main_path_takeover !== false
+    compatibilityRef.kind !== GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND ||
+    compatibilityRef.version !== GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION ||
+    compatibilityRef.boundary !==
+      GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_BOUNDARY
   ) {
-    throw new Error("governance exception compatibility contract drifted");
+    throw new Error("governance exception stabilization compatibility ref drifted");
+  }
+  const contract =
+    artifact.governance_exception_stabilization.final_consumer_contract;
+  if (
+    contract.acceptance_level !== GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_READY ||
+    contract.recommendation_only !== true ||
+    contract.additive_only !== true ||
+    contract.execution_enabled !== false ||
+    contract.default_on !== false ||
+    contract.override_execution_available !== false ||
+    contract.waiver_execution_available !== false ||
+    contract.audit_output_preserved !== true ||
+    contract.audit_verdict_preserved !== true ||
+    contract.actual_exit_code_preserved !== true ||
+    contract.denied_exit_code_preserved !== 25 ||
+    contract.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
+    contract.governance_object_addition !== false
+  ) {
+    throw new Error("governance exception stabilization final contract drifted");
+  }
+  const semantics = artifact.governance_exception_stabilization.preserved_semantics;
+  if (
+    semantics.exception_waiver_semantics_preserved !== true ||
+    semantics.override_record_semantics_preserved !== true ||
+    semantics.case_linkage_semantics_preserved !== true ||
+    semantics.exception_compatibility_semantics_preserved !== true ||
+    semantics.snapshot_semantics_preserved !== true ||
+    semantics.evidence_semantics_preserved !== true ||
+    semantics.policy_semantics_preserved !== true ||
+    semantics.enforcement_semantics_preserved !== true ||
+    semantics.approval_semantics_preserved !== true ||
+    semantics.judgment_semantics_preserved !== true ||
+    semantics.permit_gate_semantics_preserved !== true ||
+    semantics.consumer_contract_ready !== true ||
+    semantics.override_record_ready !== true ||
+    semantics.consumer_compatible !== true ||
+    semantics.main_path_takeover !== false
+  ) {
+    throw new Error("governance exception stabilization preserved semantics drifted");
   }
 }
 
-if (!GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_override_record) {
-  throw new Error("governance exception override surface entry missing");
+if (!GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_stabilization) {
+  throw new Error("governance exception stabilization surface entry missing");
 }
 if (
-  GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_override_record.contract.kind !==
-  GOVERNANCE_CASE_LINKAGE_KIND
+  GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_stabilization.contract.kind !==
+  GOVERNANCE_EXCEPTION_STABILIZATION_KIND
 ) {
-  throw new Error("governance exception override surface contract kind drifted");
+  throw new Error("governance exception stabilization surface contract kind drifted");
 }
 
-for (const exportName of GOVERNANCE_CASE_LINKAGE_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_EXCEPTION_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `governance case linkage export missing from permit index: ${exportName}`
+      `governance exception stabilization export missing from permit index: ${exportName}`
     );
   }
 }
@@ -334,4 +332,4 @@ for (const exportName of GOVERNANCE_EXCEPTION_SURFACE_STABLE_EXPORT_SET) {
   }
 }
 
-process.stdout.write("governance override record verified\n");
+process.stdout.write("governance exception stabilization verified\n");

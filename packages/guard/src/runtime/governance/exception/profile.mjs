@@ -119,6 +119,8 @@ export function buildGovernanceExceptionProfile({
         override_record_contract_available: true,
         case_linkage_profile_available: true,
         exception_compatibility_contract_available: true,
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
       validation_exports: {
         surface_available: true,
@@ -295,6 +297,12 @@ export function validateGovernanceExceptionProfile(profile) {
       payload.compatibility_refs.exception_compatibility_contract_available !== true
     ) {
       errors.push("governance exception compatibility contract availability drifted");
+    }
+    if (payload.compatibility_refs.stabilization_profile_available !== true) {
+      errors.push("governance exception stabilization availability drifted");
+    }
+    if (payload.compatibility_refs.final_acceptance_boundary_available !== true) {
+      errors.push("governance exception final acceptance boundary drifted");
     }
   }
   if (!isPlainObject(payload.validation_exports)) {
