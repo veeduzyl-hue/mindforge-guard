@@ -1,0 +1,35 @@
+# v5.2 Phase 1 Start State
+
+- Module: `v5.2 = Governance Exceptions, Waivers & Override Records v1`
+- Phase target: `v5.2 Phase 1 = governance exception profile and waiver boundary introduction`
+- Branch: `codex/v5.2-exception-waiver-phase1`
+- Release baseline:
+  - `v4.6.0` released
+  - `v4.7.0` released
+  - `v4.8.0` released
+  - `v4.9.0` released
+  - `v5.0.0` released
+  - `v5.1.0` released
+- Prior module closure:
+  - `v5.1.0 = Governance Snapshot, Explainability & Review Pack v1`
+- This phase introduces only:
+  - `governance_exception_profile`
+  - waiver / exception boundary contract
+  - exception consumer surface
+  - exception validation / export surface
+  - explicit boundary from snapshot to exception layer
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no governance object addition
+  - audit output unchanged
+  - audit verdict unchanged
+  - actual exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged
