@@ -77,6 +77,12 @@ import {
   LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY,
   LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET,
 } from "./enforcementPilot.mjs";
+import {
+  GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_CONSUMER_SURFACE,
+  GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_KIND,
+  GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_SCHEMA_ID,
+  GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_VERSION,
+} from "../caseReviewDecision/governanceCaseReviewDecisionCurrentSelectionSummaryProfile.mjs";
 
 export const GOVERNANCE_SURFACE_VERSION = "v1";
 export const GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER = "external_consumer_surface";
@@ -97,6 +103,7 @@ export const GOVERNANCE_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_disposition",
   "governance_activation_record",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ]);
 
 export const GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS = Object.freeze([
@@ -107,6 +114,7 @@ export const GOVERNANCE_EXTERNAL_CONSUMER_ARTIFACTS = Object.freeze([
   "governance_disposition",
   "governance_activation_record",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ]);
 
 export const GOVERNANCE_INTERNAL_SUPPORT_ARTIFACTS = Object.freeze(["governance_receipt"]);
@@ -326,6 +334,48 @@ export const GOVERNANCE_SURFACE_MAP = Object.freeze({
     mode: LIMITED_ENFORCEMENT_AUTHORITY_MODE,
     boundary: LIMITED_ENFORCEMENT_AUTHORITY_CONSUMER_SURFACE_BOUNDARY,
     stable_exports: LIMITED_ENFORCEMENT_AUTHORITY_PUBLIC_EXPORT_SET,
+  }),
+  governance_case_review_decision_current_selection_summary: freezeEntry({
+    artifact_id: "governance_case_review_decision_current_selection_summary",
+    tier: GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER,
+    stability: GOVERNANCE_SURFACE_STABILITY,
+    contract: {
+      kind:
+        GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_KIND,
+      version:
+        GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_VERSION,
+      schema_id:
+        GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_SCHEMA_ID,
+    },
+    consumer_surface:
+      GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_CONSUMER_SURFACE,
+    mode: "summary_only",
+    boundary: "current_selection_summary_surface",
+    stable_exports: [
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_KIND",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_VERSION",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_SCHEMA_ID",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_STAGE",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_CONSUMER_SURFACE",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PROFILE_BOUNDARY",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_TOP_LEVEL_FIELDS",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_PAYLOAD_FIELDS",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_STABLE_EXPORT_SET",
+      "buildGovernanceCaseReviewDecisionCurrentSelectionSummaryProfile",
+      "validateGovernanceCaseReviewDecisionCurrentSelectionSummaryProfile",
+      "assertValidGovernanceCaseReviewDecisionCurrentSelectionSummaryProfile",
+      "consumeGovernanceCaseReviewDecisionCurrentSelection",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_VERSION",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_STABILITY",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_CONSUMER_TIER",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_ARTIFACT_ORDER",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_META_EXPORTS",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_STABLE_EXPORT_SET",
+      "GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_SUMMARY_SURFACE_MAP",
+      "getGovernanceCaseReviewDecisionCurrentSelectionSummarySurfaceEntry",
+      "listGovernanceCaseReviewDecisionCurrentSelectionSummarySurfaceEntries",
+      "exportGovernanceCaseReviewDecisionCurrentSelectionSummarySurface",
+    ],
   }),
 });
 

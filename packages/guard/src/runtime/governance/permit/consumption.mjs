@@ -33,6 +33,7 @@ export const GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS = Object.freeze([
   "governance_application_record",
   "governance_disposition",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ]);
 
 export const GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS = Object.freeze([
@@ -126,6 +127,16 @@ export const GOVERNANCE_CONSUMPTION_PROFILE = Object.freeze({
       "governance_decision_record",
       "governance_activation_record",
     ],
+  }),
+  governance_case_review_decision_current_selection_summary: freezeEntry({
+    artifact_id: "governance_case_review_decision_current_selection_summary",
+    requirement: GOVERNANCE_CONSUMPTION_OPTIONAL,
+    consumer_safe: true,
+    surface_tier:
+      GOVERNANCE_SURFACE_MAP
+        .governance_case_review_decision_current_selection_summary.tier,
+    stability: GOVERNANCE_CONSUMPTION_PROFILE_STABILITY,
+    consumer_safe_linkage_targets: [],
   }),
 });
 
