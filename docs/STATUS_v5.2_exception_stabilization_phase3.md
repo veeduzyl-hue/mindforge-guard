@@ -1,0 +1,31 @@
+# v5.2 Phase 3 Start State
+
+- Module: `v5.2 = Governance Exceptions, Waivers & Override Records v1`
+- Phase target:
+  - `v5.2 Phase 3 = exception stabilization and final acceptance consolidation`
+- Branch:
+  - `codex/v5.2-exception-stabilization-phase3`
+- Baseline:
+  - `v5.2 Phase 1` completed and tagged as `v5.2-exception-waiver-phase1`
+  - `v5.2 Phase 2` completed and tagged as `v5.2-override-record-phase2`
+- This phase introduces only:
+  - `governance_exception_stabilization_profile`
+  - `GOVERNANCE_EXCEPTION_FINAL_ACCEPTANCE_BOUNDARY`
+  - exception final consumer contract
+  - exception validation / export stabilization surface
+  - explicit additive export path for exception final acceptance
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no governance object addition
+  - audit output unchanged
+  - audit verdict unchanged
+  - actual exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged
