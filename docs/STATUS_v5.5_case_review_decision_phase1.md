@@ -1,4 +1,4 @@
-# v5.5 Phase 1 Start State
+# v5.5 Phase 1 Completed State
 
 - Module: `v5.5 = Governance Case Review Decision Boundary v1`
 - Phase target: `v5.5 Phase 1 = governance case review decision boundary introduction`
@@ -20,6 +20,16 @@
   - `governance_case_review_decision_contract`
   - review decision consumer / validation / export surface
   - continuity linkage validation
+- Implemented artifacts:
+  - `docs/governance/case-review-decision-boundary.md`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/governanceCaseReviewDecisionProfile.mjs`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/governanceCaseReviewDecisionContract.mjs`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/consumeGovernanceCaseReviewDecision.mjs`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/validateGovernanceCaseReviewDecision.mjs`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/exportGovernanceCaseReviewDecision.mjs`
+  - `packages/guard/src/runtime/governance/caseReviewDecision/index.mjs`
+  - additive permit wiring in `packages/guard/src/runtime/governance/permit/index.mjs`
+  - `scripts/verify_governance_case_review_decision_boundary.mjs`
 - Preserved boundaries:
   - recommendation-only
   - additive-only
@@ -46,3 +56,24 @@
   - `--enforcement-pilot` semantics unchanged
   - `--limited-enforcement-authority` semantics unchanged
   - `guard action classify` unchanged
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_boundary.mjs`
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_case_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_resolution_boundary.mjs`
+  - `node scripts/verify_governance_case_escalation_boundary.mjs`
+  - `node scripts/verify_governance_case_closure_boundary.mjs`
+  - `node scripts/verify_governance_exception_stabilization.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Phase conclusion:
+  - `v5.5 Phase 1` completed as a minimal review decision boundary on top of `v5.4.0`
+  - continuity validation is enforced for `canonical_action_hash`, `case_id`, and linked evidence / resolution / escalation / closure ids
+  - bounded `review_status` and `evidence_sufficiency` values are validated and mismatches are rejected
+  - backward compatibility remains unchanged
