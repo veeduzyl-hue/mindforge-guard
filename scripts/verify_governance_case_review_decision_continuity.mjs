@@ -414,9 +414,51 @@ const base = buildBaseReviewDecisionArtifacts("would_review");
       GOVERNANCE_CASE_REVIEW_DECISION_CONSUMER_SURFACE ||
     standalone.consumed.recommendation_only !== true ||
     standalone.consumed.additive_only !== true ||
-    standalone.consumed.executing !== false
+    standalone.consumed.executing !== false ||
+    standalone.consumed.current_effective_decision !== true
   ) {
     throw new Error("standalone consumer surface drifted");
+  }
+
+  const legacyProfile = cloneJson(standalone.caseReviewDecisionProfile);
+  delete legacyProfile.governance_case_review_decision.review_decision_context
+    .supersedes_review_decision_id;
+  delete legacyProfile.governance_case_review_decision.review_decision_context
+    .superseded_by_review_decision_id;
+  delete legacyProfile.governance_case_review_decision.review_decision_context
+    .review_decision_sequence;
+  delete legacyProfile.governance_case_review_decision.review_decision_context
+    .continuity_mode;
+  delete legacyProfile.governance_case_review_decision.review_decision_context
+    .supersession_reason;
+  const legacyContract = cloneJson(standalone.caseReviewDecisionContract);
+  delete legacyContract.review_decision_profile_ref.review_decision_id;
+  delete legacyContract.continuity_supported;
+  delete legacyContract.supersession_supported;
+  delete legacyContract.continuity_mode;
+  delete legacyContract.supersedes_review_decision_id;
+  delete legacyContract.superseded_by_review_decision_id;
+  delete legacyContract.review_decision_sequence;
+  delete legacyContract.supersession_reason;
+  delete legacyContract.current_effective_decision;
+  const legacyConsumed = consumeGovernanceCaseReviewDecision({
+    governanceCaseReviewDecisionProfile: legacyProfile,
+    governanceCaseReviewDecisionContract: legacyContract,
+  });
+  assertValidBundle({
+    profile: legacyProfile,
+    contract: legacyContract,
+    evidenceProfile: base.caseEvidenceProfile,
+    consumed: legacyConsumed,
+    message: "legacy review decision artifacts without continuity fields must remain valid",
+  });
+  if (
+    legacyConsumed.continuity_mode !==
+      GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_STANDALONE ||
+    legacyConsumed.review_decision_sequence !== 1 ||
+    legacyConsumed.current_effective_decision !== true
+  ) {
+    throw new Error("legacy review decision default continuity behavior drifted");
   }
 }
 
@@ -455,6 +497,9 @@ const base = buildBaseReviewDecisionArtifacts("would_review");
     relatedProfiles: [successor.caseReviewDecisionProfile],
     message: "superseded predecessor must validate when successor is bounded",
   });
+  if (supersededPredecessor.consumed.current_effective_decision !== false) {
+    throw new Error("superseded decisions must not remain current/effective");
+  }
 }
 
 {
@@ -576,19 +621,16 @@ const base = buildBaseReviewDecisionArtifacts("would_review");
     relatedProfiles: [parallelB.caseReviewDecisionProfile],
     message: "bounded parallel review decision must validate",
   });
-  const invalidParallel = buildReviewDecisionArtifacts(base, {
-    reviewDecisionId: "review-parallel-invalid",
-    reviewDecisionSequence: 2,
-    continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL,
-  });
-  assertRejected({
-    profile: invalidParallel.caseReviewDecisionProfile,
-    contract: invalidParallel.caseReviewDecisionContract,
-    evidenceProfile: base.caseEvidenceProfile,
-    consumed: invalidParallel.consumed,
-    expectedFragment: "parallel mode requires",
-    message: "unbounded parallel review decision must be rejected",
-  });
+  assertBuildRejected(
+    () =>
+      buildReviewDecisionArtifacts(base, {
+        reviewDecisionId: "review-parallel-invalid",
+        reviewDecisionSequence: 2,
+        continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL,
+      }),
+    "parallel continuity must remain purely explanatory",
+    "unbounded parallel review decision must be rejected"
+  );
 }
 
 {
@@ -609,6 +651,81 @@ const base = buildBaseReviewDecisionArtifacts("would_review");
     consumed: brokenHash.consumed,
     expectedFragment: "canonical_action_hash",
     message: "canonical action hash mismatch must be rejected",
+  });
+}
+
+{
+  const otherBase = buildBaseReviewDecisionArtifacts("would_allow");
+  const predecessor = buildReviewDecisionArtifacts(base, {
+    reviewDecisionId: "review-cross-case-prev",
+    reviewDecisionSequence: 1,
+  });
+  const crossCase = buildReviewDecisionArtifacts(otherBase, {
+    reviewDecisionId: "review-cross-case-next",
+    reviewDecisionSequence: 2,
+    continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDING,
+    supersedesReviewDecisionId: "review-cross-case-prev",
+    supersessionReason: "cross case drift",
+  });
+  assertRejected({
+    profile: crossCase.caseReviewDecisionProfile,
+    contract: crossCase.caseReviewDecisionContract,
+    evidenceProfile: otherBase.caseEvidenceProfile,
+    consumed: crossCase.consumed,
+    relatedProfiles: [predecessor.caseReviewDecisionProfile],
+    expectedFragment: "case_id",
+    message: "cross-case supersession must be rejected",
+  });
+}
+
+{
+  const predecessor = buildReviewDecisionArtifacts(base, {
+    reviewDecisionId: "review-cross-hash-prev",
+    reviewDecisionSequence: 1,
+  });
+  const crossHash = buildReviewDecisionArtifacts(base, {
+    reviewDecisionId: "review-cross-hash-next",
+    reviewDecisionSequence: 2,
+    continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDING,
+    supersedesReviewDecisionId: "review-cross-hash-prev",
+    supersessionReason: "cross hash drift",
+  });
+  const predecessorWithDifferentHash = cloneJson(predecessor.caseReviewDecisionProfile);
+  predecessorWithDifferentHash.canonical_action_hash =
+    "sha256:cross-hash-predecessor-mismatch";
+  assertRejected({
+    profile: crossHash.caseReviewDecisionProfile,
+    contract: crossHash.caseReviewDecisionContract,
+    evidenceProfile: base.caseEvidenceProfile,
+    consumed: crossHash.consumed,
+    relatedProfiles: [predecessorWithDifferentHash],
+    expectedFragment: "canonical_action_hash",
+    message: "cross-canonical_action_hash supersession must be rejected",
+  });
+}
+
+{
+  const illegalParallel = buildReviewDecisionArtifacts(base, {
+    reviewDecisionId: "review-parallel-linked",
+    reviewDecisionSequence: 2,
+    continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL,
+    supersedesReviewDecisionId: "review-1",
+    supersessionReason: "parallel must stay link free",
+  });
+  const peer = buildReviewDecisionArtifacts(base, {
+    reviewDecisionId: "review-parallel-peer",
+    reviewDecisionSequence: 2,
+    continuityMode: GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL,
+    supersessionReason: "bounded peer review split",
+  });
+  assertRejected({
+    profile: illegalParallel.caseReviewDecisionProfile,
+    contract: illegalParallel.caseReviewDecisionContract,
+    evidenceProfile: base.caseEvidenceProfile,
+    consumed: illegalParallel.consumed,
+    relatedProfiles: [peer.caseReviewDecisionProfile],
+    expectedFragment: "parallel mode must not include supersession links",
+    message: "parallel decisions with supersession links must be rejected",
   });
 }
 
