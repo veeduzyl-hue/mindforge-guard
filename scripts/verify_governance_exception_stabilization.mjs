@@ -316,6 +316,9 @@ if (
 ) {
   throw new Error("governance exception stabilization surface contract kind drifted");
 }
+if (!permitExports.GOVERNANCE_CASE_RESOLUTION_SURFACE_MAP?.governance_case_resolution) {
+  throw new Error("governance case resolution downstream surface entry missing");
+}
 
 for (const exportName of GOVERNANCE_EXCEPTION_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
