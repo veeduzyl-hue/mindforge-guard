@@ -19,6 +19,38 @@ export {
   assertValidGovernanceExceptionProfile,
 } from "./profile.mjs";
 export {
+  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_KIND,
+  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_VERSION,
+  GOVERNANCE_OVERRIDE_RECORD_CONTRACT_BOUNDARY,
+  buildGovernanceOverrideRecordContract,
+  validateGovernanceOverrideRecordContract,
+  assertValidGovernanceOverrideRecordContract,
+} from "./overrideRecord.mjs";
+export {
+  GOVERNANCE_CASE_LINKAGE_KIND,
+  GOVERNANCE_CASE_LINKAGE_VERSION,
+  GOVERNANCE_CASE_LINKAGE_SCHEMA_ID,
+  GOVERNANCE_CASE_LINKAGE_STAGE,
+  GOVERNANCE_CASE_LINKAGE_BOUNDARY,
+  GOVERNANCE_EXCEPTION_RECEIPT_READY,
+  GOVERNANCE_EXCEPTION_CONSUMER_COMPATIBLE,
+  GOVERNANCE_CASE_LINKAGE_LEVELS,
+  GOVERNANCE_CASE_LINKAGE_TOP_LEVEL_FIELDS,
+  GOVERNANCE_CASE_LINKAGE_PAYLOAD_FIELDS,
+  GOVERNANCE_CASE_LINKAGE_STABLE_EXPORT_SET,
+  buildGovernanceCaseLinkageProfile,
+  validateGovernanceCaseLinkageProfile,
+  assertValidGovernanceCaseLinkageProfile,
+} from "./caseLinkage.mjs";
+export {
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND,
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION,
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_BOUNDARY,
+  buildGovernanceExceptionCompatibilityContract,
+  validateGovernanceExceptionCompatibilityContract,
+  assertValidGovernanceExceptionCompatibilityContract,
+} from "./compatibility.mjs";
+export {
   GOVERNANCE_EXCEPTION_SURFACE_VERSION,
   GOVERNANCE_EXCEPTION_SURFACE_STABILITY,
   GOVERNANCE_EXCEPTION_SURFACE_CONSUMER_TIER,
