@@ -57,6 +57,7 @@ const expectedOptional = [
   "governance_application_record",
   "governance_disposition",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ];
 const expectedSupportOnly = ["governance_receipt"];
 const expectedConsumerSafe = [
@@ -67,6 +68,7 @@ const expectedConsumerSafe = [
   "governance_application_record",
   "governance_disposition",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ];
 
 if (JSON.stringify(GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS) !== JSON.stringify(expectedRequired)) {
@@ -175,6 +177,17 @@ if (
   JSON.stringify(["permit_gate_result", "governance_decision_record"])
 ) {
   throw new Error("governance outcome bundle consumption linkage drifted");
+}
+if (
+  JSON.stringify(
+    GOVERNANCE_CONSUMPTION_PROFILE
+      .governance_case_review_decision_current_selection_summary
+      .consumer_safe_linkage_targets
+  ) !== JSON.stringify([])
+) {
+  throw new Error(
+    "governance case review decision current selection summary consumption linkage drifted"
+  );
 }
 
 for (const exportName of GOVERNANCE_CONSUMPTION_STABLE_EXPORT_SET) {

@@ -1,0 +1,58 @@
+# v5.7 Phase 2 Boundary State
+
+- Baseline:
+  - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
+- Module:
+  - `v5.7 Phase 2 = Governance Case Review Decision Current Selection Consumption & Summary Boundary`
+- This phase introduced:
+  - current-selection consumption-ready summary profile
+  - consumer-safe current-selection summary consumption surface
+  - additive governance consumption / summary aggregate wiring
+  - phase 2 verification and status tracking
+- This phase stabilizes consumption of:
+  - current selected review decision
+  - current selection status
+  - current selection conflict state
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - final module closure
+  - final compatibility freeze
+  - new governance top-level objects
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_current_selection_consumption_phase2.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_phase1.mjs`
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+- Boundary conclusion:
+  - `v5.7 Phase 2` makes current-selection available through a stable consumer-safe summary profile and governance consumption aggregate without changing audit main-path behavior
+  - final module closure and final compatibility freeze remain intentionally out of scope

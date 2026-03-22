@@ -32,6 +32,7 @@ const expectedArtifactIds = [
   "governance_disposition",
   "governance_activation_record",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ];
 
 if (JSON.stringify(GOVERNANCE_SURFACE_ARTIFACT_ORDER) !== JSON.stringify(expectedArtifactIds)) {
@@ -63,6 +64,7 @@ if (
       "governance_disposition",
       "governance_activation_record",
       "limited_enforcement_authority_result",
+      "governance_case_review_decision_current_selection_summary",
     ])
 ) {
   throw new Error("governance external consumer surface drifted");
@@ -116,6 +118,7 @@ for (const artifactId of [
   "governance_disposition",
   "governance_activation_record",
   "limited_enforcement_authority_result",
+  "governance_case_review_decision_current_selection_summary",
 ]) {
   if (GOVERNANCE_SURFACE_MAP[artifactId].tier !== GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER) {
     throw new Error(`${artifactId} tier mismatch`);
