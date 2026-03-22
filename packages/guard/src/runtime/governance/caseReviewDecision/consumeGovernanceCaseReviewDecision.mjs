@@ -31,6 +31,7 @@ export function consumeGovernanceCaseReviewDecision({
     review_decision_sequence: context.review_decision_sequence ?? 1,
     continuity_mode: context.continuity_mode ?? "standalone",
     supersession_reason: context.supersession_reason ?? null,
+    current_effective_decision: contract.current_effective_decision ?? true,
     supporting_artifact_only: contract.supporting_artifact_only === true,
     recommendation_only: contract.recommendation_only === true,
     additive_only: contract.additive_only === true,

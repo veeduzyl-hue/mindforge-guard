@@ -113,6 +113,10 @@ function normalizeStringArray(values, fallback) {
   return values.map((value) => String(value));
 }
 
+function normalizeOptionalString(value) {
+  return value === undefined || value === null ? null : String(value);
+}
+
 function resolveContinuityMode({
   continuityMode,
   supersedesReviewDecisionId,
@@ -159,6 +163,10 @@ export function buildGovernanceCaseReviewDecisionProfile({
     supersedesReviewDecisionId,
     supersededByReviewDecisionId,
   });
+  const normalizedSequence =
+    reviewDecisionSequence === undefined || reviewDecisionSequence === null
+      ? 1
+      : Number(reviewDecisionSequence);
 
   return {
     kind: GOVERNANCE_CASE_REVIEW_DECISION_PROFILE_KIND,
@@ -211,7 +219,7 @@ export function buildGovernanceCaseReviewDecisionProfile({
           supersededByReviewDecisionId === null
             ? null
             : String(supersededByReviewDecisionId),
-        review_decision_sequence: Number(reviewDecisionSequence),
+        review_decision_sequence: normalizedSequence,
         continuity_mode: normalizedContinuityMode,
         supersession_reason:
           supersessionReason === null ? null : String(supersessionReason),
@@ -309,6 +317,25 @@ export function validateGovernanceCaseReviewDecisionProfile(profile) {
   if (!isPlainObject(context)) {
     errors.push("governance case review decision context must be an object");
   } else {
+    const supersedesReviewDecisionId = normalizeOptionalString(
+      context.supersedes_review_decision_id
+    );
+    const supersededByReviewDecisionId = normalizeOptionalString(
+      context.superseded_by_review_decision_id
+    );
+    const reviewDecisionSequence =
+      context.review_decision_sequence === undefined
+        ? 1
+        : context.review_decision_sequence;
+    const continuityMode =
+      context.continuity_mode ??
+      resolveContinuityMode({
+        supersedesReviewDecisionId,
+        supersededByReviewDecisionId,
+      });
+    const supersessionReason = normalizeOptionalString(
+      context.supersession_reason
+    );
     if (typeof context.case_id !== "string" || context.case_id.length === 0) {
       errors.push("governance case review decision case_id is required");
     }
@@ -361,45 +388,47 @@ export function validateGovernanceCaseReviewDecisionProfile(profile) {
       errors.push("governance case review decision linked closure ids are required");
     }
     if (
-      context.supersedes_review_decision_id !== null &&
-      (typeof context.supersedes_review_decision_id !== "string" ||
-        context.supersedes_review_decision_id.length === 0)
+      supersedesReviewDecisionId !== null &&
+      supersedesReviewDecisionId.length === 0
     ) {
       errors.push(
         "governance case review decision supersedes_review_decision_id drifted"
       );
     }
     if (
-      context.superseded_by_review_decision_id !== null &&
-      (typeof context.superseded_by_review_decision_id !== "string" ||
-        context.superseded_by_review_decision_id.length === 0)
+      supersededByReviewDecisionId !== null &&
+      supersededByReviewDecisionId.length === 0
     ) {
       errors.push(
         "governance case review decision superseded_by_review_decision_id drifted"
       );
     }
     if (
-      !Number.isInteger(context.review_decision_sequence) ||
-      context.review_decision_sequence < 1
+      !Number.isInteger(reviewDecisionSequence) ||
+      reviewDecisionSequence < 1
     ) {
       errors.push(
         "governance case review decision review_decision_sequence drifted"
       );
     }
-    if (
-      !GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODES.includes(
-        context.continuity_mode ??
-          GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_STANDALONE
-      )
-    ) {
+    if (!GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODES.includes(continuityMode)) {
       errors.push("governance case review decision continuity_mode drifted");
     }
     if (
-      context.supersession_reason !== null &&
-      (typeof context.supersession_reason !== "string" ||
-        context.supersession_reason.length === 0)
+      supersessionReason !== null &&
+      supersessionReason.length === 0
     ) {
       errors.push("governance case review decision supersession_reason drifted");
+    }
+    if (
+      continuityMode === GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_STANDALONE &&
+      (supersedesReviewDecisionId !== null ||
+        supersededByReviewDecisionId !== null ||
+        supersessionReason !== null)
+    ) {
+      errors.push(
+        "governance case review decision standalone continuity must remain link-free and explanatory-only"
+      );
     }
     if (
       typeof context.review_decision_recorded_at !== "string" ||
