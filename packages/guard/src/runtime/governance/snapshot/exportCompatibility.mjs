@@ -37,6 +37,7 @@ export function buildGovernanceSnapshotExportCompatibilityContract({
     additive_only: true,
     execution_enabled: false,
     default_on: false,
+    rationale_bundle_execution_available: false,
     audit_output_preserved: true,
     audit_verdict_preserved: true,
     actual_exit_code_preserved: true,
@@ -99,6 +100,9 @@ export function validateGovernanceSnapshotExportCompatibilityContract(contract) 
   }
   if (contract.default_on !== false) {
     errors.push("governance snapshot export default-on drifted");
+  }
+  if (contract.rationale_bundle_execution_available !== false) {
+    errors.push("governance snapshot export rationale execution drifted");
   }
   if (contract.audit_output_preserved !== true) {
     errors.push("governance snapshot export audit output drifted");

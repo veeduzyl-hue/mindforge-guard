@@ -34,6 +34,7 @@ export function buildGovernanceReviewPackContract({
     recommendation_only: true,
     additive_only: true,
     execution_enabled: false,
+    review_pack_execution_available: false,
     authority_scope: "review_gate_deny_exit_recommendation_only",
     authority_scope_expansion: false,
     canonical_action_hash: snapshot.canonical_action_hash,
@@ -81,6 +82,9 @@ export function validateGovernanceReviewPackContract(contract) {
   }
   if (contract.execution_enabled !== false) {
     errors.push("governance review pack execution boundary drifted");
+  }
+  if (contract.review_pack_execution_available !== false) {
+    errors.push("governance review pack execution availability drifted");
   }
   if (
     contract.authority_scope !== "review_gate_deny_exit_recommendation_only"

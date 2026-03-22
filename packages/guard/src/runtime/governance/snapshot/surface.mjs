@@ -30,6 +30,13 @@ import {
   GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND,
   GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_VERSION,
 } from "./exportCompatibility.mjs";
+import {
+  GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_BOUNDARY,
+  GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_READY,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_KIND,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_STAGE,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_VERSION,
+} from "./stabilization.mjs";
 
 export const GOVERNANCE_SNAPSHOT_SURFACE_VERSION = "v1";
 export const GOVERNANCE_SNAPSHOT_SURFACE_STABILITY = "stable";
@@ -38,6 +45,7 @@ export const GOVERNANCE_SNAPSHOT_SURFACE_CONSUMER_TIER =
 export const GOVERNANCE_SNAPSHOT_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_snapshot",
   "governance_snapshot_review_pack",
+  "governance_snapshot_stabilization",
 ]);
 export const GOVERNANCE_SNAPSHOT_SURFACE_META_EXPORTS = Object.freeze([
   "GOVERNANCE_SNAPSHOT_SURFACE_VERSION",
@@ -106,6 +114,26 @@ export const GOVERNANCE_SNAPSHOT_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  governance_snapshot_stabilization: Object.freeze({
+    artifact_id: "governance_snapshot_stabilization",
+    consumer_surface: GOVERNANCE_SNAPSHOT_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: GOVERNANCE_SNAPSHOT_STABILIZATION_KIND,
+      version: GOVERNANCE_SNAPSHOT_STABILIZATION_VERSION,
+      schema_id: "mindforge/governance-snapshot-stabilization/v1",
+      stage: GOVERNANCE_SNAPSHOT_STABILIZATION_STAGE,
+      boundary: GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_BOUNDARY,
+    }),
+    export_contract: Object.freeze({
+      kind: GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND,
+      version: GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_VERSION,
+      boundary: GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_BOUNDARY,
+      acceptance_level: GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_READY,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -138,7 +166,11 @@ export function validateGovernanceSnapshotSurface() {
   }
   if (
     JSON.stringify(GOVERNANCE_SNAPSHOT_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["governance_snapshot", "governance_snapshot_review_pack"])
+    JSON.stringify([
+      "governance_snapshot",
+      "governance_snapshot_review_pack",
+      "governance_snapshot_stabilization",
+    ])
   ) {
     errors.push("governance snapshot surface artifact order drifted");
   }
@@ -213,6 +245,32 @@ export function validateGovernanceSnapshotSurface() {
     }
     if (reviewPackArtifact.executing !== false) {
       errors.push("governance snapshot review pack execution boundary drifted");
+    }
+  }
+  const stabilizationArtifact =
+    GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_stabilization;
+  if (!isPlainObject(stabilizationArtifact)) {
+    errors.push("governance snapshot stabilization surface entry must be an object");
+  } else {
+    if (
+      stabilizationArtifact.contract.kind !== GOVERNANCE_SNAPSHOT_STABILIZATION_KIND
+    ) {
+      errors.push("governance snapshot stabilization contract kind drifted");
+    }
+    if (
+      stabilizationArtifact.export_contract.kind !==
+      GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND
+    ) {
+      errors.push("governance snapshot stabilization export contract drifted");
+    }
+    if (stabilizationArtifact.recommendation_only !== true) {
+      errors.push("governance snapshot stabilization recommendation boundary drifted");
+    }
+    if (stabilizationArtifact.additive_only !== true) {
+      errors.push("governance snapshot stabilization additive boundary drifted");
+    }
+    if (stabilizationArtifact.executing !== false) {
+      errors.push("governance snapshot stabilization execution boundary drifted");
     }
   }
 

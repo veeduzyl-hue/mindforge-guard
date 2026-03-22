@@ -2,23 +2,20 @@ import * as permitExports from "../packages/guard/src/runtime/governance/permit/
 import {
   GOVERNANCE_RATIONALE_BUNDLE_BOUNDARY,
   GOVERNANCE_RATIONALE_BUNDLE_KIND,
-  GOVERNANCE_RATIONALE_BUNDLE_SCHEMA_ID,
   GOVERNANCE_RATIONALE_BUNDLE_STAGE,
-  GOVERNANCE_RATIONALE_BUNDLE_STABLE_EXPORT_SET,
   GOVERNANCE_RATIONALE_BUNDLE_VERSION,
-  GOVERNANCE_REVIEW_PACK_CONTRACT_BOUNDARY,
-  GOVERNANCE_REVIEW_PACK_CONTRACT_KIND,
-  GOVERNANCE_REVIEW_PACK_CONTRACT_VERSION,
   GOVERNANCE_SNAPSHOT_CONSUMER_COMPATIBLE,
   GOVERNANCE_SNAPSHOT_CONSUMER_SURFACE,
   GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_BOUNDARY,
   GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND,
   GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_VERSION,
-  GOVERNANCE_SNAPSHOT_PROFILE_BOUNDARY,
-  GOVERNANCE_SNAPSHOT_PROFILE_KIND,
-  GOVERNANCE_SNAPSHOT_PROFILE_VERSION,
-  GOVERNANCE_SNAPSHOT_RECEIPT_READY,
+  GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_BOUNDARY,
+  GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_READY,
   GOVERNANCE_SNAPSHOT_STABILIZATION_KIND,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_SCHEMA_ID,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_STAGE,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_STABLE_EXPORT_SET,
+  GOVERNANCE_SNAPSHOT_STABILIZATION_VERSION,
   GOVERNANCE_SNAPSHOT_SURFACE_MAP,
   GOVERNANCE_SNAPSHOT_SURFACE_STABLE_EXPORT_SET,
   buildApprovalArtifactProfile,
@@ -37,6 +34,7 @@ import {
   buildGovernanceReviewPackContract,
   buildGovernanceSnapshotExportCompatibilityContract,
   buildGovernanceSnapshotProfile,
+  buildGovernanceSnapshotStabilizationProfile,
   buildJudgmentCompatibilityContract,
   buildJudgmentProfile,
   buildJudgmentReadinessProfile,
@@ -46,9 +44,7 @@ import {
   buildPolicyCompatibilityProfile,
   buildPolicyProfile,
   buildPolicyStabilizationProfile,
-  validateGovernanceRationaleBundleProfile,
-  validateGovernanceReviewPackContract,
-  validateGovernanceSnapshotExportCompatibilityContract,
+  validateGovernanceSnapshotStabilizationProfile,
 } from "../packages/guard/src/runtime/governance/permit/index.mjs";
 import { buildPolicyPermitBridgeContract } from "../packages/guard/src/runtime/governance/bridge/index.mjs";
 
@@ -56,7 +52,7 @@ function buildBridge(decision) {
   return buildPolicyPermitBridgeContract({
     canonicalActionArtifact: {
       canonical_action_hash:
-        "sha256:ababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcd",
+        "sha256:ddddababddddababddddababddddababddddababddddababddddababddddabab",
       action: { action_class: "file.write" },
     },
     policyPreviewArtifact: {
@@ -82,7 +78,7 @@ function buildBridge(decision) {
   });
 }
 
-function buildReviewPackArtifacts(decision) {
+function buildSnapshotStabilization(decision) {
   const bridge = buildBridge(decision);
   const permit = buildPermitGateResult({ policyPermitBridgeContract: bridge });
   const governance = buildGovernanceDecisionRecord({
@@ -90,7 +86,7 @@ function buildReviewPackArtifacts(decision) {
       run: {
         run_id: "run",
         mode: "local",
-        git: { head: "cccccccccccccccccccccccccccccccccccccccc", branch: "branch" },
+        git: { head: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", branch: "branch" },
       },
     },
     policyPermitBridgeContract: bridge,
@@ -176,16 +172,16 @@ function buildReviewPackArtifacts(decision) {
   const snapshot = buildGovernanceSnapshotProfile({
     governanceEvidenceStabilizationProfile: evidenceStabilization,
   });
-  const reviewPack = buildGovernanceReviewPackContract({
-    governanceSnapshotProfile: snapshot,
-  });
   const rationaleBundle = buildGovernanceRationaleBundleProfile({
     governanceSnapshotProfile: snapshot,
   });
   const exportCompatibility = buildGovernanceSnapshotExportCompatibilityContract({
     governanceRationaleBundleProfile: rationaleBundle,
   });
-  return { reviewPack, rationaleBundle, exportCompatibility };
+  return buildGovernanceSnapshotStabilizationProfile({
+    governanceRationaleBundleProfile: rationaleBundle,
+    governanceSnapshotExportCompatibilityContract: exportCompatibility,
+  });
 }
 
 for (const decision of [
@@ -194,124 +190,101 @@ for (const decision of [
   "would_review",
   "would_deny",
 ]) {
-  const { reviewPack, rationaleBundle, exportCompatibility } =
-    buildReviewPackArtifacts(decision);
-
-  const reviewValidation = validateGovernanceReviewPackContract(reviewPack);
-  if (!reviewValidation.ok) {
+  const artifact = buildSnapshotStabilization(decision);
+  const validation = validateGovernanceSnapshotStabilizationProfile(artifact);
+  if (!validation.ok) {
     throw new Error(
-      `governance review pack validation failed: ${reviewValidation.errors.join("; ")}`
+      `governance snapshot stabilization validation failed: ${validation.errors.join("; ")}`
     );
   }
-  const bundleValidation = validateGovernanceRationaleBundleProfile(rationaleBundle);
-  if (!bundleValidation.ok) {
-    throw new Error(
-      `governance rationale bundle validation failed: ${bundleValidation.errors.join("; ")}`
-    );
+  if (artifact.kind !== GOVERNANCE_SNAPSHOT_STABILIZATION_KIND) {
+    throw new Error("governance snapshot stabilization kind drifted");
   }
-  const exportValidation =
-    validateGovernanceSnapshotExportCompatibilityContract(exportCompatibility);
-  if (!exportValidation.ok) {
-    throw new Error(
-      `governance snapshot export compatibility validation failed: ${exportValidation.errors.join("; ")}`
-    );
+  if (artifact.version !== GOVERNANCE_SNAPSHOT_STABILIZATION_VERSION) {
+    throw new Error("governance snapshot stabilization version drifted");
   }
-
+  if (artifact.schema_id !== GOVERNANCE_SNAPSHOT_STABILIZATION_SCHEMA_ID) {
+    throw new Error("governance snapshot stabilization schema drifted");
+  }
   if (
-    reviewPack.kind !== GOVERNANCE_REVIEW_PACK_CONTRACT_KIND ||
-    reviewPack.version !== GOVERNANCE_REVIEW_PACK_CONTRACT_VERSION ||
-    reviewPack.boundary !== GOVERNANCE_REVIEW_PACK_CONTRACT_BOUNDARY ||
-    reviewPack.review_pack_ready !== true ||
-    reviewPack.rationale_bundle_available !== true ||
-    reviewPack.recommendation_only !== true ||
-    reviewPack.additive_only !== true ||
-    reviewPack.execution_enabled !== false ||
-    reviewPack.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
-    reviewPack.authority_scope_expansion !== false
+    artifact.governance_snapshot_stabilization.stage !==
+    GOVERNANCE_SNAPSHOT_STABILIZATION_STAGE
   ) {
-    throw new Error("governance review pack contract drifted");
+    throw new Error("governance snapshot stabilization stage drifted");
   }
-
   if (
-    rationaleBundle.kind !== GOVERNANCE_RATIONALE_BUNDLE_KIND ||
-    rationaleBundle.version !== GOVERNANCE_RATIONALE_BUNDLE_VERSION ||
-    rationaleBundle.schema_id !== GOVERNANCE_RATIONALE_BUNDLE_SCHEMA_ID ||
-    rationaleBundle.governance_rationale_bundle.stage !== GOVERNANCE_RATIONALE_BUNDLE_STAGE ||
-    rationaleBundle.governance_rationale_bundle.consumer_surface !==
-      GOVERNANCE_SNAPSHOT_CONSUMER_SURFACE ||
-    rationaleBundle.governance_rationale_bundle.boundary !==
-      GOVERNANCE_RATIONALE_BUNDLE_BOUNDARY
+    artifact.governance_snapshot_stabilization.consumer_surface !==
+    GOVERNANCE_SNAPSHOT_CONSUMER_SURFACE
   ) {
-    throw new Error("governance rationale bundle envelope drifted");
+    throw new Error("governance snapshot stabilization consumer surface drifted");
   }
-  const snapshotRef = rationaleBundle.governance_rationale_bundle.snapshot_ref;
   if (
-    snapshotRef.kind !== GOVERNANCE_SNAPSHOT_PROFILE_KIND ||
-    snapshotRef.version !== GOVERNANCE_SNAPSHOT_PROFILE_VERSION ||
-    snapshotRef.boundary !== GOVERNANCE_SNAPSHOT_PROFILE_BOUNDARY
+    artifact.governance_snapshot_stabilization.boundary !==
+    GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_BOUNDARY
   ) {
-    throw new Error("governance rationale bundle snapshot ref drifted");
+    throw new Error("governance snapshot stabilization boundary drifted");
   }
-  const receiptReadiness =
-    rationaleBundle.governance_rationale_bundle.receipt_readiness;
+  const rationaleRef =
+    artifact.governance_snapshot_stabilization.rationale_bundle_ref;
   if (
-    receiptReadiness.level !== GOVERNANCE_SNAPSHOT_RECEIPT_READY ||
-    receiptReadiness.review_pack_ready !== true ||
-    receiptReadiness.rationale_bundle_ready !== true ||
-    receiptReadiness.recommendation_only !== true
+    rationaleRef.kind !== GOVERNANCE_RATIONALE_BUNDLE_KIND ||
+    rationaleRef.version !== GOVERNANCE_RATIONALE_BUNDLE_VERSION ||
+    rationaleRef.stage !== GOVERNANCE_RATIONALE_BUNDLE_STAGE ||
+    rationaleRef.boundary !== GOVERNANCE_RATIONALE_BUNDLE_BOUNDARY
   ) {
-    throw new Error("governance rationale bundle receipt readiness drifted");
+    throw new Error("governance snapshot stabilization rationale ref drifted");
   }
-  const consumerCompatibility =
-    rationaleBundle.governance_rationale_bundle.consumer_compatibility;
+  const exportRef =
+    artifact.governance_snapshot_stabilization.export_compatibility_ref;
   if (
-    consumerCompatibility.level !== GOVERNANCE_SNAPSHOT_CONSUMER_COMPATIBLE ||
-    consumerCompatibility.additive_only !== true ||
-    consumerCompatibility.non_executing !== true ||
-    consumerCompatibility.default_off !== true ||
-    consumerCompatibility.authority_scope !==
-      "review_gate_deny_exit_recommendation_only" ||
-    consumerCompatibility.denied_exit_code_preserved !== 25
+    exportRef.kind !== GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND ||
+    exportRef.version !== GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_VERSION ||
+    exportRef.boundary !== GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_BOUNDARY
   ) {
-    throw new Error("governance rationale bundle consumer compatibility drifted");
+    throw new Error("governance snapshot stabilization export ref drifted");
   }
-
+  const contract =
+    artifact.governance_snapshot_stabilization.final_consumer_contract;
   if (
-    exportCompatibility.kind !== GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_KIND ||
-    exportCompatibility.version !==
-      GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_VERSION ||
-    exportCompatibility.boundary !==
-      GOVERNANCE_SNAPSHOT_EXPORT_COMPATIBILITY_BOUNDARY ||
-    exportCompatibility.export_compatible !== true ||
-    exportCompatibility.review_pack_ready !== true ||
-    exportCompatibility.recommendation_only !== true ||
-    exportCompatibility.additive_only !== true ||
-    exportCompatibility.execution_enabled !== false ||
-    exportCompatibility.default_on !== false ||
-    exportCompatibility.audit_output_preserved !== true ||
-    exportCompatibility.audit_verdict_preserved !== true ||
-    exportCompatibility.actual_exit_code_preserved !== true ||
-    exportCompatibility.denied_exit_code_preserved !== 25 ||
-    exportCompatibility.authority_scope !==
-      "review_gate_deny_exit_recommendation_only" ||
-    exportCompatibility.governance_object_addition !== false ||
-    exportCompatibility.main_path_takeover !== false
+    contract.acceptance_level !== GOVERNANCE_SNAPSHOT_FINAL_ACCEPTANCE_READY ||
+    contract.recommendation_only !== true ||
+    contract.additive_only !== true ||
+    contract.execution_enabled !== false ||
+    contract.default_on !== false ||
+    contract.review_pack_execution_available !== false ||
+    contract.rationale_bundle_execution_available !== false ||
+    contract.audit_output_preserved !== true ||
+    contract.audit_verdict_preserved !== true ||
+    contract.actual_exit_code_preserved !== true ||
+    contract.denied_exit_code_preserved !== 25 ||
+    contract.authority_scope !== "review_gate_deny_exit_recommendation_only" ||
+    contract.governance_object_addition !== false
   ) {
-    throw new Error("governance snapshot export compatibility drifted");
+    throw new Error("governance snapshot stabilization final contract drifted");
+  }
+  const semantics = artifact.governance_snapshot_stabilization.preserved_semantics;
+  if (
+    semantics.snapshot_explainability_semantics_preserved !== true ||
+    semantics.review_pack_semantics_preserved !== true ||
+    semantics.rationale_bundle_semantics_preserved !== true ||
+    semantics.export_compatibility_semantics_preserved !== true ||
+    semantics.evidence_semantics_preserved !== true ||
+    semantics.policy_semantics_preserved !== true ||
+    semantics.enforcement_semantics_preserved !== true ||
+    semantics.approval_semantics_preserved !== true ||
+    semantics.judgment_semantics_preserved !== true ||
+    semantics.permit_gate_semantics_preserved !== true ||
+    semantics.consumer_contract_ready !== true ||
+    semantics.review_pack_ready !== true ||
+    semantics.export_compatible !== true ||
+    semantics.main_path_takeover !== false
+  ) {
+    throw new Error("governance snapshot stabilization preserved semantics drifted");
   }
 }
 
-if (!GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_review_pack) {
-  throw new Error("governance snapshot review pack surface entry missing");
-}
 if (!GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_stabilization) {
   throw new Error("governance snapshot stabilization surface entry missing");
-}
-if (
-  GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_review_pack.contract.kind !==
-  GOVERNANCE_RATIONALE_BUNDLE_KIND
-) {
-  throw new Error("governance snapshot review pack surface contract kind drifted");
 }
 if (
   GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_stabilization.contract.kind !==
@@ -320,10 +293,10 @@ if (
   throw new Error("governance snapshot stabilization surface contract kind drifted");
 }
 
-for (const exportName of GOVERNANCE_RATIONALE_BUNDLE_STABLE_EXPORT_SET) {
+for (const exportName of GOVERNANCE_SNAPSHOT_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
     throw new Error(
-      `governance rationale bundle export missing from permit index: ${exportName}`
+      `governance snapshot stabilization export missing from permit index: ${exportName}`
     );
   }
 }
@@ -335,4 +308,4 @@ for (const exportName of GOVERNANCE_SNAPSHOT_SURFACE_STABLE_EXPORT_SET) {
   }
 }
 
-process.stdout.write("governance review pack verified\n");
+process.stdout.write("governance snapshot stabilization verified\n");

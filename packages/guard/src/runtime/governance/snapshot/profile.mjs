@@ -121,6 +121,8 @@ export function buildGovernanceSnapshotProfile({
         review_pack_contract_available: true,
         rationale_bundle_profile_available: true,
         export_compatibility_contract_available: true,
+        stabilization_profile_available: true,
+        final_acceptance_boundary_available: true,
       },
       preserved_semantics: {
         evidence_semantics_preserved: true,
@@ -305,6 +307,12 @@ export function validateGovernanceSnapshotProfile(profile) {
     }
     if (payload.compatibility_refs.export_compatibility_contract_available !== true) {
       errors.push("governance snapshot export compatibility availability drifted");
+    }
+    if (payload.compatibility_refs.stabilization_profile_available !== true) {
+      errors.push("governance snapshot stabilization availability drifted");
+    }
+    if (payload.compatibility_refs.final_acceptance_boundary_available !== true) {
+      errors.push("governance snapshot final acceptance availability drifted");
     }
   }
   if (!isPlainObject(payload.preserved_semantics)) {

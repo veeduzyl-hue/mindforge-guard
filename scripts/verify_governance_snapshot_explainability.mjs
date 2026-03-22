@@ -273,6 +273,9 @@ if (!GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot) {
 if (!GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_review_pack) {
   throw new Error("governance snapshot review pack surface entry missing");
 }
+if (!GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot_stabilization) {
+  throw new Error("governance snapshot stabilization surface entry missing");
+}
 if (
   GOVERNANCE_SNAPSHOT_SURFACE_MAP.governance_snapshot.contract.kind !==
   GOVERNANCE_SNAPSHOT_PROFILE_KIND
