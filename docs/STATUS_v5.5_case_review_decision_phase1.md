@@ -1,0 +1,48 @@
+# v5.5 Phase 1 Start State
+
+- Module: `v5.5 = Governance Case Review Decision Boundary v1`
+- Phase target: `v5.5 Phase 1 = governance case review decision boundary introduction`
+- Branch: `codex/v5.5-case-review-decision-phase1`
+- Release baseline:
+  - `v4.6.0` released
+  - `v4.7.0` released
+  - `v4.8.0` released
+  - `v4.9.0` released
+  - `v5.0.0` released
+  - `v5.1.0` released
+  - `v5.2.0` released
+  - `v5.3.0` released
+  - `v5.4.0` released
+- Prior module closure:
+  - `v5.4.0 = Governance Case Evidence Boundary v1`
+- This phase introduces only:
+  - `governance_case_review_decision_profile`
+  - `governance_case_review_decision_contract`
+  - review decision consumer / validation / export surface
+  - continuity linkage validation
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no governance object addition
+  - no risk integration
+  - no UI / control plane
+- Review decision-specific guards:
+  - review decision is case-supporting governance artifact only
+  - review decision is not a new top-level governance object
+  - review decision does not trigger execution
+  - review decision does not perform routing
+  - review decision does not perform finalization
+  - review decision export remains additive-only
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged
+  - `guard action classify` unchanged
