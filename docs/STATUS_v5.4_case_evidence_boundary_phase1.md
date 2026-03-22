@@ -1,4 +1,4 @@
-# v5.4 Phase 1 Start State
+# v5.4 Phase 1 Completed State
 
 - Module: `v5.4 = Governance Case Evidence Boundary v1`
 - Phase target: `v5.4 Phase 1 = governance case evidence boundary introduction`
@@ -19,6 +19,15 @@
   - `governance_case_evidence_contract`
   - evidence consumer / validation / export surface
   - continuity linkage validation across resolution / escalation / closure / evidence
+- Completed artifacts:
+  - `packages/guard/src/runtime/governance/caseEvidence/governanceCaseEvidenceProfile.mjs`
+  - `packages/guard/src/runtime/governance/caseEvidence/governanceCaseEvidenceContract.mjs`
+  - `packages/guard/src/runtime/governance/caseEvidence/consumeGovernanceCaseEvidence.mjs`
+  - `packages/guard/src/runtime/governance/caseEvidence/validateGovernanceCaseEvidence.mjs`
+  - `packages/guard/src/runtime/governance/caseEvidence/exportGovernanceCaseEvidence.mjs`
+  - `packages/guard/src/runtime/governance/caseEvidence/index.mjs`
+  - `scripts/verify_governance_case_evidence_boundary.mjs`
+  - `docs/governance/case-evidence-boundary.md`
 - Preserved boundaries:
   - recommendation-only
   - additive-only
@@ -45,3 +54,18 @@
   - `--enforcement-pilot` semantics unchanged
   - `--limited-enforcement-authority` semantics unchanged
   - `guard action classify` unchanged
+- Verification status:
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_case_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_resolution_boundary.mjs`
+  - `node scripts/verify_governance_case_escalation_boundary.mjs`
+  - `node scripts/verify_governance_case_closure_boundary.mjs`
+  - `node scripts/verify_governance_exception_stabilization.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
