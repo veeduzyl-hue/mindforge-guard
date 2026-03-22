@@ -1,0 +1,30 @@
+# v5.2 Phase 2 Start State
+
+- Module: `v5.2 = Governance Exceptions, Waivers & Override Records v1`
+- Phase target:
+  - `v5.2 Phase 2 = override record, case linkage, and exception compatibility readiness`
+- Branch:
+  - `codex/v5.2-override-record-phase2`
+- Baseline:
+  - `v5.2 Phase 1` completed and tagged as `v5.2-exception-waiver-phase1`
+- This phase introduces only:
+  - `governance_override_record_contract`
+  - `governance_case_linkage_profile`
+  - `governance_exception_compatibility_contract`
+  - exception receipt-readiness / consumer compatibility surface
+  - explicit additive export path for exception consumer compatibility
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no governance object addition
+  - audit output unchanged
+  - audit verdict unchanged
+  - actual exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged

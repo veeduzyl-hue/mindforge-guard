@@ -12,6 +12,20 @@ import {
   GOVERNANCE_WAIVER_CONTRACT_KIND,
   GOVERNANCE_WAIVER_CONTRACT_VERSION,
 } from "./profile.mjs";
+import {
+  GOVERNANCE_CASE_LINKAGE_BOUNDARY as CASE_LINKAGE_BOUNDARY,
+  GOVERNANCE_CASE_LINKAGE_KIND as CASE_LINKAGE_KIND,
+  GOVERNANCE_CASE_LINKAGE_SCHEMA_ID as CASE_LINKAGE_SCHEMA_ID,
+  GOVERNANCE_CASE_LINKAGE_STAGE as CASE_LINKAGE_STAGE,
+  GOVERNANCE_CASE_LINKAGE_VERSION as CASE_LINKAGE_VERSION,
+  GOVERNANCE_EXCEPTION_CONSUMER_COMPATIBLE as EXCEPTION_CONSUMER_COMPATIBLE,
+  GOVERNANCE_EXCEPTION_RECEIPT_READY as EXCEPTION_RECEIPT_READY,
+} from "./caseLinkage.mjs";
+import {
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_BOUNDARY as EXCEPTION_COMPATIBILITY_BOUNDARY,
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_KIND as EXCEPTION_COMPATIBILITY_KIND,
+  GOVERNANCE_EXCEPTION_COMPATIBILITY_CONTRACT_VERSION as EXCEPTION_COMPATIBILITY_VERSION,
+} from "./compatibility.mjs";
 
 export const GOVERNANCE_EXCEPTION_SURFACE_VERSION = "v1";
 export const GOVERNANCE_EXCEPTION_SURFACE_STABILITY = "stable";
@@ -19,6 +33,7 @@ export const GOVERNANCE_EXCEPTION_SURFACE_CONSUMER_TIER =
   "governance_exception_surface";
 export const GOVERNANCE_EXCEPTION_SURFACE_ARTIFACT_ORDER = Object.freeze([
   "governance_exception",
+  "governance_exception_override_record",
 ]);
 export const GOVERNANCE_EXCEPTION_SURFACE_META_EXPORTS = Object.freeze([
   "GOVERNANCE_EXCEPTION_SURFACE_VERSION",
@@ -61,6 +76,27 @@ export const GOVERNANCE_EXCEPTION_SURFACE_MAP = Object.freeze({
     additive_only: true,
     executing: false,
   }),
+  governance_exception_override_record: Object.freeze({
+    artifact_id: "governance_exception_override_record",
+    consumer_surface: GOVERNANCE_EXCEPTION_CONSUMER_SURFACE,
+    contract: Object.freeze({
+      kind: CASE_LINKAGE_KIND,
+      version: CASE_LINKAGE_VERSION,
+      schema_id: CASE_LINKAGE_SCHEMA_ID,
+      stage: CASE_LINKAGE_STAGE,
+      boundary: CASE_LINKAGE_BOUNDARY,
+    }),
+    compatibility_contract: Object.freeze({
+      kind: EXCEPTION_COMPATIBILITY_KIND,
+      version: EXCEPTION_COMPATIBILITY_VERSION,
+      boundary: EXCEPTION_COMPATIBILITY_BOUNDARY,
+      receipt_level: EXCEPTION_RECEIPT_READY,
+      compatibility_level: EXCEPTION_CONSUMER_COMPATIBLE,
+    }),
+    recommendation_only: true,
+    additive_only: true,
+    executing: false,
+  }),
 });
 
 function isPlainObject(value) {
@@ -94,7 +130,7 @@ export function validateGovernanceExceptionSurface() {
   }
   if (
     JSON.stringify(GOVERNANCE_EXCEPTION_SURFACE_ARTIFACT_ORDER) !==
-    JSON.stringify(["governance_exception"])
+    JSON.stringify(["governance_exception", "governance_exception_override_record"])
   ) {
     errors.push("governance exception surface artifact order drifted");
   }
@@ -140,6 +176,29 @@ export function validateGovernanceExceptionSurface() {
   }
   if (artifact.executing !== false) {
     errors.push("governance exception surface execution boundary drifted");
+  }
+  const overrideArtifact =
+    GOVERNANCE_EXCEPTION_SURFACE_MAP.governance_exception_override_record;
+  if (!isPlainObject(overrideArtifact)) {
+    errors.push("governance exception override surface entry must be an object");
+  } else {
+    if (overrideArtifact.contract.kind !== CASE_LINKAGE_KIND) {
+      errors.push("governance exception override contract kind drifted");
+    }
+    if (
+      overrideArtifact.compatibility_contract.kind !== EXCEPTION_COMPATIBILITY_KIND
+    ) {
+      errors.push("governance exception override compatibility contract drifted");
+    }
+    if (overrideArtifact.recommendation_only !== true) {
+      errors.push("governance exception override recommendation boundary drifted");
+    }
+    if (overrideArtifact.additive_only !== true) {
+      errors.push("governance exception override additive boundary drifted");
+    }
+    if (overrideArtifact.executing !== false) {
+      errors.push("governance exception override execution boundary drifted");
+    }
   }
 
   return { ok: errors.length === 0, errors };

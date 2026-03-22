@@ -45,6 +45,7 @@ export const GOVERNANCE_EXCEPTION_PAYLOAD_FIELDS = Object.freeze([
   "snapshot_ref",
   "exception_contract",
   "waiver_contract",
+  "compatibility_refs",
   "validation_exports",
   "preserved_semantics",
 ]);
@@ -113,6 +114,11 @@ export function buildGovernanceExceptionProfile({
         waiver_available: true,
         descriptive_only: true,
         bounded_waiver: true,
+      },
+      compatibility_refs: {
+        override_record_contract_available: true,
+        case_linkage_profile_available: true,
+        exception_compatibility_contract_available: true,
       },
       validation_exports: {
         surface_available: true,
@@ -274,6 +280,21 @@ export function validateGovernanceExceptionProfile(profile) {
     }
     if (payload.waiver_contract.bounded_waiver !== true) {
       errors.push("governance waiver bounded boundary drifted");
+    }
+  }
+  if (!isPlainObject(payload.compatibility_refs)) {
+    errors.push("governance exception compatibility refs must be an object");
+  } else {
+    if (payload.compatibility_refs.override_record_contract_available !== true) {
+      errors.push("governance exception override record availability drifted");
+    }
+    if (payload.compatibility_refs.case_linkage_profile_available !== true) {
+      errors.push("governance exception case linkage availability drifted");
+    }
+    if (
+      payload.compatibility_refs.exception_compatibility_contract_available !== true
+    ) {
+      errors.push("governance exception compatibility contract availability drifted");
     }
   }
   if (!isPlainObject(payload.validation_exports)) {
