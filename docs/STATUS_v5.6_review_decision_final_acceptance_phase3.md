@@ -1,0 +1,39 @@
+# v5.6 Phase 3 Start State
+
+- Module:
+  - `v5.6 Phase 3 = Review Decision Continuity Final Acceptance & Compatibility Freeze`
+- Branch:
+  - `codex/v5.6-review-decision-final-acceptance-phase3`
+- This phase introduces only:
+  - a dedicated final acceptance boundary for review decision continuity
+  - a dedicated final compatibility freeze artifact for review decision continuity
+  - a consolidated final acceptance verification bundle
+  - phase 3 final acceptance readiness status tracking
+- This phase does not introduce:
+  - new governance objects
+  - workflow engine behavior
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - release closeout
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
