@@ -1,0 +1,45 @@
+# v5.7 Phase 2 Start State
+
+- Baseline:
+  - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
+- Module:
+  - `v5.7 Phase 2 = Governance Case Review Decision Current Selection Consumption & Summary Boundary`
+- This phase introduces only:
+  - current-selection consumption-ready summary profile
+  - consumer-safe current-selection summary consumption surface
+  - additive governance consumption / summary aggregate wiring
+  - phase 2 verification and status tracking
+- This phase stabilizes consumption of:
+  - current selected review decision
+  - current selection status
+  - current selection conflict state
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - final module closure
+  - final compatibility freeze
+  - new governance top-level objects
