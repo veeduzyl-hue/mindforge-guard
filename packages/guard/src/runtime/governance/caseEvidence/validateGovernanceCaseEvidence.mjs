@@ -110,6 +110,13 @@ export function validateGovernanceCaseEvidenceBundle({
       errors.push(
         "governance case evidence continuity mismatch: linked_closure_ids are required"
       );
+    } else {
+      const expectedClosureLink = `closure-${closureContinuity.case_id}`;
+      if (!evidenceContext.linked_closure_ids.includes(expectedClosureLink)) {
+        errors.push(
+          "governance case evidence continuity mismatch: linked_closure_ids must include the canonical closure link for the case continuity chain"
+        );
+      }
     }
     if (
       stableStringify(evidenceContext.linked_exception_ids) !==
