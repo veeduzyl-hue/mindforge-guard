@@ -422,6 +422,12 @@ if (
 ) {
   throw new Error("governance case closure stabilization surface entry missing");
 }
+if (
+  !permitExports.GOVERNANCE_CASE_FINAL_ACCEPTANCE_SURFACE_MAP
+    ?.governance_case_final_acceptance
+) {
+  throw new Error("governance case final acceptance downstream surface entry missing");
+}
 
 for (const exportName of GOVERNANCE_CASE_CLOSURE_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
