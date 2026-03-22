@@ -1,0 +1,40 @@
+# v5.6 Phase 2 Start State
+
+- Module:
+  - `v5.6 Phase 2 = Review Decision Continuity Stabilization & Acceptance Hardening`
+- Branch:
+  - `codex/v5.6-review-decision-continuity-phase2`
+- This phase stabilizes only:
+  - continuity mode contract boundaries
+  - review decision sequence default and boundary behavior
+  - supersession link compatibility behavior
+  - continuity consumer / validation / export stability
+  - continuity acceptance verification strength
+- This phase does not introduce:
+  - final acceptance
+  - new governance object
+  - workflow engine
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
