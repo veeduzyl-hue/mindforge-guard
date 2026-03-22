@@ -263,14 +263,16 @@ export function validateGovernanceCaseReviewDecisionProfile(profile) {
       errors.push("governance case review decision id is required");
     }
     if (!GOVERNANCE_CASE_REVIEW_DECISION_STATUSES.includes(context.review_status)) {
-      errors.push("governance case review decision status drifted");
+      errors.push("governance case review decision review_status drifted");
     }
     if (
       !GOVERNANCE_CASE_REVIEW_DECISION_EVIDENCE_SUFFICIENCY_LEVELS.includes(
         context.evidence_sufficiency
       )
     ) {
-      errors.push("governance case review decision evidence sufficiency drifted");
+      errors.push(
+        "governance case review decision evidence_sufficiency drifted"
+      );
     }
     if (
       typeof context.review_decision_rationale !== "string" ||
