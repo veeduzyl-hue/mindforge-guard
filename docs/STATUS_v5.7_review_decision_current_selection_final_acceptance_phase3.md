@@ -1,0 +1,42 @@
+# v5.7 Phase 3 Start State
+
+- Baseline:
+  - `v5.7 Phase 2 = Governance Case Review Decision Current Selection Consumption & Summary Boundary`
+- Module:
+  - `v5.7 Phase 3 = Governance Case Review Decision Current Selection Final Acceptance Consolidation`
+- This phase will consolidate:
+  - current-selection boundary
+  - current-selection consumption / summary boundary
+  - dedicated final acceptance boundary
+  - dedicated final compatibility freeze artifact
+  - consolidated final verification bundle
+  - final acceptance export / summary surface
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - main-path truth replacement
