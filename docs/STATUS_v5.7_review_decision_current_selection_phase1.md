@@ -1,0 +1,66 @@
+# v5.7 Phase 1 Boundary State
+
+- Baseline:
+  - `v5.6.0`
+- Module:
+  - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
+- This phase introduced:
+  - `governance_case_review_decision_current_selection_contract`
+  - `governance_case_review_decision_current_selection_profile`
+  - deterministic current review decision selector boundary
+  - additive current-selection export surface
+  - phase 1 verification and status tracking
+- Current-selection boundary confirms:
+  - same `case_id`
+  - same `canonical_action_hash`
+  - superseded decisions are excluded from current selection
+  - decisions marked by `superseded_by_review_decision_id` are excluded from current selection
+  - a current terminal candidate must remain unique
+  - multiple terminal candidates must produce explicit conflict
+  - sequence and continuity must remain bounded and deterministic
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - workflow engine behavior
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - audit main path changes
+  - final module closure
+  - final compatibility freeze
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_current_selection_phase1.mjs`
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_case_review_decision_boundary.mjs`
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Boundary conclusion:
+  - `v5.7 Phase 1` establishes a deterministic current-selection boundary for bounded review decision sets without introducing execution, workflow, authority expansion, or main-path takeover
+  - final compatibility freeze and final module closure remain intentionally out of scope for this phase
