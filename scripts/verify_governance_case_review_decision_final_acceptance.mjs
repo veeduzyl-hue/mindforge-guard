@@ -576,6 +576,47 @@ for (const decision of ["insufficient_signal", "would_allow", "would_review", "w
   ) {
     throw new Error("review decision final acceptance release summary drifted");
   }
+
+  let contractIdentityMismatchRejected = false;
+  try {
+    buildGovernanceCaseReviewDecisionFinalAcceptanceBoundary({
+      governanceCaseReviewDecisionProfile: successor.profile,
+      governanceCaseReviewDecisionContract: predecessor.contract,
+    });
+  } catch (error) {
+    if (String(error.message).includes("contract review_decision_id must match")) {
+      contractIdentityMismatchRejected = true;
+    }
+  }
+  if (!contractIdentityMismatchRejected) {
+    throw new Error(
+      "review decision final acceptance must reject mismatched contract/profile review_decision_id pairing"
+    );
+  }
+
+  const mismatchedHashContract = cloneJson(successor.contract);
+  mismatchedHashContract.canonical_action_hash =
+    "sha256:review-decision-final-acceptance-contract-hash-mismatch";
+  let contractHashMismatchRejected = false;
+  try {
+    buildGovernanceCaseReviewDecisionFinalAcceptanceBoundary({
+      governanceCaseReviewDecisionProfile: successor.profile,
+      governanceCaseReviewDecisionContract: mismatchedHashContract,
+    });
+  } catch (error) {
+    if (
+      String(error.message).includes(
+        "contract canonical_action_hash must match"
+      )
+    ) {
+      contractHashMismatchRejected = true;
+    }
+  }
+  if (!contractHashMismatchRejected) {
+    throw new Error(
+      "review decision final acceptance must reject mismatched contract/profile canonical_action_hash pairing"
+    );
+  }
 }
 
 if (

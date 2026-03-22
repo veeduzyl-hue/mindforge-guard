@@ -78,6 +78,26 @@ function normalizeOptionalString(value) {
   return value === undefined || value === null ? null : String(value);
 }
 
+function assertContractMatchesProfile(profile, contract) {
+  const profileContext =
+    profile.governance_case_review_decision.review_decision_context;
+  const contractProfileRef = contract.review_decision_profile_ref;
+  const contractReviewDecisionId = normalizeOptionalString(
+    contractProfileRef?.review_decision_id
+  );
+
+  if (contractReviewDecisionId !== profileContext.review_decision_id) {
+    throw new Error(
+      "governance case review decision final acceptance mismatch: contract review_decision_id must match the supplied review decision profile"
+    );
+  }
+  if (contract.canonical_action_hash !== profile.canonical_action_hash) {
+    throw new Error(
+      "governance case review decision final acceptance mismatch: contract canonical_action_hash must match the supplied review decision profile"
+    );
+  }
+}
+
 export function buildGovernanceCaseReviewDecisionFinalAcceptanceBoundary({
   governanceCaseReviewDecisionProfile,
   governanceCaseReviewDecisionContract,
@@ -88,6 +108,7 @@ export function buildGovernanceCaseReviewDecisionFinalAcceptanceBoundary({
   const contract = assertValidGovernanceCaseReviewDecisionContract(
     governanceCaseReviewDecisionContract
   );
+  assertContractMatchesProfile(profile, contract);
   const context = profile.governance_case_review_decision.review_decision_context;
   const continuityMode =
     context.continuity_mode ??
@@ -130,6 +151,8 @@ export function buildGovernanceCaseReviewDecisionFinalAcceptanceBoundary({
         kind: GOVERNANCE_CASE_REVIEW_DECISION_CONTRACT_KIND,
         version: GOVERNANCE_CASE_REVIEW_DECISION_CONTRACT_VERSION,
         boundary: GOVERNANCE_CASE_REVIEW_DECISION_CONTRACT_BOUNDARY,
+        review_decision_id: context.review_decision_id,
+        canonical_action_hash: profile.canonical_action_hash,
       },
       continuity_acceptance: {
         case_id: context.case_id,
@@ -287,6 +310,24 @@ export function validateGovernanceCaseReviewDecisionFinalAcceptanceBoundary(
     errors.push(
       "governance case review decision final acceptance contract ref missing"
     );
+  } else {
+    if (
+      typeof payload.review_decision_contract_ref.review_decision_id !== "string" ||
+      payload.review_decision_contract_ref.review_decision_id.length === 0
+    ) {
+      errors.push(
+        "governance case review decision final acceptance contract ref review_decision_id is required"
+      );
+    }
+    if (
+      typeof payload.review_decision_contract_ref.canonical_action_hash !==
+        "string" ||
+      payload.review_decision_contract_ref.canonical_action_hash.length === 0
+    ) {
+      errors.push(
+        "governance case review decision final acceptance contract ref canonical_action_hash is required"
+      );
+    }
   }
   if (!isPlainObject(payload.continuity_acceptance)) {
     errors.push(
@@ -428,6 +469,27 @@ export function validateGovernanceCaseReviewDecisionFinalAcceptanceBoundary(
     errors.push(
       "governance case review decision final acceptance preserved semantics must be an object"
     );
+  }
+  if (
+    isPlainObject(payload.review_decision_profile_ref) &&
+    isPlainObject(payload.review_decision_contract_ref)
+  ) {
+    if (
+      payload.review_decision_contract_ref.review_decision_id !==
+      payload.review_decision_profile_ref.review_decision_id
+    ) {
+      errors.push(
+        "governance case review decision final acceptance contract/profile identity drifted"
+      );
+    }
+    if (
+      payload.review_decision_contract_ref.canonical_action_hash !==
+      boundary.canonical_action_hash
+    ) {
+      errors.push(
+        "governance case review decision final acceptance contract/profile canonical_action_hash drifted"
+      );
+    }
   }
   return { ok: errors.length === 0, errors };
 }
