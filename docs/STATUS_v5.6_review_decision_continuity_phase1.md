@@ -1,0 +1,39 @@
+# v5.6 Phase 1 Start State
+
+- Module: `v5.6 = Governance Case Review Decision Continuity & Supersession Boundary v1`
+- Phase target:
+  - `v5.6 Phase 1 = governance case review decision continuity and supersession boundary introduction`
+- Branch:
+  - `codex/v5.6-review-decision-continuity-phase1`
+- Release baseline:
+  - `v5.4.0` released
+  - `v5.5.0` released
+- This phase introduces only:
+  - additive continuity / supersession fields on `governance_case_review_decision_profile`
+  - bounded continuity / supersession rules on `governance_case_review_decision_contract`
+  - additive continuity / supersession review decision consumer, validation, and export surface
+  - `verify_governance_case_review_decision_continuity.mjs`
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Continuity-specific guards:
+  - continuity remains bounded to the existing case context
+  - supersession does not become workflow execution
+  - supersession does not expand authority
+  - continuity validation only checks linkage and bounded chain legality
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged
+  - `guard action classify` unchanged
