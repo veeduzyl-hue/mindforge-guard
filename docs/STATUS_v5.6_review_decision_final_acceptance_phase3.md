@@ -1,0 +1,71 @@
+# v5.6 Phase 3 Boundary State
+
+- Module:
+  - `v5.6 Phase 3 = Review Decision Continuity Final Acceptance & Compatibility Freeze`
+- Branch:
+  - `codex/v5.6-review-decision-final-acceptance-phase3`
+- This phase finalized:
+  - `governance_case_review_decision_final_acceptance_boundary`
+  - `governance_case_review_decision_final_compatibility_freeze`
+  - dedicated final acceptance export / summary surface
+  - consolidated final acceptance verification bundle
+  - phase 3 final acceptance readiness status tracking
+- Final acceptance boundary freezes:
+  - bounded `continuity_mode` semantics
+  - `review_decision_sequence` compatibility defaults
+  - `supersedes_review_decision_id` / `superseded_by_review_decision_id` invariants
+  - `current_effective_decision` semantics for superseded decisions
+  - old artifact compatibility defaults
+  - minimal additive consume / export surface
+- Compatibility freeze confirms:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- This phase still does not introduce:
+  - new governance objects
+  - workflow engine behavior
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - release closeout
+- Backward compatibility remains preserved:
+  - old review decision artifacts without continuity fields remain valid
+  - phase 1 / phase 2 continuity semantics remain valid
+  - additive export surface remains bounded
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_case_review_decision_boundary.mjs`
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_case_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_resolution_boundary.mjs`
+  - `node scripts/verify_governance_case_escalation_boundary.mjs`
+  - `node scripts/verify_governance_case_closure_boundary.mjs`
+  - `node scripts/verify_governance_exception_stabilization.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Readiness conclusion:
+  - `v5.6` review decision continuity / supersession boundary is now in final acceptance readiness state
+  - merge-to-main recheck and tag / release preparation can proceed after review
