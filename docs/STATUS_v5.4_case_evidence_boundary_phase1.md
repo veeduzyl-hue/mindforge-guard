@@ -1,0 +1,47 @@
+# v5.4 Phase 1 Start State
+
+- Module: `v5.4 = Governance Case Evidence Boundary v1`
+- Phase target: `v5.4 Phase 1 = governance case evidence boundary introduction`
+- Branch: `codex/v5.4-case-evidence-boundary-phase1`
+- Release baseline:
+  - `v4.6.0` released
+  - `v4.7.0` released
+  - `v4.8.0` released
+  - `v4.9.0` released
+  - `v5.0.0` released
+  - `v5.1.0` released
+  - `v5.2.0` released
+  - `v5.3.0` released
+- Prior module closure:
+  - `v5.3.0 = Governance Case Resolution, Escalation & Closure v1`
+- This phase introduces only:
+  - `governance_case_evidence_profile`
+  - `governance_case_evidence_contract`
+  - evidence consumer / validation / export surface
+  - continuity linkage validation across resolution / escalation / closure / evidence
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no governance object addition
+  - no risk integration
+  - no UI / control plane
+- Evidence-specific guards:
+  - evidence is case-supporting artifact only
+  - evidence is not a new top-level governance object
+  - evidence does not trigger execution
+  - evidence does not perform routing
+  - evidence does not perform finalization
+  - evidence export remains additive-only
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` semantics unchanged
+  - `--enforcement-pilot` semantics unchanged
+  - `--limited-enforcement-authority` semantics unchanged
+  - `guard action classify` unchanged
