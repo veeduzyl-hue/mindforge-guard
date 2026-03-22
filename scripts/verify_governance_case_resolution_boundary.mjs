@@ -362,6 +362,9 @@ if (
 ) {
   throw new Error("governance case resolution stabilization surface entry missing");
 }
+if (!permitExports.GOVERNANCE_CASE_ESCALATION_SURFACE_MAP?.governance_case_escalation) {
+  throw new Error("governance case escalation downstream surface entry missing");
+}
 
 for (const exportName of GOVERNANCE_CASE_RESOLUTION_STABILIZATION_STABLE_EXPORT_SET) {
   if (!(exportName in permitExports)) {
