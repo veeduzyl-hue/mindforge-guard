@@ -20,6 +20,10 @@ function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+function normalizeOptionalString(value) {
+  return value === undefined || value === null ? null : String(value);
+}
+
 export function buildGovernanceCaseReviewDecisionContract({
   governanceCaseReviewDecisionProfile,
 }) {
@@ -91,6 +95,29 @@ export function validateGovernanceCaseReviewDecisionContract(contract) {
   if (!isPlainObject(contract.review_decision_profile_ref)) {
     errors.push("governance case review decision contract profile ref missing");
   }
+  const reviewDecisionProfileId = isPlainObject(contract.review_decision_profile_ref)
+    ? normalizeOptionalString(contract.review_decision_profile_ref.review_decision_id)
+    : null;
+  const continuitySupported = contract.continuity_supported ?? true;
+  const supersessionSupported = contract.supersession_supported ?? true;
+  const continuityMode =
+    contract.continuity_mode ??
+    GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_STANDALONE;
+  const reviewDecisionSequence =
+    contract.review_decision_sequence === undefined
+      ? 1
+      : contract.review_decision_sequence;
+  const supersedesReviewDecisionId = normalizeOptionalString(
+    contract.supersedes_review_decision_id
+  );
+  const supersededByReviewDecisionId = normalizeOptionalString(
+    contract.superseded_by_review_decision_id
+  );
+  const supersessionReason = normalizeOptionalString(contract.supersession_reason);
+  const currentEffectiveDecision =
+    contract.current_effective_decision ??
+    (continuityMode !== GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDED &&
+      supersededByReviewDecisionId === null);
   if (contract.case_review_decision_available !== true) {
     errors.push("governance case review decision availability drifted");
   }
@@ -145,93 +172,122 @@ export function validateGovernanceCaseReviewDecisionContract(contract) {
       "governance case review decision governance object boundary drifted"
     );
   }
-  if (contract.continuity_supported !== true) {
+  if (continuitySupported !== true) {
     errors.push("governance case review decision continuity support drifted");
   }
-  if (contract.supersession_supported !== true) {
+  if (supersessionSupported !== true) {
     errors.push("governance case review decision supersession support drifted");
   }
-  if (!GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODES.includes(contract.continuity_mode)) {
+  if (!GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODES.includes(continuityMode)) {
     errors.push("governance case review decision continuity_mode drifted");
   }
   if (
-    !Number.isInteger(contract.review_decision_sequence) ||
-    contract.review_decision_sequence < 1
+    !Number.isInteger(reviewDecisionSequence) ||
+    reviewDecisionSequence < 1
   ) {
     errors.push(
       "governance case review decision review_decision_sequence drifted"
     );
   }
   if (
-    contract.supersedes_review_decision_id !== null &&
-    (typeof contract.supersedes_review_decision_id !== "string" ||
-      contract.supersedes_review_decision_id.length === 0)
+    supersedesReviewDecisionId !== null &&
+    supersedesReviewDecisionId.length === 0
   ) {
     errors.push(
       "governance case review decision supersedes_review_decision_id drifted"
     );
   }
   if (
-    contract.superseded_by_review_decision_id !== null &&
-    (typeof contract.superseded_by_review_decision_id !== "string" ||
-      contract.superseded_by_review_decision_id.length === 0)
+    supersededByReviewDecisionId !== null &&
+    supersededByReviewDecisionId.length === 0
   ) {
     errors.push(
       "governance case review decision superseded_by_review_decision_id drifted"
     );
   }
   if (
-    contract.supersession_reason !== null &&
-    (typeof contract.supersession_reason !== "string" ||
-      contract.supersession_reason.length === 0)
+    supersessionReason !== null &&
+    supersessionReason.length === 0
   ) {
     errors.push("governance case review decision supersession_reason drifted");
   }
   if (
-    contract.supersedes_review_decision_id !== null &&
-    contract.review_decision_profile_ref &&
-    contract.supersedes_review_decision_id ===
-      contract.review_decision_profile_ref.review_decision_id
+    supersedesReviewDecisionId !== null &&
+    reviewDecisionProfileId !== null &&
+    supersedesReviewDecisionId === reviewDecisionProfileId
   ) {
     errors.push(
       "governance case review decision supersedes_review_decision_id must not self-reference"
     );
   }
   if (
-    contract.continuity_mode ===
+    continuityMode ===
       GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_STANDALONE &&
-    (contract.supersedes_review_decision_id !== null ||
-      contract.superseded_by_review_decision_id !== null)
+    (supersedesReviewDecisionId !== null ||
+      supersededByReviewDecisionId !== null ||
+      supersessionReason !== null)
   ) {
     errors.push(
       "governance case review decision standalone continuity must not include supersession links"
     );
   }
   if (
-    contract.continuity_mode ===
+    continuityMode ===
       GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDING &&
-    contract.supersedes_review_decision_id === null
+    supersedesReviewDecisionId === null
   ) {
     errors.push(
       "governance case review decision superseding continuity must reference a prior decision"
     );
   }
   if (
-    contract.continuity_mode ===
+    continuityMode ===
       GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDED &&
-    contract.current_effective_decision !== false
+    currentEffectiveDecision !== false
   ) {
     errors.push(
       "governance case review decision superseded continuity must not remain current"
     );
   }
   if (
-    contract.continuity_mode ===
+    continuityMode ===
       GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL &&
-    contract.current_effective_decision !== true
+    currentEffectiveDecision !== true
   ) {
     errors.push(
       "governance case review decision parallel continuity must remain review-only current"
+    );
+  }
+  if (
+    continuityMode === GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDING &&
+    supersessionReason === null
+  ) {
+    errors.push(
+      "governance case review decision superseding continuity must remain purely explanatory"
+    );
+  }
+  if (
+    continuityMode === GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDED &&
+    supersededByReviewDecisionId === null
+  ) {
+    errors.push(
+      "governance case review decision superseded continuity must reference a successor decision"
+    );
+  }
+  if (
+    continuityMode === GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDED &&
+    supersessionReason === null
+  ) {
+    errors.push(
+      "governance case review decision superseded continuity must remain purely explanatory"
+    );
+  }
+  if (
+    continuityMode === GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_PARALLEL &&
+    supersessionReason === null
+  ) {
+    errors.push(
+      "governance case review decision parallel continuity must remain purely explanatory"
     );
   }
   if (

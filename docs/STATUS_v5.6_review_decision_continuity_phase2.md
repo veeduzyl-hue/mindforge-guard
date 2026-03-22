@@ -1,0 +1,75 @@
+# v5.6 Phase 2 Stabilization State
+
+- Module:
+  - `v5.6 Phase 2 = Review Decision Continuity Stabilization & Acceptance Hardening`
+- Branch:
+  - `codex/v5.6-review-decision-continuity-phase2`
+- This phase stabilizes only:
+  - continuity mode contract boundaries
+  - review decision sequence default and boundary behavior
+  - supersession link compatibility behavior
+  - continuity consumer / validation / export stability
+  - continuity acceptance verification strength
+- Stabilized implementation:
+  - old review decision artifacts without continuity fields remain valid
+  - default standalone continuity behavior is explicit and stable
+  - supersession remains bounded to same `case_id` and `canonical_action_hash`
+  - superseded decisions no longer remain current/effective
+  - consumer surface exposes only minimal continuity summary
+  - export surface remains bounded additive continuity capability only
+- This phase does not introduce:
+  - final acceptance
+  - new governance object
+  - workflow engine
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+- Preserved boundaries:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged runtime and CLI semantics:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_case_review_decision_boundary.mjs`
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_case_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_resolution_boundary.mjs`
+  - `node scripts/verify_governance_case_escalation_boundary.mjs`
+  - `node scripts/verify_governance_case_closure_boundary.mjs`
+  - `node scripts/verify_governance_exception_stabilization.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Backward compatibility conclusion:
+  - review decision continuity remains recommendation-only
+  - review decision continuity remains additive-only
+  - review decision continuity remains non-executing
+  - review decision continuity remains default-off
+  - audit main output / verdict / exit remain unchanged
+  - deny exit code `25` remains unchanged
+  - `--permit-gate`, `--enforcement-pilot`, `--limited-enforcement-authority`, and `guard action classify` remain unchanged
+- Why this is not final acceptance:
+  - this phase only stabilizes the review decision continuity boundary
+  - it does not yet introduce a final acceptance boundary or final compatibility freeze for the continuity layer
