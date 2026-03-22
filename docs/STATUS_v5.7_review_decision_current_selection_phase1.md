@@ -1,0 +1,50 @@
+# v5.7 Phase 1 Start State
+
+- Baseline:
+  - `v5.6.0`
+- Module:
+  - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
+- This phase introduces only:
+  - `governance_case_review_decision_current_selection_contract`
+  - `governance_case_review_decision_current_selection_profile`
+  - deterministic current review decision selector boundary
+  - additive current-selection export surface
+  - phase 1 verification and status tracking
+- Selection boundary requirements:
+  - same `case_id`
+  - same `canonical_action_hash`
+  - superseded decisions are excluded from current selection
+  - decisions marked by `superseded_by_review_decision_id` are excluded from current selection
+  - a current terminal candidate must remain unique
+  - multiple terminal candidates must produce explicit conflict
+  - sequence and continuity must remain bounded and deterministic
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - workflow engine behavior
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - audit main path changes
+  - final module closure
+  - final compatibility freeze
