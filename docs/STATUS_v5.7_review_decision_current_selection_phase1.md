@@ -1,16 +1,16 @@
-# v5.7 Phase 1 Start State
+# v5.7 Phase 1 Boundary State
 
 - Baseline:
   - `v5.6.0`
 - Module:
   - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
-- This phase introduces only:
+- This phase introduced:
   - `governance_case_review_decision_current_selection_contract`
   - `governance_case_review_decision_current_selection_profile`
   - deterministic current review decision selector boundary
   - additive current-selection export surface
   - phase 1 verification and status tracking
-- Selection boundary requirements:
+- Current-selection boundary confirms:
   - same `case_id`
   - same `canonical_action_hash`
   - superseded decisions are excluded from current selection
@@ -48,3 +48,19 @@
   - audit main path changes
   - final module closure
   - final compatibility freeze
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_current_selection_phase1.mjs`
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_case_review_decision_boundary.mjs`
+  - `node scripts/verify_governance_case_evidence_boundary.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Boundary conclusion:
+  - `v5.7 Phase 1` establishes a deterministic current-selection boundary for bounded review decision sets without introducing execution, workflow, authority expansion, or main-path takeover
+  - final compatibility freeze and final module closure remain intentionally out of scope for this phase
