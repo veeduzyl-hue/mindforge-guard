@@ -74,6 +74,84 @@ function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+function stableStringify(value) {
+  return JSON.stringify(value);
+}
+
+function assertSameCanonicalLineage(resolution, escalation, closure) {
+  const hashes = [
+    resolution.canonical_action_hash,
+    escalation.canonical_action_hash,
+    closure.canonical_action_hash,
+  ];
+  if (new Set(hashes).size !== 1) {
+    throw new Error(
+      "governance case final acceptance canonical lineage mismatch: canonical_action_hash must match across resolution, escalation, and closure"
+    );
+  }
+  return hashes[0];
+}
+
+function deriveContinuity(resolution, escalation, closure) {
+  const resolutionRef =
+    resolution.governance_case_resolution_stabilization.continuity_ref;
+  const escalationRef =
+    escalation.governance_case_escalation_stabilization.continuity_ref;
+  const closureRef =
+    closure.governance_case_closure_stabilization.continuity_ref;
+
+  const sameCaseId =
+    resolutionRef.case_id === escalationRef.case_id &&
+    escalationRef.case_id === closureRef.case_id;
+  const sameExceptionIds =
+    stableStringify(resolutionRef.linked_exception_ids) ===
+      stableStringify(escalationRef.linked_exception_ids) &&
+    stableStringify(escalationRef.linked_exception_ids) ===
+      stableStringify(closureRef.linked_exception_ids);
+  const sameOverrideIds =
+    stableStringify(resolutionRef.linked_override_record_ids) ===
+      stableStringify(escalationRef.linked_override_record_ids) &&
+    stableStringify(escalationRef.linked_override_record_ids) ===
+      stableStringify(closureRef.linked_override_record_ids);
+  const escalationResolutionContinuity =
+    stableStringify(escalationRef.linked_resolution_ids) ===
+    stableStringify(closureRef.linked_resolution_ids);
+  const closureEscalationContinuity =
+    Array.isArray(closureRef.linked_escalation_ids) &&
+    closureRef.linked_escalation_ids.length > 0;
+
+  if (!sameCaseId || !escalationResolutionContinuity || !closureEscalationContinuity) {
+    throw new Error(
+      "governance case final acceptance case continuity mismatch: case_id and cross-layer case linkage chain must match across resolution, escalation, and closure"
+    );
+  }
+  if (!sameExceptionIds) {
+    throw new Error(
+      "governance case final acceptance exception continuity mismatch: exception-linked continuity basis must match across resolution, escalation, and closure"
+    );
+  }
+  if (!sameOverrideIds) {
+    throw new Error(
+      "governance case final acceptance override continuity mismatch: override-linked continuity basis must match across resolution, escalation, and closure"
+    );
+  }
+
+  return {
+    case_id: resolutionRef.case_id,
+    linked_exception_ids: resolutionRef.linked_exception_ids,
+    linked_override_record_ids: resolutionRef.linked_override_record_ids,
+    linked_resolution_ids: escalationRef.linked_resolution_ids,
+    linked_escalation_ids: closureRef.linked_escalation_ids,
+    basis_refs: resolutionRef.basis_refs,
+    case_linkage_continuity: true,
+    exception_override_compatibility_continuity: true,
+    additive_only_continuity: true,
+    recommendation_only_continuity: true,
+    non_executing_continuity: true,
+    default_off_continuity: true,
+  };
+}
+
 export function buildGovernanceCaseFinalAcceptanceBoundary({
   governanceCaseResolutionStabilizationProfile,
   governanceCaseEscalationStabilizationProfile,
@@ -89,7 +167,12 @@ export function buildGovernanceCaseFinalAcceptanceBoundary({
     governanceCaseClosureStabilizationProfile
   );
 
-  const canonicalActionHash = closure.canonical_action_hash;
+  const canonicalActionHash = assertSameCanonicalLineage(
+    resolution,
+    escalation,
+    closure
+  );
+  const continuity = deriveContinuity(resolution, escalation, closure);
 
   return {
     kind: GOVERNANCE_CASE_FINAL_ACCEPTANCE_KIND,
@@ -119,14 +202,7 @@ export function buildGovernanceCaseFinalAcceptanceBoundary({
         stage: GOVERNANCE_CASE_CLOSURE_STABILIZATION_STAGE,
         boundary: GOVERNANCE_CASE_CLOSURE_STABILIZATION_BOUNDARY,
       },
-      continuity: {
-        case_linkage_continuity: true,
-        exception_override_compatibility_continuity: true,
-        additive_only_continuity: true,
-        recommendation_only_continuity: true,
-        non_executing_continuity: true,
-        default_off_continuity: true,
-      },
+      continuity,
       final_acceptance_contract: {
         readiness_level: GOVERNANCE_CASE_FINAL_ACCEPTANCE_READY,
         resolution_boundary_present: true,
@@ -233,6 +309,42 @@ export function validateGovernanceCaseFinalAcceptanceBoundary(boundary) {
   if (!isPlainObject(payload.continuity)) {
     errors.push("governance case final acceptance continuity must be an object");
   } else {
+    if (
+      typeof payload.continuity.case_id !== "string" ||
+      payload.continuity.case_id.length === 0
+    ) {
+      errors.push("governance case final acceptance continuity case_id is required");
+    }
+    if (
+      !Array.isArray(payload.continuity.linked_exception_ids) ||
+      payload.continuity.linked_exception_ids.length === 0
+    ) {
+      errors.push("governance case final acceptance linked exception ids are required");
+    }
+    if (
+      !Array.isArray(payload.continuity.linked_override_record_ids) ||
+      payload.continuity.linked_override_record_ids.length === 0
+    ) {
+      errors.push("governance case final acceptance linked override ids are required");
+    }
+    if (
+      !Array.isArray(payload.continuity.linked_resolution_ids) ||
+      payload.continuity.linked_resolution_ids.length === 0
+    ) {
+      errors.push("governance case final acceptance linked resolution ids are required");
+    }
+    if (
+      !Array.isArray(payload.continuity.linked_escalation_ids) ||
+      payload.continuity.linked_escalation_ids.length === 0
+    ) {
+      errors.push("governance case final acceptance linked escalation ids are required");
+    }
+    if (
+      !Array.isArray(payload.continuity.basis_refs) ||
+      payload.continuity.basis_refs.length === 0
+    ) {
+      errors.push("governance case final acceptance continuity basis refs are required");
+    }
     if (payload.continuity.case_linkage_continuity !== true) {
       errors.push("governance case final acceptance case linkage continuity drifted");
     }

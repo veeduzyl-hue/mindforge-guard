@@ -42,6 +42,7 @@ export const GOVERNANCE_CASE_RESOLUTION_STABILIZATION_PAYLOAD_FIELDS =
     "boundary",
     "resolution_profile_ref",
     "compatibility_ref",
+    "continuity_ref",
     "stabilization_contract",
     "preserved_semantics",
   ]);
@@ -95,6 +96,16 @@ export function buildGovernanceCaseResolutionStabilizationProfile({
         kind: GOVERNANCE_CASE_RESOLUTION_COMPATIBILITY_CONTRACT_KIND,
         version: GOVERNANCE_CASE_RESOLUTION_COMPATIBILITY_CONTRACT_VERSION,
         boundary: GOVERNANCE_CASE_RESOLUTION_COMPATIBILITY_CONTRACT_BOUNDARY,
+      },
+      continuity_ref: {
+        case_id: profile.governance_case_resolution.resolution_context.case_id,
+        linked_exception_ids:
+          profile.governance_case_resolution.resolution_context.linked_exception_ids,
+        linked_override_record_ids:
+          profile.governance_case_resolution.resolution_context
+            .linked_override_record_ids,
+        basis_refs:
+          profile.governance_case_resolution.resolution_context.resolution_basis_refs,
       },
       stabilization_contract: {
         readiness_level: GOVERNANCE_CASE_RESOLUTION_STABILIZATION_READY,
@@ -193,6 +204,40 @@ export function validateGovernanceCaseResolutionStabilizationProfile(profile) {
   }
   if (!isPlainObject(payload.compatibility_ref)) {
     errors.push("governance case resolution stabilization compatibility ref missing");
+  }
+  if (!isPlainObject(payload.continuity_ref)) {
+    errors.push("governance case resolution stabilization continuity ref missing");
+  } else {
+    if (
+      typeof payload.continuity_ref.case_id !== "string" ||
+      payload.continuity_ref.case_id.length === 0
+    ) {
+      errors.push("governance case resolution stabilization continuity case_id is required");
+    }
+    if (
+      !Array.isArray(payload.continuity_ref.linked_exception_ids) ||
+      payload.continuity_ref.linked_exception_ids.length === 0
+    ) {
+      errors.push(
+        "governance case resolution stabilization continuity linked exception ids are required"
+      );
+    }
+    if (
+      !Array.isArray(payload.continuity_ref.linked_override_record_ids) ||
+      payload.continuity_ref.linked_override_record_ids.length === 0
+    ) {
+      errors.push(
+        "governance case resolution stabilization continuity linked override ids are required"
+      );
+    }
+    if (
+      !Array.isArray(payload.continuity_ref.basis_refs) ||
+      payload.continuity_ref.basis_refs.length === 0
+    ) {
+      errors.push(
+        "governance case resolution stabilization continuity basis refs are required"
+      );
+    }
   }
   if (!isPlainObject(payload.stabilization_contract)) {
     errors.push("governance case resolution stabilization contract missing");
