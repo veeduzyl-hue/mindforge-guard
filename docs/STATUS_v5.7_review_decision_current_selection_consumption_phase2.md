@@ -1,10 +1,10 @@
-# v5.7 Phase 2 Start State
+# v5.7 Phase 2 Boundary State
 
 - Baseline:
   - `v5.7 Phase 1 = Governance Case Review Decision Current Selection Boundary v1`
 - Module:
   - `v5.7 Phase 2 = Governance Case Review Decision Current Selection Consumption & Summary Boundary`
-- This phase introduces only:
+- This phase introduced:
   - current-selection consumption-ready summary profile
   - consumer-safe current-selection summary consumption surface
   - additive governance consumption / summary aggregate wiring
@@ -43,3 +43,16 @@
   - final module closure
   - final compatibility freeze
   - new governance top-level objects
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_current_selection_consumption_phase2.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_phase1.mjs`
+  - `node scripts/verify_governance_case_review_decision_continuity.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+- Boundary conclusion:
+  - `v5.7 Phase 2` makes current-selection available through a stable consumer-safe summary profile and governance consumption aggregate without changing audit main-path behavior
+  - final module closure and final compatibility freeze remain intentionally out of scope
