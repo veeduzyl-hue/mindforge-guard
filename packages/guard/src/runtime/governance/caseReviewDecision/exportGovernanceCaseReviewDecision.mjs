@@ -52,6 +52,8 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SURFACE_MAP = Object.freeze({
     supporting_artifact_only: true,
     recommendation_only: true,
     additive_only: true,
+    continuity_supported: true,
+    supersession_supported: true,
     executing: false,
   }),
 });
