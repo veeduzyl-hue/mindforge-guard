@@ -1,4 +1,4 @@
-# v5.8 Phase 1 Start State
+# v5.8 Phase 1 State
 
 - Baseline:
   - `v5.7.0`
@@ -44,3 +44,26 @@
   - new governance top-level objects
   - ranking/scoring engines
   - natural-language freeform explanation
+- Implemented:
+  - `governance_case_review_decision_selection_explanation_profile`
+  - `governance_case_review_decision_selection_explanation_contract`
+  - bounded selection explanation builder / consumer
+  - additive selection explanation export surface
+  - permit aggregate export wiring
+  - phase 1 boundary verification
+- Verified:
+  - explanation only applies to `selected` current selection
+  - explanation only depends on bounded existing review decision / continuity / supersession / current-selection inputs
+  - explanation absence does not change main-path behavior
+  - additive-only
+  - non-executing
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.8 Phase 1` establishes a bounded, contract-first, artifact-first selection explanation boundary for current selected review decisions without adding execution, authority, risk, or main-path control semantics.
