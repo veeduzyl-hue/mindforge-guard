@@ -1,0 +1,44 @@
+# v6.0 Phase 1 Start State
+
+- Baseline:
+  - `v5.9.0 = Governance Case Review Decision Selection Receipt Boundary v1`
+- Module:
+  - `v6.0 Phase 1 = Governance Case Review Decision Applicability Boundary v1`
+- This phase will add:
+  - bounded review decision applicability profile
+  - bounded review decision applicability contract
+  - selected review decision to applicability builder / consumer
+  - additive applicability export surface
+  - dedicated phase 1 verification
+- Applicability scope remains limited to:
+  - selected review decision bounded inputs only
+  - current selection final acceptance bounded inputs only
+  - structured supporting artifact semantics only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - applicability scoring or ranking
+  - reselection
+  - explanation v2
+  - risk integration
+  - authority expansion
+  - enforcement binding
+  - UI / dashboard / control plane
+  - new governance top-level objects
