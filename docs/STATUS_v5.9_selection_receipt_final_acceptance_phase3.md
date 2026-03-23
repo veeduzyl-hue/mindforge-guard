@@ -1,20 +1,46 @@
-# v5.9 Phase 3 Start State
+# v5.9 Phase 3 State
 
 - Baseline:
   - `v5.9 Phase 2 = Governance Case Review Decision Selection Receipt Hardening Boundary`
 - Module:
   - `v5.9 Phase 3 = Governance Case Review Decision Selection Receipt Final Acceptance Boundary`
-- This phase will consolidate:
+- Consolidated:
   - dedicated final acceptance boundary for selection receipt
   - dedicated final compatibility freeze for selection receipt
   - consolidated final verification for selection receipt
   - additive final acceptance export / summary surface for selection receipt
-- Final acceptance scope remains limited to:
+- Final acceptance scope now freezes:
   - selection receipt surface only
-  - existing current selection final acceptance bounded inputs only
-  - existing selection explanation bounded inputs only
-  - existing selection explanation final acceptance bounded inputs only
-  - structured supporting artifacts only
+  - eligible aligned bounded inputs only
+  - strict identity alignment across `case_id`, `current_review_decision_id`, and `canonical_action_hash`
+  - supporting-artifact-only semantics
+  - one-way dependency on current selection and selection explanation
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze now preserves:
+  - eligible aligned receipt generation
+  - receipt hardening rejection semantics
+  - supporting artifact semantics
+  - one-way selection dependency semantics
+  - one-way explanation dependency semantics
+  - non-judgment-source semantics
+  - non-authority-source semantics
+  - non-feedback semantics
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_selection_receipt_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_selection_receipt_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_selection_receipt_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_selection_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
 - Preserved:
   - recommendation-only
   - additive-only
@@ -34,7 +60,7 @@
   - `--enforcement-pilot`
   - `--limited-enforcement-authority`
   - `guard action classify`
-- This phase does not introduce:
+- This phase did not introduce:
   - execution takeover
   - automatic routing
   - automatic case finalization
@@ -47,3 +73,5 @@
   - freeform narrative receipt
   - release/tag work
   - v5.10 planning
+- Boundary conclusion:
+  - `v5.9 Phase 3` completes final acceptance consolidation for selection receipt without turning receipt into a judgment source, authority source, execution input, or main-path dependency.
