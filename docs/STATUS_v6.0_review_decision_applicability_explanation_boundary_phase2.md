@@ -1,22 +1,34 @@
-# v6.0 Phase 2 Start State
+# v6.0 Phase 2 State
 
 - Baseline:
   - `v6.0 Phase 1 = Governance Case Review Decision Applicability Boundary v1`
 - Module:
   - `v6.0 Phase 2 = Governance Case Review Decision Applicability Explanation Boundary v1`
-- Intended boundary:
+- Frozen boundary:
   - bounded review decision applicability explanation profile
   - bounded review decision applicability explanation contract
   - applicability explanation builder / consumer
   - additive applicability explanation export surface
   - dedicated phase 2 verification
-- Applicability explanation scope must remain limited to:
+- Applicability explanation scope is limited to:
   - selected review decision bounded inputs only
   - current selection final acceptance bounded inputs only
   - applicability profile bounded inputs only
   - structured explanation semantics only
   - strict case_id and canonical_action_hash alignment
   - strict current_review_decision_id alignment
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_applicability_explanation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_applicability_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
 - Preserved:
   - recommendation-only
   - additive-only
@@ -41,6 +53,7 @@
   - applicability ranking
   - applicability receipt
   - reselection
+  - explanation-driven reselection
   - enforcement binding
   - risk integration
   - authority expansion
