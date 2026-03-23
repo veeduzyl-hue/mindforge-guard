@@ -1,0 +1,49 @@
+# v6.0 Phase 2 Start State
+
+- Baseline:
+  - `v6.0 Phase 1 = Governance Case Review Decision Applicability Boundary v1`
+- Module:
+  - `v6.0 Phase 2 = Governance Case Review Decision Applicability Explanation Boundary v1`
+- Intended boundary:
+  - bounded review decision applicability explanation profile
+  - bounded review decision applicability explanation contract
+  - applicability explanation builder / consumer
+  - additive applicability explanation export surface
+  - dedicated phase 2 verification
+- Applicability explanation scope must remain limited to:
+  - selected review decision bounded inputs only
+  - current selection final acceptance bounded inputs only
+  - applicability profile bounded inputs only
+  - structured explanation semantics only
+  - strict case_id and canonical_action_hash alignment
+  - strict current_review_decision_id alignment
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - applicability scoring
+  - applicability ranking
+  - applicability receipt
+  - reselection
+  - enforcement binding
+  - risk integration
+  - authority expansion
+  - UI / control plane
+  - new governance top-level objects
+  - audit main-path mutations
