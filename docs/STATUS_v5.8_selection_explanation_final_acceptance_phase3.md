@@ -1,0 +1,80 @@
+# v5.8 Phase 3 State
+
+- Baseline:
+  - `v5.8 Phase 2 = Governance Case Review Decision Selection Explanation Hardening Boundary`
+- Module:
+  - `v5.8 Phase 3 = Governance Case Review Decision Selection Explanation Final Acceptance Boundary`
+- This phase consolidated:
+  - dedicated final acceptance boundary for selection explanation
+  - dedicated final compatibility freeze for selection explanation
+  - consolidated final verification for selection explanation
+  - additive final acceptance export / summary surface for selection explanation
+- Final acceptance scope now confirms:
+  - selection explanation remains a supporting artifact only
+  - selection explanation remains dependent on eligible selected current selection only
+  - selection explanation remains bounded by allowlisted `reason_codes`
+  - selection explanation remains recommendation-only, additive-only, non-executing, and default-off
+  - selection explanation remains one-way dependent on current selection and cannot feed back into current selection
+- Final compatibility freeze now freezes:
+  - selected-only explanation generation
+  - eligibility / rejection hardening semantics
+  - bounded `reason_codes` semantics
+  - explanation supporting-artifact semantics
+  - one-way current-selection dependency
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - ranking/scoring engines
+  - freeform explanation
+  - natural language summarization
+  - release/tag work
+  - v5.9 planning
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_selection_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_selection_explanation_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_selection_explanation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Backward compatibility conclusion:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.8 Phase 3` completes final acceptance consolidation for selection explanation without turning explanation into a judgment source, authority source, execution input, or main-path dependency
