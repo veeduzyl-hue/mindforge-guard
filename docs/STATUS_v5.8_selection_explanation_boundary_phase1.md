@@ -1,0 +1,69 @@
+# v5.8 Phase 1 State
+
+- Baseline:
+  - `v5.7.0`
+- Module:
+  - `v5.8 Phase 1 = Governance Case Review Decision Selection Explanation Boundary v1`
+- This phase introduces:
+  - `governance_case_review_decision_selection_explanation_profile`
+  - `governance_case_review_decision_selection_explanation_contract`
+  - bounded selection explanation builder / consumer
+  - additive selection explanation export surface
+  - phase 1 verification and status tracking
+- Explanation boundary is limited to:
+  - current-selection explanation only
+  - existing review decision / continuity / supersession / current-selection inputs only
+  - bounded structured explanation artifacts only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - workflow engine
+  - automatic routing
+  - automatic case finalization
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - ranking/scoring engines
+  - natural-language freeform explanation
+- Implemented:
+  - `governance_case_review_decision_selection_explanation_profile`
+  - `governance_case_review_decision_selection_explanation_contract`
+  - bounded selection explanation builder / consumer
+  - additive selection explanation export surface
+  - permit aggregate export wiring
+  - phase 1 boundary verification
+- Verified:
+  - explanation only applies to `selected` current selection
+  - explanation only depends on bounded existing review decision / continuity / supersession / current-selection inputs
+  - explanation absence does not change main-path behavior
+  - additive-only
+  - non-executing
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.8 Phase 1` establishes a bounded, contract-first, artifact-first selection explanation boundary for current selected review decisions without adding execution, authority, risk, or main-path control semantics.
