@@ -51,9 +51,19 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationContract({
     additive_only: true,
     non_executing: true,
     default_off: true,
+    eligible_selected_current_selection_only: true,
+    conflict_ineligible: true,
+    ambiguity_ineligible: true,
+    insufficient_support_ineligible: true,
     bounded_reason_codes_only: true,
+    allowlisted_reason_codes:
+      profile.governance_case_review_decision_selection_explanation
+        .explanation_context.reason_codes,
+    implicit_reason_semantics: false,
     freeform_explanation: false,
     ranking_scoring_engine: false,
+    selection_feedback_enabled: false,
+    judgment_source_enabled: false,
     main_path_takeover: false,
     authority_scope_expansion: false,
     new_governance_object: false,
@@ -140,6 +150,26 @@ export function validateGovernanceCaseReviewDecisionSelectionExplanationContract
       "governance case review decision selection explanation default-off boundary drifted"
     );
   }
+  if (contract.eligible_selected_current_selection_only !== true) {
+    errors.push(
+      "governance case review decision selection explanation eligibility boundary drifted"
+    );
+  }
+  if (contract.conflict_ineligible !== true) {
+    errors.push(
+      "governance case review decision selection explanation conflict rejection drifted"
+    );
+  }
+  if (contract.ambiguity_ineligible !== true) {
+    errors.push(
+      "governance case review decision selection explanation ambiguity rejection drifted"
+    );
+  }
+  if (contract.insufficient_support_ineligible !== true) {
+    errors.push(
+      "governance case review decision selection explanation insufficient support rejection drifted"
+    );
+  }
   if (contract.bounded_reason_codes_only !== true) {
     errors.push(
       "governance case review decision selection explanation bounded reason codes boundary drifted"
@@ -153,6 +183,21 @@ export function validateGovernanceCaseReviewDecisionSelectionExplanationContract
   if (contract.ranking_scoring_engine !== false) {
     errors.push(
       "governance case review decision selection explanation ranking boundary drifted"
+    );
+  }
+  if (contract.implicit_reason_semantics !== false) {
+    errors.push(
+      "governance case review decision selection explanation implicit reason semantics drifted"
+    );
+  }
+  if (contract.selection_feedback_enabled !== false) {
+    errors.push(
+      "governance case review decision selection explanation selection feedback drifted"
+    );
+  }
+  if (contract.judgment_source_enabled !== false) {
+    errors.push(
+      "governance case review decision selection explanation judgment source drifted"
     );
   }
   if (contract.main_path_takeover !== false) {
@@ -181,6 +226,15 @@ export function validateGovernanceCaseReviewDecisionSelectionExplanationContract
   ) {
     errors.push(
       "governance case review decision selection explanation reason codes are required"
+    );
+  }
+  if (
+    !Array.isArray(contract.allowlisted_reason_codes) ||
+    JSON.stringify(contract.allowlisted_reason_codes) !==
+      JSON.stringify(contract.reason_codes)
+  ) {
+    errors.push(
+      "governance case review decision selection explanation allowlisted reason codes drifted"
     );
   }
   if (
