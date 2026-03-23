@@ -1,10 +1,10 @@
-# v5.9 Phase 2 Start State
+# v5.9 Phase 2 State
 
 - Baseline:
   - `v5.9 Phase 1 = Governance Case Review Decision Selection Receipt Boundary v1`
 - Module:
   - `v5.9 Phase 2 = Governance Case Review Decision Selection Receipt Hardening Boundary`
-- This phase will harden:
+- This phase hardens:
   - selection receipt eligibility / rejection rules
   - strict identity alignment across bounded receipt inputs
   - additive receipt consumption / export stability
@@ -47,3 +47,31 @@
   - enforcement binding
   - phase 3 final acceptance
   - release/tag work
+- Implemented:
+  - hardened receipt eligibility / rejection rules
+  - strict `case_id` / `current_review_decision_id` / `canonical_action_hash` alignment
+  - explicit missing-support / unsupported-state / ambiguity rejection
+  - stabilized additive receipt consumption / export semantics
+  - phase 2 hardening verification
+- Verified:
+  - receipt only generates when bounded inputs are complete and aligned
+  - identity mismatch does not generate receipt
+  - missing support does not generate receipt
+  - unsupported or ambiguous state does not generate receipt
+  - receipt does not feed back into current selection
+  - receipt does not feed back into selection explanation
+  - receipt is not a judgment source
+  - receipt is not an authority source
+  - additive-only
+  - non-executing
+  - default-off
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.9 Phase 2` hardens the selection receipt boundary without turning receipt into a judgment source, authority source, feedback channel, or main-path dependency.
