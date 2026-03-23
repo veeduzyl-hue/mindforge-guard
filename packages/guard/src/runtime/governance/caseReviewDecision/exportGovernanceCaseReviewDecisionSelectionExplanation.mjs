@@ -55,6 +55,9 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_SURFACE_MAP =
       additive_only: true,
       current_selection_required: true,
       explanation_bounded: true,
+      eligibility_hardened: true,
+      judgment_source_enabled: false,
+      selection_feedback_enabled: false,
       executing: false,
     }),
   });

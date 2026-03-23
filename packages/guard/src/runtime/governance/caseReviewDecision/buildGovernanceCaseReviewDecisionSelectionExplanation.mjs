@@ -43,6 +43,8 @@ export function consumeGovernanceCaseReviewDecisionSelectionExplanation({
     supporting_artifact_only: true,
     recommendation_only: true,
     additive_only: true,
+    judgment_source_enabled: false,
+    selection_feedback_enabled: false,
     executing: false,
   });
 }

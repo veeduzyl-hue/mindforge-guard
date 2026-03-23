@@ -1,0 +1,73 @@
+# v5.8 Phase 2 State
+
+- Baseline:
+  - `origin/main @ 70010f6`
+- Module:
+  - `v5.8 Phase 2 = Governance Case Review Decision Selection Explanation Hardening Boundary`
+- This phase hardens:
+  - selection explanation eligibility / rejection rules
+  - bounded `reason_codes` allowlist / schema boundary
+  - explanation consumption / export stability
+  - phase 2 hardening verification
+- Phase 2 remains limited to:
+  - `selected` current selection only
+  - additive explanation artifacts only
+  - non-executing, recommendation-only semantics
+  - existing review decision / continuity / supersession / current-selection inputs only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - explanation ranking engines
+  - explanation summarization
+  - natural language freeform explanation
+  - phase 3 final acceptance
+- Implemented:
+  - hardened explanation eligibility / rejection rules
+  - frozen bounded `reason_codes` allowlist semantics
+  - explicit conflict / ambiguity / insufficient-support rejection
+  - stabilized additive export / consumption semantics
+  - phase 2 hardening verification
+- Verified:
+  - selected current selection only
+  - conflict / ambiguity / insufficient support do not generate explanation artifacts
+  - `reason_codes` remain within allowlist
+  - freeform explanation remains prohibited
+  - ranking/scoring remains prohibited
+  - explanation does not feed back into current selection
+  - explanation remains additive-only
+  - explanation remains non-executing
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.8 Phase 2` hardens the selection explanation boundary without turning explanation into a main-path dependency, judgment source, ranking surface, or control surface.

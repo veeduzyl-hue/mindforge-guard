@@ -46,6 +46,8 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODES 
     GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CONTINUITY_CHAIN_RESOLVED,
     GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_STANDALONE_SELECTION_CONFIRMED,
   ]);
+export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODE_ALLOWLIST =
+  GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODES;
 export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_TOP_LEVEL_FIELDS =
   Object.freeze([
     "kind",
@@ -84,6 +86,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_STABLE_EXPORT
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CONTINUITY_CHAIN_RESOLVED",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_STANDALONE_SELECTION_CONFIRMED",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODES",
+    "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODE_ALLOWLIST",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_TOP_LEVEL_FIELDS",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_PAYLOAD_FIELDS",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_STABLE_EXPORT_SET",
@@ -109,6 +112,52 @@ function ensureAllReasonCodesKnown(reasonCodes) {
       )
     )
   );
+}
+
+function ensureSelectionExplanationSupport(selectionProfile, selectionContract) {
+  const selectionContext =
+    selectionProfile.governance_case_review_decision_current_selection
+      .selection_context;
+
+  if (selectionProfile.deterministic !== true || selectionProfile.enforcing !== false) {
+    throw new Error(
+      "governance case review decision selection explanation insufficient support: current selection profile must remain deterministic and non-enforcing"
+    );
+  }
+  if (
+    selectionContract.deterministic_output_required !== true ||
+    selectionContract.same_case_required !== true ||
+    selectionContract.same_canonical_action_hash_required !== true ||
+    selectionContract.superseded_excluded !== true ||
+    selectionContract.unique_terminal_candidate_required !== true ||
+    selectionContract.explicit_conflict_required !== true ||
+    selectionContract.sequence_continuity_required !== true ||
+    selectionContract.continuity_supported !== true
+  ) {
+    throw new Error(
+      "governance case review decision selection explanation insufficient support: current selection contract must remain fully hardened"
+    );
+  }
+  if (
+    !Array.isArray(selectionContext.candidate_review_decision_ids) ||
+    !selectionContext.candidate_review_decision_ids.includes(
+      selectionContext.current_review_decision_id
+    )
+  ) {
+    throw new Error(
+      "governance case review decision selection explanation insufficient support: selected review decision must remain within candidate scope"
+    );
+  }
+  if (
+    !Array.isArray(selectionContext.terminal_review_decision_ids) ||
+    selectionContext.terminal_review_decision_ids.length !== 1 ||
+    selectionContext.terminal_review_decision_ids[0] !==
+      selectionContext.current_review_decision_id
+  ) {
+    throw new Error(
+      "governance case review decision selection explanation conflict or ambiguity: selected review decision must remain the unique terminal candidate"
+    );
+  }
 }
 
 export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
@@ -159,6 +208,7 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
       "governance case review decision selection explanation mismatch: selection contract must remain aligned to selection profile"
     );
   }
+  ensureSelectionExplanationSupport(selectionProfile, selectionContract);
 
   const currentProfile = reviewProfiles.find((profile) => {
     const context = profile.governance_case_review_decision.review_decision_context;
@@ -177,6 +227,14 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
 
   const currentContext =
     currentProfile.governance_case_review_decision.review_decision_context;
+  if (
+    currentContext.continuity_mode === "superseded" ||
+    currentContext.superseded_by_review_decision_id !== null
+  ) {
+    throw new Error(
+      "governance case review decision selection explanation insufficient support: superseded decisions must never receive explanation artifacts"
+    );
+  }
   const reasonCodes = [
     GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_SAME_CASE_BOUNDED,
     GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_SAME_CANONICAL_ACTION_HASH_BOUNDED,
@@ -197,6 +255,10 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
       GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_STANDALONE_SELECTION_CONFIRMED
     );
   }
+  const orderedReasonCodes =
+    GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODE_ALLOWLIST.filter(
+      (code) => reasonCodes.includes(code)
+    );
 
   return {
     kind: GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_PROFILE_KIND,
@@ -225,7 +287,7 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
         continuity_mode: currentContext.continuity_mode ?? "standalone",
         supersedes_review_decision_id:
           currentContext.supersedes_review_decision_id ?? null,
-        reason_codes: Object.freeze(reasonCodes),
+        reason_codes: Object.freeze(orderedReasonCodes),
       },
       validation_exports: {
         current_selection_profile_available: true,
@@ -245,6 +307,8 @@ export function buildGovernanceCaseReviewDecisionSelectionExplanationProfile({
         ui_control_plane: false,
         freeform_explanation: false,
         ranking_scoring_engine: false,
+        judgment_source_enabled: false,
+        selection_feedback_enabled: false,
       },
     },
     deterministic: selectionProfile.deterministic === true,
@@ -410,7 +474,14 @@ export function validateGovernanceCaseReviewDecisionSelectionExplanationProfile(
     }
     if (
       !ensureAllReasonCodesKnown(payload.explanation_context.reason_codes) ||
-      !hasUniqueStrings(payload.explanation_context.reason_codes)
+      !hasUniqueStrings(payload.explanation_context.reason_codes) ||
+      JSON.stringify(payload.explanation_context.reason_codes) !==
+        JSON.stringify(
+          GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_REASON_CODE_ALLOWLIST.filter(
+            (code) =>
+              payload.explanation_context.reason_codes.includes(code)
+          )
+        )
     ) {
       errors.push(
         "governance case review decision selection explanation reason codes drifted"
@@ -435,6 +506,16 @@ export function validateGovernanceCaseReviewDecisionSelectionExplanationProfile(
     if (payload.preserved_semantics.ranking_scoring_engine !== false) {
       errors.push(
         "governance case review decision selection explanation must not introduce ranking or scoring"
+      );
+    }
+    if (payload.preserved_semantics.judgment_source_enabled !== false) {
+      errors.push(
+        "governance case review decision selection explanation must not become a judgment source"
+      );
+    }
+    if (payload.preserved_semantics.selection_feedback_enabled !== false) {
+      errors.push(
+        "governance case review decision selection explanation must not feed back into current selection"
       );
     }
   }
