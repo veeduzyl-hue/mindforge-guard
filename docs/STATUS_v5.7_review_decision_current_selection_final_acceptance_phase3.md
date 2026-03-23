@@ -1,0 +1,79 @@
+# v5.7 Phase 3 Boundary State
+
+- Baseline:
+  - `v5.7 Phase 2 = Governance Case Review Decision Current Selection Consumption & Summary Boundary`
+- Module:
+  - `v5.7 Phase 3 = Governance Case Review Decision Current Selection Final Acceptance Consolidation`
+- This phase consolidated:
+  - current-selection boundary
+  - current-selection consumption / summary boundary
+  - dedicated final acceptance boundary
+  - dedicated final compatibility freeze artifact
+  - consolidated final verification bundle
+  - final acceptance export / summary surface
+- Final acceptance scope now confirms:
+  - current-selection phase 1 semantics remain preserved
+  - current-selection consumption / summary phase 2 semantics remain preserved
+  - current selection and summary artifacts remain case-bounded and canonical-action-hash-bounded
+  - current selection and summary artifacts remain recommendation-only, additive-only, non-executing, and default-off
+- Final compatibility freeze now freezes:
+  - current selection uniqueness semantics
+  - explicit conflict semantics
+  - superseded exclusion semantics
+  - deterministic current selection output
+  - current-selection summary consumer surface
+  - current review decision projection
+  - conflict-state projection
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - main-path truth replacement
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_current_selection_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_consumption_phase2.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_phase1.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Backward compatibility conclusion:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.7 Phase 3` completes final acceptance consolidation for current selection and current-selection summary consumption without introducing execution, workflow, authority expansion, or main-path takeover
+  - `v5.7` current selection module is now in final acceptance readiness state and can move to PR / merge / main verification / tag preparation
