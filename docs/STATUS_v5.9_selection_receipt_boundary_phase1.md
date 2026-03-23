@@ -1,0 +1,75 @@
+# v5.9 Phase 1 State
+
+- Baseline:
+  - `v5.8.0 = Governance Case Review Decision Selection Explanation Boundary v1`
+- Module:
+  - `v5.9 Phase 1 = Governance Case Review Decision Selection Receipt Boundary v1`
+- This phase introduces:
+  - `governance_case_review_decision_selection_receipt_profile`
+  - `governance_case_review_decision_selection_receipt_contract`
+  - bounded selection receipt builder / consumer
+  - additive selection receipt export surface
+  - phase 1 selection receipt verification and status tracking
+- Selection receipt boundary is limited to:
+  - existing current selection bounded inputs only
+  - existing selection explanation bounded inputs only
+  - existing selection explanation final acceptance bounded inputs only
+  - structured supporting artifacts only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - ranking / scoring
+  - freeform narrative receipts
+  - enforcement binding
+  - phase 2 / phase 3
+- Implemented:
+  - `governance_case_review_decision_selection_receipt_profile`
+  - `governance_case_review_decision_selection_receipt_contract`
+  - bounded selection receipt builder / consumer
+  - additive selection receipt export surface
+  - permit aggregate export wiring
+  - phase 1 boundary verification
+- Verified:
+  - receipt only binds to existing bounded current-selection / explanation / final-acceptance inputs
+  - receipt does not feed back into current selection
+  - receipt does not feed back into selection explanation
+  - receipt is not a judgment source
+  - receipt is not an authority source
+  - additive-only
+  - non-executing
+  - default-off
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.9 Phase 1` establishes a bounded, contract-first, artifact-first selection receipt boundary as a supporting artifact on top of current selection, selection explanation, and explanation final acceptance without adding judgment, authority, execution, risk, or main-path control semantics.
