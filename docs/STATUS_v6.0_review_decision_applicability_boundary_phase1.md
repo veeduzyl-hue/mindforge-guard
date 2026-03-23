@@ -1,0 +1,58 @@
+# v6.0 Phase 1 State
+
+- Baseline:
+  - `v5.9.0 = Governance Case Review Decision Selection Receipt Boundary v1`
+- Module:
+  - `v6.0 Phase 1 = Governance Case Review Decision Applicability Boundary v1`
+- Frozen boundary:
+  - bounded review decision applicability profile
+  - bounded review decision applicability contract
+  - selected review decision to applicability builder / consumer
+  - additive applicability export surface
+  - dedicated phase 1 verification
+- Applicability scope is limited to:
+  - selected review decision bounded inputs only
+  - current selection final acceptance bounded inputs only
+  - structured supporting artifact semantics only
+  - strict case_id and canonical_action_hash alignment
+  - strict current_review_decision_id alignment
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_applicability_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase did not introduce:
+  - applicability scoring or ranking
+  - reselection
+  - explanation v2
+  - risk integration
+  - authority expansion
+  - enforcement binding
+  - UI / dashboard / control plane
+  - new governance top-level objects
+  - main-path verdict or exit mutations
