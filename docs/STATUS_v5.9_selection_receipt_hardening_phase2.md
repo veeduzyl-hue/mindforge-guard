@@ -1,0 +1,49 @@
+# v5.9 Phase 2 Start State
+
+- Baseline:
+  - `v5.9 Phase 1 = Governance Case Review Decision Selection Receipt Boundary v1`
+- Module:
+  - `v5.9 Phase 2 = Governance Case Review Decision Selection Receipt Hardening Boundary`
+- This phase will harden:
+  - selection receipt eligibility / rejection rules
+  - strict identity alignment across bounded receipt inputs
+  - additive receipt consumption / export stability
+  - phase 2 hardening verification
+- Phase 2 remains limited to:
+  - existing current selection final acceptance bounded inputs only
+  - existing selection explanation bounded inputs only
+  - existing selection explanation final acceptance bounded inputs only
+  - structured supporting artifacts only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - ranking / scoring
+  - freeform narrative receipt
+  - enforcement binding
+  - phase 3 final acceptance
+  - release/tag work
