@@ -22,6 +22,7 @@ export function consumeGovernanceCaseReviewDecisionSelectionReceipt({
   const context = payload.receipt_context;
 
   if (
+    contract.selection_receipt_profile_ref.case_id !== receiptRef.case_id ||
     contract.current_review_decision_id !== receiptRef.current_review_decision_id ||
     contract.canonical_action_hash !== profile.canonical_action_hash
   ) {
@@ -40,6 +41,9 @@ export function consumeGovernanceCaseReviewDecisionSelectionReceipt({
     supporting_artifact_only: true,
     recommendation_only: true,
     additive_only: true,
+    non_executing: true,
+    default_off: true,
+    identity_alignment_hardened: true,
     judgment_source_enabled: false,
     authority_source_enabled: false,
     selection_feedback_enabled: false,

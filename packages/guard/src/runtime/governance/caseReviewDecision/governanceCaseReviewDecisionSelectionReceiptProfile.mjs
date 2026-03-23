@@ -25,6 +25,8 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_PROFILE_BOUNDARY 
   "governance_case_review_decision_selection_receipt_boundary_contract";
 export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_STATUS_RECORDED =
   "recorded";
+export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_IDENTITY_ALIGNMENT_MODE_STRICT =
+  "strict";
 export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_TOP_LEVEL_FIELDS =
   Object.freeze([
     "kind",
@@ -54,6 +56,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_STABLE_EXPORT_SET
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_CONSUMER_SURFACE",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_PROFILE_BOUNDARY",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_STATUS_RECORDED",
+    "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_IDENTITY_ALIGNMENT_MODE_STRICT",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_TOP_LEVEL_FIELDS",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_PAYLOAD_FIELDS",
     "GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_STABLE_EXPORT_SET",
@@ -159,6 +162,91 @@ function assertBoundedInputAlignment(
   }
 }
 
+function assertSelectionReceiptSupport(
+  currentSelectionFinalAcceptanceBoundary,
+  selectionExplanationProfile,
+  selectionExplanationFinalAcceptanceBoundary
+) {
+  const currentAcceptance =
+    currentSelectionFinalAcceptanceBoundary.governance_case_review_decision_current_selection_final_acceptance;
+  const explanationPayload =
+    selectionExplanationProfile.governance_case_review_decision_selection_explanation;
+  const explanationAcceptance =
+    selectionExplanationFinalAcceptanceBoundary.governance_case_review_decision_selection_explanation_final_acceptance;
+  const currentAcceptanceScope = currentAcceptance.acceptance_scope;
+  const currentAcceptanceContract = currentAcceptance.final_acceptance_contract;
+  const explanationAcceptanceScope = explanationAcceptance.acceptance_scope;
+  const explanationAcceptanceContract =
+    explanationAcceptance.final_acceptance_contract;
+  const explanationSemantics = explanationPayload.preserved_semantics;
+
+  if (
+    currentAcceptanceScope.current_selection_boundary_present !== true ||
+    currentAcceptanceScope.current_selection_summary_boundary_present !== true ||
+    explanationPayload.validation_exports.current_selection_profile_available !==
+      true ||
+    explanationPayload.validation_exports.current_selection_contract_available !==
+      true ||
+    explanationPayload.validation_exports.review_decision_profile_available !==
+      true ||
+    explanationAcceptanceScope.supporting_artifact_only !== true
+  ) {
+    throw new Error(
+      "governance case review decision selection receipt missing support: bounded prerequisite artifacts must remain fully available"
+    );
+  }
+
+  if (
+    currentAcceptanceScope.selection_status !== "selected" ||
+    explanationAcceptanceScope.selection_status !== "selected" ||
+    currentAcceptanceScope.selected_state_supported !== true ||
+    explanationAcceptanceScope.selected_current_selection_required !== true ||
+    explanationAcceptanceScope.explanation_status !==
+      GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_EXPLANATION_STATUS_AVAILABLE
+  ) {
+    throw new Error(
+      "governance case review decision selection receipt unsupported state: only eligible selected current selection may generate a receipt"
+    );
+  }
+
+  if (
+    currentAcceptanceScope.unique_terminal_candidate_preserved !== true ||
+    currentAcceptanceScope.explicit_conflict_preserved !== true ||
+    !isPlainObject(
+      currentAcceptanceScope.current_selection_summary_current_review_decision
+    )
+  ) {
+    throw new Error(
+      "governance case review decision selection receipt ambiguity: current selection must remain uniquely resolved"
+    );
+  }
+
+  if (
+    currentAcceptanceContract.additive_only !== true ||
+    currentAcceptanceContract.non_executing !== true ||
+    currentAcceptanceContract.default_off !== true ||
+    explanationAcceptanceContract.additive_only !== true ||
+    explanationAcceptanceContract.non_executing !== true ||
+    explanationAcceptanceContract.default_off !== true
+  ) {
+    throw new Error(
+      "governance case review decision selection receipt missing support: prerequisite final acceptance boundaries must remain additive-only, non-executing, and default-off"
+    );
+  }
+
+  if (
+    explanationAcceptanceContract.judgment_source_enabled !== false ||
+    explanationAcceptanceContract.authority_source_enabled !== false ||
+    explanationAcceptanceContract.selection_feedback_enabled !== false ||
+    explanationSemantics.judgment_source_enabled !== false ||
+    explanationSemantics.selection_feedback_enabled !== false
+  ) {
+    throw new Error(
+      "governance case review decision selection receipt unsupported state: explanation prerequisites must remain non-judgment, non-authority, and non-feedback only"
+    );
+  }
+}
+
 export function buildGovernanceCaseReviewDecisionSelectionReceiptProfile({
   governanceCaseReviewDecisionCurrentSelectionFinalAcceptanceBoundary,
   governanceCaseReviewDecisionSelectionExplanationProfile,
@@ -178,6 +266,11 @@ export function buildGovernanceCaseReviewDecisionSelectionReceiptProfile({
     );
 
   assertBoundedInputAlignment(
+    currentSelectionFinalAcceptance,
+    selectionExplanationProfile,
+    selectionExplanationFinalAcceptance
+  );
+  assertSelectionReceiptSupport(
     currentSelectionFinalAcceptance,
     selectionExplanationProfile,
     selectionExplanationFinalAcceptance
@@ -223,6 +316,10 @@ export function buildGovernanceCaseReviewDecisionSelectionReceiptProfile({
             GOVERNANCE_CASE_REVIEW_DECISION_CURRENT_SELECTION_FINAL_ACCEPTANCE_READY,
           selection_explanation_available: true,
           selection_explanation_final_acceptance_ready: true,
+          identity_alignment_mode:
+            GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_IDENTITY_ALIGNMENT_MODE_STRICT,
+          eligibility_hardened: true,
+          supporting_artifacts_complete: true,
         }),
       },
       validation_exports: {
@@ -230,6 +327,8 @@ export function buildGovernanceCaseReviewDecisionSelectionReceiptProfile({
         selection_explanation_profile_available: true,
         selection_explanation_final_acceptance_available: true,
         export_surface_available: true,
+        identity_alignment_hardened: true,
+        consumer_stability_hardened: true,
       },
       preserved_semantics: {
         supporting_artifact_only: true,
@@ -240,6 +339,11 @@ export function buildGovernanceCaseReviewDecisionSelectionReceiptProfile({
         judgment_source_enabled: false,
         authority_source_enabled: false,
         selection_feedback_enabled: false,
+        missing_support_ineligible: true,
+        unsupported_state_ineligible: true,
+        ambiguity_ineligible: true,
+        strict_identity_alignment: true,
+        implicit_alignment_fill_disabled: true,
         main_path_takeover: false,
         authority_scope_expansion: false,
         governance_object_addition: false,
@@ -404,12 +508,49 @@ export function validateGovernanceCaseReviewDecisionSelectionReceiptProfile(
       errors.push(
         "governance case review decision selection receipt receipt_inputs must be an object"
       );
+    } else {
+      if (
+        payload.receipt_context.receipt_inputs.identity_alignment_mode !==
+        GOVERNANCE_CASE_REVIEW_DECISION_SELECTION_RECEIPT_IDENTITY_ALIGNMENT_MODE_STRICT
+      ) {
+        errors.push(
+          "governance case review decision selection receipt identity alignment mode drifted"
+        );
+      }
+      for (const field of [
+        "current_selection_final_acceptance_ready",
+        "selection_explanation_available",
+        "selection_explanation_final_acceptance_ready",
+        "eligibility_hardened",
+        "supporting_artifacts_complete",
+      ]) {
+        if (payload.receipt_context.receipt_inputs[field] !== true) {
+          errors.push(
+            `governance case review decision selection receipt receipt_inputs drifted: ${field}`
+          );
+        }
+      }
     }
   }
   if (!isPlainObject(payload.validation_exports)) {
     errors.push(
       "governance case review decision selection receipt validation_exports must be an object"
     );
+  } else {
+    for (const field of [
+      "current_selection_final_acceptance_available",
+      "selection_explanation_profile_available",
+      "selection_explanation_final_acceptance_available",
+      "export_surface_available",
+      "identity_alignment_hardened",
+      "consumer_stability_hardened",
+    ]) {
+      if (payload.validation_exports[field] !== true) {
+        errors.push(
+          `governance case review decision selection receipt validation export drifted: ${field}`
+        );
+      }
+    }
   }
   if (!isPlainObject(payload.preserved_semantics)) {
     errors.push(
@@ -422,6 +563,11 @@ export function validateGovernanceCaseReviewDecisionSelectionReceiptProfile(
       "additive_only",
       "non_executing",
       "default_off",
+      "missing_support_ineligible",
+      "unsupported_state_ineligible",
+      "ambiguity_ineligible",
+      "strict_identity_alignment",
+      "implicit_alignment_fill_disabled",
     ]) {
       if (payload.preserved_semantics[field] !== true) {
         errors.push(
