@@ -1,4 +1,4 @@
-# v5.8 Phase 2 Start State
+# v5.8 Phase 2 State
 
 - Baseline:
   - `origin/main @ 70010f6`
@@ -46,3 +46,28 @@
   - explanation summarization
   - natural language freeform explanation
   - phase 3 final acceptance
+- Implemented:
+  - hardened explanation eligibility / rejection rules
+  - frozen bounded `reason_codes` allowlist semantics
+  - explicit conflict / ambiguity / insufficient-support rejection
+  - stabilized additive export / consumption semantics
+  - phase 2 hardening verification
+- Verified:
+  - selected current selection only
+  - conflict / ambiguity / insufficient support do not generate explanation artifacts
+  - `reason_codes` remain within allowlist
+  - freeform explanation remains prohibited
+  - ranking/scoring remains prohibited
+  - explanation does not feed back into current selection
+  - explanation remains additive-only
+  - explanation remains non-executing
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v5.8 Phase 2` hardens the selection explanation boundary without turning explanation into a main-path dependency, judgment source, ranking surface, or control surface.
