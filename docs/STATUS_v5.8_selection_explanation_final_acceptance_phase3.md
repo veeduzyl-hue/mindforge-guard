@@ -1,0 +1,49 @@
+# v5.8 Phase 3 Start State
+
+- Baseline:
+  - `v5.8 Phase 2 = Governance Case Review Decision Selection Explanation Hardening Boundary`
+- Module:
+  - `v5.8 Phase 3 = Governance Case Review Decision Selection Explanation Final Acceptance Boundary`
+- This phase will close:
+  - dedicated final acceptance boundary for selection explanation
+  - dedicated final compatibility freeze for selection explanation
+  - consolidated final verification for selection explanation
+  - additive final acceptance export / summary surface for selection explanation
+- This phase remains limited to:
+  - selection explanation only
+  - explanation final acceptance semantics only
+  - explanation compatibility freeze only
+  - additive supporting artifacts only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - execution takeover
+  - automatic routing
+  - automatic case finalization
+  - workflow engine
+  - authority expansion
+  - risk integration
+  - UI / control plane
+  - new governance top-level objects
+  - freeform explanation
+  - ranking/scoring
+  - natural language summarization
+  - release/tag work
+  - v5.9 planning
