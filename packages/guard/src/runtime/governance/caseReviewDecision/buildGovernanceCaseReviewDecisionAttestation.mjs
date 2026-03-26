@@ -26,7 +26,10 @@ export function consumeGovernanceCaseReviewDecisionAttestation({
     contract.attestation_profile_ref.attestation_id !== attestationRef.attestation_id ||
     contract.attestation_profile_ref.case_id !== attestationRef.case_id ||
     contract.review_decision_id !== attestationRef.review_decision_id ||
-    contract.canonical_action_hash !== profile.canonical_action_hash
+    contract.canonical_action_hash !== profile.canonical_action_hash ||
+    contract.attestation_status !== attestationContext.attestation_status ||
+    contract.continuity_status !== attestationContext.continuity_status ||
+    contract.supersession_status !== attestationContext.supersession_status
   ) {
     throw new Error(
       "governance case review decision attestation consumer mismatch: profile and contract must remain aligned"
@@ -51,6 +54,8 @@ export function consumeGovernanceCaseReviewDecisionAttestation({
     authority_source_enabled: false,
     execution_binding_enabled: false,
     selection_feedback_enabled: false,
+    risk_source_enabled: false,
+    main_path_takeover: false,
     executing: false,
   });
 }
