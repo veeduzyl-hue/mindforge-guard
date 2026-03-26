@@ -33,3 +33,43 @@
   - `--enforcement-pilot`
   - `--limited-enforcement-authority`
   - `guard action classify`
+- This phase does not introduce:
+  - signing or cryptographic attestation
+  - ledger or trace platform
+  - approval or authority semantics
+  - execution binding
+  - risk integration
+  - UI / dashboard / control plane
+  - governance main-path takeover
+  - new governance top-level objects
+  - release/tag work
+- Implemented:
+  - stricter attestation current-view continuity validation
+  - stricter cross-case / cross-decision / cross-hash linkage rejection
+  - explicit aggregate-export-only attestation surface metadata
+  - stronger attestation compatibility verification
+- Verified:
+  - unique current selected view is required for attestation
+  - superseded and broken-continuity decisions do not form current attestation
+  - selection receipt / selection explanation / applicability / applicability explanation must remain aligned
+  - missing or broken supporting linkage does not form attestation
+  - attestation remains derived-only
+  - attestation remains supporting-artifact-only
+  - attestation is not a judgment source
+  - attestation is not an authority source
+  - attestation is not execution binding
+  - additive-only
+  - recommendation-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v6.1 Phase 2` hardens the review decision attestation boundary without turning attestation into a governance object, approval signal, authority source, execution channel, risk input, or main-path dependency.
