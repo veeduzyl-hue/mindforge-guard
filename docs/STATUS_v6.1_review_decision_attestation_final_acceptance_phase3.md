@@ -1,0 +1,27 @@
+# v6.1 Phase 3 State
+
+- Baseline:
+  - `v6.1 Phase 2 = Governance Case Review Decision Attestation Hardening + Compatibility Stabilization`
+- Module:
+  - `v6.1 Phase 3 = Governance Case Review Decision Attestation Boundary v1 Final Acceptance Consolidation + Final Compatibility Freeze`
+- Start scope:
+  - consolidate final acceptance for the existing attestation boundary
+  - freeze final compatibility expectations for release readiness
+  - unify verification around semantic integrity, positioning integrity, and compatibility non-regression
+  - avoid any expansion into signing, authority, execution, risk, UI, or new governance object families
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no authority scope expansion
+  - no risk integration
+  - no UI / control plane
+- Planned consolidation target:
+  - final acceptance statement for review decision attestation profile / contract / builder / validator / export surface
+  - final compatibility freeze statement for audit / permit / classify and authority-adjacent flags
+  - consolidated final acceptance verification for semantic integrity and non-regression
+  - release-readiness documentation for `v6.1` without performing tag / release
