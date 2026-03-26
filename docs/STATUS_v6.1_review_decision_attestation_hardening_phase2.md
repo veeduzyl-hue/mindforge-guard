@@ -1,0 +1,35 @@
+# v6.1 Phase 2 State
+
+- Baseline:
+  - `v6.1 Phase 1 = Governance Case Review Decision Attestation Boundary v1`
+- Module:
+  - `v6.1 Phase 2 = Governance Case Review Decision Attestation Hardening + Compatibility Stabilization`
+- This phase hardens:
+  - review decision attestation linkage integrity
+  - current-view continuity and supersession rejection
+  - additive attestation export and aggregate re-export stability
+  - compatibility non-regression verification
+- Phase 2 remains limited to:
+  - existing current selection bounded inputs only
+  - existing selection explanation / selection receipt bounded inputs only
+  - existing applicability / applicability explanation bounded inputs only
+  - derived, additive, non-authoritative supporting artifact semantics only
+- Preserved:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
