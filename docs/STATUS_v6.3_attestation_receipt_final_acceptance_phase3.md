@@ -44,3 +44,30 @@
   - no attestation receipt traceability surface
   - no signing / cryptographic receipt seal
   - no ledger / trace platform behavior
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_attestation_receipt_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_receipt_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_receipt_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.3` review decision attestation receipt boundary is consolidated to final acceptance and final compatibility freeze without turning attestation receipt into a governance object, judgment source, authority signal, execution channel, risk source, traceability surface, UI surface, or main-path dependency.
