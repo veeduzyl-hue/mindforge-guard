@@ -26,7 +26,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_PROFILE_VERSION = "v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_PROFILE_SCHEMA_ID =
   "mindforge/governance-case-review-decision-attestation-profile/v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_PROFILE_STAGE =
-  "governance_case_review_decision_attestation_boundary_phase1_v6_1_0";
+  "governance_case_review_decision_attestation_hardening_phase2_v6_1_0";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CONSUMER_SURFACE =
   "guard.audit.governance_case_review_decision_attestation";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_PROFILE_BOUNDARY =
@@ -117,6 +117,10 @@ function hasUniqueStrings(values) {
   return Array.isArray(values) && new Set(values).size === values.length;
 }
 
+function normalizeOptionalString(value) {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
 function ensureKnownReasonCodes(reasonCodes) {
   return (
     Array.isArray(reasonCodes) &&
@@ -140,6 +144,77 @@ function deriveSupersessionStatus(reviewDecisionContext) {
     return "superseding";
   }
   return "standalone";
+}
+
+function assertAlignedRef({
+  label,
+  ref,
+  caseId,
+  reviewDecisionId,
+  selectionStatus,
+}) {
+  if (!isPlainObject(ref)) {
+    throw new Error(
+      `governance case review decision attestation missing support: ${label} ref must be an object`
+    );
+  }
+  if (ref.case_id !== caseId) {
+    throw new Error(
+      `governance case review decision attestation mismatch: ${label} must remain case aligned`
+    );
+  }
+  if (normalizeOptionalString(ref.current_review_decision_id) !== reviewDecisionId) {
+    throw new Error(
+      `governance case review decision attestation mismatch: ${label} must remain current review decision aligned`
+    );
+  }
+  if (
+    selectionStatus !== undefined &&
+    "selection_status" in ref &&
+    ref.selection_status !== selectionStatus
+  ) {
+    throw new Error(
+      `governance case review decision attestation mismatch: ${label} must preserve selection_status`
+    );
+  }
+}
+
+function assertCurrentViewContinuityGrounded(reviewDecisionContext) {
+  const supersedesReviewDecisionId = normalizeOptionalString(
+    reviewDecisionContext.supersedes_review_decision_id
+  );
+  const supersededByReviewDecisionId = normalizeOptionalString(
+    reviewDecisionContext.superseded_by_review_decision_id
+  );
+  if (
+    reviewDecisionContext.continuity_mode === "parallel" ||
+    reviewDecisionContext.continuity_mode === "superseded"
+  ) {
+    throw new Error(
+      "governance case review decision attestation unsupported state: broken continuity cannot be attested as current view"
+    );
+  }
+  if (
+    reviewDecisionContext.continuity_mode === "standalone" &&
+    (supersedesReviewDecisionId !== null || supersededByReviewDecisionId !== null)
+  ) {
+    throw new Error(
+      "governance case review decision attestation unsupported state: standalone continuity must not carry supersession links"
+    );
+  }
+  if (
+    reviewDecisionContext.continuity_mode === "superseding" &&
+    supersedesReviewDecisionId === null
+  ) {
+    throw new Error(
+      "governance case review decision attestation unsupported state: superseding continuity requires supersedes_review_decision_id"
+    );
+  }
+  if (supersededByReviewDecisionId !== null) {
+    throw new Error(
+      "governance case review decision attestation unsupported state: superseded review decision cannot be attested as current view"
+    );
+  }
 }
 
 function assertPreservedSupportingArtifactSemantics(semantics, label) {
@@ -224,10 +299,19 @@ function assertAttestationSupport({
   if (
     selectionAcceptance.acceptance_scope.unique_terminal_candidate_preserved !==
       true ||
-    selectionAcceptance.acceptance_scope.selected_state_supported !== true
+    selectionAcceptance.acceptance_scope.selected_state_supported !== true ||
+    selectionAcceptance.acceptance_scope.conflict_state_supported !== true ||
+    selectionAcceptance.acceptance_scope.consumer_safe_summary_preserved !== true
   ) {
     throw new Error(
       "governance case review decision attestation requires uniquely selected current selection"
+    );
+  }
+  const currentSelectionSummary =
+    selectionAcceptance.acceptance_scope.current_selection_summary_current_review_decision;
+  if (!isPlainObject(currentSelectionSummary)) {
+    throw new Error(
+      "governance case review decision attestation requires current selection summary current review decision"
     );
   }
   if (
@@ -244,6 +328,28 @@ function assertAttestationSupport({
   ) {
     throw new Error(
       "governance case review decision attestation requires available applicability explanation profile"
+    );
+  }
+  if (
+    applicabilityPayload.validation_exports
+      .current_selection_final_acceptance_available !==
+      true ||
+    applicabilityPayload.validation_exports
+      .selected_review_decision_profile_available !==
+      true
+  ) {
+    throw new Error(
+      "governance case review decision attestation requires stable applicability linkage support"
+    );
+  }
+  if (
+    applicabilityExplanationPayload.validation_exports.current_selection_final_acceptance_available !==
+      true ||
+    applicabilityExplanationPayload.validation_exports.applicability_profile_available !==
+      true
+  ) {
+    throw new Error(
+      "governance case review decision attestation requires stable applicability explanation linkage support"
     );
   }
 
@@ -339,6 +445,7 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
   const selectionAcceptance =
     selectionFinalAcceptanceBoundary.governance_case_review_decision_current_selection_final_acceptance;
   const selectionRef = selectionAcceptance.current_selection_profile_ref;
+  const selectionStatus = selectionRef.selection_status;
   const selectionExplanationAcceptance =
     selectionExplanationFinalAcceptanceBoundary.governance_case_review_decision_selection_explanation_final_acceptance;
   const selectionExplanationRef =
@@ -359,20 +466,20 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
   const reviewDecisionId = selectionRef.current_review_decision_id;
   const canonicalActionHash = selectionFinalAcceptanceBoundary.canonical_action_hash;
 
+  assertAlignedRef({
+    label: "current selection final acceptance",
+    ref: selectionRef,
+    caseId,
+    reviewDecisionId,
+    selectionStatus,
+  });
   for (const [label, ref] of [
     ["selection explanation final acceptance", selectionExplanationRef],
     ["selection receipt final acceptance", selectionReceiptRef],
     ["applicability profile", applicabilityRef],
     ["applicability explanation profile", applicabilityExplanationRef],
   ]) {
-    if (
-      ref.case_id !== caseId ||
-      ref.current_review_decision_id !== reviewDecisionId
-    ) {
-      throw new Error(
-        `governance case review decision attestation mismatch: ${label} must remain identity aligned`
-      );
-    }
+    assertAlignedRef({ label, ref, caseId, reviewDecisionId, selectionStatus });
   }
   if (
     selectionExplanationFinalAcceptanceBoundary.canonical_action_hash !==
@@ -387,7 +494,7 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
     );
   }
 
-  const selectedReviewDecisionProfile = reviewProfiles.find((profile) => {
+  const selectedReviewDecisionProfiles = reviewProfiles.filter((profile) => {
     const context = profile.governance_case_review_decision.review_decision_context;
     return (
       context.case_id === caseId &&
@@ -395,20 +502,28 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
       profile.canonical_action_hash === canonicalActionHash
     );
   });
-  if (!selectedReviewDecisionProfile) {
+  if (selectedReviewDecisionProfiles.length !== 1) {
     throw new Error(
-      "governance case review decision attestation mismatch: selected review decision profile is required"
+      "governance case review decision attestation mismatch: uniquely aligned selected review decision profile is required"
     );
   }
+  const [selectedReviewDecisionProfile] = selectedReviewDecisionProfiles;
 
   const reviewDecisionContext =
     selectedReviewDecisionProfile.governance_case_review_decision.review_decision_context;
+  assertCurrentViewContinuityGrounded(reviewDecisionContext);
+
+  const currentSelectionSummary =
+    selectionAcceptance.acceptance_scope.current_selection_summary_current_review_decision;
   if (
-    reviewDecisionContext.continuity_mode === "superseded" ||
-    reviewDecisionContext.superseded_by_review_decision_id !== null
+    currentSelectionSummary.review_decision_id !== reviewDecisionId ||
+    currentSelectionSummary.review_decision_sequence !==
+      reviewDecisionContext.review_decision_sequence ||
+    currentSelectionSummary.continuity_mode !==
+      reviewDecisionContext.continuity_mode
   ) {
     throw new Error(
-      "governance case review decision attestation unsupported state: superseded review decision cannot be attested as current view"
+      "governance case review decision attestation mismatch: current selection summary must remain aligned to the selected current review decision"
     );
   }
 
@@ -502,6 +617,11 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
           selection_explanation_linked: true,
           applicability_linked: true,
           applicability_explanation_linked: true,
+          derived_only: true,
+          supporting_artifact_only: true,
+          non_authoritative: true,
+          no_main_path_takeover: true,
+          continuity_chain_intact: true,
           continuity_mode: reviewDecisionContext.continuity_mode,
           supersedes_review_decision_id:
             reviewDecisionContext.supersedes_review_decision_id,
@@ -517,6 +637,10 @@ export function buildGovernanceCaseReviewDecisionAttestationProfile({
         applicability_explanation_profile_available: true,
         selected_review_decision_profile_available: true,
         export_surface_available: true,
+        unique_current_view_required: true,
+        continuity_chain_intact: true,
+        linkage_integrity_preserved: true,
+        permit_aggregate_export_only: true,
       },
       preserved_semantics: {
         derived_only: true,
@@ -732,6 +856,11 @@ export function validateGovernanceCaseReviewDecisionAttestationProfile(profile) 
       "selection_explanation_linked",
       "applicability_linked",
       "applicability_explanation_linked",
+      "derived_only",
+      "supporting_artifact_only",
+      "non_authoritative",
+      "no_main_path_takeover",
+      "continuity_chain_intact",
     ]) {
       if (attestationContext.attestation_basis[field] !== true) {
         errors.push(
@@ -756,6 +885,10 @@ export function validateGovernanceCaseReviewDecisionAttestationProfile(profile) 
     "applicability_explanation_profile_available",
     "selected_review_decision_profile_available",
     "export_surface_available",
+    "unique_current_view_required",
+    "continuity_chain_intact",
+    "linkage_integrity_preserved",
+    "permit_aggregate_export_only",
   ]) {
     if (validationExports[field] !== true) {
       errors.push(
