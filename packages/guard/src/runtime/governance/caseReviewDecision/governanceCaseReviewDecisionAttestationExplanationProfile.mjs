@@ -23,7 +23,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_EXPLANATION_PROFILE_VER
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_EXPLANATION_PROFILE_SCHEMA_ID =
   "mindforge/governance-case-review-decision-attestation-explanation-profile/v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_EXPLANATION_PROFILE_STAGE =
-  "governance_case_review_decision_attestation_explanation_boundary_phase1_v6_2_0";
+  "governance_case_review_decision_attestation_explanation_hardening_phase2_v6_2_0";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_EXPLANATION_CONSUMER_SURFACE =
   "guard.audit.governance_case_review_decision_attestation_explanation";
 export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_EXPLANATION_PROFILE_BOUNDARY =
@@ -141,6 +141,8 @@ function assertAlignedRef({ label, ref, caseId, reviewDecisionId }) {
 
 function assertSupportingSemantics({
   attestationPayload,
+  selectionExplanationAcceptance,
+  selectionReceiptAcceptance,
   applicabilityPayload,
   applicabilityExplanationPayload,
 }) {
@@ -184,6 +186,68 @@ function assertSupportingSemantics({
     throw new Error(
       "governance case review decision attestation explanation requires available applicability explanation profile"
     );
+  }
+  for (const boundary of [
+    selectionExplanationAcceptance.final_acceptance_contract,
+    selectionReceiptAcceptance.final_acceptance_contract,
+  ]) {
+    for (const field of [
+      "recommendation_only",
+      "additive_only",
+      "non_executing",
+      "default_off",
+    ]) {
+      if (boundary[field] !== true) {
+        throw new Error(
+          `governance case review decision attestation explanation requires stable prerequisite field: ${field}`
+        );
+      }
+    }
+    for (const field of [
+      "judgment_source_enabled",
+      "authority_source_enabled",
+      "selection_feedback_enabled",
+      "main_path_takeover",
+    ]) {
+      if (field in boundary && boundary[field] !== false) {
+        throw new Error(
+          `governance case review decision attestation explanation requires stable prerequisite field: ${field}=false`
+        );
+      }
+    }
+  }
+  for (const [label, semantics] of [
+    ["applicability profile", applicabilityPayload.preserved_semantics],
+    [
+      "applicability explanation profile",
+      applicabilityExplanationPayload.preserved_semantics,
+    ],
+  ]) {
+    for (const field of [
+      "supporting_artifact_only",
+      "recommendation_only",
+      "additive_only",
+      "non_executing",
+      "default_off",
+    ]) {
+      if (semantics[field] !== true) {
+        throw new Error(
+          `governance case review decision attestation explanation requires ${label} preserved semantic ${field}=true`
+        );
+      }
+    }
+    for (const field of [
+      "judgment_source_enabled",
+      "authority_source_enabled",
+      "selection_feedback_enabled",
+      "main_path_takeover",
+    ]) {
+      if (semantics[field] !== false) {
+        throw new Error(
+          `governance case review decision attestation explanation requires ${label} preserved semantic ${field}=false`
+        );
+      }
+    }
   }
 }
 
@@ -234,6 +298,7 @@ export function buildGovernanceCaseReviewDecisionAttestationExplanationProfile({
   if (
     attestationContext.continuity_status === "superseded" ||
     attestationContext.continuity_status === "parallel" ||
+    attestationContext.supersession_status === "superseded" ||
     attestationContext.attestation_basis.continuity_chain_intact !== true ||
     attestationContext.attestation_basis.current_selection_final_acceptance_ready !==
       true
@@ -271,6 +336,8 @@ export function buildGovernanceCaseReviewDecisionAttestationExplanationProfile({
 
   assertSupportingSemantics({
     attestationPayload,
+    selectionExplanationAcceptance,
+    selectionReceiptAcceptance,
     applicabilityPayload,
     applicabilityExplanationPayload,
   });
@@ -328,6 +395,24 @@ export function buildGovernanceCaseReviewDecisionAttestationExplanationProfile({
         `governance case review decision attestation explanation missing support: attestation basis must preserve ${field}`
       );
     }
+  }
+  if (
+    attestationPayload.validation_exports.unique_current_view_required !== true ||
+    attestationPayload.validation_exports.continuity_chain_intact !== true ||
+    attestationPayload.validation_exports.linkage_integrity_preserved !== true ||
+    attestationPayload.validation_exports.permit_aggregate_export_only !== true
+  ) {
+    throw new Error(
+      "governance case review decision attestation explanation requires attestation validation exports to remain stabilized"
+    );
+  }
+  if (
+    selectionExplanationAcceptance.acceptance_scope.selection_status !== "selected" ||
+    selectionReceiptAcceptance.acceptance_scope.selection_status !== "selected"
+  ) {
+    throw new Error(
+      "governance case review decision attestation explanation requires selected supporting acceptance scope"
+    );
   }
 
   const explanationId = `${attestationRef.attestation_id}:explanation`;
@@ -400,6 +485,13 @@ export function buildGovernanceCaseReviewDecisionAttestationExplanationProfile({
         applicability_profile_available: true,
         applicability_explanation_profile_available: true,
         export_surface_available: true,
+        unique_current_attestation_view_required: true,
+        broken_continuity_rejected: true,
+        cross_case_binding_rejected: true,
+        cross_review_decision_binding_rejected: true,
+        cross_canonical_action_hash_binding_rejected: true,
+        complete_supporting_linkage_required: true,
+        permit_aggregate_export_only: true,
       },
       preserved_semantics: {
         derived_only: true,
@@ -605,6 +697,13 @@ export function validateGovernanceCaseReviewDecisionAttestationExplanationProfil
     "applicability_profile_available",
     "applicability_explanation_profile_available",
     "export_surface_available",
+    "unique_current_attestation_view_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_review_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
+    "complete_supporting_linkage_required",
+    "permit_aggregate_export_only",
   ]) {
     if (validationExports[field] !== true) {
       errors.push(

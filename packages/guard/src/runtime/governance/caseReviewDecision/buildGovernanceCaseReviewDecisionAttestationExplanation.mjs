@@ -28,7 +28,10 @@ export function consumeGovernanceCaseReviewDecisionAttestationExplanation({
   if (
     contract.attestation_explanation_profile_ref.explanation_id !==
       explanationRef.explanation_id ||
+    contract.attestation_explanation_profile_ref.attestation_id !==
+      explanationRef.attestation_id ||
     contract.review_decision_id !== explanationRef.review_decision_id ||
+    contract.attestation_explanation_profile_ref.case_id !== explanationRef.case_id ||
     contract.canonical_action_hash !== profile.canonical_action_hash
   ) {
     throw new Error(
@@ -58,6 +61,7 @@ export function consumeGovernanceCaseReviewDecisionAttestationExplanation({
     execution_binding_enabled: false,
     risk_source_enabled: false,
     selection_feedback_enabled: false,
+    main_path_takeover: false,
     executing: false,
   });
 }
