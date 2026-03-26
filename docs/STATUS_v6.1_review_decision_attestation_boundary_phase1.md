@@ -1,10 +1,10 @@
-# v6.1 Phase 1 Start State
+# v6.1 Phase 1 State
 
 - Baseline:
   - `v6.0.0 = Governance Case Review Decision Applicability Boundary & Explanation v1`
 - Module:
   - `v6.1 Phase 1 = Governance Case Review Decision Attestation Boundary v1`
-- Planned boundary:
+- Frozen boundary:
   - bounded review decision attestation profile
   - bounded review decision attestation contract
   - review decision attestation builder / consumer
@@ -12,11 +12,32 @@
   - dedicated phase 1 verification
 - Attestation scope is limited to:
   - current selected review decision judgment combination only
-  - current selection / selection receipt / selection explanation linkage only
+  - current selection / selection explanation / selection receipt linkage only
   - applicability / applicability explanation linkage only
   - continuity / supersession grounded current view only
   - derived, additive, non-authoritative supporting artifact semantics only
-- This phase must preserve:
+- Attestation identity / linkage is frozen on:
+  - `attestation_id`
+  - `case_id`
+  - `review_decision_id`
+  - `current_selection_id`
+  - `selection_receipt_id`
+  - `selection_explanation_id`
+  - `applicability_id`
+  - `applicability_explanation_id`
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_attestation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_applicability_explanation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_current_selection_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
   - recommendation-only
   - additive-only
   - non-executing
@@ -26,7 +47,7 @@
   - no new governance object
   - no risk integration
   - no UI / control plane
-- This phase must keep unchanged:
+- Unchanged:
   - audit main output
   - audit main verdict
   - actual audit exit code
@@ -35,7 +56,7 @@
   - `--enforcement-pilot`
   - `--limited-enforcement-authority`
   - `guard action classify`
-- This phase must not introduce:
+- This phase did not introduce:
   - signing or cryptographic seal
   - ledger or trace platform
   - authority or approval semantics
