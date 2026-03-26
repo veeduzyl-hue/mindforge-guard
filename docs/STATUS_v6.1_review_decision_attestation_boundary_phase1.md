@@ -1,0 +1,45 @@
+# v6.1 Phase 1 Start State
+
+- Baseline:
+  - `v6.0.0 = Governance Case Review Decision Applicability Boundary & Explanation v1`
+- Module:
+  - `v6.1 Phase 1 = Governance Case Review Decision Attestation Boundary v1`
+- Planned boundary:
+  - bounded review decision attestation profile
+  - bounded review decision attestation contract
+  - review decision attestation builder / consumer
+  - additive review decision attestation export surface
+  - dedicated phase 1 verification
+- Attestation scope is limited to:
+  - current selected review decision judgment combination only
+  - current selection / selection receipt / selection explanation linkage only
+  - applicability / applicability explanation linkage only
+  - continuity / supersession grounded current view only
+  - derived, additive, non-authoritative supporting artifact semantics only
+- This phase must preserve:
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance object
+  - no risk integration
+  - no UI / control plane
+- This phase must keep unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - signing or cryptographic seal
+  - ledger or trace platform
+  - authority or approval semantics
+  - execution binding
+  - risk integration
+  - UI / dashboard / control plane
+  - governance main-path takeover
