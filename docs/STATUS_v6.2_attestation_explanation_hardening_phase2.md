@@ -1,0 +1,46 @@
+# v6.2 Phase 2 State
+
+- Baseline:
+  - `v6.2 Phase 1 = Governance Case Review Decision Attestation Explanation Boundary v1`
+- Module:
+  - `v6.2 Phase 2 = Governance Case Review Decision Attestation Explanation Hardening + Compatibility Stabilization`
+- This phase hardens:
+  - attestation explanation linkage integrity
+  - current-view continuity and supersession rejection
+  - additive attestation explanation export and aggregate re-export stability
+  - compatibility non-regression verification
+- Phase 2 remains limited to:
+  - existing attestation bounded inputs only
+  - existing selection explanation / selection receipt bounded inputs only
+  - existing applicability / applicability explanation bounded inputs only
+  - derived, additive, non-authoritative supporting explanation semantics only
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - attestation explanation receipt
+  - attestation traceability surface
+  - signing / cryptographic explanation seal
+  - ledger / immutable trace platform
+  - approval / authority / execution semantics
+  - risk integration
+  - UI / dashboard / control plane
+  - governance main-path takeover
