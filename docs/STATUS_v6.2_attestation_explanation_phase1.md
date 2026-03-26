@@ -1,0 +1,47 @@
+# v6.2 Phase 1 State
+
+- Baseline:
+  - `v6.1.0 = Governance Case Review Decision Attestation Boundary v1`
+- Module:
+  - `v6.2 Phase 1 = Governance Case Review Decision Attestation Explanation Boundary v1`
+- Start scope:
+  - establish the minimum review decision attestation explanation profile / contract
+  - establish the minimum attestation explanation builder / validator / export surface
+  - verify explanation formation prerequisites and supporting linkage integrity
+  - keep attestation explanation derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+- This phase is limited to:
+  - explanation of the existing review decision attestation artifact only
+  - explanation of attestation formation / basis / linkage only
+  - bounded alignment to current selection / selection explanation / selection receipt / applicability / applicability explanation / continuity / supersession / attestation basis only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - approval semantics
+  - authority semantics
+  - execution semantics
+  - attestation receipt
+  - attestation traceability platform
+  - signing / cryptographic seal
+  - ledger / immutable trace platform behavior
+  - risk integration
+  - UI / dashboard / control plane
+  - audit / permit / classify main-path takeover
