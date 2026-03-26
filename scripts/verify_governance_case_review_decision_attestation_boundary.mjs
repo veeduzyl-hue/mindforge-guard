@@ -594,10 +594,17 @@ await import("./verify_governance_case_review_decision_applicability_explanation
     "applicability_explanation_profile_required",
     "selected_review_decision_profile_required",
     "non_superseded_review_decision_required",
+    "unique_current_view_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
     "strict_case_id_alignment_required",
     "strict_review_decision_id_alignment_required",
     "strict_canonical_action_hash_alignment_required",
     "continuity_supersession_basis_required",
+    "aggregate_export_only",
+    "permit_aggregate_export_only",
     "derived_only",
     "supporting_artifact_only",
     "recommendation_only",
@@ -677,13 +684,27 @@ if (
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.default_off !== true ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.aggregate_export_only !== true ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.permit_aggregate_export_only !== true ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.judgment_source_enabled !== false ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.authority_source_enabled !== false ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.execution_binding_enabled !== false ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.risk_source_enabled !== false ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.permit_lane_consumption !== false ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.audit_path_dependency !== false ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.main_path_takeover !== false ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.governance_object_addition !== false ||
+  GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
+    .governance_case_review_decision_attestation.ui_control_plane !== false ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_SURFACE_MAP
     .governance_case_review_decision_attestation.executing !== false
 ) {
@@ -713,6 +734,34 @@ process.stdout.write(
   const fixture = buildSelectedFixture();
   assertRejected(
     () => {
+      const brokenContinuity = cloneJson(fixture.current);
+      brokenContinuity.governance_case_review_decision.review_decision_context.continuity_mode =
+        GOVERNANCE_CASE_REVIEW_DECISION_CONTINUITY_MODE_SUPERSEDING;
+      brokenContinuity.governance_case_review_decision.review_decision_context.supersedes_review_decision_id =
+        null;
+      return buildGovernanceCaseReviewDecisionAttestation({
+        governanceCaseReviewDecisionCurrentSelectionFinalAcceptanceBoundary:
+          fixture.selectionFinalAcceptance,
+        governanceCaseReviewDecisionSelectionExplanationFinalAcceptanceBoundary:
+          fixture.selectionExplanationFinalAcceptance,
+        governanceCaseReviewDecisionSelectionReceiptFinalAcceptanceBoundary:
+          fixture.selectionReceiptFinalAcceptance,
+        governanceCaseReviewDecisionApplicabilityProfile:
+          fixture.applicabilityProfile,
+        governanceCaseReviewDecisionApplicabilityExplanationProfile:
+          fixture.applicabilityExplanation,
+        governanceCaseReviewDecisionProfiles: [brokenContinuity, fixture.previous],
+      });
+    },
+    "superseding continuity requires supersedes_review_decision_id",
+    "review decision attestation must reject broken continuity current view"
+  );
+}
+
+{
+  const fixture = buildSelectedFixture();
+  assertRejected(
+    () => {
       const superseded = cloneJson(fixture.current);
       superseded.governance_case_review_decision.review_decision_context.superseded_by_review_decision_id =
         "review-other";
@@ -732,8 +781,34 @@ process.stdout.write(
         governanceCaseReviewDecisionProfiles: [superseded, fixture.previous],
       });
     },
-    "superseded review decision cannot be attested",
+    "broken continuity cannot be attested as current view",
     "review decision attestation must reject superseded selected review decision"
+  );
+}
+
+{
+  const fixture = buildSelectedFixture();
+  assertRejected(
+    () => {
+      const mismatched = cloneJson(fixture.selectionExplanationFinalAcceptance);
+      mismatched.governance_case_review_decision_selection_explanation_final_acceptance.selection_explanation_profile_ref.case_id =
+        "case-other";
+      return buildGovernanceCaseReviewDecisionAttestation({
+        governanceCaseReviewDecisionCurrentSelectionFinalAcceptanceBoundary:
+          fixture.selectionFinalAcceptance,
+        governanceCaseReviewDecisionSelectionExplanationFinalAcceptanceBoundary:
+          mismatched,
+        governanceCaseReviewDecisionSelectionReceiptFinalAcceptanceBoundary:
+          fixture.selectionReceiptFinalAcceptance,
+        governanceCaseReviewDecisionApplicabilityProfile:
+          fixture.applicabilityProfile,
+        governanceCaseReviewDecisionApplicabilityExplanationProfile:
+          fixture.applicabilityExplanation,
+        governanceCaseReviewDecisionProfiles: [fixture.current, fixture.previous],
+      });
+    },
+    "case_id drifted",
+    "review decision attestation must reject selection explanation cross-case mismatch"
   );
 }
 
@@ -758,8 +833,33 @@ process.stdout.write(
         governanceCaseReviewDecisionProfiles: [fixture.current, fixture.previous],
       });
     },
-    "must remain identity aligned",
+    "identity aligned",
     "review decision attestation must reject selection receipt linkage mismatch"
+  );
+}
+
+{
+  const fixture = buildSelectedFixture();
+  assertRejected(
+    () => {
+      const mismatched = cloneJson(fixture.applicabilityProfile);
+      mismatched.governance_case_review_decision_applicability.applicability_ref.case_id =
+        "case-other";
+      return buildGovernanceCaseReviewDecisionAttestation({
+        governanceCaseReviewDecisionCurrentSelectionFinalAcceptanceBoundary:
+          fixture.selectionFinalAcceptance,
+        governanceCaseReviewDecisionSelectionExplanationFinalAcceptanceBoundary:
+          fixture.selectionExplanationFinalAcceptance,
+        governanceCaseReviewDecisionSelectionReceiptFinalAcceptanceBoundary:
+          fixture.selectionReceiptFinalAcceptance,
+        governanceCaseReviewDecisionApplicabilityProfile: mismatched,
+        governanceCaseReviewDecisionApplicabilityExplanationProfile:
+          fixture.applicabilityExplanation,
+        governanceCaseReviewDecisionProfiles: [fixture.current, fixture.previous],
+      });
+    },
+    "case aligned",
+    "review decision attestation must reject applicability cross-case mismatch"
   );
 }
 
@@ -783,8 +883,34 @@ process.stdout.write(
         governanceCaseReviewDecisionProfiles: [fixture.current, fixture.previous],
       });
     },
-    "must remain identity aligned",
+    "current review decision aligned",
     "review decision attestation must reject missing applicability explanation linkage"
+  );
+}
+
+{
+  const fixture = buildSelectedFixture();
+  assertRejected(
+    () => {
+      const missingSupport = cloneJson(fixture.selectionExplanationFinalAcceptance);
+      missingSupport.governance_case_review_decision_selection_explanation_final_acceptance.final_acceptance_contract.readiness_level =
+        "not_ready";
+      return buildGovernanceCaseReviewDecisionAttestation({
+        governanceCaseReviewDecisionCurrentSelectionFinalAcceptanceBoundary:
+          fixture.selectionFinalAcceptance,
+        governanceCaseReviewDecisionSelectionExplanationFinalAcceptanceBoundary:
+          missingSupport,
+        governanceCaseReviewDecisionSelectionReceiptFinalAcceptanceBoundary:
+          fixture.selectionReceiptFinalAcceptance,
+        governanceCaseReviewDecisionApplicabilityProfile:
+          fixture.applicabilityProfile,
+        governanceCaseReviewDecisionApplicabilityExplanationProfile:
+          fixture.applicabilityExplanation,
+        governanceCaseReviewDecisionProfiles: [fixture.current, fixture.previous],
+      });
+    },
+    "readiness",
+    "review decision attestation must reject missing explanation readiness support"
   );
 }
 
