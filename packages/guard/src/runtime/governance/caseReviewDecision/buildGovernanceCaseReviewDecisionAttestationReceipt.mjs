@@ -37,6 +37,47 @@ export function consumeGovernanceCaseReviewDecisionAttestationReceipt({
       "governance case review decision attestation receipt consumer mismatch: profile and contract must remain aligned"
     );
   }
+  for (const field of [
+    "unique_current_attestation_view_required",
+    "attestation_explanation_alignment_required",
+    "continuity_chain_intact_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_review_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
+    "complete_supporting_linkage_required",
+    "linkage_integrity_preserved",
+    "aggregate_export_only",
+    "permit_aggregate_export_only",
+    "derived_only",
+    "supporting_artifact_only",
+    "non_authoritative",
+    "non_authoritative_support_only",
+    "additive_only",
+    "non_executing",
+    "default_off",
+  ]) {
+    if (contract[field] !== true) {
+      throw new Error(
+        `governance case review decision attestation receipt consumer mismatch: contract must preserve ${field}`
+      );
+    }
+  }
+  for (const field of [
+    "permit_lane_consumption",
+    "audit_path_dependency",
+    "judgment_source_enabled",
+    "authority_source_enabled",
+    "execution_binding_enabled",
+    "risk_source_enabled",
+    "main_path_takeover",
+  ]) {
+    if (contract[field] !== false) {
+      throw new Error(
+        `governance case review decision attestation receipt consumer mismatch: contract must preserve ${field}=false`
+      );
+    }
+  }
 
   return Object.freeze({
     consumer_surface: payload.consumer_surface,

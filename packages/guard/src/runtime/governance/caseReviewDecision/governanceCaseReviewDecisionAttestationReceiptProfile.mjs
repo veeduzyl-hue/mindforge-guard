@@ -152,6 +152,7 @@ function assertAlignedIdentity({
 function assertAttestationSemantics(attestationPayload) {
   const context = attestationPayload.attestation_context;
   const basis = context.attestation_basis;
+  const validationExports = attestationPayload.validation_exports;
   const semantics = attestationPayload.preserved_semantics;
   if (context.attestation_status !== GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_STATUS_ATTESTED) {
     throw new Error(
@@ -168,6 +169,23 @@ function assertAttestationSemantics(attestationPayload) {
     throw new Error(
       "governance case review decision attestation receipt unsupported state: broken continuity current attestation cannot receive a receipt"
     );
+  }
+  for (const field of [
+    "current_selection_final_acceptance_available",
+    "selection_receipt_final_acceptance_available",
+    "selection_explanation_final_acceptance_available",
+    "applicability_profile_available",
+    "applicability_explanation_profile_available",
+    "unique_current_view_required",
+    "continuity_chain_intact",
+    "linkage_integrity_preserved",
+    "permit_aggregate_export_only",
+  ]) {
+    if (validationExports[field] !== true) {
+      throw new Error(
+        `governance case review decision attestation receipt missing attestation validation export: ${field}`
+      );
+    }
   }
   for (const field of [
     "selection_explanation_linked",
@@ -217,6 +235,7 @@ function assertAttestationSemantics(attestationPayload) {
 function assertExplanationSemantics(explanationPayload) {
   const context = explanationPayload.explanation_context;
   const basis = context.explanation_basis;
+  const validationExports = explanationPayload.validation_exports;
   const semantics = explanationPayload.preserved_semantics;
   if (
     context.explanation_status !==
@@ -225,6 +244,27 @@ function assertExplanationSemantics(explanationPayload) {
     throw new Error(
       "governance case review decision attestation receipt requires attestation explanation availability"
     );
+  }
+  for (const field of [
+    "attestation_available",
+    "selection_explanation_final_acceptance_available",
+    "selection_receipt_final_acceptance_available",
+    "applicability_profile_available",
+    "applicability_explanation_profile_available",
+    "export_surface_available",
+    "unique_current_attestation_view_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_review_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
+    "complete_supporting_linkage_required",
+    "permit_aggregate_export_only",
+  ]) {
+    if (validationExports[field] !== true) {
+      throw new Error(
+        `governance case review decision attestation receipt missing explanation validation export: ${field}`
+      );
+    }
   }
   for (const field of [
     "supporting_basis_complete",
@@ -355,14 +395,20 @@ export function buildGovernanceCaseReviewDecisionAttestationReceiptProfile({
           receipt_reason_codes: Object.freeze(receiptReasonCodes),
           attestation_available: true,
           attestation_explanation_available: true,
+          current_attestation_aligned: true,
           current_selection_aligned: true,
+          attestation_explanation_aligned: true,
           selection_explanation_aligned: true,
           selection_receipt_aligned: true,
           applicability_aligned: true,
           applicability_explanation_aligned: true,
+          continuity_chain_current: true,
+          supporting_basis_complete: true,
           derived_only: true,
           supporting_artifact_only: true,
           non_authoritative: true,
+          aggregate_export_only: true,
+          permit_aggregate_export_only: true,
         }),
         receipt_status_inputs: Object.freeze({
           continuity_chain_current: true,
@@ -378,11 +424,16 @@ export function buildGovernanceCaseReviewDecisionAttestationReceiptProfile({
         attestation_explanation_available: true,
         export_surface_available: true,
         unique_current_attestation_view_required: true,
+        attestation_explanation_alignment_required: true,
+        continuity_chain_intact_required: true,
         broken_continuity_rejected: true,
         cross_case_binding_rejected: true,
         cross_review_decision_binding_rejected: true,
         cross_canonical_action_hash_binding_rejected: true,
         complete_supporting_linkage_required: true,
+        linkage_integrity_preserved: true,
+        non_authoritative_support_only: true,
+        aggregate_export_only: true,
         permit_aggregate_export_only: true,
       },
       preserved_semantics: {
@@ -569,6 +620,31 @@ export function validateGovernanceCaseReviewDecisionAttestationReceiptProfile(
     errors.push(
       "governance case review decision attestation receipt reason codes drifted"
     );
+  } else {
+    for (const field of [
+      "attestation_available",
+      "attestation_explanation_available",
+      "current_attestation_aligned",
+      "current_selection_aligned",
+      "attestation_explanation_aligned",
+      "selection_explanation_aligned",
+      "selection_receipt_aligned",
+      "applicability_aligned",
+      "applicability_explanation_aligned",
+      "continuity_chain_current",
+      "supporting_basis_complete",
+      "derived_only",
+      "supporting_artifact_only",
+      "non_authoritative",
+      "aggregate_export_only",
+      "permit_aggregate_export_only",
+    ]) {
+      if (receiptContext.receipt_basis[field] !== true) {
+        errors.push(
+          `governance case review decision attestation receipt receipt_basis drifted: ${field}`
+        );
+      }
+    }
   }
   if (!isPlainObject(receiptContext.receipt_status_inputs)) {
     errors.push(
@@ -601,11 +677,16 @@ export function validateGovernanceCaseReviewDecisionAttestationReceiptProfile(
     "attestation_explanation_available",
     "export_surface_available",
     "unique_current_attestation_view_required",
+    "attestation_explanation_alignment_required",
+    "continuity_chain_intact_required",
     "broken_continuity_rejected",
     "cross_case_binding_rejected",
     "cross_review_decision_binding_rejected",
     "cross_canonical_action_hash_binding_rejected",
     "complete_supporting_linkage_required",
+    "linkage_integrity_preserved",
+    "non_authoritative_support_only",
+    "aggregate_export_only",
     "permit_aggregate_export_only",
   ]) {
     if (validationExports[field] !== true) {
