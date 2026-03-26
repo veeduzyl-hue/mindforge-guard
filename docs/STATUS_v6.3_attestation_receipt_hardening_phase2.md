@@ -44,3 +44,38 @@
   - risk integration
   - UI / dashboard / control plane
   - governance main-path takeover
+
+- Implemented:
+  - stricter current-attestation uniqueness and explanation-alignment validation
+  - stricter cross-case / cross-review-decision / cross-hash linkage rejection
+  - explicit aggregate-export-only attestation receipt surface metadata
+  - stronger attestation receipt compatibility verification
+- Verified:
+  - unique current attested view is required for receipt
+  - attestation explanation must remain available and aligned
+  - superseded and broken-continuity attestation states do not form current receipt
+  - selection explanation / selection receipt / applicability / applicability explanation must remain aligned
+  - missing or broken supporting linkage does not form receipt
+  - attestation receipt remains derived-only
+  - attestation receipt remains supporting-artifact-only
+  - attestation receipt remains non-authoritative
+  - attestation receipt is not a judgment source
+  - attestation receipt is not an authority source
+  - attestation receipt is not execution binding
+  - attestation receipt is not a risk source
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v6.3 Phase 2` hardens the review decision attestation receipt boundary without turning receipt into a governance object, judgment source, authority source, execution channel, risk input, or main-path dependency.
