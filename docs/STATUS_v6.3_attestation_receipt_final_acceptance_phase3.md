@@ -1,0 +1,46 @@
+# v6.3 Phase 3 State
+
+- Baseline:
+  - `v6.3 Phase 2 = Governance Case Review Decision Attestation Receipt Hardening + Compatibility Stabilization`
+- Module:
+  - `v6.3 Phase 3 = Governance Case Review Decision Attestation Receipt Boundary v1 Final Acceptance Consolidation + Final Compatibility Freeze`
+- Start scope:
+  - consolidate final acceptance for the existing attestation receipt boundary
+  - freeze final compatibility expectations for release readiness
+  - unify verification around semantic integrity, positioning integrity, and compatibility non-regression
+  - avoid any expansion into traceability, authority, execution, risk, UI, signing, ledger, or new governance object families
+- Consolidated:
+  - final acceptance statement for attestation receipt profile / contract / builder / validator / export surface
+  - final compatibility freeze statement for audit / permit / classify and authority-adjacent flags
+  - consolidated final acceptance verification for semantic integrity and non-regression
+  - release-readiness documentation for `v6.3` without performing tag / release
+- Final acceptance scope freezes:
+  - attestation receipt as current attestation and attestation explanation derived artifact only
+  - attestation explanation existence requirement
+  - unique current attested view requirement
+  - non-superseded current attestation requirement
+  - complete supporting linkage requirement across selection explanation / selection receipt / applicability / applicability explanation
+  - strict identity alignment across `case_id`, `review_decision_id`, and `canonical_action_hash`
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no new governance object
+  - no authority scope expansion
+  - no execution semantics
+  - no risk integration
+  - no UI / control plane
+  - no main-path takeover
+  - no attestation receipt traceability surface
+  - no signing / cryptographic receipt seal
+  - no ledger / trace platform behavior
