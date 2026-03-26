@@ -1,0 +1,81 @@
+# v6.3 Phase 2 State
+
+- Baseline:
+  - `v6.3 Phase 1 = Governance Case Review Decision Attestation Receipt Boundary v1`
+- Module:
+  - `v6.3 Phase 2 = Governance Case Review Decision Attestation Receipt Hardening + Compatibility Stabilization`
+- This phase hardens:
+  - attestation receipt linkage integrity
+  - current-view continuity and supersession rejection
+  - additive attestation receipt export and aggregate re-export stability
+  - compatibility non-regression verification
+- Phase 2 remains limited to:
+  - existing attestation bounded inputs only
+  - existing attestation explanation bounded inputs only
+  - existing selection explanation / selection receipt bounded inputs only
+  - existing applicability / applicability explanation bounded inputs only
+  - derived, additive, non-authoritative supporting receipt semantics only
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase does not introduce:
+  - attestation receipt traceability
+  - signing / cryptographic receipt seal
+  - ledger / immutable trace platform
+  - approval / authority / execution semantics
+  - risk integration
+  - UI / dashboard / control plane
+  - governance main-path takeover
+
+- Implemented:
+  - stricter current-attestation uniqueness and explanation-alignment validation
+  - stricter cross-case / cross-review-decision / cross-hash linkage rejection
+  - explicit aggregate-export-only attestation receipt surface metadata
+  - stronger attestation receipt compatibility verification
+- Verified:
+  - unique current attested view is required for receipt
+  - attestation explanation must remain available and aligned
+  - superseded and broken-continuity attestation states do not form current receipt
+  - selection explanation / selection receipt / applicability / applicability explanation must remain aligned
+  - missing or broken supporting linkage does not form receipt
+  - attestation receipt remains derived-only
+  - attestation receipt remains supporting-artifact-only
+  - attestation receipt remains non-authoritative
+  - attestation receipt is not a judgment source
+  - attestation receipt is not an authority source
+  - attestation receipt is not execution binding
+  - attestation receipt is not a risk source
+  - additive-only
+  - non-executing
+  - default-off
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+- Boundary conclusion:
+  - `v6.3 Phase 2` hardens the review decision attestation receipt boundary without turning receipt into a governance object, judgment source, authority source, execution channel, risk input, or main-path dependency.
