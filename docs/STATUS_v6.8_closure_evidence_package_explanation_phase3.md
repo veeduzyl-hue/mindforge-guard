@@ -1,0 +1,56 @@
+# v6.8 Phase 3 State
+
+- Baseline:
+  - `v6.8 Phase 2 = Governance Case Closure Evidence Package Explanation / Narrative Boundary v1`
+- Module:
+  - `v6.8 Phase 3 = Governance Case Closure Evidence Package Explanation / Narrative Boundary v1 Final Acceptance Consolidation`
+- Final acceptance scope freezes:
+  - closure evidence package explanation accepted as bounded supporting-artifact deliverable surface only
+  - current narrative selection semantics accepted as frozen
+  - narrative section object contract accepted as frozen
+  - section interpretation surface accepted as bounded
+  - section-to-artifact linkage accepted as stable
+  - consumer summary alignment accepted as stable
+  - cross-surface alignment across profile / contract / builder / export accepted as stable
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+  - no new governance authority object
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_explanation_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_explanation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_boundary.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.8` explanation / narrative boundary is consolidated to final acceptance without turning the explanation artifact into a governance authority object, judgment source, execution channel, risk surface, UI surface, or main-path dependency.
