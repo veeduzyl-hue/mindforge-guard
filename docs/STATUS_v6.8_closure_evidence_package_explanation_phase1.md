@@ -1,0 +1,36 @@
+# v6.8 Phase 1 State
+
+- Baseline:
+  - `v6.7.0 = Governance Case Review Decision Closure Receipt / Evidence Package Boundary v1`
+- Module:
+  - `v6.8 Phase 1 = Governance Case Closure Evidence Package Explanation / Narrative Boundary v1`
+- Start scope:
+  - establish the minimum closure evidence package explanation / narrative profile / contract
+  - establish the minimum package explanation builder / consumer / export surface
+  - verify package explanation alignment to the existing closure evidence package surface
+  - keep package explanation derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+- This phase is limited to:
+  - explanation of the existing closure evidence package only
+  - bounded narrative sections for package overview, supporting evidence, closure conclusion, selection basis, and explanation summary only
+  - bounded interpretation surface aligned to existing package artifacts only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance authority object
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
