@@ -79,6 +79,7 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityContract
     supporting_artifact_only: true,
     non_authoritative: true,
     non_authoritative_support_only: true,
+    traceability_basis_support_only: true,
     recommendation_only: true,
     additive_only: true,
     non_executing: true,
@@ -94,6 +95,9 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityContract
     main_path_takeover: false,
     authority_scope_expansion: false,
     new_governance_object: false,
+    attestation_trace_platform: false,
+    observability_platform_behavior: false,
+    traceability_platform_behavior: false,
     traceability_status: traceabilityContext.traceability_status,
     traceability_scope: traceabilityContext.traceability_scope,
     review_decision_id: traceabilityRef.review_decision_id,
@@ -156,6 +160,7 @@ export function validateGovernanceCaseReviewDecisionAttestationTraceabilityContr
     "supporting_artifact_only",
     "non_authoritative",
     "non_authoritative_support_only",
+    "traceability_basis_support_only",
     "recommendation_only",
     "additive_only",
     "non_executing",
@@ -179,6 +184,9 @@ export function validateGovernanceCaseReviewDecisionAttestationTraceabilityContr
     "main_path_takeover",
     "authority_scope_expansion",
     "new_governance_object",
+    "attestation_trace_platform",
+    "observability_platform_behavior",
+    "traceability_platform_behavior",
   ]) {
     if (contract[field] !== false) {
       errors.push(

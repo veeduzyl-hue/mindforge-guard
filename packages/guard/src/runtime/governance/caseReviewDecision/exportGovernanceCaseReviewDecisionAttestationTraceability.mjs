@@ -70,6 +70,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_TRACEABILITY_SURFACE_MA
       complete_supporting_linkage_required: true,
       linkage_integrity_preserved: true,
       non_authoritative_support_only: true,
+      traceability_basis_support_only: true,
       permit_lane_consumption: false,
       judgment_source_enabled: false,
       authority_source_enabled: false,
@@ -79,6 +80,9 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_TRACEABILITY_SURFACE_MA
       main_path_takeover: false,
       governance_object_addition: false,
       ui_control_plane: false,
+      attestation_trace_platform: false,
+      observability_platform_behavior: false,
+      traceability_platform_behavior: false,
       executing: false,
     }),
   });

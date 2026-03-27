@@ -395,9 +395,12 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityProfile(
           attestation_available: true,
           attestation_explanation_available: true,
           attestation_receipt_available: true,
+          unique_current_attestation_view_required: true,
           current_attestation_aligned: true,
           current_selection_aligned: true,
+          attestation_explanation_alignment_required: true,
           attestation_explanation_aligned: true,
+          attestation_receipt_alignment_required: true,
           attestation_receipt_aligned: true,
           selection_explanation_aligned: true,
           selection_receipt_aligned: true,
@@ -405,9 +408,12 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityProfile(
           applicability_explanation_aligned: true,
           continuity_chain_current: true,
           supporting_basis_complete: true,
+          linkage_integrity_preserved: true,
           derived_only: true,
           supporting_artifact_only: true,
           non_authoritative: true,
+          non_authoritative_support_only: true,
+          traceability_basis_support_only: true,
           aggregate_export_only: true,
           permit_aggregate_export_only: true,
         }),
@@ -435,6 +441,7 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityProfile(
         complete_supporting_linkage_required: true,
         linkage_integrity_preserved: true,
         non_authoritative_support_only: true,
+        traceability_basis_support_only: true,
         aggregate_export_only: true,
         permit_aggregate_export_only: true,
       },
@@ -458,6 +465,7 @@ export function buildGovernanceCaseReviewDecisionAttestationTraceabilityProfile(
         attestation_trace_platform: false,
         cryptographic_trace_seal: false,
         observability_platform_behavior: false,
+        traceability_platform_behavior: false,
       },
     },
     deterministic: true,
@@ -537,6 +545,39 @@ export function validateGovernanceCaseReviewDecisionAttestationTraceabilityProfi
     )
   ) {
     errors.push("governance case review decision attestation traceability reason codes drifted");
+  } else {
+    for (const field of [
+      "attestation_available",
+      "attestation_explanation_available",
+      "attestation_receipt_available",
+      "unique_current_attestation_view_required",
+      "current_attestation_aligned",
+      "current_selection_aligned",
+      "attestation_explanation_alignment_required",
+      "attestation_explanation_aligned",
+      "attestation_receipt_alignment_required",
+      "attestation_receipt_aligned",
+      "selection_explanation_aligned",
+      "selection_receipt_aligned",
+      "applicability_aligned",
+      "applicability_explanation_aligned",
+      "continuity_chain_current",
+      "supporting_basis_complete",
+      "linkage_integrity_preserved",
+      "derived_only",
+      "supporting_artifact_only",
+      "non_authoritative",
+      "non_authoritative_support_only",
+      "traceability_basis_support_only",
+      "aggregate_export_only",
+      "permit_aggregate_export_only",
+    ]) {
+      if (context.traceability_basis[field] !== true) {
+        errors.push(
+          `governance case review decision attestation traceability basis drifted: ${field}`
+        );
+      }
+    }
   }
   for (const field of [
     "attestation_available",
@@ -554,6 +595,7 @@ export function validateGovernanceCaseReviewDecisionAttestationTraceabilityProfi
     "complete_supporting_linkage_required",
     "linkage_integrity_preserved",
     "non_authoritative_support_only",
+    "traceability_basis_support_only",
     "aggregate_export_only",
     "permit_aggregate_export_only",
   ]) {
@@ -591,6 +633,7 @@ export function validateGovernanceCaseReviewDecisionAttestationTraceabilityProfi
     "attestation_trace_platform",
     "cryptographic_trace_seal",
     "observability_platform_behavior",
+    "traceability_platform_behavior",
   ]) {
     if (payload.preserved_semantics[field] !== false) {
       errors.push(

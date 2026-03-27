@@ -8,6 +8,22 @@ export {
   buildGovernanceCaseReviewDecisionAttestationTraceabilityProfile as buildGovernanceCaseReviewDecisionAttestationTraceability,
 };
 
+function assertTrueFields(source, fields, label) {
+  for (const field of fields) {
+    if (source[field] !== true) {
+      throw new Error(`${label} must preserve ${field}`);
+    }
+  }
+}
+
+function assertFalseFields(source, fields, label) {
+  for (const field of fields) {
+    if (source[field] !== false) {
+      throw new Error(`${label} must preserve ${field}=false`);
+    }
+  }
+}
+
 export function consumeGovernanceCaseReviewDecisionAttestationTraceability({
   governanceCaseReviewDecisionAttestationTraceabilityProfile,
   governanceCaseReviewDecisionAttestationTraceabilityContract,
@@ -44,6 +60,56 @@ export function consumeGovernanceCaseReviewDecisionAttestationTraceability({
     );
   }
 
+  assertTrueFields(
+    contract,
+    [
+      "traceability_available",
+      "attestation_required",
+      "attestation_explanation_required",
+      "attestation_receipt_required",
+      "unique_current_attestation_view_required",
+      "attestation_explanation_alignment_required",
+      "attestation_receipt_alignment_required",
+      "continuity_chain_intact_required",
+      "broken_continuity_rejected",
+      "cross_case_binding_rejected",
+      "cross_review_decision_binding_rejected",
+      "cross_canonical_action_hash_binding_rejected",
+      "complete_supporting_linkage_required",
+      "linkage_integrity_preserved",
+      "aggregate_export_only",
+      "permit_aggregate_export_only",
+      "derived_only",
+      "supporting_artifact_only",
+      "non_authoritative",
+      "non_authoritative_support_only",
+      "traceability_basis_support_only",
+      "recommendation_only",
+      "additive_only",
+      "non_executing",
+      "default_off",
+      "structured_traceability_only",
+    ],
+    "governance case review decision attestation traceability contract"
+  );
+  assertFalseFields(
+    contract,
+    [
+      "judgment_source_enabled",
+      "authority_source_enabled",
+      "execution_binding_enabled",
+      "risk_source_enabled",
+      "selection_feedback_enabled",
+      "permit_lane_consumption",
+      "audit_path_dependency",
+      "main_path_takeover",
+      "attestation_trace_platform",
+      "observability_platform_behavior",
+      "traceability_platform_behavior",
+    ],
+    "governance case review decision attestation traceability contract"
+  );
+
   return Object.freeze({
     consumer_surface: payload.consumer_surface,
     traceability_id: traceabilityRef.traceability_id,
@@ -70,6 +136,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationTraceability({
     risk_source_enabled: false,
     selection_feedback_enabled: false,
     main_path_takeover: false,
+    audit_path_dependency: false,
+    permit_lane_consumption: false,
     executing: false,
   });
 }
