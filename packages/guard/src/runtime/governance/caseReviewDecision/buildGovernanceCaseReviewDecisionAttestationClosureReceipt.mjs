@@ -27,6 +27,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureReceipt({
 
   if (
     contract.attestation_closure_receipt_profile_ref.receipt_id !== ref.receipt_id ||
+    contract.attestation_closure_receipt_profile_ref.receipt_selection_id !==
+      ref.receipt_selection_id ||
     contract.attestation_closure_receipt_profile_ref.explanation_id !==
       ref.explanation_id ||
     contract.attestation_closure_receipt_profile_ref.explanation_selection_id !==
@@ -47,6 +49,7 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureReceipt({
   return Object.freeze({
     consumer_surface: payload.consumer_surface,
     receipt_id: ref.receipt_id,
+    receipt_selection_id: ref.receipt_selection_id,
     explanation_id: ref.explanation_id,
     explanation_selection_id: ref.explanation_selection_id,
     closure_id: ref.closure_id,
@@ -59,6 +62,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureReceipt({
     receipt_reason_codes: Object.freeze([
       ...context.receipt_basis.receipt_reason_codes,
     ]),
+    current_receipt_selected: true,
+    current_receipt_selection_stable: true,
     current_closure_selected: true,
     current_explanation_selected: true,
     current_explanation_selection_stable: true,

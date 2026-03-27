@@ -1,0 +1,33 @@
+# v6.7 Phase 2 Stabilization State
+
+- `v6.7 Phase 2 = Closure Receipt / Evidence Package Structure & Export Stabilization`
+- Stabilized in this phase:
+  - closure receipt foundation reused as package input layer
+  - package manifest / envelope frozen
+  - package composition frozen to bounded supporting artifacts
+  - package export frozen as additive-only aggregate surface
+  - package consumption frozen as non-authoritative bounded output
+- Compatibility freeze preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged behavior preserved:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Phase 2 completion:
+  - evidence package structure established
+  - package export stabilization established
+  - package boundary verification completed
