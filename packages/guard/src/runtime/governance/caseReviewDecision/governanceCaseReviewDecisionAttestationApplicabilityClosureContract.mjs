@@ -43,6 +43,7 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
       boundary:
         GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_PROFILE_BOUNDARY,
       closure_id: ref.closure_id,
+      closure_selection_id: ref.closure_selection_id,
       case_id: ref.case_id,
       review_decision_id: ref.review_decision_id,
       attestation_id: ref.attestation_id,
@@ -59,8 +60,14 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
     selected_current_review_decision_only: true,
     non_superseded_current_attestation_only: true,
     unique_current_attestation_view_required: true,
+    current_closure_selected_only: true,
+    unique_current_closure_required: true,
+    current_closure_selection_stable: true,
     applicability_alignment_required: true,
     applicability_explanation_alignment_required: true,
+    attestation_applicability_binding_unambiguous: true,
+    applicability_explanation_binding_unambiguous: true,
+    continuity_lineage_alignment_required: true,
     continuity_chain_intact_required: true,
     broken_continuity_rejected: true,
     cross_case_binding_rejected: true,
@@ -122,6 +129,15 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
       "governance case review decision attestation applicability closure profile ref missing"
     );
   }
+  if (
+    isPlainObject(contract.attestation_applicability_closure_profile_ref) &&
+    (typeof contract.attestation_applicability_closure_profile_ref.closure_selection_id !== "string" ||
+      contract.attestation_applicability_closure_profile_ref.closure_selection_id.length === 0)
+  ) {
+    errors.push(
+      "governance case review decision attestation applicability closure profile ref closure_selection_id missing"
+    );
+  }
   for (const field of [
     "closure_available",
     "attestation_required",
@@ -133,8 +149,14 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
     "selected_current_review_decision_only",
     "non_superseded_current_attestation_only",
     "unique_current_attestation_view_required",
+    "current_closure_selected_only",
+    "unique_current_closure_required",
+    "current_closure_selection_stable",
     "applicability_alignment_required",
     "applicability_explanation_alignment_required",
+    "attestation_applicability_binding_unambiguous",
+    "applicability_explanation_binding_unambiguous",
+    "continuity_lineage_alignment_required",
     "continuity_chain_intact_required",
     "broken_continuity_rejected",
     "cross_case_binding_rejected",

@@ -27,6 +27,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationApplicabilityClosu
   if (
     contract.attestation_applicability_closure_profile_ref.closure_id !==
       ref.closure_id ||
+    contract.attestation_applicability_closure_profile_ref.closure_selection_id !==
+      ref.closure_selection_id ||
     contract.attestation_applicability_closure_profile_ref.attestation_id !==
       ref.attestation_id ||
     contract.canonical_action_hash !== profile.canonical_action_hash
@@ -39,6 +41,7 @@ export function consumeGovernanceCaseReviewDecisionAttestationApplicabilityClosu
   return Object.freeze({
     consumer_surface: payload.consumer_surface,
     closure_id: ref.closure_id,
+    closure_selection_id: ref.closure_selection_id,
     case_id: ref.case_id,
     review_decision_id: ref.review_decision_id,
     attestation_id: ref.attestation_id,
@@ -49,6 +52,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationApplicabilityClosu
     closure_reason_codes: Object.freeze([
       ...payload.closure_context.closure_basis.closure_reason_codes,
     ]),
+    current_closure_selected: true,
+    current_closure_selection_stable: true,
     derived_only: true,
     supporting_artifact_only: true,
     non_authoritative: true,
