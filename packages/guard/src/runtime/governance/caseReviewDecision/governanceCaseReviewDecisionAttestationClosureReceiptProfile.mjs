@@ -29,9 +29,13 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_RECEIPT_REASON_
   Object.freeze([
     "closure_available",
     "closure_explanation_available",
+    "current_receipt_selected",
+    "unique_current_receipt_required",
+    "current_receipt_selection_stable",
     "current_closure_selected",
     "current_explanation_selected",
     "current_explanation_selection_stable",
+    "explanation_selection_alignment_current",
     "closure_selection_alignment_current",
     "attestation_selection_alignment_current",
     "attestation_applicability_binding_current",
@@ -164,12 +168,16 @@ function assertClosureSemantics(payload) {
     [
       "closure_available",
       "closure_explanation_available",
+      "current_receipt_selected_only",
       "current_closure_selected_only",
       "current_explanation_selected_only",
+      "unique_current_receipt_required",
       "unique_current_closure_required",
       "unique_current_explanation_required",
+      "current_receipt_selection_stable",
       "current_closure_selection_stable",
       "current_explanation_selection_stable",
+      "explanation_selection_alignment_required",
       "closure_selection_alignment_required",
       "attestation_selection_alignment_required",
       "attestation_applicability_binding_required",
@@ -180,6 +188,7 @@ function assertClosureSemantics(payload) {
       "cross_canonical_action_hash_binding_rejected",
       "complete_supporting_linkage_required",
       "receipt_linkage_only",
+      "consumption_boundary_bounded",
       "aggregate_export_only",
       "permit_aggregate_export_only",
     ],
@@ -215,6 +224,43 @@ function assertExplanationSemantics(payload) {
       "supporting_basis_complete",
     ],
     "explanation basis"
+  );
+}
+
+function assertReceiptSemantics(payload) {
+  assertTrueFields(
+    payload.receipt_context.receipt_basis,
+    [
+      "current_receipt_selected",
+      "unique_current_receipt_required",
+      "current_receipt_selection_stable",
+      "current_closure_selected",
+      "current_explanation_selected",
+      "current_explanation_selection_stable",
+      "explanation_selection_alignment_current",
+      "closure_selection_alignment_current",
+      "attestation_selection_alignment_current",
+      "attestation_applicability_binding_current",
+      "applicability_explanation_alignment_current",
+      "continuity_lineage_aligned",
+      "supporting_basis_complete",
+      "receipt_linkage_only",
+      "consumption_boundary_bounded",
+      "aggregate_export_only",
+      "permit_aggregate_export_only",
+    ],
+    "receipt basis"
+  );
+  assertTrueFields(
+    payload.receipt_context.receipt_status_inputs,
+    [
+      "current_receipt_only",
+      "current_closure_only",
+      "current_explanation_only",
+      "stable_current_selection_only",
+      "complete_supporting_linkage_required",
+    ],
+    "receipt status input"
   );
 }
 
@@ -308,6 +354,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureReceiptProfil
         GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_RECEIPT_PROFILE_BOUNDARY,
       attestation_closure_receipt_ref: {
         receipt_id: `${closureRef.closure_id}:receipt`,
+        receipt_selection_id: `${closureRef.closure_id}:receipt:current`,
         explanation_id: explanationRef.explanation_id,
         explanation_selection_id: explanationRef.explanation_selection_id,
         closure_id: closureRef.closure_id,
@@ -341,9 +388,13 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureReceiptProfil
           ]),
           closure_available: true,
           closure_explanation_available: true,
+          current_receipt_selected: true,
+          unique_current_receipt_required: true,
+          current_receipt_selection_stable: true,
           current_closure_selected: true,
           current_explanation_selected: true,
           current_explanation_selection_stable: true,
+          explanation_selection_alignment_current: true,
           closure_selection_alignment_current: true,
           attestation_selection_alignment_current: true,
           attestation_applicability_binding_current: true,
@@ -351,10 +402,12 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureReceiptProfil
           continuity_lineage_aligned: true,
           supporting_basis_complete: true,
           receipt_linkage_only: true,
+          consumption_boundary_bounded: true,
           aggregate_export_only: true,
           permit_aggregate_export_only: true,
         }),
         receipt_status_inputs: Object.freeze({
+          current_receipt_only: true,
           current_closure_only: true,
           current_explanation_only: true,
           stable_current_selection_only: true,
@@ -364,12 +417,16 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureReceiptProfil
       validation_exports: Object.freeze({
         closure_available: true,
         closure_explanation_available: true,
+        current_receipt_selected_only: true,
         current_closure_selected_only: true,
         current_explanation_selected_only: true,
+        unique_current_receipt_required: true,
         unique_current_closure_required: true,
         unique_current_explanation_required: true,
+        current_receipt_selection_stable: true,
         current_closure_selection_stable: true,
         current_explanation_selection_stable: true,
+        explanation_selection_alignment_required: true,
         closure_selection_alignment_required: true,
         attestation_selection_alignment_required: true,
         attestation_applicability_binding_required: true,
@@ -380,6 +437,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureReceiptProfil
         cross_canonical_action_hash_binding_rejected: true,
         complete_supporting_linkage_required: true,
         receipt_linkage_only: true,
+        consumption_boundary_bounded: true,
         aggregate_export_only: true,
         permit_aggregate_export_only: true,
       }),
@@ -489,6 +547,7 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureReceiptPro
     } else {
       for (const field of [
         "receipt_id",
+        "receipt_selection_id",
         "explanation_id",
         "explanation_selection_id",
         "closure_id",
@@ -518,6 +577,7 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureReceiptPro
       try {
         assertClosureSemantics(payload);
         assertExplanationSemantics(payload);
+        assertReceiptSemantics(payload);
         const reasonCodes = payload.receipt_context.receipt_basis?.receipt_reason_codes;
         if (
           !hasUniqueStrings(reasonCodes) ||
