@@ -1,0 +1,36 @@
+# v6.7 Phase 2 State
+
+- Baseline:
+  - `v6.7 Phase 1 = closure receipt foundation`
+- Module:
+  - `v6.7 Phase 2 = Closure Receipt / Evidence Package Structure & Export Stabilization`
+- Start scope:
+  - add the minimal closure evidence package profile / contract / builder / export surface
+  - compose existing supporting artifacts into a bounded delivery package
+  - stabilize package manifest / export / consumption boundaries
+  - preserve unchanged audit / permit / classify behavior
+- This phase is limited to:
+  - bounded supporting-artifact package composition only
+  - additive package export only
+  - package manifest / envelope only
+  - no new authority-bearing governance object
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
