@@ -1,0 +1,73 @@
+# v6.4 Phase 3 State
+
+- Baseline:
+  - `v6.4 Phase 2 = Governance Case Review Decision Attestation Traceability Hardening + Compatibility Stabilization`
+- Module:
+  - `v6.4 Phase 3 = Governance Case Review Decision Attestation Traceability Boundary v1 Final Acceptance Consolidation + Final Compatibility Freeze`
+- Start scope:
+  - consolidate final acceptance for the existing attestation traceability boundary
+  - freeze final compatibility expectations for release readiness
+  - unify verification around semantic integrity, positioning integrity, and compatibility non-regression
+  - avoid any expansion into signing, ledger, observability, authority, execution, risk, UI, or new governance object families
+- Consolidated:
+  - final acceptance statement for attestation traceability profile / contract / builder / validator / export surface
+  - final compatibility freeze statement for audit / permit / classify and authority-adjacent flags
+  - consolidated final acceptance verification for semantic integrity and non-regression
+  - release-readiness documentation for `v6.4` without performing tag / release
+- Final acceptance scope freezes:
+  - attestation traceability as current attestation, attestation explanation, and attestation receipt derived artifact only
+  - attestation explanation existence requirement
+  - attestation receipt existence requirement
+  - unique current attested view requirement
+  - non-superseded current attestation requirement
+  - complete supporting linkage requirement across selection explanation / selection receipt / applicability / applicability explanation
+  - strict identity alignment across `case_id`, `review_decision_id`, and `canonical_action_hash`
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no new governance object
+  - no authority scope expansion
+  - no execution semantics
+  - no risk integration
+  - no UI / control plane
+  - no main-path takeover
+  - no signing / cryptographic trace seal
+  - no ledger / trace platform behavior
+  - no observability platform behavior
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_attestation_traceability_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_traceability_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_traceability_boundary.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.4` review decision attestation traceability boundary is consolidated to final acceptance and final compatibility freeze without turning attestation traceability into a governance object, judgment source, authority signal, execution channel, risk source, observability surface, platform surface, UI surface, or main-path dependency.
