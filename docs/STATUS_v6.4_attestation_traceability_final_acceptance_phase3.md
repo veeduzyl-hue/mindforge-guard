@@ -71,3 +71,9 @@
   - no UI / control plane
 - Boundary conclusion:
   - `v6.4` review decision attestation traceability boundary is consolidated to final acceptance and final compatibility freeze without turning attestation traceability into a governance object, judgment source, authority signal, execution channel, risk source, observability surface, platform surface, UI surface, or main-path dependency.
+- Final acceptance state:
+  - attestation traceability profile / contract / builder / validator / export surface accepted as the bounded `v6.4` module surface
+  - semantic integrity, positioning integrity, and compatibility non-regression verified
+  - no runtime capability expansion introduced during phase 3
+- Release readiness:
+  - `v6.4` is ready to proceed to tag / release preparation once `main` absorbs phase 3 and post-merge verification passes
