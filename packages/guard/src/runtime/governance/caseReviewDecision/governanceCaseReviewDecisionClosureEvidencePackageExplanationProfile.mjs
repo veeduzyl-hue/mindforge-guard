@@ -20,6 +20,8 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATIO
   "available";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SCOPE_CURRENT_PACKAGE =
   "current_closure_evidence_package_explanation_only";
+export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SELECTION_MODE_CURRENT =
+  "current_closure_evidence_package_explanation_only";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_PACKAGE_OVERVIEW =
   "package_overview";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_SUPPORTING_EVIDENCE =
@@ -61,6 +63,9 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATIO
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_REASON_CODES =
   Object.freeze([
     "package_available",
+    "current_narrative_selected",
+    "unique_current_narrative_required",
+    "current_narrative_selection_stable",
     "package_manifest_complete",
     "package_composition_bounded",
     "package_export_stable",
@@ -71,6 +76,10 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATIO
     "explanation_summary_bounded",
     "interpretation_surface_bounded",
     "narrative_sections_complete",
+    "narrative_section_alignment_stable",
+    "section_artifact_binding_stable",
+    "section_consumer_consistency_stable",
+    "cross_surface_alignment_stable",
   ]);
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_REASON_CODE_ALLOWLIST =
   GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_REASON_CODES;
@@ -104,6 +113,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATIO
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_PROFILE_BOUNDARY",
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_STATUS_AVAILABLE",
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SCOPE_CURRENT_PACKAGE",
+    "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SELECTION_MODE_CURRENT",
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_PACKAGE_OVERVIEW",
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_SUPPORTING_EVIDENCE",
     "GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_CLOSURE_CONCLUSION",
@@ -270,6 +280,7 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageExplanati
           GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_PROFILE_BOUNDARY,
         closure_evidence_package_explanation_ref: {
           narrative_id: `${ref.package_id}:narrative`,
+          narrative_selection_id: `${ref.package_id}:narrative:current`,
           package_id: ref.package_id,
           receipt_id: ref.receipt_id,
           explanation_id: ref.explanation_id,
@@ -288,6 +299,9 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageExplanati
               ...GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_REASON_CODES,
             ]),
             package_available: true,
+            current_narrative_selected: true,
+            unique_current_narrative_required: true,
+            current_narrative_selection_stable: true,
             package_manifest_complete: true,
             package_composition_bounded: true,
             package_export_stable: true,
@@ -298,11 +312,17 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageExplanati
             explanation_summary_bounded: true,
             interpretation_surface_bounded: true,
             narrative_sections_complete: true,
+            narrative_section_alignment_stable: true,
+            section_artifact_binding_stable: true,
+            section_consumer_consistency_stable: true,
+            cross_surface_alignment_stable: true,
             consumption_boundary_bounded: true,
             aggregate_export_only: true,
             permit_aggregate_export_only: true,
           }),
           narrative_structure: Object.freeze({
+            narrative_selection_mode:
+              GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SELECTION_MODE_CURRENT,
             narrative_section_ids: Object.freeze([
               ...GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_ORDER,
             ]),
@@ -314,6 +334,9 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageExplanati
         },
         validation_exports: Object.freeze({
           package_required: true,
+          current_narrative_selected_only: true,
+          unique_current_narrative_required: true,
+          current_narrative_selection_stable: true,
           package_manifest_complete: true,
           package_composition_bounded: true,
           package_export_stable: true,
@@ -324,6 +347,10 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageExplanati
           explanation_summary_bounded: true,
           interpretation_surface_bounded: true,
           narrative_sections_complete: true,
+          narrative_section_alignment_stable: true,
+          section_artifact_binding_stable: true,
+          section_consumer_consistency_stable: true,
+          cross_surface_alignment_stable: true,
           consumption_boundary_bounded: true,
           aggregate_export_only: true,
           permit_aggregate_export_only: true,
@@ -425,6 +452,29 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
       "governance case review decision closure evidence package explanation ref missing"
     );
   }
+  if (
+    !isPlainObject(payload.closure_evidence_package_explanation_ref) ||
+    [
+      "narrative_id",
+      "narrative_selection_id",
+      "package_id",
+      "receipt_id",
+      "explanation_id",
+      "closure_id",
+      "case_id",
+      "review_decision_id",
+      "attestation_id",
+    ].some(
+      (field) =>
+        typeof payload.closure_evidence_package_explanation_ref?.[field] !==
+          "string" ||
+        payload.closure_evidence_package_explanation_ref[field].length === 0
+    )
+  ) {
+    errors.push(
+      "governance case review decision closure evidence package explanation ref fields drifted"
+    );
+  }
   if (!isPlainObject(payload.explanation_context)) {
     errors.push(
       "governance case review decision closure evidence package explanation context missing"
@@ -446,6 +496,9 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
     context.explanation_basis,
     [
       "package_available",
+      "current_narrative_selected",
+      "unique_current_narrative_required",
+      "current_narrative_selection_stable",
       "package_manifest_complete",
       "package_composition_bounded",
       "package_export_stable",
@@ -456,6 +509,10 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
       "explanation_summary_bounded",
       "interpretation_surface_bounded",
       "narrative_sections_complete",
+      "narrative_section_alignment_stable",
+      "section_artifact_binding_stable",
+      "section_consumer_consistency_stable",
+      "cross_surface_alignment_stable",
       "consumption_boundary_bounded",
       "aggregate_export_only",
       "permit_aggregate_export_only",
@@ -464,6 +521,8 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
   );
   if (
     !hasUniqueStrings(context.explanation_basis.explanation_reason_codes) ||
+    context.narrative_structure.narrative_selection_mode !==
+      GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SELECTION_MODE_CURRENT ||
     JSON.stringify(context.narrative_structure.narrative_section_order) !==
       JSON.stringify(
         GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_SECTION_ORDER
@@ -580,6 +639,9 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
     payload.validation_exports,
     [
       "package_required",
+      "current_narrative_selected_only",
+      "unique_current_narrative_required",
+      "current_narrative_selection_stable",
       "package_manifest_complete",
       "package_composition_bounded",
       "package_export_stable",
@@ -590,6 +652,10 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageExplan
       "explanation_summary_bounded",
       "interpretation_surface_bounded",
       "narrative_sections_complete",
+      "narrative_section_alignment_stable",
+      "section_artifact_binding_stable",
+      "section_consumer_consistency_stable",
+      "cross_surface_alignment_stable",
       "consumption_boundary_bounded",
       "aggregate_export_only",
       "permit_aggregate_export_only",
