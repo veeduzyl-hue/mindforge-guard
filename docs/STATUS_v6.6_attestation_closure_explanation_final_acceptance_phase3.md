@@ -46,3 +46,37 @@
   - no risk integration
   - no UI / control plane
   - no main-path takeover
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_attestation_closure_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_closure_explanation_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_closure_explanation_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_applicability_closure_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_traceability_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.6` review decision attestation closure explanation boundary is consolidated to final acceptance and final compatibility freeze without turning attestation closure explanation into a governance object, judgment source, authority signal, execution channel, risk source, UI surface, or main-path dependency.
+- Final acceptance state:
+  - attestation closure explanation profile / contract / builder / validator / export surface accepted as the bounded `v6.6` module surface
+  - explanation selection stability, alignment integrity, consumption compatibility, and compatibility non-regression verified
+  - no runtime capability expansion introduced during phase 3
+- Release readiness:
+  - `v6.6` is ready to proceed to tag / release preparation once `main` absorbs phase 3 and post-merge verification passes
