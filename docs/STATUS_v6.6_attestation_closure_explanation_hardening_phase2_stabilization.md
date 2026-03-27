@@ -1,0 +1,36 @@
+# v6.6 Phase 2 Stabilization State
+
+- `v6.6 Phase 2 = Attestation Closure Explanation Consistency & Selection Stabilization`
+- Stabilized in this phase:
+  - current explanation selection uniqueness frozen
+  - current explanation selection stability frozen
+  - closure selection alignment basis frozen
+  - attestation selection alignment basis frozen
+  - applicability / applicability explanation current-selection alignment frozen
+  - explanation consumption boundary frozen as bounded supporting-artifact-only output
+- Compatibility freeze preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged behavior preserved:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Phase 2 completion:
+  - explanation consistency hardening completed
+  - explanation selection stabilization completed
+  - export surface stability frozen without widening consumption semantics
+  - phase 2 compatibility stabilization completed without expanding runtime authority or execution scope
