@@ -32,11 +32,17 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_R
     "attestation_available",
     "applicability_available",
     "applicability_explanation_available",
+    "current_closure_selected",
+    "unique_current_closure_required",
+    "current_closure_selection_stable",
     "current_selection_aligned",
     "selection_explanation_linked",
     "selection_receipt_linked",
     "applicability_linked",
     "applicability_explanation_linked",
+    "attestation_applicability_binding_unambiguous",
+    "applicability_explanation_binding_unambiguous",
+    "continuity_lineage_aligned",
     "continuity_chain_current",
     "supporting_linkage_bounded",
   ]);
@@ -90,6 +96,140 @@ function ensureKnownReasonCodes(codes) {
   return Array.isArray(codes) && new Set(codes).size === codes.length && codes.every((code) => GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_REASON_CODE_ALLOWLIST.includes(code));
 }
 
+function assertTrueFields(source, fields, label) {
+  for (const field of fields) {
+    if (source[field] !== true) {
+      throw new Error(`${label} must preserve ${field}`);
+    }
+  }
+}
+
+function assertFalseFields(source, fields, label) {
+  for (const field of fields) {
+    if (source[field] !== false) {
+      throw new Error(`${label} must preserve ${field}=false`);
+    }
+  }
+}
+
+function assertAttestationSemantics(payload) {
+  const { attestation_context: context, validation_exports: exports, preserved_semantics: semantics } = payload;
+  if (context.attestation_status !== GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_STATUS_ATTESTED) {
+    throw new Error("governance case review decision attestation applicability closure requires attestation current view");
+  }
+  if (
+    context.continuity_status === "superseded" ||
+    context.continuity_status === "parallel" ||
+    context.supersession_status === "superseded" ||
+    context.attestation_basis.continuity_chain_intact !== true ||
+    context.attestation_basis.current_selection_final_acceptance_ready !== true
+  ) {
+    throw new Error("governance case review decision attestation applicability closure unsupported state: broken continuity");
+  }
+  assertTrueFields(
+    exports,
+    [
+      "current_selection_final_acceptance_available",
+      "selection_receipt_final_acceptance_available",
+      "selection_explanation_final_acceptance_available",
+      "applicability_profile_available",
+      "applicability_explanation_profile_available",
+      "unique_current_view_required",
+      "continuity_chain_intact",
+      "linkage_integrity_preserved",
+      "permit_aggregate_export_only",
+    ],
+    "attestation validation export"
+  );
+  assertTrueFields(
+    context.attestation_basis,
+    [
+      "selection_explanation_linked",
+      "selection_receipt_linked",
+      "applicability_linked",
+      "applicability_explanation_linked",
+      "derived_only",
+      "supporting_artifact_only",
+      "non_authoritative",
+      "no_main_path_takeover",
+    ],
+    "attestation basis"
+  );
+  assertTrueFields(
+    semantics,
+    ["derived_only", "supporting_artifact_only", "recommendation_only", "additive_only", "non_executing", "default_off"],
+    "attestation preserved semantic"
+  );
+  assertFalseFields(
+    semantics,
+    ["judgment_source_enabled", "authority_source_enabled", "execution_binding_enabled", "selection_feedback_enabled", "main_path_takeover"],
+    "attestation preserved semantic"
+  );
+}
+
+function assertApplicabilitySemantics(payload) {
+  const { applicability_ref: ref, applicability_context: context, validation_exports: exports, preserved_semantics: semantics } = payload;
+  if (ref.selection_status !== "selected") {
+    throw new Error("governance case review decision attestation applicability closure requires selected applicability");
+  }
+  if (
+    context.applicability_status !== GOVERNANCE_CASE_REVIEW_DECISION_APPLICABILITY_STATUS_APPLICABLE
+  ) {
+    throw new Error("governance case review decision attestation applicability closure requires applicability availability");
+  }
+  assertTrueFields(
+    exports,
+    [
+      "current_selection_final_acceptance_available",
+      "selected_review_decision_profile_available",
+      "export_surface_available",
+    ],
+    "applicability validation export"
+  );
+  assertTrueFields(
+    semantics,
+    ["supporting_artifact_only", "recommendation_only", "additive_only", "non_executing", "default_off"],
+    "applicability preserved semantic"
+  );
+  assertFalseFields(
+    semantics,
+    ["judgment_source_enabled", "authority_source_enabled", "selection_feedback_enabled", "main_path_takeover", "authority_scope_expansion", "governance_object_addition", "risk_integration", "ui_control_plane"],
+    "applicability preserved semantic"
+  );
+}
+
+function assertApplicabilityExplanationSemantics(payload) {
+  const { applicability_explanation_ref: ref, explanation_context: context, validation_exports: exports, preserved_semantics: semantics } = payload;
+  if (ref.selection_status !== "selected" || ref.applicability_status !== GOVERNANCE_CASE_REVIEW_DECISION_APPLICABILITY_STATUS_APPLICABLE) {
+    throw new Error("governance case review decision attestation applicability closure requires selected applicability explanation");
+  }
+  if (
+    context.explanation_status !== GOVERNANCE_CASE_REVIEW_DECISION_APPLICABILITY_EXPLANATION_STATUS_AVAILABLE
+  ) {
+    throw new Error("governance case review decision attestation applicability closure requires applicability explanation availability");
+  }
+  assertTrueFields(
+    exports,
+    [
+      "current_selection_final_acceptance_available",
+      "applicability_profile_available",
+      "selected_review_decision_profile_available",
+      "export_surface_available",
+    ],
+    "applicability explanation validation export"
+  );
+  assertTrueFields(
+    semantics,
+    ["supporting_artifact_only", "recommendation_only", "additive_only", "non_executing", "default_off"],
+    "applicability explanation preserved semantic"
+  );
+  assertFalseFields(
+    semantics,
+    ["applicability_scoring", "applicability_ranking", "reselection_enabled", "judgment_source_enabled", "authority_source_enabled", "selection_feedback_enabled", "main_path_takeover", "authority_scope_expansion", "governance_object_addition", "risk_integration", "ui_control_plane"],
+    "applicability explanation preserved semantic"
+  );
+}
+
 function assertAligned(attestationRef, applicabilityRef, explanationRef, hashes) {
   if (
     attestationRef.case_id !== applicabilityRef.case_id ||
@@ -133,40 +273,20 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
   const explanationRef = explanationPayload.applicability_explanation_ref;
   const attestationBasis = attestationPayload.attestation_context.attestation_basis;
 
-  if (attestationPayload.attestation_context.attestation_status !== GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_STATUS_ATTESTED) {
-    throw new Error("governance case review decision attestation applicability closure requires attestation current view");
-  }
-  if (
-    attestationPayload.attestation_context.continuity_status === "superseded" ||
-    attestationPayload.attestation_context.supersession_status === "superseded" ||
-    attestationBasis.continuity_chain_intact !== true
-  ) {
-    throw new Error("governance case review decision attestation applicability closure unsupported state: broken continuity");
-  }
-  if (
-    applicabilityPayload.applicability_context.applicability_status !== GOVERNANCE_CASE_REVIEW_DECISION_APPLICABILITY_STATUS_APPLICABLE
-  ) {
-    throw new Error("governance case review decision attestation applicability closure requires applicability availability");
-  }
-  if (
-    explanationPayload.explanation_context.explanation_status !== GOVERNANCE_CASE_REVIEW_DECISION_APPLICABILITY_EXPLANATION_STATUS_AVAILABLE
-  ) {
-    throw new Error("governance case review decision attestation applicability closure requires applicability explanation availability");
-  }
-  if (
-    attestationBasis.selection_explanation_linked !== true ||
-    attestationBasis.selection_receipt_linked !== true ||
-    attestationBasis.applicability_linked !== true ||
-    attestationBasis.applicability_explanation_linked !== true
-  ) {
-    throw new Error("governance case review decision attestation applicability closure requires bounded supporting linkage");
-  }
+  assertAttestationSemantics(attestationPayload);
+  assertApplicabilitySemantics(applicabilityPayload);
+  assertApplicabilityExplanationSemantics(explanationPayload);
 
   assertAligned(attestationRef, applicabilityRef, explanationRef, [
     attestationProfile.canonical_action_hash,
     applicabilityProfile.canonical_action_hash,
     applicabilityExplanationProfile.canonical_action_hash,
   ]);
+  if (
+    applicabilityRef.current_review_decision_id !== explanationRef.current_review_decision_id
+  ) {
+    throw new Error("governance case review decision attestation applicability closure mismatch: current review decision binding must remain unambiguous");
+  }
 
   return {
     kind:
@@ -185,6 +305,7 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
         GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_PROFILE_BOUNDARY,
       attestation_applicability_closure_ref: {
         closure_id: `${attestationRef.attestation_id}:applicability_closure`,
+        closure_selection_id: `${attestationRef.current_selection_id}:attestation_applicability_closure`,
         case_id: attestationRef.case_id,
         review_decision_id: attestationRef.review_decision_id,
         attestation_id: attestationRef.attestation_id,
@@ -216,12 +337,18 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
           attestation_available: true,
           applicability_available: true,
           applicability_explanation_available: true,
+          current_closure_selected: true,
+          unique_current_closure_required: true,
+          current_closure_selection_stable: true,
           current_attestation_aligned: true,
           current_selection_aligned: true,
           selection_explanation_linked: true,
           selection_receipt_linked: true,
           applicability_aligned: true,
           applicability_explanation_aligned: true,
+          attestation_applicability_binding_unambiguous: true,
+          applicability_explanation_binding_unambiguous: true,
+          continuity_lineage_aligned: true,
           continuity_chain_current: true,
           supporting_linkage_bounded: true,
           derived_only: true,
@@ -241,8 +368,13 @@ export function buildGovernanceCaseReviewDecisionAttestationApplicabilityClosure
         applicability_explanation_available: true,
         export_surface_available: true,
         unique_current_attestation_view_required: true,
+        unique_current_closure_required: true,
+        current_closure_selection_stable: true,
         applicability_alignment_required: true,
         applicability_explanation_alignment_required: true,
+        attestation_applicability_binding_unambiguous: true,
+        applicability_explanation_binding_unambiguous: true,
+        continuity_lineage_alignment_required: true,
         continuity_chain_intact_required: true,
         broken_continuity_rejected: true,
         cross_case_binding_rejected: true,
@@ -321,6 +453,7 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
   }
   for (const field of [
     "closure_id",
+    "closure_selection_id",
     "case_id",
     "review_decision_id",
     "attestation_id",
@@ -364,12 +497,18 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
     "attestation_available",
     "applicability_available",
     "applicability_explanation_available",
+    "current_closure_selected",
+    "unique_current_closure_required",
+    "current_closure_selection_stable",
     "current_attestation_aligned",
     "current_selection_aligned",
     "selection_explanation_linked",
     "selection_receipt_linked",
     "applicability_aligned",
     "applicability_explanation_aligned",
+    "attestation_applicability_binding_unambiguous",
+    "applicability_explanation_binding_unambiguous",
+    "continuity_lineage_aligned",
     "continuity_chain_current",
     "supporting_linkage_bounded",
     "derived_only",
@@ -392,8 +531,13 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
     "applicability_explanation_available",
     "export_surface_available",
     "unique_current_attestation_view_required",
+    "unique_current_closure_required",
+    "current_closure_selection_stable",
     "applicability_alignment_required",
     "applicability_explanation_alignment_required",
+    "attestation_applicability_binding_unambiguous",
+    "applicability_explanation_binding_unambiguous",
+    "continuity_lineage_alignment_required",
     "continuity_chain_intact_required",
     "broken_continuity_rejected",
     "cross_case_binding_rejected",
