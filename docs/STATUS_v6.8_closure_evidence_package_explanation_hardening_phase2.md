@@ -1,0 +1,37 @@
+# v6.8 Phase 2 State
+
+- Baseline:
+  - `v6.8 Phase 1 = Governance Case Closure Evidence Package Explanation / Narrative Boundary v1`
+- Module:
+  - `v6.8 Phase 2 = Closure Evidence Package Explanation / Narrative Consistency & Interpretation Stabilization`
+- Start scope:
+  - stabilize explanation interpretation consistency
+  - stabilize section-to-artifact binding consistency
+  - stabilize builder / profile / contract / export cross-surface alignment
+  - strengthen negative verification against narrative drift
+  - preserve unchanged audit / permit / classify behavior
+- This phase is limited to:
+  - the existing closure evidence package explanation / narrative surface only
+  - bounded supporting-artifact explanation consistency only
+  - additive stabilization only
+  - no new authority-bearing governance object
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`

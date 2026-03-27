@@ -29,6 +29,8 @@ export function consumeGovernanceCaseReviewDecisionClosureEvidencePackageExplana
   if (
     contract.closure_evidence_package_explanation_profile_ref.narrative_id !==
       ref.narrative_id ||
+    contract.closure_evidence_package_explanation_profile_ref
+      .narrative_selection_id !== ref.narrative_selection_id ||
     contract.closure_evidence_package_explanation_profile_ref.package_id !==
       ref.package_id ||
     contract.closure_evidence_package_explanation_profile_ref.receipt_id !==
@@ -48,6 +50,7 @@ export function consumeGovernanceCaseReviewDecisionClosureEvidencePackageExplana
   return Object.freeze({
     consumer_surface: payload.consumer_surface,
     narrative_id: ref.narrative_id,
+    narrative_selection_id: ref.narrative_selection_id,
     package_id: ref.package_id,
     receipt_id: ref.receipt_id,
     explanation_id: ref.explanation_id,
@@ -57,12 +60,20 @@ export function consumeGovernanceCaseReviewDecisionClosureEvidencePackageExplana
     attestation_id: ref.attestation_id,
     explanation_status: payload.explanation_context.explanation_status,
     explanation_scope: payload.explanation_context.explanation_scope,
+    narrative_selection_mode:
+      payload.explanation_context.narrative_structure.narrative_selection_mode,
     narrative_section_ids: Object.freeze([...sectionIds]),
+    current_narrative_selected: true,
+    current_narrative_selection_stable: true,
     package_manifest_complete: true,
     package_composition_bounded: true,
     package_export_stable: true,
     interpretation_surface_bounded: true,
     narrative_sections_complete: true,
+    narrative_section_alignment_stable: true,
+    section_artifact_binding_stable: true,
+    section_consumer_consistency_stable: true,
+    cross_surface_alignment_stable: true,
     package_linkage_only: true,
     consumption_boundary_bounded: true,
     derived_only: true,
