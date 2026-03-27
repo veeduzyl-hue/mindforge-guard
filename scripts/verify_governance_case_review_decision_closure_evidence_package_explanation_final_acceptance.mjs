@@ -33,7 +33,7 @@ if (!explanationSurface) {
 
 if (
   GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_EXPLANATION_PROFILE_STAGE !==
-  "governance_case_review_decision_closure_evidence_package_explanation_boundary_phase1_v6_8_0"
+  "governance_case_review_decision_closure_evidence_package_explanation_boundary_phase2_v6_8_0"
 ) {
   throw new Error(
     "review decision closure evidence package explanation final acceptance stage drifted"
