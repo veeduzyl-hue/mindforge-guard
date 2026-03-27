@@ -1,0 +1,50 @@
+# v6.5 Phase 1 State
+
+- Baseline:
+  - `v6.4.0 = Governance Case Review Decision Attestation Traceability Boundary v1`
+- Module:
+  - `v6.5 Phase 1 = Governance Case Review Decision Attestation Applicability Closure v1`
+- Start scope:
+  - establish the minimum review decision attestation applicability closure profile / contract
+  - establish the minimum attestation applicability closure builder / validator / export surface
+  - verify closure formation prerequisites and bounded supporting linkage integrity
+  - keep attestation applicability closure derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+- This phase is limited to:
+  - closure of the existing review decision attestation artifact only
+  - closure of the existing review decision applicability artifact only
+  - closure of the existing review decision applicability explanation artifact only
+  - bounded alignment to current selection / selection explanation / selection receipt / applicability / applicability explanation / attestation basis only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - approval semantics
+  - authority semantics
+  - execution semantics
+  - observability platform behavior
+  - risk integration
+  - UI / dashboard / control plane
+  - audit / permit / classify main-path takeover
+- Phase 1 completion:
+  - minimum attestation applicability closure profile / contract established
+  - minimum closure builder / validator / export surface established
+  - minimum closure verification established
+  - phase 1 boundary frozen without expanding runtime authority or execution scope
