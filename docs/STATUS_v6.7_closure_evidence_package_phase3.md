@@ -1,0 +1,43 @@
+# v6.7 Phase 3 Start State
+
+- Baseline:
+  - `v6.7 Phase 2 = Governance Case Review Decision Closure Receipt / Evidence Package Boundary v1`
+  - `phase 2 focus = evidence package structure / export stabilization`
+- Module:
+  - `v6.7 Phase 3 = Governance Case Review Decision Closure Receipt / Evidence Package Boundary v1 Final Acceptance Consolidation`
+- Start scope:
+  - consolidate final acceptance for the existing closure receipt foundation plus closure evidence package surface
+  - freeze compatibility expectations for release readiness
+  - unify verification around package integrity, export completeness, consumption compatibility, and non-regression
+  - avoid any expansion into authority, execution, risk, UI, control plane, narrative, install-to-value, SKU gating, or new governance object families
+- Consolidation target:
+  - final acceptance statement for receipt foundation compatibility and closure evidence package profile / contract / builder / consumer / export surface
+  - final compatibility freeze statement for audit / permit / classify and authority-adjacent flags
+  - consolidated final acceptance verification for semantic integrity and non-regression
+  - release-readiness documentation for `v6.7` without performing tag / release
+- Final acceptance scope freezes:
+  - closure receipt remains the package input-layer foundation only
+  - closure evidence package remains a bounded supporting-artifact deliverable surface only
+  - package manifest completeness and package composition boundedness remain required
+  - package export stability and package linkage-only semantics remain required
+  - package consumption remains bounded compatibility-only
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+  - no new governance authority object
+  - no runtime governance object with decision semantics
