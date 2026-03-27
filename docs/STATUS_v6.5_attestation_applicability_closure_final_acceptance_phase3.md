@@ -14,3 +14,65 @@
   - final compatibility freeze statement for audit / permit / classify and authority-adjacent flags
   - consolidated final acceptance verification for semantic integrity and non-regression
   - release-readiness documentation for `v6.5` without performing tag / release
+- Final acceptance scope freezes:
+  - attestation applicability closure as current attestation to applicability / applicability explanation derived artifact only
+  - unique current closure selection requirement
+  - current closure selection stability requirement
+  - unambiguous attestation to applicability binding requirement
+  - unambiguous applicability explanation binding requirement
+  - continuity lineage alignment requirement
+  - complete supporting linkage requirement across selection explanation / selection receipt / applicability / applicability explanation
+  - strict identity alignment across `case_id`, `review_decision_id`, and `canonical_action_hash`
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no new governance object
+  - no authority scope expansion
+  - no execution semantics
+  - no risk integration
+  - no UI / control plane
+  - no main-path takeover
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_attestation_applicability_closure_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_applicability_closure_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_applicability_closure_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_attestation_traceability_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs action classify --text "write file README.md"`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --limited-enforcement-authority`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --enforcement-pilot`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.5` review decision attestation applicability closure boundary is consolidated to final acceptance and final compatibility freeze without turning attestation applicability closure into a governance object, judgment source, authority signal, execution channel, risk source, UI surface, or main-path dependency.
+- Final acceptance state:
+  - attestation applicability closure profile / contract / builder / validator / export surface accepted as the bounded `v6.5` module surface
+  - closure uniqueness, selection stability, binding consistency, and compatibility non-regression verified
+  - no runtime capability expansion introduced during phase 3
+- Release readiness:
+  - `v6.5` is ready to proceed to tag / release preparation once `main` absorbs phase 3 and post-merge verification passes
