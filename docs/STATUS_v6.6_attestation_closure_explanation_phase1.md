@@ -1,0 +1,49 @@
+# v6.6 Phase 1 State
+
+- Baseline:
+  - `v6.5.0 = Governance Case Review Decision Attestation Applicability Closure v1`
+- Module:
+  - `v6.6 Phase 1 = Governance Case Review Decision Attestation Closure Explanation Boundary v1`
+- Start scope:
+  - establish the minimum review decision attestation closure explanation profile / contract
+  - establish the minimum closure explanation builder / validator / export surface
+  - verify closure explanation alignment to the existing closure / attestation / applicability / applicability explanation / continuity lineage surface
+  - keep attestation closure explanation derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+- This phase is limited to:
+  - explanation of the existing review decision attestation applicability closure artifact only
+  - explanation of the existing attestation to applicability binding only
+  - explanation of the existing applicability explanation alignment only
+  - bounded alignment to current closure selection / attestation basis / applicability basis / applicability explanation basis / continuity lineage only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - approval semantics
+  - authority semantics
+  - execution semantics
+  - risk integration
+  - UI / dashboard / control plane
+  - audit / permit / classify main-path takeover
+- Phase 1 completion:
+  - minimum attestation closure explanation profile / contract established
+  - minimum explanation builder / validator / export surface established
+  - minimum explanation verification established
+  - phase 1 boundary frozen without expanding runtime authority or execution scope
