@@ -1,0 +1,56 @@
+# mindforge-guard/.codex/config.toml
+# Repo-scoped Codex defaults for MindForge Guard.
+# Keep this file project-safe and team-shareable.
+# Put personal or machine-specific overrides in ~/.codex/config.toml instead.
+
+model = "gpt-5.4"
+model_provider = "openai"
+
+# Guard work benefits from stronger planning and tighter wording.
+model_reasoning_effort = "high"
+plan_mode_reasoning_effort = "high"
+model_verbosity = "low"
+
+# Be conservative by default inside this repo.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# Keep repo tasks self-contained unless a task explicitly needs network.
+[sandbox_workspace_write]
+network_access = false
+exclude_slash_tmp = false
+exclude_tmpdir_env_var = false
+
+# Project discovery: treat the git root as the project root.
+project_root_markers = [".git"]
+
+# Allow enough space for repo instructions without going overboard.
+project_doc_max_bytes = 65536
+
+# Keep fallback support minimal and explicit.
+project_doc_fallback_filenames = [".agents.md"]
+
+# Optional project-scoped profiles.
+# Use these when you want to switch posture quickly without changing the root defaults.
+
+[profiles.guard_plan]
+model_reasoning_effort = "high"
+model_verbosity = "low"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.guard_review]
+model_reasoning_effort = "high"
+model_verbosity = "low"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.guard_docs]
+model_reasoning_effort = "medium"
+model_verbosity = "low"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# Windows-specific note:
+# If you later find you need a stricter or different sandbox posture on Windows,
+# add a profile-scoped windows.sandbox override after confirming the behavior you want.
