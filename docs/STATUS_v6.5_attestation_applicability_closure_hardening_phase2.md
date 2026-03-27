@@ -1,0 +1,50 @@
+# v6.5 Phase 2 State
+
+- Baseline:
+  - `v6.5 Phase 1 = Governance Case Review Decision Attestation Applicability Closure v1`
+- Module:
+  - `v6.5 Phase 2 = Attestation Applicability Closure Consistency & Selection Stabilization`
+- Start scope:
+  - harden current closure selection uniqueness and stability
+  - harden closure consistency across attestation / applicability / applicability explanation / continuity lineage
+  - harden machine-verifiable contract / profile / surface fields without introducing new governance objects
+  - strengthen verification for selection stability and compatibility non-regression
+- This phase is limited to:
+  - bounded consistency tightening inside the existing attestation applicability closure artifact
+  - current closure selection stabilization only
+  - cross-artifact alignment hardening only
+  - additive export surface stabilization only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - authority implication
+  - execution semantics
+  - permit lane consumption
+  - risk integration
+  - UI / dashboard / control plane
+  - main-path takeover
+  - governance object proliferation
+- Current target:
+  - current closure selection uniqueness frozen
+  - current closure selection stability frozen
+  - attestation / applicability / applicability explanation lineage consistency frozen
+  - phase 2 compatibility stabilization completed without expanding runtime authority or execution scope
