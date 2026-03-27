@@ -1,0 +1,39 @@
+# v6.5 Phase 2 Stabilization State
+
+- Module:
+  - `v6.5 Phase 2 = Attestation Applicability Closure Consistency & Selection Stabilization`
+- Achieved:
+  - current closure selection uniqueness frozen
+  - current closure selection stability frozen
+  - attestation / applicability / applicability explanation lineage consistency frozen
+  - contract/profile/export surface consistency hardened
+  - phase 2 verification hardened for selection stability and compatibility non-regression
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Not introduced:
+  - authority implication
+  - execution semantics
+  - permit lane consumption
+  - risk integration
+  - UI / dashboard / control plane
+  - governance object expansion
+  - main-path takeover
