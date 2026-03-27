@@ -47,3 +47,11 @@
   - minimum explanation builder / validator / export surface established
   - minimum explanation verification established
   - phase 1 boundary frozen without expanding runtime authority or execution scope
+- Boundary state:
+  - attestation closure explanation now explains current closure selection basis
+  - attestation to applicability binding basis is frozen as bounded explanation scope only
+  - applicability explanation alignment basis is frozen as bounded explanation scope only
+  - continuity lineage alignment basis is frozen as bounded explanation scope only
+  - explanation remains derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+  - export remains additive-only through `caseReviewDecision` and permit aggregate re-export only
+  - no new governance object, authority implication, execution binding, risk integration, UI, or control plane introduced
