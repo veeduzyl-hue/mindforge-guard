@@ -117,6 +117,93 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
   ) {
     errors.push("governance case review decision attestation applicability closure contract envelope drifted");
   }
+  if (!isPlainObject(contract.attestation_applicability_closure_profile_ref)) {
+    errors.push(
+      "governance case review decision attestation applicability closure profile ref missing"
+    );
+  }
+  for (const field of [
+    "closure_available",
+    "attestation_required",
+    "applicability_required",
+    "applicability_explanation_required",
+    "current_selection_required",
+    "selection_explanation_required",
+    "selection_receipt_required",
+    "selected_current_review_decision_only",
+    "non_superseded_current_attestation_only",
+    "unique_current_attestation_view_required",
+    "applicability_alignment_required",
+    "applicability_explanation_alignment_required",
+    "continuity_chain_intact_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_review_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
+    "strict_case_id_alignment_required",
+    "strict_review_decision_id_alignment_required",
+    "strict_canonical_action_hash_alignment_required",
+    "complete_supporting_linkage_required",
+    "aggregate_export_only",
+    "permit_aggregate_export_only",
+    "derived_only",
+    "supporting_artifact_only",
+    "non_authoritative",
+    "non_authoritative_support_only",
+    "closure_linkage_only",
+    "recommendation_only",
+    "additive_only",
+    "non_executing",
+    "default_off",
+    "structured_closure_only",
+  ]) {
+    if (contract[field] !== true) {
+      errors.push(
+        `governance case review decision attestation applicability closure contract field drifted: ${field}`
+      );
+    }
+  }
+  for (const field of [
+    "judgment_source_enabled",
+    "authority_source_enabled",
+    "execution_binding_enabled",
+    "risk_source_enabled",
+    "selection_feedback_enabled",
+    "permit_lane_consumption",
+    "audit_path_dependency",
+    "main_path_takeover",
+    "authority_scope_expansion",
+    "new_governance_object",
+    "observability_platform_behavior",
+  ]) {
+    if (contract[field] !== false) {
+      errors.push(
+        `governance case review decision attestation applicability closure contract field drifted: ${field}`
+      );
+    }
+  }
+  if (contract.closure_status !== "closed") {
+    errors.push(
+      "governance case review decision attestation applicability closure status drifted"
+    );
+  }
+  if (
+    contract.closure_scope !== "current_attestation_applicability_closure_only"
+  ) {
+    errors.push(
+      "governance case review decision attestation applicability closure scope drifted"
+    );
+  }
+  if (
+    typeof contract.review_decision_id !== "string" ||
+    contract.review_decision_id.length === 0 ||
+    typeof contract.canonical_action_hash !== "string" ||
+    contract.canonical_action_hash.length === 0
+  ) {
+    errors.push(
+      "governance case review decision attestation applicability closure identity fields are required"
+    );
+  }
   return { ok: errors.length === 0, errors };
 }
 

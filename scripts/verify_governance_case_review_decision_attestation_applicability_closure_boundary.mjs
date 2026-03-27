@@ -393,6 +393,23 @@ assertRejected(() => {
   });
 }, "canonical_action_hash", "review decision attestation applicability closure must reject cross-canonical-action-hash mismatch");
 
+assertRejected(() => {
+  const drifted = cloneJson(profile);
+  drifted.governance_case_review_decision_attestation_applicability_closure.preserved_semantics.authority_source_enabled =
+    true;
+  permitExports.assertValidGovernanceCaseReviewDecisionAttestationApplicabilityClosureProfile(
+    drifted
+  );
+}, "preserved semantic drifted: authority_source_enabled", "review decision attestation applicability closure profile validator must reject authority drift");
+
+assertRejected(() => {
+  const drifted = cloneJson(contract);
+  drifted.main_path_takeover = true;
+  permitExports.assertValidGovernanceCaseReviewDecisionAttestationApplicabilityClosureContract(
+    drifted
+  );
+}, "contract field drifted: main_path_takeover", "review decision attestation applicability closure contract validator must reject main-path drift");
+
 if (
   !GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_SURFACE_MAP.governance_case_review_decision_attestation_applicability_closure ||
   GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_SURFACE_MAP.governance_case_review_decision_attestation_applicability_closure.derived_only !== true ||

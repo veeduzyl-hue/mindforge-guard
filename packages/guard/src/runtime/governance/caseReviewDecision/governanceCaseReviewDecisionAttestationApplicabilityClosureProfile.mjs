@@ -306,20 +306,142 @@ export function validateGovernanceCaseReviewDecisionAttestationApplicabilityClos
   ) {
     errors.push("governance case review decision attestation applicability closure payload field order drifted");
   }
+  const ref = payload.attestation_applicability_closure_ref;
+  const context = payload.closure_context;
+  const validationExports = payload.validation_exports;
+  const preservedSemantics = payload.preserved_semantics;
   if (
-    payload.closure_context.closure_status !==
+    !isPlainObject(ref) ||
+    !isPlainObject(context) ||
+    !isPlainObject(validationExports) ||
+    !isPlainObject(preservedSemantics)
+  ) {
+    errors.push("governance case review decision attestation applicability closure payload structure drifted");
+    return { ok: false, errors };
+  }
+  for (const field of [
+    "closure_id",
+    "case_id",
+    "review_decision_id",
+    "attestation_id",
+    "applicability_id",
+    "applicability_explanation_id",
+    "current_selection_id",
+    "selection_explanation_id",
+    "selection_receipt_id",
+  ]) {
+    if (typeof ref[field] !== "string" || ref[field].length === 0) {
+      errors.push(
+        `governance case review decision attestation applicability closure ref ${field} is required`
+      );
+    }
+  }
+  if (
+    context.closure_status !==
       GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_STATUS_CLOSED ||
-    payload.closure_context.closure_scope !==
+    context.closure_scope !==
       GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_APPLICABILITY_CLOSURE_SCOPE_CURRENT_ATTESTATION
   ) {
     errors.push("governance case review decision attestation applicability closure scope or status drifted");
   }
   if (
+    !isPlainObject(context.attestation_basis) ||
+    !Array.isArray(context.applicability_reason_codes) ||
+    !Array.isArray(context.applicability_explanation_reason_codes) ||
+    !isPlainObject(context.closure_basis)
+  ) {
+    errors.push("governance case review decision attestation applicability closure basis structure drifted");
+    return { ok: false, errors };
+  }
+  if (
     !ensureKnownReasonCodes(
-      payload.closure_context.closure_basis.closure_reason_codes
+      context.closure_basis.closure_reason_codes
     )
   ) {
     errors.push("governance case review decision attestation applicability closure reason codes drifted");
+  }
+  for (const field of [
+    "attestation_available",
+    "applicability_available",
+    "applicability_explanation_available",
+    "current_attestation_aligned",
+    "current_selection_aligned",
+    "selection_explanation_linked",
+    "selection_receipt_linked",
+    "applicability_aligned",
+    "applicability_explanation_aligned",
+    "continuity_chain_current",
+    "supporting_linkage_bounded",
+    "derived_only",
+    "supporting_artifact_only",
+    "non_authoritative",
+    "non_authoritative_support_only",
+    "closure_linkage_only",
+    "aggregate_export_only",
+    "permit_aggregate_export_only",
+  ]) {
+    if (context.closure_basis[field] !== true) {
+      errors.push(
+        `governance case review decision attestation applicability closure basis drifted: ${field}`
+      );
+    }
+  }
+  for (const field of [
+    "attestation_available",
+    "applicability_available",
+    "applicability_explanation_available",
+    "export_surface_available",
+    "unique_current_attestation_view_required",
+    "applicability_alignment_required",
+    "applicability_explanation_alignment_required",
+    "continuity_chain_intact_required",
+    "broken_continuity_rejected",
+    "cross_case_binding_rejected",
+    "cross_review_decision_binding_rejected",
+    "cross_canonical_action_hash_binding_rejected",
+    "complete_supporting_linkage_required",
+    "non_authoritative_support_only",
+    "aggregate_export_only",
+    "permit_aggregate_export_only",
+  ]) {
+    if (validationExports[field] !== true) {
+      errors.push(
+        `governance case review decision attestation applicability closure validation export drifted: ${field}`
+      );
+    }
+  }
+  for (const field of [
+    "derived_only",
+    "supporting_artifact_only",
+    "non_authoritative",
+    "recommendation_only",
+    "additive_only",
+    "non_executing",
+    "default_off",
+  ]) {
+    if (preservedSemantics[field] !== true) {
+      errors.push(
+        `governance case review decision attestation applicability closure preserved semantic drifted: ${field}`
+      );
+    }
+  }
+  for (const field of [
+    "judgment_source_enabled",
+    "authority_source_enabled",
+    "execution_binding_enabled",
+    "risk_source_enabled",
+    "selection_feedback_enabled",
+    "main_path_takeover",
+    "authority_scope_expansion",
+    "governance_object_addition",
+    "ui_control_plane",
+    "observability_platform_behavior",
+  ]) {
+    if (preservedSemantics[field] !== false) {
+      errors.push(
+        `governance case review decision attestation applicability closure preserved semantic drifted: ${field}`
+      );
+    }
   }
   return { ok: errors.length === 0, errors };
 }
