@@ -28,6 +28,8 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureExplanation
   if (
     contract.attestation_closure_explanation_profile_ref.explanation_id !==
       ref.explanation_id ||
+    contract.attestation_closure_explanation_profile_ref.explanation_selection_id !==
+      ref.explanation_selection_id ||
     contract.attestation_closure_explanation_profile_ref.closure_id !==
       ref.closure_id ||
     contract.attestation_closure_explanation_profile_ref.attestation_id !==
@@ -44,6 +46,7 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureExplanation
   return Object.freeze({
     consumer_surface: payload.consumer_surface,
     explanation_id: ref.explanation_id,
+    explanation_selection_id: ref.explanation_selection_id,
     closure_id: ref.closure_id,
     closure_selection_id: ref.closure_selection_id,
     case_id: ref.case_id,
@@ -54,8 +57,12 @@ export function consumeGovernanceCaseReviewDecisionAttestationClosureExplanation
     explanation_reason_codes: Object.freeze([
       ...context.explanation_basis.explanation_reason_codes,
     ]),
+    current_explanation_selected: true,
+    current_explanation_selection_stable: true,
     current_closure_selected: true,
     current_closure_selection_stable: true,
+    explanation_linkage_only: true,
+    consumption_boundary_bounded: true,
     derived_only: true,
     supporting_artifact_only: true,
     non_authoritative: true,

@@ -1,0 +1,45 @@
+# v6.6 Phase 2 State
+
+- Baseline:
+  - `v6.6 Phase 1 = Governance Case Review Decision Attestation Closure Explanation Boundary v1`
+- Module:
+  - `v6.6 Phase 2 = Attestation Closure Explanation Consistency & Selection Stabilization`
+- Start scope:
+  - harden current explanation selection uniqueness and stability
+  - harden explanation consistency across closure / attestation / applicability / applicability explanation / continuity lineage
+  - harden machine-verifiable contract / profile / surface fields without introducing new governance objects
+  - strengthen verification for explanation selection stability and compatibility non-regression
+- This phase is limited to:
+  - bounded explanation consistency tightening inside the existing attestation closure explanation artifact
+  - current explanation selection stabilization only
+  - cross-artifact alignment hardening only
+  - additive export surface stabilization only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no new governance object
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- This phase must not introduce:
+  - authority implication
+  - execution semantics
+  - permit lane consumption
+  - risk integration
+  - UI / dashboard / control plane
+  - main-path takeover
+  - governance object proliferation
