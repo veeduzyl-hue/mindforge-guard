@@ -43,6 +43,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationCo
       boundary:
         GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_EXPLANATION_PROFILE_BOUNDARY,
       explanation_id: ref.explanation_id,
+      explanation_selection_id: ref.explanation_selection_id,
       closure_id: ref.closure_id,
       closure_selection_id: ref.closure_selection_id,
       case_id: ref.case_id,
@@ -54,10 +55,15 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationCo
     attestation_required: true,
     applicability_required: true,
     applicability_explanation_required: true,
+    current_explanation_selected_only: true,
+    unique_current_explanation_required: true,
+    current_explanation_selection_stable: true,
     current_closure_selected_only: true,
     unique_current_closure_required: true,
     current_closure_selection_stable: true,
     closure_validity_basis_required: true,
+    closure_selection_alignment_required: true,
+    attestation_selection_alignment_required: true,
     attestation_applicability_binding_basis_required: true,
     applicability_explanation_alignment_basis_required: true,
     continuity_lineage_alignment_basis_required: true,
@@ -66,6 +72,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationCo
     cross_review_decision_binding_rejected: true,
     cross_canonical_action_hash_binding_rejected: true,
     complete_supporting_linkage_required: true,
+    consumption_boundary_bounded: true,
     aggregate_export_only: true,
     permit_aggregate_export_only: true,
     derived_only: true,
@@ -121,16 +128,32 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
       "governance case review decision attestation closure explanation profile ref missing"
     );
   }
+  if (
+    isPlainObject(contract.attestation_closure_explanation_profile_ref) &&
+    (typeof contract.attestation_closure_explanation_profile_ref
+      .explanation_selection_id !== "string" ||
+      contract.attestation_closure_explanation_profile_ref.explanation_selection_id
+        .length === 0)
+  ) {
+    errors.push(
+      "governance case review decision attestation closure explanation profile ref explanation_selection_id missing"
+    );
+  }
   for (const field of [
     "explanation_available",
     "closure_required",
     "attestation_required",
     "applicability_required",
     "applicability_explanation_required",
+    "current_explanation_selected_only",
+    "unique_current_explanation_required",
+    "current_explanation_selection_stable",
     "current_closure_selected_only",
     "unique_current_closure_required",
     "current_closure_selection_stable",
     "closure_validity_basis_required",
+    "closure_selection_alignment_required",
+    "attestation_selection_alignment_required",
     "attestation_applicability_binding_basis_required",
     "applicability_explanation_alignment_basis_required",
     "continuity_lineage_alignment_basis_required",
@@ -139,6 +162,7 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
     "cross_review_decision_binding_rejected",
     "cross_canonical_action_hash_binding_rejected",
     "complete_supporting_linkage_required",
+    "consumption_boundary_bounded",
     "aggregate_export_only",
     "permit_aggregate_export_only",
     "derived_only",

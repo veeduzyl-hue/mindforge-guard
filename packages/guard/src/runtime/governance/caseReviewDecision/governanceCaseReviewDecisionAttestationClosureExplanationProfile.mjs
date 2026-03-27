@@ -38,6 +38,9 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_EXPLANATION_REA
     "attestation_available",
     "applicability_available",
     "applicability_explanation_available",
+    "current_explanation_selected",
+    "unique_current_explanation_required",
+    "current_explanation_selection_stable",
     "current_closure_selected",
     "current_closure_selection_stable",
     "closure_validity_current",
@@ -300,6 +303,15 @@ function assertApplicabilitySemantics(payload) {
       "governance case review decision attestation closure explanation requires applicable applicability"
     );
   }
+  assertTrueFields(
+    payload.validation_exports,
+    [
+      "current_selection_final_acceptance_available",
+      "selected_review_decision_profile_available",
+      "export_surface_available",
+    ],
+    "applicability validation export"
+  );
 }
 
 function assertApplicabilityExplanationSemantics(payload) {
@@ -311,6 +323,16 @@ function assertApplicabilityExplanationSemantics(payload) {
       "governance case review decision attestation closure explanation requires applicability explanation availability"
     );
   }
+  assertTrueFields(
+    payload.validation_exports,
+    [
+      "current_selection_final_acceptance_available",
+      "applicability_profile_available",
+      "selected_review_decision_profile_available",
+      "export_surface_available",
+    ],
+    "applicability explanation validation export"
+  );
 }
 
 export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationProfile({
@@ -413,6 +435,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationPr
         GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_EXPLANATION_PROFILE_BOUNDARY,
       attestation_closure_explanation_ref: {
         explanation_id: `${closureRef.closure_id}:explanation`,
+        explanation_selection_id: `${closureRef.closure_selection_id}:explanation`,
         closure_id: closureRef.closure_id,
         closure_selection_id: closureRef.closure_selection_id,
         case_id: caseId,
@@ -434,18 +457,27 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationPr
           explanation_reason_codes: Object.freeze([
             ...GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_EXPLANATION_REASON_CODES,
           ]),
+          current_explanation_selected: true,
+          unique_current_explanation_required: true,
+          current_explanation_selection_stable: true,
           current_closure_selection_basis: true,
           closure_validity_basis: true,
+          closure_selection_alignment_basis: true,
+          attestation_selection_alignment_basis: true,
           attestation_applicability_binding_basis: true,
           applicability_explanation_alignment_basis: true,
           continuity_lineage_alignment_basis: true,
           closure_uniqueness_basis: true,
+          explanation_consumption_boundary_bounded: true,
           supporting_basis_complete: true,
         }),
         artifact_version:
           GOVERNANCE_CASE_REVIEW_DECISION_ATTESTATION_CLOSURE_EXPLANATION_PROFILE_VERSION,
       },
       validation_exports: {
+        current_explanation_selected_only: true,
+        unique_current_explanation_required: true,
+        current_explanation_selection_stable: true,
         closure_available: true,
         attestation_available: true,
         applicability_available: true,
@@ -454,6 +486,8 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationPr
         unique_current_closure_required: true,
         current_closure_selection_stable: true,
         closure_validity_basis_required: true,
+        closure_selection_alignment_required: true,
+        attestation_selection_alignment_required: true,
         applicability_alignment_required: true,
         applicability_explanation_alignment_required: true,
         continuity_lineage_alignment_required: true,
@@ -461,6 +495,7 @@ export function buildGovernanceCaseReviewDecisionAttestationClosureExplanationPr
         cross_review_decision_binding_rejected: true,
         cross_canonical_action_hash_binding_rejected: true,
         complete_supporting_linkage_required: true,
+        consumption_boundary_bounded: true,
         permit_aggregate_export_only: true,
       },
       preserved_semantics: {
@@ -581,6 +616,7 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
   }
   for (const field of [
     "explanation_id",
+    "explanation_selection_id",
     "closure_id",
     "closure_selection_id",
     "case_id",
@@ -624,12 +660,18 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
     );
   }
   for (const field of [
+    "current_explanation_selected",
+    "unique_current_explanation_required",
+    "current_explanation_selection_stable",
     "current_closure_selection_basis",
     "closure_validity_basis",
+    "closure_selection_alignment_basis",
+    "attestation_selection_alignment_basis",
     "attestation_applicability_binding_basis",
     "applicability_explanation_alignment_basis",
     "continuity_lineage_alignment_basis",
     "closure_uniqueness_basis",
+    "explanation_consumption_boundary_bounded",
     "supporting_basis_complete",
   ]) {
     if (context.explanation_basis[field] !== true) {
@@ -647,6 +689,9 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
     );
   }
   for (const field of [
+    "current_explanation_selected_only",
+    "unique_current_explanation_required",
+    "current_explanation_selection_stable",
     "closure_available",
     "attestation_available",
     "applicability_available",
@@ -655,6 +700,8 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
     "unique_current_closure_required",
     "current_closure_selection_stable",
     "closure_validity_basis_required",
+    "closure_selection_alignment_required",
+    "attestation_selection_alignment_required",
     "applicability_alignment_required",
     "applicability_explanation_alignment_required",
     "continuity_lineage_alignment_required",
@@ -662,6 +709,7 @@ export function validateGovernanceCaseReviewDecisionAttestationClosureExplanatio
     "cross_review_decision_binding_rejected",
     "cross_canonical_action_hash_binding_rejected",
     "complete_supporting_linkage_required",
+    "consumption_boundary_bounded",
     "permit_aggregate_export_only",
   ]) {
     if (validationExports[field] !== true) {
