@@ -1,0 +1,33 @@
+# v6.12 Phase 2 Stabilization State
+
+- `v6.12 Phase 2 = Delivery Manifest / Acceptance Semantics Finalization Hardening`
+- Stabilized in this phase:
+  - bundle ↔ manifest ↔ acceptance semantics linkage frozen
+  - acceptance readability consistency frozen
+  - finalized cross-surface consistency frozen
+  - export / consumer / contract / profile finalized semantics alignment frozen
+  - export mismatch rejection verified
+  - cross-surface mismatch rejection verified
+- Compatibility freeze preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged behavior preserved:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Phase 2 completion:
+  - finalized semantics consistency strengthened
+  - linkage / readability / export / cross-surface stability verified

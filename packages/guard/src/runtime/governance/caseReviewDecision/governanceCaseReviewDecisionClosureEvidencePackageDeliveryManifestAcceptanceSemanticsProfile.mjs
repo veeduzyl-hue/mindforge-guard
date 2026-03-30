@@ -20,7 +20,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_M
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ACCEPTANCE_SEMANTICS_PROFILE_SCHEMA_ID =
   "mindforge/governance-case-review-decision-closure-evidence-package-delivery-manifest-acceptance-semantics-profile/v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ACCEPTANCE_SEMANTICS_PROFILE_STAGE =
-  "governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics_boundary_phase1_v6_12_0";
+  "governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics_boundary_phase2_v6_12_0";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ACCEPTANCE_SEMANTICS_CONSUMER_SURFACE =
   "guard.audit.governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ACCEPTANCE_SEMANTICS_PROFILE_BOUNDARY =
@@ -41,10 +41,14 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_M
     "explanation_available",
     "consumption_summary_available",
     "bundle_manifest_semantic_linkage_finalized",
+    "bundle_manifest_acceptance_semantics_linkage_stable",
     "acceptance_semantics_finalized",
     "finalized_acceptance_readability_bounded",
+    "acceptance_readability_consistency_stable",
     "finalized_cross_surface_consistency_bounded",
+    "cross_surface_alignment_stable",
     "finalized_export_stable",
+    "export_consistency_stable",
     "aggregate_export_only",
     "permit_aggregate_export_only",
   ]);
@@ -267,10 +271,14 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryM
               explanation_available: true,
               consumption_summary_available: true,
               bundle_manifest_semantic_linkage_finalized: true,
+              bundle_manifest_acceptance_semantics_linkage_stable: true,
               acceptance_semantics_finalized: true,
               finalized_acceptance_readability_bounded: true,
+              acceptance_readability_consistency_stable: true,
               finalized_cross_surface_consistency_bounded: true,
+              cross_surface_alignment_stable: true,
               finalized_export_stable: true,
+              export_consistency_stable: true,
               aggregate_export_only: true,
               permit_aggregate_export_only: true,
             },
@@ -284,10 +292,14 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryM
             bundle_manifest_linkage_required: true,
             finalized_semantic_linkage_required: true,
             bundle_manifest_semantic_linkage_finalized: true,
+            bundle_manifest_acceptance_semantics_linkage_stable: true,
             acceptance_semantics_finalized: true,
             finalized_acceptance_readability_bounded: true,
+            acceptance_readability_consistency_stable: true,
             finalized_cross_surface_consistency_bounded: true,
+            cross_surface_alignment_stable: true,
             finalized_export_stable: true,
+            export_consistency_stable: true,
             cross_case_binding_rejected: true,
             cross_review_decision_binding_rejected: true,
             cross_canonical_action_hash_binding_rejected: true,
@@ -466,10 +478,14 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         "explanation_available",
         "consumption_summary_available",
         "bundle_manifest_semantic_linkage_finalized",
+        "bundle_manifest_acceptance_semantics_linkage_stable",
         "acceptance_semantics_finalized",
         "finalized_acceptance_readability_bounded",
+        "acceptance_readability_consistency_stable",
         "finalized_cross_surface_consistency_bounded",
+        "cross_surface_alignment_stable",
         "finalized_export_stable",
+        "export_consistency_stable",
         "aggregate_export_only",
         "permit_aggregate_export_only",
       ]) {
@@ -496,10 +512,14 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         "bundle_manifest_linkage_required",
         "finalized_semantic_linkage_required",
         "bundle_manifest_semantic_linkage_finalized",
+        "bundle_manifest_acceptance_semantics_linkage_stable",
         "acceptance_semantics_finalized",
         "finalized_acceptance_readability_bounded",
+        "acceptance_readability_consistency_stable",
         "finalized_cross_surface_consistency_bounded",
+        "cross_surface_alignment_stable",
         "finalized_export_stable",
+        "export_consistency_stable",
         "cross_case_binding_rejected",
         "cross_review_decision_binding_rejected",
         "cross_canonical_action_hash_binding_rejected",
