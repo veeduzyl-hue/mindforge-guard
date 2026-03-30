@@ -58,6 +58,7 @@ const expectedOptional = [
   "governance_disposition",
   "limited_enforcement_authority_result",
   "governance_case_review_decision_current_selection_summary",
+  "governance_case_review_decision_closure_evidence_package_delivery_bundle",
 ];
 const expectedSupportOnly = ["governance_receipt"];
 const expectedConsumerSafe = [
@@ -69,6 +70,7 @@ const expectedConsumerSafe = [
   "governance_disposition",
   "limited_enforcement_authority_result",
   "governance_case_review_decision_current_selection_summary",
+  "governance_case_review_decision_closure_evidence_package_delivery_bundle",
 ];
 
 if (JSON.stringify(GOVERNANCE_CONSUMPTION_REQUIRED_ARTIFACTS) !== JSON.stringify(expectedRequired)) {
@@ -187,6 +189,17 @@ if (
 ) {
   throw new Error(
     "governance case review decision current selection summary consumption linkage drifted"
+  );
+}
+if (
+  JSON.stringify(
+    GOVERNANCE_CONSUMPTION_PROFILE
+      .governance_case_review_decision_closure_evidence_package_delivery_bundle
+      .consumer_safe_linkage_targets
+  ) !== JSON.stringify([])
+) {
+  throw new Error(
+    "governance case review decision closure evidence package delivery bundle consumption linkage drifted"
   );
 }
 

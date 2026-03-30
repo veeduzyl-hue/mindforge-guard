@@ -34,6 +34,7 @@ export const GOVERNANCE_CONSUMPTION_OPTIONAL_ARTIFACTS = Object.freeze([
   "governance_disposition",
   "limited_enforcement_authority_result",
   "governance_case_review_decision_current_selection_summary",
+  "governance_case_review_decision_closure_evidence_package_delivery_bundle",
 ]);
 
 export const GOVERNANCE_CONSUMPTION_SUPPORT_ONLY_ARTIFACTS = Object.freeze([
@@ -135,6 +136,17 @@ export const GOVERNANCE_CONSUMPTION_PROFILE = Object.freeze({
     surface_tier:
       GOVERNANCE_SURFACE_MAP
         .governance_case_review_decision_current_selection_summary.tier,
+    stability: GOVERNANCE_CONSUMPTION_PROFILE_STABILITY,
+    consumer_safe_linkage_targets: [],
+  }),
+  governance_case_review_decision_closure_evidence_package_delivery_bundle: freezeEntry({
+    artifact_id:
+      "governance_case_review_decision_closure_evidence_package_delivery_bundle",
+    requirement: GOVERNANCE_CONSUMPTION_OPTIONAL,
+    consumer_safe: true,
+    surface_tier:
+      GOVERNANCE_SURFACE_MAP
+        .governance_case_review_decision_closure_evidence_package_delivery_bundle.tier,
     stability: GOVERNANCE_CONSUMPTION_PROFILE_STABILITY,
     consumer_safe_linkage_targets: [],
   }),
