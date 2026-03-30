@@ -1,0 +1,41 @@
+# v6.11 Phase 3 State
+
+- Baseline:
+  - `v6.11 Phase 1 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Boundary v1`
+  - `v6.11 Phase 2 = Closure Evidence Package Delivery Manifest / Acceptance Semantics Hardening`
+- Module:
+  - `v6.11 Phase 3 = Closure Evidence Package Delivery Manifest / Acceptance Final Acceptance Consolidation`
+- Phase 3 scope:
+  - consolidate Phase 1 boundary and Phase 2 hardening into a final acceptance verify surface
+  - freeze final acceptance semantics for:
+    - manifest ref alignment
+    - listing determinism / consistency
+    - completeness semantics
+    - acceptance readability consistency
+    - cross-surface alignment
+  - record final acceptance state and boundary freeze docs
+- This phase is limited to:
+  - final acceptance consolidation for the existing delivery manifest line only
+  - bounded supporting-artifact acceptance surface only
+  - additive freeze / verification only
+  - no new authority-bearing governance object
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`

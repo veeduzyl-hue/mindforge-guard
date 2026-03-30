@@ -1,0 +1,32 @@
+# v6.11 Phase 3 Final Acceptance State
+
+- `v6.11 Phase 3 = Closure Evidence Package Delivery Manifest / Acceptance Final Acceptance Consolidation`
+- Final acceptance closed in this phase:
+  - Phase 1 boundary preserved
+  - Phase 2 hardening preserved
+  - manifest ref alignment final acceptance semantics frozen
+  - listing determinism / consistency final acceptance semantics frozen
+  - completeness / acceptance readability / cross-surface alignment final acceptance semantics frozen
+- Compatibility freeze preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged behavior preserved:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Phase 3 completion:
+  - delivery manifest / acceptance boundary reaches final acceptance readiness
+  - final acceptance verification proves bounded supporting-artifact acceptance closure
