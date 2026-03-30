@@ -1,0 +1,33 @@
+# v6.10 Phase 2 Stabilization State
+
+- `v6.10 Phase 2 = Closure Evidence Package Delivery Bundle / Handoff Consistency & Stabilization`
+- Stabilized in this phase:
+  - bundle ref alignment frozen
+  - handoff-state / readability-state semantics frozen
+  - bundle composition semantics frozen
+  - handoff readability consistency frozen
+  - profile / contract / consumer / export cross-surface alignment frozen
+- Compatibility freeze preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged behavior preserved:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
+- Phase 2 completion:
+  - handoff semantics consistency strengthened
+  - bundle ref / semantics / export linkage stabilized
+  - cross-surface stabilization verified

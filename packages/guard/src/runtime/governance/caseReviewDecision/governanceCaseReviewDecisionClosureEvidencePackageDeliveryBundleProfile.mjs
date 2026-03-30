@@ -24,7 +24,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_B
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PROFILE_SCHEMA_ID =
   "mindforge/governance-case-review-decision-closure-evidence-package-delivery-bundle-profile/v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PROFILE_STAGE =
-  "governance_case_review_decision_closure_evidence_package_delivery_bundle_boundary_phase1_v6_10_0";
+  "governance_case_review_decision_closure_evidence_package_delivery_bundle_boundary_phase2_v6_10_0";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_CONSUMER_SURFACE =
   "guard.audit.governance_case_review_decision_closure_evidence_package_delivery_bundle";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PROFILE_BOUNDARY =
@@ -45,6 +45,10 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_B
     "explanation_stabilized_surface_available",
     "delivery_readiness_summary_available",
     "bundle_ref_alignment_stable",
+    "handoff_semantics_stable",
+    "bundle_composition_stable",
+    "bundle_handoff_readability_consistency_stable",
+    "cross_surface_alignment_stable",
     "bundle_composition_bounded",
     "bundle_handoff_surface_bounded",
     "bundle_handoff_readable",
@@ -290,6 +294,17 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryB
     ],
     "consumption summary delivery readiness"
   );
+  if (
+    summaryPayload.validation_exports.summary_ref_alignment_stable !== true ||
+    summaryPayload.validation_exports.explanation_stabilized_surface_semantics_stable !== true ||
+    summaryPayload.validation_exports.delivery_readiness_interpretation_stable !== true ||
+    summaryPayload.validation_exports.delivery_readiness_consumer_consistency_stable !== true ||
+    summaryPayload.validation_exports.cross_surface_alignment_stable !== true
+  ) {
+    throw new Error(
+      "governance case review decision closure evidence package delivery bundle requires stabilized consumption summary validation exports"
+    );
+  }
 
   return assertValidGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryBundleProfile(
     {
@@ -340,6 +355,10 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryB
               explanation_stabilized_surface_available: true,
               delivery_readiness_summary_available: true,
               bundle_ref_alignment_stable: true,
+              handoff_semantics_stable: true,
+              bundle_composition_stable: true,
+              bundle_handoff_readability_consistency_stable: true,
+              cross_surface_alignment_stable: true,
               bundle_composition_bounded: true,
               bundle_handoff_surface_bounded: true,
               bundle_handoff_readable: true,
@@ -355,6 +374,10 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryB
             explanation_stabilized_surface_required: true,
             delivery_readiness_summary_required: true,
             bundle_ref_alignment_stable: true,
+            handoff_semantics_stable: true,
+            bundle_composition_stable: true,
+            bundle_handoff_readability_consistency_stable: true,
+            cross_surface_alignment_stable: true,
             bundle_composition_bounded: true,
             bundle_handoff_surface_bounded: true,
             bundle_handoff_readable: true,
@@ -405,6 +428,16 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
     };
   }
   if (
+    JSON.stringify(Object.keys(profile)) !==
+    JSON.stringify(
+      GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_TOP_LEVEL_FIELDS
+    )
+  ) {
+    errors.push(
+      "governance case review decision closure evidence package delivery bundle top-level field order drifted"
+    );
+  }
+  if (
     profile.kind !==
       GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PROFILE_KIND ||
     profile.version !==
@@ -424,6 +457,16 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
       "governance case review decision closure evidence package delivery bundle payload must be an object"
     );
   } else {
+    if (
+      JSON.stringify(Object.keys(payload)) !==
+      JSON.stringify(
+        GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PAYLOAD_FIELDS
+      )
+    ) {
+      errors.push(
+        "governance case review decision closure evidence package delivery bundle payload field order drifted"
+      );
+    }
     if (
       payload.stage !==
         GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_BUNDLE_PROFILE_STAGE ||
@@ -511,6 +554,10 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         "explanation_stabilized_surface_available",
         "delivery_readiness_summary_available",
         "bundle_ref_alignment_stable",
+        "handoff_semantics_stable",
+        "bundle_composition_stable",
+        "bundle_handoff_readability_consistency_stable",
+        "cross_surface_alignment_stable",
         "bundle_composition_bounded",
         "bundle_handoff_surface_bounded",
         "bundle_handoff_readable",
@@ -539,6 +586,10 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         "explanation_stabilized_surface_required",
         "delivery_readiness_summary_required",
         "bundle_ref_alignment_stable",
+        "handoff_semantics_stable",
+        "bundle_composition_stable",
+        "bundle_handoff_readability_consistency_stable",
+        "cross_surface_alignment_stable",
         "bundle_composition_bounded",
         "bundle_handoff_surface_bounded",
         "bundle_handoff_readable",
