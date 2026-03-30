@@ -1,0 +1,56 @@
+# v6.10 Phase 3 State
+
+- Baseline:
+  - `v6.10 Phase 2 = Governance Case Closure Evidence Package Delivery Bundle / Handoff Consistency & Stabilization`
+- Module:
+  - `v6.10 Phase 3 = Governance Case Closure Evidence Package Delivery Bundle / Handoff Boundary v1 Final Acceptance Consolidation`
+- Final acceptance scope freezes:
+  - closure evidence package delivery bundle accepted as bounded supporting-artifact handoff surface only
+  - bundle ref linkage accepted as frozen
+  - handoff semantics accepted as frozen
+  - bundle composition accepted as frozen
+  - handoff readability accepted as bounded and stable
+  - cross-surface alignment across profile / contract / builder / export accepted as stable
+  - supporting-artifact-only semantics
+  - non-authoritative semantics
+  - additive-only
+  - non-executing
+  - default-off
+- Final compatibility freeze preserves:
+  - audit main output unchanged
+  - audit main verdict unchanged
+  - actual audit exit code unchanged
+  - deny exit code `25` unchanged
+  - `--permit-gate` unchanged
+  - `--enforcement-pilot` unchanged
+  - `--limited-enforcement-authority` unchanged
+  - `guard action classify` unchanged
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+  - no new governance authority object
+- Verification completed:
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_bundle_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_bundle_hardening.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_bundle_boundary.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_consumption_summary_final_acceptance.mjs`
+  - `node scripts/verify_governance_case_review_decision_closure_evidence_package_explanation_final_acceptance.mjs`
+  - `node scripts/verify_governance_surface.mjs`
+  - `node scripts/verify_governance_consumption_profile.mjs`
+  - `node scripts/verify_audit_permit_gate.mjs`
+  - `node packages/guard/src/runGuard.mjs audit . --staged`
+  - `node packages/guard/src/runGuard.mjs audit . --staged --permit-gate`
+- Preserved:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Boundary conclusion:
+  - `v6.10` delivery bundle / handoff boundary is consolidated to final acceptance without turning the bundle artifact into a governance authority object, delivery judgment surface, permit consumer, execution channel, risk surface, UI surface, or main-path dependency.
