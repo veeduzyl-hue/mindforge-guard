@@ -18,7 +18,7 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTIO
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTION_SUMMARY_PROFILE_SCHEMA_ID =
   "mindforge/governance-case-review-decision-closure-evidence-package-consumption-summary-profile/v1";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTION_SUMMARY_PROFILE_STAGE =
-  "governance_case_review_decision_closure_evidence_package_consumption_summary_boundary_phase1_v6_9_0";
+  "governance_case_review_decision_closure_evidence_package_consumption_summary_boundary_phase2_v6_9_0";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTION_SUMMARY_CONSUMER_SURFACE =
   "guard.audit.governance_case_review_decision_closure_evidence_package_consumption_summary";
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTION_SUMMARY_PROFILE_BOUNDARY =
@@ -36,12 +36,16 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTIO
     "package_available",
     "explanation_available",
     "explanation_stabilized_surface_available",
+    "summary_ref_alignment_stable",
+    "explanation_stabilized_surface_semantics_stable",
     "current_narrative_selected",
     "current_narrative_selection_stable",
     "narrative_section_alignment_stable",
     "section_artifact_binding_stable",
     "section_consumer_consistency_stable",
     "cross_surface_alignment_stable",
+    "delivery_readiness_interpretation_stable",
+    "delivery_readiness_consumer_consistency_stable",
     "delivery_readiness_summary_bounded",
     "delivery_readiness_readable",
     "consumer_reading_surface_bounded",
@@ -265,12 +269,16 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageConsumpti
               package_available: true,
               explanation_available: true,
               explanation_stabilized_surface_available: true,
+              summary_ref_alignment_stable: true,
+              explanation_stabilized_surface_semantics_stable: true,
               current_narrative_selected: true,
               current_narrative_selection_stable: true,
               narrative_section_alignment_stable: true,
               section_artifact_binding_stable: true,
               section_consumer_consistency_stable: true,
               cross_surface_alignment_stable: true,
+              delivery_readiness_interpretation_stable: true,
+              delivery_readiness_consumer_consistency_stable: true,
               delivery_readiness_summary_bounded: true,
               delivery_readiness_readable: true,
               consumer_reading_surface_bounded: true,
@@ -283,12 +291,16 @@ export function buildGovernanceCaseReviewDecisionClosureEvidencePackageConsumpti
             package_surface_required: true,
             explanation_surface_required: true,
             explanation_stabilized_surface_required: true,
+            summary_ref_alignment_stable: true,
+            explanation_stabilized_surface_semantics_stable: true,
             current_narrative_selected_only: true,
             current_narrative_selection_stable: true,
             narrative_section_alignment_stable: true,
             section_artifact_binding_stable: true,
             section_consumer_consistency_stable: true,
             cross_surface_alignment_stable: true,
+            delivery_readiness_interpretation_stable: true,
+            delivery_readiness_consumer_consistency_stable: true,
             delivery_readiness_summary_bounded: true,
             delivery_readiness_readable: true,
             consumer_reading_surface_bounded: true,
@@ -413,6 +425,14 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageConsum
       "governance case review decision closure evidence package consumption summary ref fields drifted"
     );
   }
+  if (
+    payload.closure_evidence_package_consumption_summary_ref?.summary_id !==
+    `${payload.closure_evidence_package_consumption_summary_ref?.package_id}:consumption-summary`
+  ) {
+    errors.push(
+      "governance case review decision closure evidence package consumption summary ref derivation drifted"
+    );
+  }
   if (!isPlainObject(payload.summary_context)) {
     errors.push(
       "governance case review decision closure evidence package consumption summary context missing"
@@ -447,12 +467,16 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageConsum
       "package_available",
       "explanation_available",
       "explanation_stabilized_surface_available",
+      "summary_ref_alignment_stable",
+      "explanation_stabilized_surface_semantics_stable",
       "current_narrative_selected",
       "current_narrative_selection_stable",
       "narrative_section_alignment_stable",
       "section_artifact_binding_stable",
       "section_consumer_consistency_stable",
       "cross_surface_alignment_stable",
+      "delivery_readiness_interpretation_stable",
+      "delivery_readiness_consumer_consistency_stable",
       "delivery_readiness_summary_bounded",
       "delivery_readiness_readable",
       "consumer_reading_surface_bounded",
@@ -462,7 +486,13 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageConsum
     ],
     "delivery readiness"
   );
-  if (!hasUniqueStrings(readiness.summary_reason_codes)) {
+  if (
+    !hasUniqueStrings(readiness.summary_reason_codes) ||
+    JSON.stringify(readiness.summary_reason_codes) !==
+      JSON.stringify(
+        GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_CONSUMPTION_SUMMARY_REASON_CODES
+      )
+  ) {
     errors.push(
       "governance case review decision closure evidence package consumption summary reason codes drifted"
     );
@@ -473,12 +503,16 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageConsum
       "package_surface_required",
       "explanation_surface_required",
       "explanation_stabilized_surface_required",
+      "summary_ref_alignment_stable",
+      "explanation_stabilized_surface_semantics_stable",
       "current_narrative_selected_only",
       "current_narrative_selection_stable",
       "narrative_section_alignment_stable",
       "section_artifact_binding_stable",
       "section_consumer_consistency_stable",
       "cross_surface_alignment_stable",
+      "delivery_readiness_interpretation_stable",
+      "delivery_readiness_consumer_consistency_stable",
       "delivery_readiness_summary_bounded",
       "delivery_readiness_readable",
       "consumer_reading_surface_bounded",
