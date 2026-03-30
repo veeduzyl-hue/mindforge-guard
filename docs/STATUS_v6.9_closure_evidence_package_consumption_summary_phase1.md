@@ -1,0 +1,36 @@
+# v6.9 Phase 1 State
+
+- Baseline:
+  - `v6.8.0 = Governance Case Closure Evidence Package Explanation / Narrative Boundary v1`
+- Module:
+  - `v6.9 Phase 1 = Governance Case Closure Evidence Package Consumption Summary / Delivery Readiness Boundary v1`
+- Start scope:
+  - establish the minimum closure evidence package consumption summary / delivery readiness profile / contract
+  - establish the minimum summary builder / consumer / export surface
+  - verify summary alignment to the existing closure evidence package + explanation surface
+  - keep the summary derived-only, supporting-artifact-only, non-authoritative, additive-only, non-executing, and default-off
+- This phase is limited to:
+  - delivery-readiness-facing summary of the existing package + explanation only
+  - bounded consumer-readable summary for package availability, explanation availability, and delivery readiness readability only
+  - bounded consumption-facing reading surface aligned to existing package/explanation/final-acceptance semantics only
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no new governance authority object
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
