@@ -35,6 +35,7 @@ const expectedArtifactIds = [
   "governance_case_review_decision_current_selection_summary",
   "governance_case_review_decision_closure_evidence_package_delivery_bundle",
   "governance_case_review_decision_closure_evidence_package_delivery_manifest",
+  "governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics",
 ];
 
 if (JSON.stringify(GOVERNANCE_SURFACE_ARTIFACT_ORDER) !== JSON.stringify(expectedArtifactIds)) {
@@ -69,6 +70,7 @@ if (
     "governance_case_review_decision_current_selection_summary",
     "governance_case_review_decision_closure_evidence_package_delivery_bundle",
     "governance_case_review_decision_closure_evidence_package_delivery_manifest",
+    "governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics",
   ])
 ) {
   throw new Error("governance external consumer surface drifted");
@@ -125,6 +127,7 @@ for (const artifactId of [
   "governance_case_review_decision_current_selection_summary",
   "governance_case_review_decision_closure_evidence_package_delivery_bundle",
   "governance_case_review_decision_closure_evidence_package_delivery_manifest",
+  "governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics",
 ]) {
   if (GOVERNANCE_SURFACE_MAP[artifactId].tier !== GOVERNANCE_SURFACE_EXTERNAL_CONSUMER_TIER) {
     throw new Error(`${artifactId} tier mismatch`);
