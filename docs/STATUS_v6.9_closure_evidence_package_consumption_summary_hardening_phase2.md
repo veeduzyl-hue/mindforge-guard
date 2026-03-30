@@ -1,0 +1,37 @@
+# v6.9 Phase 2 State
+
+- Baseline:
+  - `v6.9 Phase 1 = Governance Case Closure Evidence Package Consumption Summary / Delivery Readiness Boundary v1`
+- Module:
+  - `v6.9 Phase 2 = Closure Evidence Package Consumption Summary / Delivery Readiness Consistency & Stabilization`
+- Start scope:
+  - stabilize summary ref alignment consistency
+  - stabilize explanation-stabilized-surface semantics
+  - stabilize delivery-readiness-facing reading interpretation
+  - stabilize builder / contract / consumer / export cross-surface alignment
+  - strengthen negative verification against summary semantics and linkage drift
+- This phase is limited to:
+  - the existing closure evidence package consumption summary / delivery readiness surface only
+  - bounded supporting-artifact consumption consistency only
+  - additive stabilization only
+  - no new authority-bearing governance object
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
