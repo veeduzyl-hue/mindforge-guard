@@ -45,6 +45,12 @@ export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_M
   ]);
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_REASON_CODE_ALLOWLIST =
   GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_REASON_CODES;
+export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ITEM_KINDS =
+  Object.freeze([
+    "governance_case_review_decision_closure_evidence_package",
+    "governance_case_review_decision_closure_evidence_package_explanation",
+    "governance_case_review_decision_closure_evidence_package_consumption_summary",
+  ]);
 export const GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_TOP_LEVEL_FIELDS =
   Object.freeze([
     "kind",
@@ -462,6 +468,11 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         "governance case review decision closure evidence package delivery manifest items drifted"
       );
     } else {
+      const expectedArtifactIds = [
+        ref?.package_id,
+        ref?.explanation_id,
+        ref?.summary_id,
+      ];
       const expectedRoles = [
         "delivery_package",
         "delivery_explanation",
@@ -478,6 +489,18 @@ export function validateGovernanceCaseReviewDecisionClosureEvidencePackageDelive
         ) {
           errors.push(
             "governance case review decision closure evidence package delivery manifest item listing drifted"
+          );
+          break;
+        }
+        if (
+          item.artifact_id !== expectedArtifactIds[index] ||
+          item.artifact_kind !==
+            GOVERNANCE_CASE_REVIEW_DECISION_CLOSURE_EVIDENCE_PACKAGE_DELIVERY_MANIFEST_ITEM_KINDS[
+              index
+            ]
+        ) {
+          errors.push(
+            "governance case review decision closure evidence package delivery manifest item linkage drifted"
           );
           break;
         }

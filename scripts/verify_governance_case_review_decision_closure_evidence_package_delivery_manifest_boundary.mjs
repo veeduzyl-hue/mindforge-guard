@@ -407,6 +407,48 @@ assertRejected(
   "review decision closure evidence package delivery manifest must reject unreadable handoff bundle"
 );
 
+assertRejected(
+  () =>
+    permitExports.assertValidGovernanceCaseReviewDecisionClosureEvidencePackageDeliveryManifestProfile(
+      (() => {
+        const drifted = cloneJson(profile);
+        drifted.governance_case_review_decision_closure_evidence_package_delivery_manifest.delivery_package_items =
+          [
+            {
+              artifact_id:
+                drifted.governance_case_review_decision_closure_evidence_package_delivery_manifest
+                  .closure_evidence_package_delivery_manifest_ref.explanation_id,
+              artifact_kind:
+                "governance_case_review_decision_closure_evidence_package",
+              role: "delivery_package",
+              listing_order: 1,
+            },
+            {
+              artifact_id:
+                drifted.governance_case_review_decision_closure_evidence_package_delivery_manifest
+                  .closure_evidence_package_delivery_manifest_ref.package_id,
+              artifact_kind:
+                "governance_case_review_decision_closure_evidence_package_explanation",
+              role: "delivery_explanation",
+              listing_order: 2,
+            },
+            {
+              artifact_id:
+                drifted.governance_case_review_decision_closure_evidence_package_delivery_manifest
+                  .closure_evidence_package_delivery_manifest_ref.summary_id,
+              artifact_kind:
+                "governance_case_review_decision_closure_evidence_package_consumption_summary",
+              role: "delivery_consumption_summary",
+              listing_order: 3,
+            },
+          ];
+        return drifted;
+      })()
+    ),
+  "item linkage drifted",
+  "review decision closure evidence package delivery manifest must reject item linkage drift even when roles and count still look valid"
+);
+
 console.log(
   "verify_governance_case_review_decision_closure_evidence_package_delivery_manifest_boundary: ok"
 );
