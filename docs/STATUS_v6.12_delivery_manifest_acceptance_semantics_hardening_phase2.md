@@ -1,0 +1,37 @@
+# v6.12 Phase 2 State
+
+- Baseline:
+  - `v6.12 Phase 1 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+- Module:
+  - `v6.12 Phase 2 = Delivery Manifest / Acceptance Semantics Finalization Hardening`
+- Start scope:
+  - stabilize bundle ↔ manifest ↔ acceptance semantics finalized linkage
+  - stabilize acceptance-facing readability consistency
+  - stabilize finalized cross-surface consistency interpretation
+  - stabilize profile / contract / consumer / export finalized semantics alignment
+  - strengthen negative verification against export mismatch and cross-surface mismatch
+- This phase is limited to:
+  - the existing delivery manifest / acceptance semantics finalized line only
+  - bounded supporting-artifact finalized semantics consistency only
+  - additive hardening only
+  - no new authority-bearing governance object
+- Preserved target:
+  - derived-only
+  - supporting-artifact-only
+  - non-authoritative
+  - additive-only
+  - non-executing
+  - default-off
+  - no authority scope expansion
+  - no main-path takeover
+  - no risk integration
+  - no UI / control plane
+- Unchanged target:
+  - audit main output
+  - audit main verdict
+  - actual audit exit code
+  - deny exit code `25`
+  - `--permit-gate`
+  - `--enforcement-pilot`
+  - `--limited-enforcement-authority`
+  - `guard action classify`
