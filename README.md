@@ -1,99 +1,87 @@
 # MindForge Guard
 
-MindForge Guard is a commercial CLI for deterministic AI coding governance.
+MindForge Guard is a deterministic governance CLI for AI coding and decision surfaces.
 
-It is positioned as:
-- AI Coding Safety Layer
-- Evolving toward a Deterministic Execution Authority Layer
+## Product Position
 
-Guard is CLI-first, offline-capable, and built around stable exit codes plus machine-readable JSON artifacts.
-Current checkpoint release: `v1.1.0`, adding canonical action classify plus local contract hardening.
+Guard is:
 
-## Current Stable Release
+- a deterministic governance layer
+- a bounded evidence / packaging / acceptance product
+- recommendation-only
+- additive-only
+- non-executing
+- default-off where applicable
 
-- Current release: `v1.1.0`
-- `v1.1.0` is the current Canonical Action checkpoint release
-- This release adds `guard action classify` and a validated `canonical_action` artifact
-- Execution-path integrations remain out of scope for this release, including audit / drift / permit / policy enforcement hookups
+Guard is not:
 
-## Core Commands
+- an execution authority
+- a control plane
+- a dashboard-first product
+- a main-path takeover runtime
 
-Basic surface:
+## Current Released Baseline
+
+The current released governance baseline is:
+
+- `v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+
+`v6.12.0` remains:
+
+- supporting-artifact-only
+- non-authoritative
+- additive-only
+- non-executing
+- default-off
+
+## Next Commercial Boundary Release
+
+The recommended next release is:
+
+- `v6.13.0 = Commercial Edition Boundary Completion`
+
+`v6.13.0` does not rewrite `v6.12.0`.
+It promotes the already-implemented Community / Pro / Pro+ / Enterprise edition line into a formal commercial promise surface.
+
+## Formal CLI Surface
+
+Core commands available in every edition:
 
 ```bash
-node packages/guard/bin/guard.mjs --version
-node packages/guard/bin/guard.mjs --help
-node packages/guard/bin/guard.mjs status
+node packages/guard/src/runGuard.mjs --version
+node packages/guard/src/runGuard.mjs --help
+node packages/guard/src/runGuard.mjs status
+node packages/guard/src/runGuard.mjs validate-policy
+node packages/guard/src/runGuard.mjs audit . --staged
+node packages/guard/src/runGuard.mjs snapshot .
+node packages/guard/src/runGuard.mjs action classify --text "write file README.md"
+node packages/guard/src/runGuard.mjs drift status --format json
+node packages/guard/src/runGuard.mjs license status
+node packages/guard/src/runGuard.mjs license show
+node packages/guard/src/runGuard.mjs license install <file>
+node packages/guard/src/runGuard.mjs license remove
 ```
 
-Governance workflow:
+Paid analytics commands:
 
 ```bash
-node packages/guard/bin/guard.mjs validate-policy
-node packages/guard/bin/guard.mjs audit . --staged
-node packages/guard/bin/guard.mjs snapshot .
+node packages/guard/src/runGuard.mjs drift timeline
+node packages/guard/src/runGuard.mjs drift compare
+node packages/guard/src/runGuard.mjs assoc correlate
 ```
 
-New in `v1.1.0`:
+## Commercial Editions
 
-```bash
-node packages/guard/bin/guard.mjs action classify --text "write file README.md"
-```
-
-This returns a `canonical_action` JSON artifact with local schema validation and fail-closed behavior for invalid classify output.
-
-Signal and analytics surface:
-
-```bash
-node packages/guard/bin/guard.mjs drift status --format json
-node packages/guard/bin/guard.mjs drift timeline
-node packages/guard/bin/guard.mjs drift compare
-node packages/guard/bin/guard.mjs assoc correlate
-```
-
-## License and Edition Behavior
-
-Canonical edition model:
-
-- `community`
-- `pro`
-- `pro_plus`
-- `enterprise`
-
-Current CLI gating:
-
-| Command | Community | Pro | Pro Plus | Enterprise |
-|---|---|---|---|---|
-| `guard drift status` | Yes | Yes | Yes | Yes |
-| `guard drift timeline` | No | Yes | Yes | Yes |
-| `guard drift compare` | No | No | Yes | Yes |
-| `guard assoc correlate` | No | No | Yes | Yes |
-
-Without the required license, gated commands fail closed with structured JSON and exit code `21`.
-
-## Exit Codes
-
-Guard preserves these stable exit semantics:
-
-| Code | Meaning |
+| Edition | Formal command promise |
 |---|---|
-| `0` | Success |
-| `10` | Soft governance block |
-| `20` | Hard governance block |
-| `21` | License required |
-| `30` | Command-scoped validation or runtime contract error |
+| Community | Core governance CLI + `drift status` + license lifecycle commands |
+| Pro | Community + `drift timeline` |
+| Pro+ | Pro + `drift compare` + `assoc correlate` |
+| Enterprise | Same current CLI entitlement as Pro+; no extra runtime authority or extra commands promised in this release |
 
-## Documentation
+See:
 
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
 - [docs/LICENSE.md](/D:/AI%20project/mindforge-guard/docs/LICENSE.md)
-- [docs/SECURITY.md](/D:/AI%20project/mindforge-guard/docs/SECURITY.md)
 - [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md)
-- [docs/ROADMAP_GUARD_1X.md](/D:/AI%20project/mindforge-guard/docs/ROADMAP_GUARD_1X.md)
-
-## Notes
-
-- `guard audit . --staged` requires a git-accessible repository state.
-- `guard snapshot .` requires a previously generated audit artifact.
-- `v1.1.0` establishes a bounded Canonical Action checkpoint.
-- Execution-path integrations remain out of scope for this release.
+- [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
