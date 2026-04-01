@@ -1,63 +1,63 @@
 # MindForge Guard Release Process
 
-This repository ships MindForge Guard primarily through GitHub Releases. npm publish remains optional.
+MindForge Guard ships primarily through GitHub Releases. npm publish remains optional.
 
-## Preconditions
+## Current Released Baseline
 
-- Node.js `>=18`
-- npm available
-- clean working tree
-- no committed release tarballs
+The currently released governance baseline is:
 
-## 1. Update Release Metadata
+- `v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
 
-Update:
+This release remains:
 
-- [packages/guard/package.json](/D:/AI%20project/mindforge-guard/packages/guard/package.json)
-- [package-lock.json](/D:/AI%20project/mindforge-guard/package-lock.json)
+- supporting-artifact-only
+- non-authoritative
+- additive-only
+- non-executing
+- default-off
 
-## 2. Local CLI Verification
+## Recommended Next Release
+
+The recommended next release is:
+
+- `v6.13.0 = Commercial Edition Boundary Completion`
+
+Why `v6.13.0`:
+
+- it keeps `v6.12.0` intact as the already-released governance baseline
+- it promotes the existing edition functionality into a formal commercial promise surface
+- it is a product-boundary uplift, not a patch to `v6.12.0`
+
+## Scope Of `v6.13.0`
+
+`v6.13.0` should formalize:
+
+- Community / Pro / Pro+ / Enterprise boundaries
+- license gate JSON contract
+- edition mismatch JSON contract
+- exit-code commitments for gated commercial surfaces
+- accepted edition evidence
+
+It should not add:
+
+- authority expansion
+- permit-lane consumption
+- execution binding
+- main-path takeover
+- risk integration
+- UI / control-plane behavior
+
+## Release Verification
 
 From the repository root:
 
 ```bash
-node packages/guard/bin/guard.mjs --version
-node packages/guard/bin/guard.mjs --help
-node packages/guard/bin/guard.mjs status
-node packages/guard/bin/guard.mjs audit . --staged
-node packages/guard/bin/guard.mjs snapshot .
-node packages/guard/bin/guard.mjs drift status --format json
-node packages/guard/bin/guard.mjs drift timeline
-node packages/guard/bin/guard.mjs drift compare
-node packages/guard/bin/guard.mjs assoc correlate
+node packages/guard/src/runGuard.mjs --version
+node packages/guard/src/runGuard.mjs --help
+node packages/guard/src/runGuard.mjs status
+npm run verify:core
+npm run verify:v612
+node scripts/verify_commercial_edition_boundary.mjs
 ```
 
-Use [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md) as the public verification matrix.
-
-## v1.0.2 Release Note Draft
-
-`v1.0.2` is a stabilization and trust-hardening release.
-
-### Fixed
-
-- fixed `guard audit` runtime crash
-- fixed `guard snapshot` missing-module crash
-- removed silent success from gated drift analytics paths
-- enforced fail-closed behavior for missing required drift input data
-- aligned drift schemas with emitted payloads
-- unified commercial edition naming to `community / pro / pro_plus / enterprise`
-- restored runnable repo-root CLI verification flow
-
-### Behavior Changes
-
-- `guard audit . --staged` now returns JSON instead of crashing
-- `guard snapshot .` now returns JSON instead of crashing
-- `guard drift timeline` and `guard drift compare` no longer return misleading empty success payloads
-- gated analytics commands now fail closed with structured JSON and stable exit codes
-
-### Out Of Scope
-
-- no v1.1 Canonical Action implementation
-- no Risk v1 redesign
-- no Drift architecture redesign
-- no UI or control plane work
+Use [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md) as the release verification matrix.

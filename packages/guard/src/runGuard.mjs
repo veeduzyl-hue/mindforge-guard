@@ -19,6 +19,10 @@ import {
   getLicensePath,
 } from "./product/license.mjs";
 import { normalizeEdition } from "./product/edition.mjs";
+import {
+  EXIT_LICENSE_REQUIRED,
+  buildLicenseGateResult,
+} from "./product/license_gate.mjs";
 
 function readPkgVersion() {
   try {
@@ -31,7 +35,6 @@ function readPkgVersion() {
 }
 
 const GUARD_VERSION = readPkgVersion();
-const EXIT_LICENSE_REQUIRED = 21;
 const EXIT_ERROR_DEFAULT = 30;
 
 function tierNumFromEdition(edition) {
@@ -50,27 +53,11 @@ function tierLabel(tier) {
 }
 
 function licenseGateResult({ lic, requiredEdition, feature }) {
-  const currentEdition = normalizeEdition(lic && lic.kind === "ok" ? lic.edition : "community");
-  if (tierNumFromEdition(currentEdition) >= tierNumFromEdition(requiredEdition)) return null;
-
-  return {
-    exitCode: EXIT_LICENSE_REQUIRED,
-    stdout:
-      JSON.stringify(
-        {
-          ok: false,
-          error: {
-            kind: "license_required",
-            feature: feature || "",
-            required_edition: normalizeEdition(requiredEdition),
-            current_edition: currentEdition,
-            hint: "Install a signed license file: guard license install <file>",
-          },
-        },
-        null,
-        2
-      ) + "\n",
-  };
+  return buildLicenseGateResult({
+    lic,
+    requiredEdition,
+    feature,
+  });
 }
 
 function showLicenseSummaryLocal() {

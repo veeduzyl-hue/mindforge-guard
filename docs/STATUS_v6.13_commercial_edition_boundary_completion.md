@@ -1,0 +1,24 @@
+# v6.13.0 Commercial Edition Boundary Completion
+
+- Baseline:
+  - `v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+- Goal:
+  - promote Community / Pro / Pro+ / Enterprise into a formal commercial promise surface
+- Boundary:
+  - commercial edition boundary only
+  - no authority expansion
+  - no main-path takeover
+  - no execution binding
+  - no UI / control plane
+  - no risk integration
+- Contract:
+  - gated analytics commands must return stable structured errors
+  - `license_required` covers missing / invalid / expired / not_yet_valid
+  - `edition_mismatch` covers valid-but-insufficient editions
+  - gate exit code remains `21`
+- Preserved:
+  - `audit` output / verdict / exit unchanged
+  - recommendation-only
+  - additive-only
+  - non-executing
+  - default-off where applicable
