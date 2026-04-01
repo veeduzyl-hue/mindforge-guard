@@ -81,7 +81,7 @@ node packages/guard/src/runGuard.mjs assoc correlate
 
 See:
 
-- [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
-- [docs/LICENSE.md](/D:/AI%20project/mindforge-guard/docs/LICENSE.md)
-- [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md)
-- [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
+- [docs/EDITIONS.md](docs/EDITIONS.md)
+- [docs/LICENSE.md](docs/LICENSE.md)
+- [docs/VERIFY.md](docs/VERIFY.md)
+- [RELEASE.md](RELEASE.md)

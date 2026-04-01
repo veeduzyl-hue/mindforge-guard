@@ -52,6 +52,6 @@ node packages/guard/bin/guard.mjs assoc correlate
 
 See:
 
-- [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
-- [docs/LICENSE.md](/D:/AI%20project/mindforge-guard/docs/LICENSE.md)
-- [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md)
+- [docs/EDITIONS.md](../../docs/EDITIONS.md)
+- [docs/LICENSE.md](../../docs/LICENSE.md)
+- [docs/VERIFY.md](../../docs/VERIFY.md)
