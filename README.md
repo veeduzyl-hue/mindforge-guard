@@ -133,6 +133,8 @@ Without a valid Pro license, Guard returns a structured `license_required` respo
 ### Demo C — Pro+ comparison and correlation
 Show the main paid upgrade surface:
 
+Commercial editions walkthrough: [`docs/demos/DEMO_C_COMMERCIAL_EDITIONS_BOUNDARY.md`](docs/demos/DEMO_C_COMMERCIAL_EDITIONS_BOUNDARY.md)
+
 ```bash
 node packages/guard/src/runGuard.mjs drift compare
 node packages/guard/src/runGuard.mjs assoc correlate

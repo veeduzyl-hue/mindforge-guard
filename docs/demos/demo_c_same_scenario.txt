@@ -1,0 +1,1 @@
+An AI-assisted team is preparing a release and wants to inspect the current governance state, review drift over time, and compare signals before deciding whether to upgrade.
