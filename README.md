@@ -107,8 +107,12 @@ node packages/guard/src/runGuard.mjs drift status --format json
 
 ## Demo paths
 
-### Demo A — Community baseline
-Run Guard without a paid license:
+Start with the buyer overview:
+
+- [`docs/demos/README.md`](docs/demos/README.md) — Buyer Demo Series
+
+### Demo A — See AI-assisted change before release drift
+See how Guard helps a team make AI-assisted change visible before it becomes downstream release drift.
 
 Full walkthrough: [`docs/demos/DEMO_A_AI_CODING_GOVERNANCE.md`](docs/demos/DEMO_A_AI_CODING_GOVERNANCE.md)
 
@@ -119,8 +123,8 @@ node packages/guard/src/runGuard.mjs snapshot .
 node packages/guard/src/runGuard.mjs drift status --format json
 ```
 
-### Demo B — Pro drift visibility
-Show the first paid analytics boundary:
+### Demo B — Prove release governance readiness
+See how a release workflow can produce verifiable governance evidence and reviewable release-governance artifacts.
 
 Release-governance walkthrough: [`docs/demos/DEMO_B_RELEASE_GOVERNANCE.md`](docs/demos/DEMO_B_RELEASE_GOVERNANCE.md)
 
@@ -130,8 +134,8 @@ node packages/guard/src/runGuard.mjs drift timeline
 
 Without a valid Pro license, Guard returns a structured `license_required` response.
 
-### Demo C — Pro+ comparison and correlation
-Show the main paid upgrade surface:
+### Demo C — Understand Community vs Pro vs Pro+
+See the practical difference between Community, Pro, and Pro+ using one buyer-facing scenario.
 
 Commercial editions walkthrough: [`docs/demos/DEMO_C_COMMERCIAL_EDITIONS_BOUNDARY.md`](docs/demos/DEMO_C_COMMERCIAL_EDITIONS_BOUNDARY.md)
 
