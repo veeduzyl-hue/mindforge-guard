@@ -110,6 +110,8 @@ node packages/guard/src/runGuard.mjs drift status --format json
 ### Demo A — Community baseline
 Run Guard without a paid license:
 
+Full walkthrough: [`docs/demos/DEMO_A_AI_CODING_GOVERNANCE.md`](docs/demos/DEMO_A_AI_CODING_GOVERNANCE.md)
+
 ```bash
 node packages/guard/src/runGuard.mjs status
 node packages/guard/src/runGuard.mjs audit . --staged

@@ -1,0 +1,1 @@
+AI rewrites the release README, updates edition copy, and changes docs links before a release candidate is reviewed.
