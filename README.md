@@ -122,6 +122,8 @@ node packages/guard/src/runGuard.mjs drift status --format json
 ### Demo B — Pro drift visibility
 Show the first paid analytics boundary:
 
+Release-governance walkthrough: [`docs/demos/DEMO_B_RELEASE_GOVERNANCE.md`](docs/demos/DEMO_B_RELEASE_GOVERNANCE.md)
+
 ```bash
 node packages/guard/src/runGuard.mjs drift timeline
 ```

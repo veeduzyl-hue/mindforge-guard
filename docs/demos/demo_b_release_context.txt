@@ -1,0 +1,1 @@
+Prepare a release candidate with closure evidence, delivery manifest alignment, and final acceptance semantics verification before publication.
