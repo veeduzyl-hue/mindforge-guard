@@ -13,6 +13,7 @@
       "db:migrate:dev": "npm --workspace @mindforge/db run migrate:dev",
       "verify:core": "node scripts/verify_governance_surface.mjs && node scripts/verify_governance_consumption_profile.mjs && node scripts/verify_audit_permit_gate.mjs",
       "verify:v612": "node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics_boundary.mjs && node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics_hardening.mjs && node scripts/verify_governance_case_review_decision_closure_evidence_package_delivery_manifest_acceptance_semantics_final_acceptance.mjs",
+      "verify:license-hub-phase2": "node scripts/verify_license_hub_phase2_boundary.mjs",
       "verify:license-hub-skeleton": "node scripts/verify_license_hub_skeleton_phase1.mjs",
       "verify": "npm run verify:core && npm run verify:v612"
     }
