@@ -29,7 +29,8 @@ node packages/guard/bin/guard.mjs action classify --text "write file README.md"
 node packages/guard/bin/guard.mjs drift status --format json
 node packages/guard/bin/guard.mjs license status
 node packages/guard/bin/guard.mjs license show
-node packages/guard/bin/guard.mjs license install <file>
+node packages/guard/bin/guard.mjs license verify --file <file>
+node packages/guard/bin/guard.mjs license install --file <file>
 node packages/guard/bin/guard.mjs license remove
 ```
 
@@ -55,3 +56,30 @@ See:
 - [docs/EDITIONS.md](../../docs/EDITIONS.md)
 - [docs/LICENSE.md](../../docs/LICENSE.md)
 - [docs/VERIFY.md](../../docs/VERIFY.md)
+
+## License Activation UX
+
+Guard installs the local license file to:
+
+- Windows: `C:\Users\<user>\.guard\license.json`
+- macOS/Linux: `~/.guard/license.json`
+
+Recommended flow:
+
+```bash
+node packages/guard/bin/guard.mjs license verify --file downloaded-license.json
+node packages/guard/bin/guard.mjs license install --file downloaded-license.json
+node packages/guard/bin/guard.mjs license status
+node packages/guard/bin/guard.mjs status
+```
+
+Get the signed license JSON from License Hub:
+
+- customer portal download
+- resend email from License Hub
+
+Helpful surfaces:
+
+- `guard license status` shows current state, install path, edition, and next step
+- `guard license show` returns the structured local inspection result
+- `guard status` includes the repo policy, drift summary, and local license guidance

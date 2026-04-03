@@ -103,6 +103,26 @@ node packages/guard/src/runGuard.mjs snapshot .
 node packages/guard/src/runGuard.mjs drift status --format json
 ```
 
+### License activation
+
+Paid analytics commands stay offline and use a locally installed signed license JSON.
+
+Typical flow:
+
+```bash
+node packages/guard/src/runGuard.mjs license verify --file downloaded-license.json
+node packages/guard/src/runGuard.mjs license install --file downloaded-license.json
+node packages/guard/src/runGuard.mjs license status
+node packages/guard/src/runGuard.mjs status
+```
+
+The standard install path is:
+
+- Windows: `C:\Users\<user>\.guard\license.json`
+- macOS/Linux: `~/.guard/license.json`
+
+Download the license file from License Hub, then install it locally with the CLI.
+
 ---
 
 ## Demo paths
