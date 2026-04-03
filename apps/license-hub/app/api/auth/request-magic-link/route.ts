@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       email: result.email,
       expiresAt: result.expiresAt,
       mailMode: result.delivery.mode,
-      ...(result.delivery.mode === "dev"
+      ...(result.delivery.mode === "dev" && result.delivery.devMagicLink
         ? {
             devMagicLink: result.delivery.devMagicLink,
             debugPath: result.delivery.debugPath,

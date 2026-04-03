@@ -2,6 +2,8 @@ import crypto from "node:crypto";
 
 import { cookies } from "next/headers";
 
+import { isProductionEnv } from "./env";
+
 const SESSION_COOKIE_NAME = "mf_license_hub_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
@@ -19,11 +21,16 @@ function base64urlDecode(input: string): string {
 }
 
 function getSessionSecret(): string {
-  return (
-    process.env.LICENSE_HUB_SESSION_SECRET ||
-    process.env.LICENSE_PRIVATE_KEY_PEM ||
-    "mindforge-license-hub-dev-secret"
-  );
+  const configured = process.env.LICENSE_HUB_SESSION_SECRET;
+  if (configured) {
+    return configured;
+  }
+
+  if (isProductionEnv()) {
+    throw new Error("production requires LICENSE_HUB_SESSION_SECRET");
+  }
+
+  return "mindforge-license-hub-dev-secret";
 }
 
 function sign(value: string): string {
