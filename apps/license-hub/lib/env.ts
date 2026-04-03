@@ -25,3 +25,23 @@ export function getLicenseHubDbDefaults() {
       path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json"),
   };
 }
+
+export function isProductionEnv(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+export function readBooleanEnv(name: string, fallback = false): boolean {
+  const value = process.env[name];
+  if (!value) {
+    return fallback;
+  }
+
+  return value === "1" || value.toLowerCase() === "true" || value.toLowerCase() === "yes";
+}
+
+export function readCsvEnv(name: string): string[] {
+  return String(process.env[name] || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}

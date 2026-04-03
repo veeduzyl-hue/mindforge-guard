@@ -79,6 +79,8 @@ model License {
   issuedAt            DateTime
   notBefore           DateTime
   notAfter            DateTime
+  revokedAt           DateTime?
+  revokeReason        String?
   payloadJson         Json
   signedLicenseJson   Json
   signatureBase64     String
