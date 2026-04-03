@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { isProductionEnv, readBooleanEnv } from "./env";
+import { getMailProviderConfig, isProductionEnv, readBooleanEnv } from "./env";
 
 export type MailMode = "provider" | "dev";
 
@@ -65,8 +65,7 @@ function assertMailModeAllowed(mode: MailMode): void {
 }
 
 async function sendViaResend(input: TextEmailInput): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
+  const { resendApiKey: apiKey, resendFromEmail: from } = getMailProviderConfig();
   if (!apiKey || !from) {
     throw new Error("provider mail mode requires RESEND_API_KEY and RESEND_FROM_EMAIL");
   }

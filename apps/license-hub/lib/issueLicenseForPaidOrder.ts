@@ -84,6 +84,8 @@ export async function issueLicenseForPaidOrder(input: IssueLicenseForPaidOrderIn
     issuedAt: signedLicense.issued_at,
     notBefore: signedLicense.not_before,
     notAfter: signedLicense.not_after,
+    revokedAt: null,
+    revokeReason: null,
     payloadJson: payload,
     signedLicenseJson: signedLicense,
     signatureBase64: signedLicense.signature.sig,

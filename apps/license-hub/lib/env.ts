@@ -30,6 +30,22 @@ export function isProductionEnv(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
+export function getBillingProviderConfig() {
+  return {
+    provider: process.env.BILLING_PROVIDER || "billing_provider",
+    webhookSecret: process.env.BILLING_WEBHOOK_SECRET || "",
+    signatureHeader: process.env.BILLING_SIGNATURE_HEADER || "x-billing-signature",
+    allowUnsignedDev: readBooleanEnv("BILLING_ALLOW_UNSIGNED_DEV", false),
+  };
+}
+
+export function getMailProviderConfig() {
+  return {
+    resendApiKey: process.env.RESEND_API_KEY || "",
+    resendFromEmail: process.env.RESEND_FROM_EMAIL || "",
+  };
+}
+
 export function readBooleanEnv(name: string, fallback = false): boolean {
   const value = process.env[name];
   if (!value) {
