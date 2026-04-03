@@ -6,6 +6,10 @@ export type OrderStatus = "pending" | "paid" | "failed" | "refunded" | "cancelle
 export type LicenseStatus = "active" | "superseded" | "revoked" | "refund_revoked" | "expired";
 export type WebhookStatus = "received" | "processed" | "ignored" | "error";
 export type MagicLinkPurpose = "portal_access" | "download_license";
+export type OrganizationMemberRole = "owner" | "admin" | "member";
+export type OrganizationMemberStatus = "active" | "pending" | "removed";
+export type SeatAssignmentStatus = "active" | "unassigned" | "pending";
+export type ActivationStatus = "requested" | "confirmed" | "revoked" | "expired";
 
 export interface CustomerRecord {
   id: string;
@@ -111,6 +115,73 @@ export interface SystemActionRecord {
   webhookEventId: string | null;
 }
 
+export interface OrganizationRecord {
+  id: string;
+  slug: string;
+  name: string;
+  billingEmail: string | null;
+  createdAt: string;
+  updatedAt: string;
+  ownerCustomerId: string | null;
+}
+
+export interface OrganizationMemberRecord {
+  id: string;
+  organizationId: string;
+  customerId: string | null;
+  email: string;
+  role: OrganizationMemberRole;
+  status: OrganizationMemberStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SeatEntitlementRecord {
+  id: string;
+  organizationId: string;
+  licenseId: string;
+  edition: string;
+  seatCount: number;
+  activeFrom: string;
+  activeUntil: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SeatAssignmentRecord {
+  id: string;
+  seatEntitlementId: string;
+  organizationId: string;
+  customerId: string | null;
+  email: string;
+  status: SeatAssignmentStatus;
+  assignedByEmail: string | null;
+  assignedAt: string;
+  unassignedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivationRecord {
+  id: string;
+  activationId: string;
+  licenseId: string;
+  organizationId: string | null;
+  customerId: string | null;
+  requestedByEmail: string;
+  deviceFingerprint: string;
+  machineName: string | null;
+  activationTokenHash: string | null;
+  requestNonce: string | null;
+  status: ActivationStatus;
+  requestedAt: string;
+  confirmedAt: string | null;
+  lastSeenAt: string | null;
+  revokedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface LicenseUpdatePatch {
   schemaVersion?: number;
   keyId?: string;
@@ -153,6 +224,11 @@ interface FileDbShape {
   magic_link_tokens: MagicLinkTokenRecord[];
   admin_actions: AdminActionRecord[];
   system_actions: SystemActionRecord[];
+  organizations: OrganizationRecord[];
+  organization_members: OrganizationMemberRecord[];
+  seat_entitlements: SeatEntitlementRecord[];
+  seat_assignments: SeatAssignmentRecord[];
+  activation_records: ActivationRecord[];
 }
 
 export interface LicenseHubDb {
@@ -237,6 +313,47 @@ export interface LicenseHubDb {
   }): Promise<MagicLinkTokenRecord>;
   getMagicLinkTokenByHash(tokenHash: string): Promise<MagicLinkTokenRecord | null>;
   consumeMagicLinkToken(id: string): Promise<MagicLinkTokenRecord>;
+  listOrdersByCustomerEmail(email: string): Promise<OrderRecord[]>;
+  ensureOrganizationForCustomer(input: {
+    customerId: string;
+    customerEmail: string;
+    customerName?: string | null;
+  }): Promise<OrganizationRecord>;
+  getOrganizationById(id: string): Promise<OrganizationRecord | null>;
+  getOrganizationForCustomerEmail(email: string): Promise<OrganizationRecord | null>;
+  listOrganizationMembers(organizationId: string): Promise<OrganizationMemberRecord[]>;
+  listSeatEntitlementsByOrganizationId(organizationId: string): Promise<SeatEntitlementRecord[]>;
+  listSeatAssignmentsByOrganizationId(organizationId: string): Promise<SeatAssignmentRecord[]>;
+  assignSeat(input: {
+    organizationId: string;
+    licenseId: string;
+    email: string;
+    assignedByEmail: string;
+    customerId?: string | null;
+  }): Promise<SeatAssignmentRecord>;
+  unassignSeat(input: {
+    organizationId: string;
+    licenseId: string;
+    email: string;
+  }): Promise<SeatAssignmentRecord>;
+  createActivationRecord(input: {
+    activationId: string;
+    licenseId: string;
+    organizationId?: string | null;
+    customerId?: string | null;
+    requestedByEmail: string;
+    deviceFingerprint: string;
+    machineName?: string | null;
+    activationTokenHash?: string | null;
+    requestNonce?: string | null;
+  }): Promise<ActivationRecord>;
+  getActivationRecordByActivationId(activationId: string): Promise<ActivationRecord | null>;
+  confirmActivationRecord(
+    activationId: string,
+    patch?: {
+      lastSeenAt?: string | null;
+    }
+  ): Promise<ActivationRecord>;
 }
 
 function nowIso(): string {
@@ -245,6 +362,15 @@ function nowIso(): string {
 
 function newId(prefix: string): string {
   return `${prefix}_${crypto.randomUUID()}`;
+}
+
+function slugify(value: string): string {
+  return String(value || "organization")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "organization";
 }
 
 function defaultFileDbPath(): string {
@@ -274,6 +400,52 @@ function normalizeLicenseRecord(record: LicenseRecord): LicenseRecord {
   };
 }
 
+function normalizeOrganizationRecord(record: OrganizationRecord): OrganizationRecord {
+  return {
+    ...record,
+    billingEmail: record.billingEmail ?? null,
+    ownerCustomerId: record.ownerCustomerId ?? null,
+  };
+}
+
+function normalizeOrganizationMemberRecord(record: OrganizationMemberRecord): OrganizationMemberRecord {
+  return {
+    ...record,
+    customerId: record.customerId ?? null,
+  };
+}
+
+function normalizeSeatEntitlementRecord(record: SeatEntitlementRecord): SeatEntitlementRecord {
+  return {
+    ...record,
+    seatCount: record.seatCount ?? 1,
+    activeUntil: record.activeUntil ?? null,
+  };
+}
+
+function normalizeSeatAssignmentRecord(record: SeatAssignmentRecord): SeatAssignmentRecord {
+  return {
+    ...record,
+    customerId: record.customerId ?? null,
+    assignedByEmail: record.assignedByEmail ?? null,
+    unassignedAt: record.unassignedAt ?? null,
+  };
+}
+
+function normalizeActivationRecord(record: ActivationRecord): ActivationRecord {
+  return {
+    ...record,
+    organizationId: record.organizationId ?? null,
+    customerId: record.customerId ?? null,
+    machineName: record.machineName ?? null,
+    activationTokenHash: record.activationTokenHash ?? null,
+    requestNonce: record.requestNonce ?? null,
+    confirmedAt: record.confirmedAt ?? null,
+    lastSeenAt: record.lastSeenAt ?? null,
+    revokedAt: record.revokedAt ?? null,
+  };
+}
+
 function readFileDb(filePath: string): FileDbShape {
   if (!fs.existsSync(filePath)) {
     return {
@@ -284,6 +456,11 @@ function readFileDb(filePath: string): FileDbShape {
       magic_link_tokens: [],
       admin_actions: [],
       system_actions: [],
+      organizations: [],
+      organization_members: [],
+      seat_entitlements: [],
+      seat_assignments: [],
+      activation_records: [],
     };
   }
 
@@ -296,6 +473,11 @@ function readFileDb(filePath: string): FileDbShape {
     magic_link_tokens: raw.magic_link_tokens ?? [],
     admin_actions: raw.admin_actions ?? [],
     system_actions: raw.system_actions ?? [],
+    organizations: (raw.organizations ?? []).map(normalizeOrganizationRecord),
+    organization_members: (raw.organization_members ?? []).map(normalizeOrganizationMemberRecord),
+    seat_entitlements: (raw.seat_entitlements ?? []).map(normalizeSeatEntitlementRecord),
+    seat_assignments: (raw.seat_assignments ?? []).map(normalizeSeatAssignmentRecord),
+    activation_records: (raw.activation_records ?? []).map(normalizeActivationRecord),
   };
 }
 
@@ -691,6 +873,280 @@ class FileLicenseHubDb implements LicenseHubDb {
     this.write(db);
     return db.magic_link_tokens[index];
   }
+
+  async listOrdersByCustomerEmail(email: string): Promise<OrderRecord[]> {
+    const customer = await this.getCustomerByEmail(email);
+    if (!customer) return [];
+    return sortByCreatedDesc(this.read().orders.filter((order) => order.customerId === customer.id));
+  }
+
+  async ensureOrganizationForCustomer(input: {
+    customerId: string;
+    customerEmail: string;
+    customerName?: string | null;
+  }): Promise<OrganizationRecord> {
+    const db = this.read();
+    const existing = db.organizations.find((organization) => organization.ownerCustomerId === input.customerId);
+    if (existing) {
+      return existing;
+    }
+
+    const base = slugify(input.customerName || input.customerEmail.split("@")[0] || input.customerId);
+    let slug = base;
+    let suffix = 1;
+    while (db.organizations.some((organization) => organization.slug === slug)) {
+      suffix += 1;
+      slug = `${base}-${suffix}`;
+    }
+
+    const organization: OrganizationRecord = {
+      id: newId("org"),
+      slug,
+      name: input.customerName ? `${input.customerName} Organization` : `${input.customerEmail} Organization`,
+      billingEmail: input.customerEmail,
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+      ownerCustomerId: input.customerId,
+    };
+
+    const ownerMembership: OrganizationMemberRecord = {
+      id: newId("orgm"),
+      organizationId: organization.id,
+      customerId: input.customerId,
+      email: input.customerEmail.trim().toLowerCase(),
+      role: "owner",
+      status: "active",
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+
+    db.organizations.push(organization);
+    db.organization_members.push(ownerMembership);
+    this.write(db);
+    return organization;
+  }
+
+  async getOrganizationById(id: string): Promise<OrganizationRecord | null> {
+    return this.read().organizations.find((organization) => organization.id === id) ?? null;
+  }
+
+  async getOrganizationForCustomerEmail(email: string): Promise<OrganizationRecord | null> {
+    const normalizedEmail = email.trim().toLowerCase();
+    const db = this.read();
+    const membership = db.organization_members.find(
+      (member) => member.email === normalizedEmail && member.status !== "removed"
+    );
+    if (membership) {
+      return db.organizations.find((organization) => organization.id === membership.organizationId) ?? null;
+    }
+
+    const customer = db.customers.find((entry) => entry.email === normalizedEmail);
+    if (!customer) return null;
+    return db.organizations.find((organization) => organization.ownerCustomerId === customer.id) ?? null;
+  }
+
+  async listOrganizationMembers(organizationId: string): Promise<OrganizationMemberRecord[]> {
+    return sortByCreatedDesc(
+      this.read().organization_members.filter((member) => member.organizationId === organizationId)
+    );
+  }
+
+  async listSeatEntitlementsByOrganizationId(organizationId: string): Promise<SeatEntitlementRecord[]> {
+    return sortByCreatedDesc(
+      this.read().seat_entitlements.filter((entitlement) => entitlement.organizationId === organizationId)
+    );
+  }
+
+  async listSeatAssignmentsByOrganizationId(organizationId: string): Promise<SeatAssignmentRecord[]> {
+    return sortByCreatedDesc(
+      this.read().seat_assignments.filter((assignment) => assignment.organizationId === organizationId)
+    );
+  }
+
+  async assignSeat(input: {
+    organizationId: string;
+    licenseId: string;
+    email: string;
+    assignedByEmail: string;
+    customerId?: string | null;
+  }): Promise<SeatAssignmentRecord> {
+    const normalizedEmail = input.email.trim().toLowerCase();
+    const db = this.read();
+    const license = db.licenses.find((entry) => entry.licenseId === input.licenseId);
+    if (!license) {
+      throw new Error(`license not found: ${input.licenseId}`);
+    }
+
+    let entitlement =
+      db.seat_entitlements.find(
+        (entry) => entry.organizationId === input.organizationId && entry.licenseId === license.id
+      ) ?? null;
+
+    if (!entitlement) {
+      entitlement = {
+        id: newId("seatent"),
+        organizationId: input.organizationId,
+        licenseId: license.id,
+        edition: license.edition,
+        seatCount: 1,
+        activeFrom: nowIso(),
+        activeUntil: null,
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
+      };
+      db.seat_entitlements.push(entitlement);
+    }
+
+    const activeAssignments = db.seat_assignments.filter(
+      (assignment) => assignment.seatEntitlementId === entitlement.id && assignment.status === "active"
+    );
+    const existing = db.seat_assignments.find(
+      (assignment) => assignment.seatEntitlementId === entitlement.id && assignment.email === normalizedEmail
+    );
+
+    if (!existing && activeAssignments.length >= entitlement.seatCount) {
+      throw new Error("seat entitlement exhausted");
+    }
+
+    const assignment: SeatAssignmentRecord = existing
+      ? {
+          ...existing,
+          customerId: input.customerId ?? existing.customerId,
+          status: "active",
+          assignedByEmail: input.assignedByEmail,
+          assignedAt: nowIso(),
+          unassignedAt: null,
+          updatedAt: nowIso(),
+        }
+      : {
+          id: newId("seatasn"),
+          seatEntitlementId: entitlement.id,
+          organizationId: input.organizationId,
+          customerId: input.customerId ?? null,
+          email: normalizedEmail,
+          status: "active",
+          assignedByEmail: input.assignedByEmail,
+          assignedAt: nowIso(),
+          unassignedAt: null,
+          createdAt: nowIso(),
+          updatedAt: nowIso(),
+        };
+
+    if (existing) {
+      const index = db.seat_assignments.findIndex((entry) => entry.id === existing.id);
+      db.seat_assignments[index] = assignment;
+    } else {
+      db.seat_assignments.push(assignment);
+    }
+
+    this.write(db);
+    return assignment;
+  }
+
+  async unassignSeat(input: {
+    organizationId: string;
+    licenseId: string;
+    email: string;
+  }): Promise<SeatAssignmentRecord> {
+    const normalizedEmail = input.email.trim().toLowerCase();
+    const db = this.read();
+    const license = db.licenses.find((entry) => entry.licenseId === input.licenseId);
+    if (!license) {
+      throw new Error(`license not found: ${input.licenseId}`);
+    }
+
+    const entitlement = db.seat_entitlements.find(
+      (entry) => entry.organizationId === input.organizationId && entry.licenseId === license.id
+    );
+    if (!entitlement) {
+      throw new Error(`seat entitlement not found for license: ${input.licenseId}`);
+    }
+
+    const index = db.seat_assignments.findIndex(
+      (assignment) =>
+        assignment.seatEntitlementId === entitlement.id &&
+        assignment.email === normalizedEmail &&
+        assignment.status === "active"
+    );
+    if (index === -1) {
+      throw new Error(`active seat assignment not found: ${normalizedEmail}`);
+    }
+
+    db.seat_assignments[index] = {
+      ...db.seat_assignments[index],
+      status: "unassigned",
+      unassignedAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+
+    this.write(db);
+    return db.seat_assignments[index];
+  }
+
+  async createActivationRecord(input: {
+    activationId: string;
+    licenseId: string;
+    organizationId?: string | null;
+    customerId?: string | null;
+    requestedByEmail: string;
+    deviceFingerprint: string;
+    machineName?: string | null;
+    activationTokenHash?: string | null;
+    requestNonce?: string | null;
+  }): Promise<ActivationRecord> {
+    const db = this.read();
+    const record: ActivationRecord = {
+      id: newId("act"),
+      activationId: input.activationId,
+      licenseId: input.licenseId,
+      organizationId: input.organizationId ?? null,
+      customerId: input.customerId ?? null,
+      requestedByEmail: input.requestedByEmail,
+      deviceFingerprint: input.deviceFingerprint,
+      machineName: input.machineName ?? null,
+      activationTokenHash: input.activationTokenHash ?? null,
+      requestNonce: input.requestNonce ?? null,
+      status: "requested",
+      requestedAt: nowIso(),
+      confirmedAt: null,
+      lastSeenAt: null,
+      revokedAt: null,
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+
+    db.activation_records.push(record);
+    this.write(db);
+    return record;
+  }
+
+  async getActivationRecordByActivationId(activationId: string): Promise<ActivationRecord | null> {
+    return this.read().activation_records.find((record) => record.activationId === activationId) ?? null;
+  }
+
+  async confirmActivationRecord(
+    activationId: string,
+    patch?: {
+      lastSeenAt?: string | null;
+    }
+  ): Promise<ActivationRecord> {
+    const db = this.read();
+    const index = db.activation_records.findIndex((record) => record.activationId === activationId);
+    if (index === -1) {
+      throw new Error(`activation record not found: ${activationId}`);
+    }
+
+    db.activation_records[index] = {
+      ...db.activation_records[index],
+      status: "confirmed",
+      confirmedAt: db.activation_records[index].confirmedAt || nowIso(),
+      lastSeenAt: patch?.lastSeenAt ?? nowIso(),
+      updatedAt: nowIso(),
+    };
+
+    this.write(db);
+    return db.activation_records[index];
+  }
 }
 
 function asIsoString(value: unknown): string | null {
@@ -815,6 +1271,83 @@ function mapSystemActionRecord(value: Record<string, unknown>): SystemActionReco
     licenseId: value.licenseId ? String(value.licenseId) : null,
     webhookEventId: value.webhookEventId ? String(value.webhookEventId) : null,
   };
+}
+
+function mapOrganizationRecord(value: Record<string, unknown>): OrganizationRecord {
+  return normalizeOrganizationRecord({
+    id: String(value.id),
+    slug: String(value.slug),
+    name: String(value.name),
+    billingEmail: value.billingEmail ? String(value.billingEmail) : null,
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    updatedAt: asIsoString(value.updatedAt) || nowIso(),
+    ownerCustomerId: value.ownerCustomerId ? String(value.ownerCustomerId) : null,
+  });
+}
+
+function mapOrganizationMemberRecord(value: Record<string, unknown>): OrganizationMemberRecord {
+  return normalizeOrganizationMemberRecord({
+    id: String(value.id),
+    organizationId: String(value.organizationId),
+    customerId: value.customerId ? String(value.customerId) : null,
+    email: String(value.email),
+    role: String(value.role) as OrganizationMemberRole,
+    status: String(value.status) as OrganizationMemberStatus,
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    updatedAt: asIsoString(value.updatedAt) || nowIso(),
+  });
+}
+
+function mapSeatEntitlementRecord(value: Record<string, unknown>): SeatEntitlementRecord {
+  return normalizeSeatEntitlementRecord({
+    id: String(value.id),
+    organizationId: String(value.organizationId),
+    licenseId: String(value.licenseId),
+    edition: String(value.edition),
+    seatCount: Number(value.seatCount ?? 1),
+    activeFrom: asIsoString(value.activeFrom) || nowIso(),
+    activeUntil: asIsoString(value.activeUntil),
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    updatedAt: asIsoString(value.updatedAt) || nowIso(),
+  });
+}
+
+function mapSeatAssignmentRecord(value: Record<string, unknown>): SeatAssignmentRecord {
+  return normalizeSeatAssignmentRecord({
+    id: String(value.id),
+    seatEntitlementId: String(value.seatEntitlementId),
+    organizationId: String(value.organizationId),
+    customerId: value.customerId ? String(value.customerId) : null,
+    email: String(value.email),
+    status: String(value.status) as SeatAssignmentStatus,
+    assignedByEmail: value.assignedByEmail ? String(value.assignedByEmail) : null,
+    assignedAt: asIsoString(value.assignedAt) || nowIso(),
+    unassignedAt: asIsoString(value.unassignedAt),
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    updatedAt: asIsoString(value.updatedAt) || nowIso(),
+  });
+}
+
+function mapActivationRecord(value: Record<string, unknown>): ActivationRecord {
+  return normalizeActivationRecord({
+    id: String(value.id),
+    activationId: String(value.activationId),
+    licenseId: String(value.licenseId),
+    organizationId: value.organizationId ? String(value.organizationId) : null,
+    customerId: value.customerId ? String(value.customerId) : null,
+    requestedByEmail: String(value.requestedByEmail),
+    deviceFingerprint: String(value.deviceFingerprint),
+    machineName: value.machineName ? String(value.machineName) : null,
+    activationTokenHash: value.activationTokenHash ? String(value.activationTokenHash) : null,
+    requestNonce: value.requestNonce ? String(value.requestNonce) : null,
+    status: String(value.status) as ActivationStatus,
+    requestedAt: asIsoString(value.requestedAt) || nowIso(),
+    confirmedAt: asIsoString(value.confirmedAt),
+    lastSeenAt: asIsoString(value.lastSeenAt),
+    revokedAt: asIsoString(value.revokedAt),
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    updatedAt: asIsoString(value.updatedAt) || nowIso(),
+  });
 }
 
 function mapLicensePatchForPrisma(patch: LicenseUpdatePatch): Record<string, unknown> {
@@ -1152,6 +1685,244 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
         },
       });
       return mapMagicLinkTokenRecord(record as unknown as Record<string, unknown>);
+    },
+    async listOrdersByCustomerEmail(email) {
+      const records = await prisma.order.findMany({
+        where: {
+          customer: {
+            email,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return records.map((record) => mapOrderRecord(record as unknown as Record<string, unknown>));
+    },
+    async ensureOrganizationForCustomer(input) {
+      const existing = await prisma.organization.findFirst({
+        where: {
+          ownerCustomerId: input.customerId,
+        },
+      });
+      if (existing) {
+        return mapOrganizationRecord(existing as unknown as Record<string, unknown>);
+      }
+
+      const base = slugify(input.customerName || input.customerEmail.split("@")[0] || input.customerId);
+      let slug = base;
+      let suffix = 1;
+      while (await prisma.organization.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${base}-${suffix}`;
+      }
+
+      const organization = await prisma.organization.create({
+        data: {
+          slug,
+          name: input.customerName ? `${input.customerName} Organization` : `${input.customerEmail} Organization`,
+          billingEmail: input.customerEmail,
+          ownerCustomerId: input.customerId,
+          members: {
+            create: {
+              email: input.customerEmail,
+              customerId: input.customerId,
+              role: "owner",
+              status: "active",
+            },
+          },
+        },
+      });
+      return mapOrganizationRecord(organization as unknown as Record<string, unknown>);
+    },
+    async getOrganizationById(id) {
+      const record = await prisma.organization.findUnique({ where: { id } });
+      return record ? mapOrganizationRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async getOrganizationForCustomerEmail(email) {
+      const record = await prisma.organization.findFirst({
+        where: {
+          OR: [
+            { ownerCustomer: { email } },
+            {
+              members: {
+                some: {
+                  email,
+                  status: {
+                    not: "removed",
+                  },
+                },
+              },
+            },
+          ],
+        },
+      });
+      return record ? mapOrganizationRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async listOrganizationMembers(organizationId) {
+      const records = await prisma.organizationMember.findMany({
+        where: { organizationId },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return records.map((record) => mapOrganizationMemberRecord(record as unknown as Record<string, unknown>));
+    },
+    async listSeatEntitlementsByOrganizationId(organizationId) {
+      const records = await prisma.seatEntitlement.findMany({
+        where: { organizationId },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return records.map((record) => mapSeatEntitlementRecord(record as unknown as Record<string, unknown>));
+    },
+    async listSeatAssignmentsByOrganizationId(organizationId) {
+      const records = await prisma.seatAssignment.findMany({
+        where: { organizationId },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return records.map((record) => mapSeatAssignmentRecord(record as unknown as Record<string, unknown>));
+    },
+    async assignSeat(input) {
+      const license = await prisma.license.findUnique({
+        where: { licenseId: input.licenseId },
+      });
+      if (!license) {
+        throw new Error(`license not found: ${input.licenseId}`);
+      }
+
+      const entitlement =
+        (await prisma.seatEntitlement.findFirst({
+          where: {
+            organizationId: input.organizationId,
+            licenseId: license.id,
+          },
+        })) ||
+        (await prisma.seatEntitlement.create({
+          data: {
+            organizationId: input.organizationId,
+            licenseId: license.id,
+            edition: license.edition,
+            seatCount: 1,
+          },
+        }));
+
+      const activeAssignments = await prisma.seatAssignment.count({
+        where: {
+          seatEntitlementId: entitlement.id,
+          status: "active",
+        },
+      });
+
+      const existing = await prisma.seatAssignment.findFirst({
+        where: {
+          seatEntitlementId: entitlement.id,
+          email: input.email,
+        },
+      });
+
+      if (!existing && activeAssignments >= entitlement.seatCount) {
+        throw new Error("seat entitlement exhausted");
+      }
+
+      const record = existing
+        ? await prisma.seatAssignment.update({
+            where: { id: existing.id },
+            data: {
+              customerId: input.customerId ?? existing.customerId,
+              status: "active",
+              assignedByEmail: input.assignedByEmail,
+              assignedAt: new Date(),
+              unassignedAt: null,
+            },
+          })
+        : await prisma.seatAssignment.create({
+            data: {
+              seatEntitlementId: entitlement.id,
+              organizationId: input.organizationId,
+              customerId: input.customerId ?? null,
+              email: input.email,
+              status: "active",
+              assignedByEmail: input.assignedByEmail,
+            },
+          });
+
+      return mapSeatAssignmentRecord(record as unknown as Record<string, unknown>);
+    },
+    async unassignSeat(input) {
+      const license = await prisma.license.findUnique({
+        where: { licenseId: input.licenseId },
+      });
+      if (!license) {
+        throw new Error(`license not found: ${input.licenseId}`);
+      }
+
+      const entitlement = await prisma.seatEntitlement.findFirst({
+        where: {
+          organizationId: input.organizationId,
+          licenseId: license.id,
+        },
+      });
+      if (!entitlement) {
+        throw new Error(`seat entitlement not found for license: ${input.licenseId}`);
+      }
+
+      const assignment = await prisma.seatAssignment.findFirst({
+        where: {
+          seatEntitlementId: entitlement.id,
+          email: input.email,
+          status: "active",
+        },
+      });
+      if (!assignment) {
+        throw new Error(`active seat assignment not found: ${input.email}`);
+      }
+
+      const record = await prisma.seatAssignment.update({
+        where: { id: assignment.id },
+        data: {
+          status: "unassigned",
+          unassignedAt: new Date(),
+        },
+      });
+      return mapSeatAssignmentRecord(record as unknown as Record<string, unknown>);
+    },
+    async createActivationRecord(input) {
+      const record = await prisma.activationRecord.create({
+        data: {
+          activationId: input.activationId,
+          licenseId: input.licenseId,
+          organizationId: input.organizationId ?? null,
+          customerId: input.customerId ?? null,
+          requestedByEmail: input.requestedByEmail,
+          deviceFingerprint: input.deviceFingerprint,
+          machineName: input.machineName ?? null,
+          activationTokenHash: input.activationTokenHash ?? null,
+          requestNonce: input.requestNonce ?? null,
+          status: "requested",
+        },
+      });
+      return mapActivationRecord(record as unknown as Record<string, unknown>);
+    },
+    async getActivationRecordByActivationId(activationId) {
+      const record = await prisma.activationRecord.findUnique({
+        where: { activationId },
+      });
+      return record ? mapActivationRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async confirmActivationRecord(activationId, patch) {
+      const record = await prisma.activationRecord.update({
+        where: { activationId },
+        data: {
+          status: "confirmed",
+          confirmedAt: new Date(),
+          lastSeenAt: patch?.lastSeenAt ? new Date(patch.lastSeenAt) : new Date(),
+        },
+      });
+      return mapActivationRecord(record as unknown as Record<string, unknown>);
     },
   };
 }

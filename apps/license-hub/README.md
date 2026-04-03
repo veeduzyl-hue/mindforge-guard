@@ -15,6 +15,9 @@ Bounded commercial support subsystem for MindForge Guard. License Hub stays outs
 - admin license resend / revoke / extend / supersede actions
 - admin action audit log
 - system action audit log for automated lifecycle events
+- account self-serve surface for orders / licenses / billing overview
+- organization and seat assignment skeleton
+- optional online activation protocol skeleton
 - file-db fallback for local MVP
 - Prisma schema as canonical data model
 
@@ -190,6 +193,54 @@ Admin actions available on the license detail page:
 - extend by issuing a replacement license and superseding the old one
 - supersede with a replacement license, optional edition change, and audit logging
 
+## Account surface
+
+Phase 6 adds an additive account surface alongside the existing portal:
+
+- `/account`
+- `/account/orders`
+- `/account/licenses`
+- `/account/billing`
+- `/account/organization`
+- `/account/seats`
+
+Relationship to `/portal`:
+
+- `/portal` remains the customer delivery and download surface
+- `/account` is the broader self-serve visibility layer for orders, billing state, organization scaffolding, and seat skeletons
+- no existing portal flow is removed or downgraded
+
+## Seats skeleton
+
+Phase 6 does **not** introduce full org RBAC, invitations, or seat provisioning workflows.
+
+It adds the minimum bounded skeleton:
+
+- `Organization`
+- `OrganizationMember`
+- `SeatEntitlement`
+- `SeatAssignment`
+
+Current posture:
+
+- seats are modeled as license-scoped entitlements assigned inside an organization
+- account APIs can assign and unassign seats against active licenses
+- this is a bounded prebuild skeleton, not a full seat-management product
+
+## Online activation skeleton
+
+Phase 6 introduces an optional online activation protocol skeleton:
+
+- `POST /api/activation/request`
+- `POST /api/activation/confirm`
+- `GET /api/activation/:id`
+
+Important boundary:
+
+- Guard CLI offline `license verify` / `license install` / `license status` remain authoritative
+- online activation is optional and skeleton-only
+- no existing Guard CLI path now depends on a live service
+
 ## APIs
 
 Portal:
@@ -213,6 +264,23 @@ Admin:
 - `POST /api/admin/licenses/:licenseId/supersede`
 - `GET /api/admin/orders`
 - `GET /api/admin/customers`
+
+Account:
+
+- `GET /api/account/me`
+- `GET /api/account/orders`
+- `GET /api/account/licenses`
+- `GET /api/account/billing`
+- `GET /api/account/organization`
+- `GET /api/account/seats`
+- `POST /api/account/seats/assign`
+- `POST /api/account/seats/unassign`
+
+Activation skeleton:
+
+- `POST /api/activation/request`
+- `POST /api/activation/confirm`
+- `GET /api/activation/:id`
 
 Webhooks:
 
