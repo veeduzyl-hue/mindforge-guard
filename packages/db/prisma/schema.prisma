@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  pending
+  paid
+  failed
+  cancelled
+}
+
+enum LicenseStatus {
+  active
+  superseded
+  revoked
+  expired
+}
+
+enum WebhookStatus {
+  received
+  processed
+  ignored
+  error
+}
+
+enum MagicLinkPurpose {
+  portal_access
+  download_license
+}
+
+model Customer {
+  id                 String           @id @default(cuid())
+  email              String           @unique
+  name               String?
+  externalCustomerId String?          @unique
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  orders             Order[]
+  licenses           License[]
+  webhookEvents      WebhookEvent[]
+  magicLinkTokens    MagicLinkToken[]
+
+  @@map("customers")
+}
+
+model Order {
+  id              String         @id @default(cuid())
+  externalOrderId String         @unique
+  paymentProvider String
+  status          OrderStatus    @default(pending)
+  edition         String
+  amountCents     Int?
+  currency        String?
+  paidAt          DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  customerId      String
+  customer        Customer       @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  licenses        License[]
+  webhookEvents   WebhookEvent[]
+
+  @@index([customerId])
+  @@map("orders")
+}
+
+model License {
+  id                  String         @id @default(cuid())
+  licenseId           String         @unique
+  schemaVersion       Int
+  keyId               String
+  edition             String
+  status              LicenseStatus  @default(active)
+  subjectEmail        String
+  issuedAt            DateTime
+  notBefore           DateTime
+  notAfter            DateTime
+  payloadJson         Json
+  signedLicenseJson   Json
+  signatureBase64     String
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  customerId          String
+  orderId             String
+  supersedesLicenseId String?        @unique
+  supersededAt        DateTime?
+  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  order               Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  supersedesLicense   License?       @relation("LicenseSupersede", fields: [supersedesLicenseId], references: [id])
+  supersededBy        License?       @relation("LicenseSupersede")
+  webhookEvents       WebhookEvent[]
+  adminActions        AdminAction[]
+
+  @@index([orderId, status])
+  @@index([customerId, status])
+  @@map("licenses")
+}
+
+model WebhookEvent {
+  id              String        @id @default(cuid())
+  provider        String
+  eventId         String
+  eventType       String
+  status          WebhookStatus @default(received)
+  payloadJson     Json
+  processedAt     DateTime?
+  errorMessage    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  customerId      String?
+  orderId         String?
+  licenseId       String?
+  customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  order           Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  license         License?      @relation(fields: [licenseId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, eventId])
+  @@index([orderId])
+  @@index([licenseId])
+  @@map("webhook_events")
+}
+
+model MagicLinkToken {
+  id          String          @id @default(cuid())
+  email       String
+  tokenHash   String          @unique
+  purpose     MagicLinkPurpose
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  customerId  String?
+  customer    Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([customerId])
+  @@map("magic_link_tokens")
+}
+
+model AdminAction {
+  id          String    @id @default(cuid())
+  actorEmail  String
+  actionType  String
+  targetType  String
+  targetId    String
+  payloadJson Json
+  createdAt   DateTime  @default(now())
+  licenseId   String?
+  license     License?  @relation(fields: [licenseId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([licenseId])
+  @@map("admin_actions")
+}

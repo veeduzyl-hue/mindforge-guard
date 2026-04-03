@@ -1,0 +1,17 @@
+{
+  "name": "@mindforge/licensing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./canonicalize": "./src/canonicalize.ts",
+    "./entitlements": "./src/entitlements.ts",
+    "./schema": "./src/schema.ts",
+    "./sign": "./src/sign.ts",
+    "./verify": "./src/verify.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

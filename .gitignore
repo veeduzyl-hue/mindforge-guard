@@ -2,9 +2,17 @@ node_modules/
 .DS_Store
 *.log
 .env
+*.tsbuildinfo
 
 # Guard runtime (repo-local)
 .mindforge/
+
+# License hub / Next / Prisma local artifacts
+apps/license-hub/.next/
+apps/license-hub/.env.local
+apps/license-hub/.env
+packages/db/prisma/*.db
+packages/db/prisma/*.db-journal
 
 tooling/license/keys/guard_ed25519_private.pem
 tooling/license/keys/*.pem
