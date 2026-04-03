@@ -1,10 +1,11 @@
 # MindForge License Hub
 
-Bounded commercial support subsystem for MindForge Guard. License Hub stays outside the Guard CLI main path and keeps issuance, portal access, and minimal operator actions inspectable and auditable.
+Bounded commercial support subsystem for MindForge Guard. License Hub stays outside the Guard CLI main path and keeps issuance, billing lifecycle handling, portal access, and operator actions inspectable and auditable.
 
 ## Scope
 
 - mock payment webhook
+- billing webhook skeleton with signature verification and idempotency
 - customer / order / license persistence
 - Ed25519 license issuance and verification
 - magic link login
@@ -13,6 +14,7 @@ Bounded commercial support subsystem for MindForge Guard. License Hub stays outs
 - admin allowlist auth
 - admin license resend / revoke / extend / supersede actions
 - admin action audit log
+- system action audit log for automated lifecycle events
 - file-db fallback for local MVP
 - Prisma schema as canonical data model
 
@@ -23,7 +25,7 @@ This subsystem does **not** change:
 - `packages/guard`
 - `audit` output / verdict / exit semantics
 - `permit` / `classify` / `drift` main-path behavior
-- edition narrative boundaries
+- Community / Pro / Pro+ / Enterprise narrative boundaries
 
 License Hub remains additive-only, non-breaking, and outside the Guard CLI governance surface.
 
@@ -56,23 +58,28 @@ Local MVP defaults:
 - `LICENSE_HUB_DB_PROVIDER=file`
 - `MAGIC_LINK_MAIL_MODE=dev`
 - `LICENSE_HUB_ADMIN_EMAILS=admin@example.com`
+- `BILLING_ALLOW_UNSIGNED_DEV=true`
 
 Production requirements:
 
 - `LICENSE_HUB_SESSION_SECRET` must be explicitly configured
 - `MAGIC_LINK_MAIL_MODE` must be explicitly set to `provider` or `dev`
-- `MAGIC_LINK_MAIL_MODE=dev` in production additionally requires:
-  - `ALLOW_DEV_MAGIC_LINK_IN_PRODUCTION=true`
-- provider mode requires:
+- provider mail mode requires:
   - `RESEND_API_KEY`
   - `RESEND_FROM_EMAIL`
+- billing webhook processing requires:
+  - `BILLING_PROVIDER`
+  - `BILLING_WEBHOOK_SECRET`
+  - `BILLING_SIGNATURE_HEADER`
+- `MAGIC_LINK_MAIL_MODE=dev` in production additionally requires:
+  - `ALLOW_DEV_MAGIC_LINK_IN_PRODUCTION=true`
 
 Production hardening behavior:
 
 - production never falls back to a fixed dev session secret
 - production never falls back to `LICENSE_PRIVATE_KEY_PEM` for session signing
 - production does not expose `devMagicLink` by default
-- production without explicit mail mode or without an allowed delivery path fails closed
+- production billing webhook processing requires a secret unless explicit unsigned-dev override is enabled outside production
 
 For Prisma-backed storage:
 
@@ -91,9 +98,9 @@ npm.cmd run db:migrate:dev
 npm.cmd run license-hub:dev
 ```
 
-## Mock webhook
+## Webhooks
 
-Send:
+### Mock payment
 
 ```bash
 curl -X POST http://localhost:3000/api/webhooks/mock-payment ^
@@ -101,12 +108,53 @@ curl -X POST http://localhost:3000/api/webhooks/mock-payment ^
   -d "{\"id\":\"evt_demo_1\",\"type\":\"payment.succeeded\",\"data\":{\"customer\":{\"id\":\"cus_demo_1\",\"email\":\"buyer@example.com\",\"name\":\"Buyer Demo\"},\"order\":{\"id\":\"ord_demo_1\",\"edition\":\"pro\",\"amountCents\":9900,\"currency\":\"USD\"}}}"
 ```
 
-Expected response:
+### Billing webhook
 
-- `ok: true`
-- `eventType: payment.succeeded`
-- `licenseId: ...`
-- `idempotent: false` on first request, `true` on replay
+Example local payload:
+
+```bash
+curl -X POST http://localhost:3000/api/webhooks/billing ^
+  -H "Content-Type: application/json" ^
+  -H "x-billing-signature: REPLACE_WITH_HMAC_SHA256_HEX" ^
+  -d "{\"id\":\"evt_bill_1\",\"type\":\"payment_succeeded\",\"occurred_at\":\"2026-04-03T10:00:00.000Z\",\"data\":{\"customer\":{\"id\":\"cus_live_1\",\"email\":\"buyer@example.com\",\"name\":\"Buyer Demo\"},\"order\":{\"id\":\"ord_live_1\",\"edition\":\"pro\",\"amount_cents\":9900,\"currency\":\"USD\"},\"payment\":{\"id\":\"pay_live_1\"}}}"
+```
+
+In local dev, if `BILLING_ALLOW_UNSIGNED_DEV=true` and `BILLING_WEBHOOK_SECRET` is empty, the route will accept unsigned requests.
+
+## Billing lifecycle rules
+
+Normalized event types:
+
+- `order_created`
+- `payment_succeeded`
+- `payment_failed`
+- `order_canceled`
+- `payment_refunded`
+
+Order status flow:
+
+- `order_created` -> `pending`
+- `payment_succeeded` -> `paid`
+- `payment_failed` -> `failed`
+- `payment_refunded` -> `refunded`
+- `order_canceled` -> `cancelled`
+
+License lifecycle flow:
+
+- `payment_succeeded` issues one active license for the order if no active license already exists
+- repeated success events reuse the existing active license for that order
+- `payment_refunded` revokes the active license for the order with status `refund_revoked`
+- `order_canceled` revokes the active license for the order with status `revoked`
+- no lifecycle event deletes historical records
+
+Automated lifecycle events write both:
+
+- `webhook_events`
+- `system_actions`
+
+Admin actions continue to write:
+
+- `admin_actions`
 
 ## Customer portal
 
@@ -166,6 +214,11 @@ Admin:
 - `GET /api/admin/orders`
 - `GET /api/admin/customers`
 
+Webhooks:
+
+- `POST /api/webhooks/mock-payment`
+- `POST /api/webhooks/billing`
+
 ## Verification
 
 Scripts:
@@ -174,31 +227,40 @@ Scripts:
 node scripts/verify_license_hub_skeleton_phase1.mjs
 node scripts/verify_license_hub_phase2_boundary.mjs
 node scripts/verify_license_hub_phase3_admin_boundary.mjs
+node scripts/verify_license_hub_phase4_payment_lifecycle_boundary.mjs
 ```
 
 Manual verification:
 
 1. Start the app with `npm.cmd run license-hub:dev`.
-2. Hit the mock payment webhook to create a paid order and issued license.
+2. Hit the mock payment webhook and confirm license issuance still works.
 3. Request a customer magic link and confirm portal list / detail / download still work.
-4. Set `LICENSE_HUB_ADMIN_EMAILS` to include the same email or another signed-in admin email.
-5. Open `/admin/licenses`, `/admin/orders`, and `/admin/customers`.
-6. On `/admin/licenses/[licenseId]`, test resend.
-7. Revoke an active license and confirm status becomes `revoked` and an `admin_action` entry is created.
-8. Issue a fresh active license, then test extend or supersede and confirm:
-   - the previous license becomes `superseded`
-   - a new replacement license is created
-   - `supersedesLicenseId` links the new record to the old record
-   - an `admin_action` entry is created
+4. Confirm admin pages still work.
+5. Send a `payment_succeeded` billing event and confirm:
+   - `webhook_events` records the raw and normalized payload
+   - the order becomes `paid`
+   - a second replay does not create another active license
+   - a `system_action` entry is created
+6. Send a `payment_failed` billing event and confirm the order becomes `failed`.
+7. Send a `payment_refunded` billing event and confirm:
+   - the order becomes `refunded`
+   - the active license becomes `refund_revoked`
+   - no history is deleted
+   - a `system_action` entry is created
+8. Send an `order_canceled` billing event and confirm:
+   - the order becomes `cancelled`
+   - the active license becomes `revoked`
+   - a `system_action` entry is created
 9. In production-mode validation, confirm:
    - missing `LICENSE_HUB_SESSION_SECRET` blocks session use
    - `MAGIC_LINK_MAIL_MODE` must be explicit
    - `devMagicLink` is not exposed unless production dev override is explicitly enabled
+   - missing `BILLING_WEBHOOK_SECRET` blocks billing webhook processing
 
-## Phase 4 candidates
+## Phase 5 candidates
 
-- official Paddle / Stripe webhooks
-- provider productionization beyond minimal Resend wiring
-- refund / recovery workflows
-- deeper Guard CLI install integration
-- richer admin UX and operational reporting
+- formal payment provider mapping and richer field coverage
+- billing UI / reconciliation UI
+- refund recovery and charge dispute handling
+- deeper Guard CLI activation/install integration
+- team seats / organization support

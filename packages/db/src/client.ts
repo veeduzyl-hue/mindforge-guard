@@ -2,8 +2,8 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
-export type OrderStatus = "pending" | "paid" | "failed" | "cancelled";
-export type LicenseStatus = "active" | "superseded" | "revoked" | "expired";
+export type OrderStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
+export type LicenseStatus = "active" | "superseded" | "revoked" | "refund_revoked" | "expired";
 export type WebhookStatus = "received" | "processed" | "ignored" | "error";
 export type MagicLinkPurpose = "portal_access" | "download_license";
 
@@ -22,9 +22,15 @@ export interface OrderRecord {
   paymentProvider: string;
   status: OrderStatus;
   edition: string;
+  externalPaymentId: string | null;
+  externalSubscriptionId: string | null;
   amountCents: number | null;
   currency: string | null;
   paidAt: string | null;
+  failedAt: string | null;
+  refundedAt: string | null;
+  cancelledAt: string | null;
+  statusReason: string | null;
   createdAt: string;
   updatedAt: string;
   customerId: string;
@@ -92,6 +98,19 @@ export interface AdminActionRecord {
   licenseId: string | null;
 }
 
+export interface SystemActionRecord {
+  id: string;
+  source: string;
+  actionType: string;
+  targetType: string;
+  targetId: string;
+  payloadJson: unknown;
+  createdAt: string;
+  orderId: string | null;
+  licenseId: string | null;
+  webhookEventId: string | null;
+}
+
 export interface LicenseUpdatePatch {
   schemaVersion?: number;
   keyId?: string;
@@ -110,6 +129,22 @@ export interface LicenseUpdatePatch {
   supersededAt?: string | null;
 }
 
+export interface OrderUpdatePatch {
+  paymentProvider?: string;
+  status?: OrderStatus;
+  edition?: string;
+  externalPaymentId?: string | null;
+  externalSubscriptionId?: string | null;
+  amountCents?: number | null;
+  currency?: string | null;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  refundedAt?: string | null;
+  cancelledAt?: string | null;
+  statusReason?: string | null;
+  customerId?: string;
+}
+
 interface FileDbShape {
   customers: CustomerRecord[];
   orders: OrderRecord[];
@@ -117,6 +152,7 @@ interface FileDbShape {
   webhook_events: WebhookEventRecord[];
   magic_link_tokens: MagicLinkTokenRecord[];
   admin_actions: AdminActionRecord[];
+  system_actions: SystemActionRecord[];
 }
 
 export interface LicenseHubDb {
@@ -149,12 +185,21 @@ export interface LicenseHubDb {
     paymentProvider: string;
     customerId: string;
     edition: string;
+    externalPaymentId?: string | null;
+    externalSubscriptionId?: string | null;
     amountCents?: number | null;
     currency?: string | null;
     status: OrderStatus;
     paidAt?: string | null;
+    failedAt?: string | null;
+    refundedAt?: string | null;
+    cancelledAt?: string | null;
+    statusReason?: string | null;
   }): Promise<OrderRecord>;
+  updateOrder(id: string, patch: OrderUpdatePatch): Promise<OrderRecord>;
   getOrderById(id: string): Promise<OrderRecord | null>;
+  getOrderByExternalOrderId(externalOrderId: string): Promise<OrderRecord | null>;
+  getOrderByExternalPaymentId(externalPaymentId: string): Promise<OrderRecord | null>;
   listOrders(): Promise<OrderRecord[]>;
   findActiveLicenseByOrderId(orderId: string): Promise<LicenseRecord | null>;
   createLicense(input: Omit<LicenseRecord, "id" | "createdAt" | "updatedAt">): Promise<LicenseRecord>;
@@ -172,6 +217,17 @@ export interface LicenseHubDb {
     licenseId?: string | null;
   }): Promise<AdminActionRecord>;
   listAdminActionsByLicenseId(licenseId: string): Promise<AdminActionRecord[]>;
+  createSystemAction(input: {
+    source: string;
+    actionType: string;
+    targetType: string;
+    targetId: string;
+    payloadJson: unknown;
+    orderId?: string | null;
+    licenseId?: string | null;
+    webhookEventId?: string | null;
+  }): Promise<SystemActionRecord>;
+  listSystemActionsByOrderId(orderId: string): Promise<SystemActionRecord[]>;
   createMagicLinkToken(input: {
     email: string;
     tokenHash: string;
@@ -195,6 +251,19 @@ function defaultFileDbPath(): string {
   return path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json");
 }
 
+function normalizeOrderRecord(record: OrderRecord): OrderRecord {
+  return {
+    ...record,
+    externalPaymentId: record.externalPaymentId ?? null,
+    externalSubscriptionId: record.externalSubscriptionId ?? null,
+    paidAt: record.paidAt ?? null,
+    failedAt: record.failedAt ?? null,
+    refundedAt: record.refundedAt ?? null,
+    cancelledAt: record.cancelledAt ?? null,
+    statusReason: record.statusReason ?? null,
+  };
+}
+
 function normalizeLicenseRecord(record: LicenseRecord): LicenseRecord {
   return {
     ...record,
@@ -214,17 +283,19 @@ function readFileDb(filePath: string): FileDbShape {
       webhook_events: [],
       magic_link_tokens: [],
       admin_actions: [],
+      system_actions: [],
     };
   }
 
   const raw = JSON.parse(fs.readFileSync(filePath, "utf8")) as Partial<FileDbShape>;
   return {
     customers: raw.customers ?? [],
-    orders: raw.orders ?? [],
+    orders: (raw.orders ?? []).map(normalizeOrderRecord),
     licenses: (raw.licenses ?? []).map(normalizeLicenseRecord),
     webhook_events: raw.webhook_events ?? [],
     magic_link_tokens: raw.magic_link_tokens ?? [],
     admin_actions: raw.admin_actions ?? [],
+    system_actions: raw.system_actions ?? [],
   };
 }
 
@@ -365,48 +436,97 @@ class FileLicenseHubDb implements LicenseHubDb {
     paymentProvider: string;
     customerId: string;
     edition: string;
+    externalPaymentId?: string | null;
+    externalSubscriptionId?: string | null;
     amountCents?: number | null;
     currency?: string | null;
     status: OrderStatus;
     paidAt?: string | null;
+    failedAt?: string | null;
+    refundedAt?: string | null;
+    cancelledAt?: string | null;
+    statusReason?: string | null;
   }): Promise<OrderRecord> {
     const db = this.read();
     const existing = db.orders.find((order) => order.externalOrderId === input.externalOrderId);
     if (existing) {
-      existing.paymentProvider = input.paymentProvider;
-      existing.customerId = input.customerId;
-      existing.edition = input.edition;
-      existing.amountCents = input.amountCents ?? existing.amountCents;
-      existing.currency = input.currency ?? existing.currency;
-      existing.status = input.status;
-      existing.paidAt = input.paidAt ?? existing.paidAt;
-      existing.updatedAt = nowIso();
+      const updated = normalizeOrderRecord({
+        ...existing,
+        paymentProvider: input.paymentProvider,
+        customerId: input.customerId,
+        edition: input.edition,
+        externalPaymentId: input.externalPaymentId ?? existing.externalPaymentId,
+        externalSubscriptionId: input.externalSubscriptionId ?? existing.externalSubscriptionId,
+        amountCents: input.amountCents ?? existing.amountCents,
+        currency: input.currency ?? existing.currency,
+        status: input.status,
+        paidAt: input.paidAt ?? existing.paidAt,
+        failedAt: input.failedAt ?? existing.failedAt,
+        refundedAt: input.refundedAt ?? existing.refundedAt,
+        cancelledAt: input.cancelledAt ?? existing.cancelledAt,
+        statusReason: input.statusReason ?? existing.statusReason,
+        updatedAt: nowIso(),
+      });
+      const index = db.orders.findIndex((order) => order.id === existing.id);
+      db.orders[index] = updated;
       this.write(db);
-      return existing;
+      return updated;
     }
 
-    const created: OrderRecord = {
+    const created: OrderRecord = normalizeOrderRecord({
       id: newId("ord"),
       externalOrderId: input.externalOrderId,
       paymentProvider: input.paymentProvider,
       customerId: input.customerId,
       edition: input.edition,
+      externalPaymentId: input.externalPaymentId ?? null,
+      externalSubscriptionId: input.externalSubscriptionId ?? null,
       amountCents: input.amountCents ?? null,
       currency: input.currency ?? null,
       status: input.status,
       paidAt: input.paidAt ?? null,
+      failedAt: input.failedAt ?? null,
+      refundedAt: input.refundedAt ?? null,
+      cancelledAt: input.cancelledAt ?? null,
+      statusReason: input.statusReason ?? null,
       createdAt: nowIso(),
       updatedAt: nowIso(),
-    };
+    });
 
     db.orders.push(created);
     this.write(db);
     return created;
   }
 
+  async updateOrder(id: string, patch: OrderUpdatePatch): Promise<OrderRecord> {
+    const db = this.read();
+    const index = db.orders.findIndex((order) => order.id === id);
+    if (index === -1) {
+      throw new Error(`order not found: ${id}`);
+    }
+
+    db.orders[index] = normalizeOrderRecord({
+      ...db.orders[index],
+      ...patch,
+      updatedAt: nowIso(),
+    });
+    this.write(db);
+    return db.orders[index];
+  }
+
   async getOrderById(id: string): Promise<OrderRecord | null> {
     const db = this.read();
     return db.orders.find((order) => order.id === id) ?? null;
+  }
+
+  async getOrderByExternalOrderId(externalOrderId: string): Promise<OrderRecord | null> {
+    const db = this.read();
+    return db.orders.find((order) => order.externalOrderId === externalOrderId) ?? null;
+  }
+
+  async getOrderByExternalPaymentId(externalPaymentId: string): Promise<OrderRecord | null> {
+    const db = this.read();
+    return db.orders.find((order) => order.externalPaymentId === externalPaymentId) ?? null;
   }
 
   async listOrders(): Promise<OrderRecord[]> {
@@ -497,6 +617,39 @@ class FileLicenseHubDb implements LicenseHubDb {
     return sortByCreatedDesc(db.admin_actions.filter((action) => action.licenseId === licenseId));
   }
 
+  async createSystemAction(input: {
+    source: string;
+    actionType: string;
+    targetType: string;
+    targetId: string;
+    payloadJson: unknown;
+    orderId?: string | null;
+    licenseId?: string | null;
+    webhookEventId?: string | null;
+  }): Promise<SystemActionRecord> {
+    const db = this.read();
+    const record: SystemActionRecord = {
+      id: newId("sys"),
+      source: input.source,
+      actionType: input.actionType,
+      targetType: input.targetType,
+      targetId: input.targetId,
+      payloadJson: input.payloadJson,
+      createdAt: nowIso(),
+      orderId: input.orderId ?? null,
+      licenseId: input.licenseId ?? null,
+      webhookEventId: input.webhookEventId ?? null,
+    };
+    db.system_actions.push(record);
+    this.write(db);
+    return record;
+  }
+
+  async listSystemActionsByOrderId(orderId: string): Promise<SystemActionRecord[]> {
+    const db = this.read();
+    return sortByCreatedDesc(db.system_actions.filter((action) => action.orderId === orderId));
+  }
+
   async createMagicLinkToken(input: {
     email: string;
     tokenHash: string;
@@ -558,19 +711,25 @@ function mapCustomerRecord(value: Record<string, unknown>): CustomerRecord {
 }
 
 function mapOrderRecord(value: Record<string, unknown>): OrderRecord {
-  return {
+  return normalizeOrderRecord({
     id: String(value.id),
     externalOrderId: String(value.externalOrderId),
     paymentProvider: String(value.paymentProvider),
     status: String(value.status) as OrderStatus,
     edition: String(value.edition),
+    externalPaymentId: value.externalPaymentId ? String(value.externalPaymentId) : null,
+    externalSubscriptionId: value.externalSubscriptionId ? String(value.externalSubscriptionId) : null,
     amountCents: typeof value.amountCents === "number" ? value.amountCents : null,
     currency: value.currency ? String(value.currency) : null,
     paidAt: asIsoString(value.paidAt),
+    failedAt: asIsoString(value.failedAt),
+    refundedAt: asIsoString(value.refundedAt),
+    cancelledAt: asIsoString(value.cancelledAt),
+    statusReason: value.statusReason ? String(value.statusReason) : null,
     createdAt: asIsoString(value.createdAt) || nowIso(),
     updatedAt: asIsoString(value.updatedAt) || nowIso(),
     customerId: String(value.customerId),
-  };
+  });
 }
 
 function mapLicenseRecord(value: Record<string, unknown>): LicenseRecord {
@@ -643,6 +802,21 @@ function mapAdminActionRecord(value: Record<string, unknown>): AdminActionRecord
   };
 }
 
+function mapSystemActionRecord(value: Record<string, unknown>): SystemActionRecord {
+  return {
+    id: String(value.id),
+    source: String(value.source),
+    actionType: String(value.actionType),
+    targetType: String(value.targetType),
+    targetId: String(value.targetId),
+    payloadJson: value.payloadJson ?? null,
+    createdAt: asIsoString(value.createdAt) || nowIso(),
+    orderId: value.orderId ? String(value.orderId) : null,
+    licenseId: value.licenseId ? String(value.licenseId) : null,
+    webhookEventId: value.webhookEventId ? String(value.webhookEventId) : null,
+  };
+}
+
 function mapLicensePatchForPrisma(patch: LicenseUpdatePatch): Record<string, unknown> {
   const data: Record<string, unknown> = {};
   if (patch.schemaVersion !== undefined) data.schemaVersion = patch.schemaVersion;
@@ -660,6 +834,24 @@ function mapLicensePatchForPrisma(patch: LicenseUpdatePatch): Record<string, unk
   if (patch.signatureBase64 !== undefined) data.signatureBase64 = patch.signatureBase64;
   if (patch.supersedesLicenseId !== undefined) data.supersedesLicenseId = patch.supersedesLicenseId;
   if (patch.supersededAt !== undefined) data.supersededAt = patch.supersededAt ? new Date(patch.supersededAt) : null;
+  return data;
+}
+
+function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  if (patch.paymentProvider !== undefined) data.paymentProvider = patch.paymentProvider;
+  if (patch.status !== undefined) data.status = patch.status;
+  if (patch.edition !== undefined) data.edition = patch.edition;
+  if (patch.externalPaymentId !== undefined) data.externalPaymentId = patch.externalPaymentId;
+  if (patch.externalSubscriptionId !== undefined) data.externalSubscriptionId = patch.externalSubscriptionId;
+  if (patch.amountCents !== undefined) data.amountCents = patch.amountCents;
+  if (patch.currency !== undefined) data.currency = patch.currency;
+  if (patch.paidAt !== undefined) data.paidAt = patch.paidAt ? new Date(patch.paidAt) : null;
+  if (patch.failedAt !== undefined) data.failedAt = patch.failedAt ? new Date(patch.failedAt) : null;
+  if (patch.refundedAt !== undefined) data.refundedAt = patch.refundedAt ? new Date(patch.refundedAt) : null;
+  if (patch.cancelledAt !== undefined) data.cancelledAt = patch.cancelledAt ? new Date(patch.cancelledAt) : null;
+  if (patch.statusReason !== undefined) data.statusReason = patch.statusReason;
+  if (patch.customerId !== undefined) data.customerId = patch.customerId;
   return data;
 }
 
@@ -743,27 +935,58 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           paymentProvider: input.paymentProvider,
           customerId: input.customerId,
           edition: input.edition,
+          externalPaymentId: input.externalPaymentId ?? undefined,
+          externalSubscriptionId: input.externalSubscriptionId ?? undefined,
           amountCents: input.amountCents ?? null,
           currency: input.currency ?? null,
           status: input.status,
           paidAt: input.paidAt ? new Date(input.paidAt) : null,
+          failedAt: input.failedAt ? new Date(input.failedAt) : null,
+          refundedAt: input.refundedAt ? new Date(input.refundedAt) : null,
+          cancelledAt: input.cancelledAt ? new Date(input.cancelledAt) : null,
+          statusReason: input.statusReason ?? null,
         },
         create: {
           externalOrderId: input.externalOrderId,
           paymentProvider: input.paymentProvider,
           customerId: input.customerId,
           edition: input.edition,
+          externalPaymentId: input.externalPaymentId ?? null,
+          externalSubscriptionId: input.externalSubscriptionId ?? null,
           amountCents: input.amountCents ?? null,
           currency: input.currency ?? null,
           status: input.status,
           paidAt: input.paidAt ? new Date(input.paidAt) : null,
+          failedAt: input.failedAt ? new Date(input.failedAt) : null,
+          refundedAt: input.refundedAt ? new Date(input.refundedAt) : null,
+          cancelledAt: input.cancelledAt ? new Date(input.cancelledAt) : null,
+          statusReason: input.statusReason ?? null,
         },
+      });
+      return mapOrderRecord(record as unknown as Record<string, unknown>);
+    },
+    async updateOrder(id, patch) {
+      const record = await prisma.order.update({
+        where: { id },
+        data: mapOrderPatchForPrisma(patch),
       });
       return mapOrderRecord(record as unknown as Record<string, unknown>);
     },
     async getOrderById(id) {
       const record = await prisma.order.findUnique({
         where: { id },
+      });
+      return record ? mapOrderRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async getOrderByExternalOrderId(externalOrderId) {
+      const record = await prisma.order.findUnique({
+        where: { externalOrderId },
+      });
+      return record ? mapOrderRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async getOrderByExternalPaymentId(externalPaymentId) {
+      const record = await prisma.order.findFirst({
+        where: { externalPaymentId },
       });
       return record ? mapOrderRecord(record as unknown as Record<string, unknown>) : null;
     },
@@ -878,6 +1101,30 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
         },
       });
       return records.map((record) => mapAdminActionRecord(record as unknown as Record<string, unknown>));
+    },
+    async createSystemAction(input) {
+      const record = await prisma.systemAction.create({
+        data: {
+          source: input.source,
+          actionType: input.actionType,
+          targetType: input.targetType,
+          targetId: input.targetId,
+          payloadJson: input.payloadJson as object,
+          orderId: input.orderId ?? null,
+          licenseId: input.licenseId ?? null,
+          webhookEventId: input.webhookEventId ?? null,
+        },
+      });
+      return mapSystemActionRecord(record as unknown as Record<string, unknown>);
+    },
+    async listSystemActionsByOrderId(orderId) {
+      const records = await prisma.systemAction.findMany({
+        where: { orderId },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return records.map((record) => mapSystemActionRecord(record as unknown as Record<string, unknown>));
     },
     async createMagicLinkToken(input) {
       const record = await prisma.magicLinkToken.create({

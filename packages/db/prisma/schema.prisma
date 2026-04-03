@@ -11,6 +11,7 @@ enum OrderStatus {
   pending
   paid
   failed
+  refunded
   cancelled
 }
 
@@ -18,6 +19,7 @@ enum LicenseStatus {
   active
   superseded
   revoked
+  refund_revoked
   expired
 }
 
@@ -54,16 +56,25 @@ model Order {
   paymentProvider String
   status          OrderStatus    @default(pending)
   edition         String
+  externalPaymentId String?
+  externalSubscriptionId String?
   amountCents     Int?
   currency        String?
   paidAt          DateTime?
+  failedAt        DateTime?
+  refundedAt      DateTime?
+  cancelledAt     DateTime?
+  statusReason    String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   customerId      String
   customer        Customer       @relation(fields: [customerId], references: [id], onDelete: Restrict)
   licenses        License[]
   webhookEvents   WebhookEvent[]
+  systemActions   SystemAction[]
 
+  @@index([externalPaymentId])
+  @@index([externalSubscriptionId])
   @@index([customerId])
   @@map("orders")
 }
@@ -96,6 +107,7 @@ model License {
   supersededBy        License?       @relation("LicenseSupersede")
   webhookEvents       WebhookEvent[]
   adminActions        AdminAction[]
+  systemActions       SystemAction[]
 
   @@index([orderId, status])
   @@index([customerId, status])
@@ -119,6 +131,7 @@ model WebhookEvent {
   customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
   order           Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
   license         License?      @relation(fields: [licenseId], references: [id], onDelete: SetNull)
+  systemActions   SystemAction[]
 
   @@unique([provider, eventId])
   @@index([orderId])
@@ -156,4 +169,26 @@ model AdminAction {
   @@index([targetType, targetId])
   @@index([licenseId])
   @@map("admin_actions")
+}
+
+model SystemAction {
+  id             String       @id @default(cuid())
+  source         String
+  actionType     String
+  targetType     String
+  targetId       String
+  payloadJson    Json
+  createdAt      DateTime     @default(now())
+  orderId        String?
+  licenseId      String?
+  webhookEventId String?
+  order          Order?       @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  license        License?     @relation(fields: [licenseId], references: [id], onDelete: SetNull)
+  webhookEvent   WebhookEvent? @relation(fields: [webhookEventId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([orderId])
+  @@index([licenseId])
+  @@index([webhookEventId])
+  @@map("system_actions")
 }
