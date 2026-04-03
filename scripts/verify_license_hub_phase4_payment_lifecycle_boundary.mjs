@@ -48,6 +48,11 @@ expect(billingWebhook.includes("verifyBillingSignature"), "billing webhook shoul
 expect(billingWebhook.includes("getWebhookEvent"), "billing webhook should check event idempotency");
 expect(billingWebhook.includes("createWebhookEvent"), "billing webhook should persist event ledger records");
 expect(billingWebhook.includes("markWebhookEvent"), "billing webhook should mark processing outcome");
+expect(billingWebhook.includes("fallbackEventId"), "billing webhook should create a surrogate event id for malformed events");
+expect(billingWebhook.includes("eventType: ledger.eventType"), "billing webhook should persist a conservative event type before normalization");
+expect(billingWebhook.includes("raw_body: rawBody"), "billing webhook should persist the raw body before normalization");
+expect(billingWebhook.includes("licenseId: result.license?.id ?? null"), "billing webhook should link webhook events by internal license record id");
+expect(billingWebhook.includes("publicLicenseId"), "billing webhook response should distinguish public license id from internal linkage");
 
 const lifecycle = read("apps/license-hub/lib/paymentLifecycle.ts");
 expect(lifecycle.includes("issueLicenseForPaidOrder"), "payment lifecycle should reuse the issuance path");

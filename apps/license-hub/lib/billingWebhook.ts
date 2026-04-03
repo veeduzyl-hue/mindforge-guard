@@ -40,24 +40,76 @@ function verifyBillingSignature(rawBody: string, headers: Headers): void {
   }
 }
 
+function fallbackEventId(rawBody: string): string {
+  const digest = crypto.createHash("sha256").update(rawBody, "utf8").digest("hex").slice(0, 24);
+  return `surrogate_${digest}`;
+}
+
+function safeParseRawPayload(rawBody: string): unknown {
+  return JSON.parse(rawBody) as unknown;
+}
+
+function extractLedgerMetadata(rawPayload: unknown, rawBody: string) {
+  const payload = (rawPayload && typeof rawPayload === "object" ? rawPayload : {}) as Record<string, unknown>;
+  const eventId =
+    (typeof payload.id === "string" && payload.id.trim()) ||
+    (typeof payload.event_id === "string" && payload.event_id.trim()) ||
+    fallbackEventId(rawBody);
+  const eventType =
+    (typeof payload.type === "string" && payload.type.trim()) ||
+    (typeof payload.event_type === "string" && payload.event_type.trim()) ||
+    "unknown";
+
+  return {
+    eventId,
+    eventType,
+  };
+}
+
 export async function handleBillingWebhook(rawBody: string, headers: Headers) {
   verifyBillingSignature(rawBody, headers);
 
   const providerConfig = getBillingProviderConfig();
-  const rawPayload = JSON.parse(rawBody) as unknown;
-  const event = normalizeBillingEvent(rawPayload, providerConfig.provider);
   const db = await getLicenseHubDb();
+  let rawPayload: unknown = null;
 
-  const existingEvent = await db.getWebhookEvent(providerConfig.provider, event.eventId);
+  try {
+    rawPayload = safeParseRawPayload(rawBody);
+  } catch (error) {
+    const ledger = extractLedgerMetadata(null, rawBody);
+    const webhookEvent =
+      (await db.getWebhookEvent(providerConfig.provider, ledger.eventId)) ||
+      (await db.createWebhookEvent({
+        provider: providerConfig.provider,
+        eventId: ledger.eventId,
+        eventType: ledger.eventType,
+        payloadJson: {
+          raw_body: rawBody,
+          raw_payload: null,
+        },
+      }));
+
+    await db.markWebhookEvent(webhookEvent.id, {
+      status: "error",
+      processedAt: new Date().toISOString(),
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
+
+  const ledger = extractLedgerMetadata(rawPayload, rawBody);
+
+  const existingEvent = await db.getWebhookEvent(providerConfig.provider, ledger.eventId);
   if (existingEvent?.status === "processed") {
     return {
       ok: true,
       idempotent: true,
       provider: providerConfig.provider,
-      eventId: event.eventId,
-      eventType: event.eventType,
+      eventId: existingEvent.eventId,
+      eventType: existingEvent.eventType,
       orderId: existingEvent.orderId,
-      licenseId: existingEvent.licenseId,
+      licenseRecordId: existingEvent.licenseId,
+      publicLicenseId: null,
     };
   }
 
@@ -65,15 +117,16 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
     existingEvent ||
     (await db.createWebhookEvent({
       provider: providerConfig.provider,
-      eventId: event.eventId,
-      eventType: event.eventType,
+      eventId: ledger.eventId,
+      eventType: ledger.eventType,
       payloadJson: {
-        raw_body: rawPayload,
-        normalized_event: event,
+        raw_body: rawBody,
+        raw_payload: rawPayload,
       },
     }));
 
   try {
+    const event = normalizeBillingEvent(rawPayload, providerConfig.provider);
     const result = await applyBillingLifecycle({
       db,
       webhookEventId: webhookEvent.id,
@@ -85,7 +138,7 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
       processedAt: new Date().toISOString(),
       customerId: result.customer.id,
       orderId: result.order.id,
-      licenseId: result.license?.licenseId ?? null,
+      licenseId: result.license?.id ?? null,
     });
 
     return {
@@ -95,7 +148,8 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
       eventId: event.eventId,
       eventType: event.eventType,
       orderId: result.order.id,
-      licenseId: result.license?.licenseId ?? null,
+      licenseRecordId: result.license?.id ?? null,
+      publicLicenseId: result.license?.licenseId ?? null,
     };
   } catch (error) {
     await db.markWebhookEvent(webhookEvent.id, {
