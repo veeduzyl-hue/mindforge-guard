@@ -83,3 +83,13 @@ Helpful surfaces:
 - `guard license status` shows current state, install path, edition, and next step
 - `guard license show` returns the structured local inspection result
 - `guard status` includes the repo policy, drift summary, and local license guidance
+
+## Commercial Packaging References
+
+For the current buyer, deployment, and demo baseline, see:
+
+- [Current Commercial Baseline](../../docs/product/current-product-baseline.md)
+- [Capability Baseline](../../docs/product/capability-baseline.md)
+- [User Journey](../../docs/product/user-journey.md)
+- [Commercial Demo Paths](../../docs/demo/commercial-demo-paths.md)
+- [Release Readiness Checklist](../../docs/release/release-readiness-checklist.md)
