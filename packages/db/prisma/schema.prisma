@@ -35,6 +35,31 @@ enum MagicLinkPurpose {
   download_license
 }
 
+enum OrganizationMemberRole {
+  owner
+  admin
+  member
+}
+
+enum OrganizationMemberStatus {
+  active
+  pending
+  removed
+}
+
+enum SeatAssignmentStatus {
+  active
+  unassigned
+  pending
+}
+
+enum ActivationStatus {
+  requested
+  confirmed
+  revoked
+  expired
+}
+
 model Customer {
   id                 String           @id @default(cuid())
   email              String           @unique
@@ -46,6 +71,10 @@ model Customer {
   licenses           License[]
   webhookEvents      WebhookEvent[]
   magicLinkTokens    MagicLinkToken[]
+  organizationsOwned Organization[]   @relation("OrganizationOwner")
+  organizationMemberships OrganizationMember[] @relation("OrganizationMembership")
+  seatAssignments    SeatAssignment[]
+  activationRecords  ActivationRecord[]
 
   @@map("customers")
 }
@@ -108,6 +137,8 @@ model License {
   webhookEvents       WebhookEvent[]
   adminActions        AdminAction[]
   systemActions       SystemAction[]
+  seatEntitlements    SeatEntitlement[]
+  activationRecords   ActivationRecord[]
 
   @@index([orderId, status])
   @@index([customerId, status])
@@ -191,4 +222,107 @@ model SystemAction {
   @@index([licenseId])
   @@index([webhookEventId])
   @@map("system_actions")
+}
+
+model Organization {
+  id              String               @id @default(cuid())
+  slug            String               @unique
+  name            String
+  billingEmail    String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  ownerCustomerId String?
+  ownerCustomer   Customer?            @relation("OrganizationOwner", fields: [ownerCustomerId], references: [id], onDelete: SetNull)
+  members         OrganizationMember[]
+  seatEntitlements SeatEntitlement[]
+  activationRecords ActivationRecord[]
+
+  @@index([ownerCustomerId])
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String                   @id @default(cuid())
+  organizationId String
+  customerId     String?
+  email          String
+  role           OrganizationMemberRole   @default(member)
+  status         OrganizationMemberStatus @default(active)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  organization   Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer       Customer?                @relation("OrganizationMembership", fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, email])
+  @@index([customerId])
+  @@map("organization_members")
+}
+
+model SeatEntitlement {
+  id             String            @id @default(cuid())
+  organizationId String
+  licenseId      String
+  edition        String
+  seatCount      Int               @default(1)
+  activeFrom     DateTime          @default(now())
+  activeUntil    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  license        License           @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  assignments    SeatAssignment[]
+
+  @@unique([organizationId, licenseId])
+  @@index([licenseId])
+  @@map("seat_entitlements")
+}
+
+model SeatAssignment {
+  id                String               @id @default(cuid())
+  seatEntitlementId String
+  organizationId    String
+  customerId        String?
+  email             String
+  status            SeatAssignmentStatus @default(active)
+  assignedByEmail   String?
+  assignedAt        DateTime             @default(now())
+  unassignedAt      DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  seatEntitlement   SeatEntitlement      @relation(fields: [seatEntitlementId], references: [id], onDelete: Cascade)
+  organization      Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer          Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@unique([seatEntitlementId, email])
+  @@index([organizationId, status])
+  @@index([customerId])
+  @@map("seat_assignments")
+}
+
+model ActivationRecord {
+  id                  String           @id @default(cuid())
+  activationId        String           @unique
+  licenseId           String
+  organizationId      String?
+  customerId          String?
+  requestedByEmail    String
+  deviceFingerprint   String
+  machineName         String?
+  activationTokenHash String?
+  requestNonce        String?
+  status              ActivationStatus @default(requested)
+  requestedAt         DateTime         @default(now())
+  confirmedAt         DateTime?
+  lastSeenAt          DateTime?
+  revokedAt           DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  license             License          @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  organization        Organization?    @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  customer            Customer?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([licenseId, status])
+  @@index([organizationId])
+  @@index([customerId])
+  @@map("activation_records")
 }

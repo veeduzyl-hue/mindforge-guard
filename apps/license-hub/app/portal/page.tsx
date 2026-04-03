@@ -13,6 +13,9 @@ export default async function PortalPage() {
       <p>
         <Link href="/portal/licenses">View licenses</Link>
       </p>
+      <p>
+        <Link href="/account">Open account surface</Link>
+      </p>
       <form action="/api/auth/logout" method="post">
         <button type="submit">Logout</button>
       </form>
