@@ -10,13 +10,18 @@ import {
 } from "@mindforge/licensing";
 
 import { getLicenseIssuerConfig } from "./env";
-import { sendLicenseStatusEmail, sendSignedLicenseEmail } from "./mailer";
+import { type MailDeliveryResult, sendLicenseStatusEmail, sendSignedLicenseEmail } from "./mailer";
 
 interface LicenseContext {
   db: LicenseHubDb;
   license: LicenseRecord;
   customer: CustomerRecord;
   order: OrderRecord;
+}
+
+interface NotificationAttemptResult {
+  notification: MailDeliveryResult | null;
+  notificationError: string | null;
 }
 
 export interface AdminActionRequestBody {
@@ -83,6 +88,39 @@ async function getLicenseContext(db: LicenseHubDb, licenseId: string): Promise<L
     customer,
     order,
   };
+}
+
+async function attemptNotification(input: {
+  db: LicenseHubDb;
+  actorEmail: string;
+  actionType: string;
+  parentLicenseId: string;
+  licenseRecordId: string;
+  send: () => Promise<MailDeliveryResult>;
+}): Promise<NotificationAttemptResult> {
+  try {
+    const notification = await input.send();
+    return {
+      notification,
+      notificationError: null,
+    };
+  } catch (error) {
+    const notificationError = error instanceof Error ? error.message : String(error);
+    await input.db.createAdminAction({
+      actorEmail: input.actorEmail,
+      actionType: `${input.actionType}_notification_error`,
+      targetType: "license",
+      targetId: input.parentLicenseId,
+      licenseId: input.licenseRecordId,
+      payloadJson: {
+        notification_error: notificationError,
+      },
+    });
+    return {
+      notification: null,
+      notificationError,
+    };
+  }
 }
 
 function createReplacementSignedLicense(input: {
@@ -178,16 +216,7 @@ export async function revokeLicenseByAdmin(input: {
     revokeReason: input.reason?.trim() || null,
   });
 
-  let notification = null;
-  if (normalizeNotifyCustomer(input.notifyCustomer)) {
-    notification = await sendLicenseStatusEmail({
-      to: context.customer.email,
-      subject: `License ${context.license.licenseId} revoked`,
-      message: `License ${context.license.licenseId} has been revoked.${input.reason ? ` Reason: ${input.reason}` : ""}`,
-      licenseId: context.license.licenseId,
-      actionLabel: "revoke",
-    });
-  }
+  const notifyCustomer = normalizeNotifyCustomer(input.notifyCustomer);
 
   const action = await input.db.createAdminAction({
     actorEmail: input.actorEmail,
@@ -198,15 +227,38 @@ export async function revokeLicenseByAdmin(input: {
     payloadJson: {
       revoked_at: revokedAt,
       revoke_reason: input.reason?.trim() || null,
-      notify_customer: normalizeNotifyCustomer(input.notifyCustomer),
-      notification_mode: notification?.mode ?? null,
+      notify_customer: notifyCustomer,
+      notification_mode: null,
     },
   });
+
+  let notification = null;
+  let notificationError = null;
+  if (notifyCustomer) {
+    const result = await attemptNotification({
+      db: input.db,
+      actorEmail: input.actorEmail,
+      actionType: "revoke",
+      parentLicenseId: context.license.licenseId,
+      licenseRecordId: context.license.id,
+      send: () =>
+        sendLicenseStatusEmail({
+          to: context.customer.email,
+          subject: `License ${context.license.licenseId} revoked`,
+          message: `License ${context.license.licenseId} has been revoked.${input.reason ? ` Reason: ${input.reason}` : ""}`,
+          licenseId: context.license.licenseId,
+          actionLabel: "revoke",
+        }),
+    });
+    notification = result.notification;
+    notificationError = result.notificationError;
+  }
 
   return {
     license: updatedLicense,
     action,
     notification,
+    notificationError,
   };
 }
 
@@ -259,15 +311,7 @@ async function replaceLicenseByAdmin(input: {
     supersededAt,
   });
 
-  let notification = null;
-  if (normalizeNotifyCustomer(input.notifyCustomer)) {
-    notification = await sendSignedLicenseEmail({
-      to: context.customer.email,
-      licenseId: replacementRecord.licenseId,
-      signedLicenseJson: replacementRecord.signedLicenseJson,
-      actionLabel: input.actionType === "extend" ? "License extension" : "License replacement",
-    });
-  }
+  const notifyCustomer = normalizeNotifyCustomer(input.notifyCustomer);
 
   const action = await input.db.createAdminAction({
     actorEmail: input.actorEmail,
@@ -283,16 +327,38 @@ async function replaceLicenseByAdmin(input: {
       replacement_status: replacementRecord.status,
       next_not_after: replacementRecord.notAfter,
       next_edition: replacementRecord.edition,
-      notify_customer: normalizeNotifyCustomer(input.notifyCustomer),
-      notification_mode: notification?.mode ?? null,
+      notify_customer: notifyCustomer,
+      notification_mode: null,
     },
   });
+
+  let notification = null;
+  let notificationError = null;
+  if (notifyCustomer) {
+    const result = await attemptNotification({
+      db: input.db,
+      actorEmail: input.actorEmail,
+      actionType: input.actionType,
+      parentLicenseId: context.license.licenseId,
+      licenseRecordId: context.license.id,
+      send: () =>
+        sendSignedLicenseEmail({
+          to: context.customer.email,
+          licenseId: replacementRecord.licenseId,
+          signedLicenseJson: replacementRecord.signedLicenseJson,
+          actionLabel: input.actionType === "extend" ? "License extension" : "License replacement",
+        }),
+    });
+    notification = result.notification;
+    notificationError = result.notificationError;
+  }
 
   return {
     previousLicense,
     replacementLicense: replacementRecord,
     action,
     notification,
+    notificationError,
   };
 }
 
