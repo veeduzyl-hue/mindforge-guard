@@ -325,6 +325,16 @@ Manual verification:
    - `devMagicLink` is not exposed unless production dev override is explicitly enabled
    - missing `BILLING_WEBHOOK_SECRET` blocks billing webhook processing
 
+## Packaging and Demo References
+
+For the current product packaging baseline, demo paths, and deployment checklist, see:
+
+- [Current Commercial Baseline](../../docs/product/current-product-baseline.md)
+- [Capability Baseline](../../docs/product/capability-baseline.md)
+- [User Journey](../../docs/product/user-journey.md)
+- [Commercial Demo Paths](../../docs/demo/commercial-demo-paths.md)
+- [Release Readiness Checklist](../../docs/release/release-readiness-checklist.md)
+
 ## Phase 5 candidates
 
 - formal payment provider mapping and richer field coverage

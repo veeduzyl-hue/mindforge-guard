@@ -226,6 +226,16 @@ MindForge Guard does **not** become:
 
 ---
 
+## Commercial Packaging Baseline
+
+- `docs/product/current-product-baseline.md` - current commercial packaging baseline
+- `docs/product/capability-baseline.md` - sellable capability and SKU baseline
+- `docs/product/user-journey.md` - buyer, operator, and CLI journey
+- `docs/demo/commercial-demo-paths.md` - commercial demo scripts
+- `docs/release/release-readiness-checklist.md` - deployment and readiness checklist
+
+---
+
 ## Current release line
 
 - Governance baseline: `v6.12.0`
