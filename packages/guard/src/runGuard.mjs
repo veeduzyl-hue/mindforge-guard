@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import {
   loadPolicy,
@@ -14,9 +15,11 @@ import { buildAssociationBundle } from "./runtime/association/index.mjs";
 import { handleActionSubcommand } from "./cli/action.mjs";
 import {
   readLicense,
+  readLicenseFile,
   removeLicense,
   licenseTier,
   getLicensePath,
+  buildLicensePortalHint,
 } from "./product/license.mjs";
 import { normalizeEdition } from "./product/edition.mjs";
 import {
@@ -60,14 +63,77 @@ function licenseGateResult({ lic, requiredEdition, feature }) {
   });
 }
 
+function buildLicenseGuidance(lic) {
+  const pathValue = lic?.path || getLicensePath();
+  if (!lic || lic.kind === "missing") {
+    return `${buildLicensePortalHint()} (installs to ${pathValue})`;
+  }
+  if (lic.kind === "invalid") {
+    return `Re-download the signed license JSON from License Hub and reinstall it at ${pathValue}.`;
+  }
+  if (lic.kind === "expired") {
+    return `Download a renewed license from License Hub and reinstall it at ${pathValue}.`;
+  }
+  if (lic.kind === "not_yet_valid") {
+    return `Wait until the license validity window opens or install the correct license at ${pathValue}.`;
+  }
+  if (lic.kind === "revoked" || lic.kind === "superseded") {
+    return `Download the current replacement license from License Hub and reinstall it at ${pathValue}.`;
+  }
+  return `Verify the installed license with: guard license status`;
+}
+
+function renderLicenseStatusText({ lic, includeNextStep = false, sourcePath = null }) {
+  const pathValue = sourcePath || lic?.path || getLicensePath();
+  const lines = [];
+
+  if (!lic || lic.kind === "missing") {
+    lines.push("license: missing");
+    lines.push(`path: ${pathValue}`);
+    if (includeNextStep) lines.push(`next: ${buildLicenseGuidance({ kind: "missing", path: pathValue })}`);
+    return lines.join("\n");
+  }
+
+  if (lic.kind === "invalid") {
+    lines.push(`license: invalid (${lic.reason || "unknown"})`);
+    lines.push(`path: ${pathValue}`);
+    if (includeNextStep) lines.push(`next: ${buildLicenseGuidance(lic)}`);
+    return lines.join("\n");
+  }
+
+  if (lic.kind === "expired") {
+    lines.push(`license: expired (${lic.edition || "unknown"}) expires: ${lic.not_after || ""}`);
+    lines.push(`path: ${pathValue}`);
+    if (includeNextStep) lines.push(`next: ${buildLicenseGuidance(lic)}`);
+    return lines.join("\n");
+  }
+
+  if (lic.kind === "not_yet_valid") {
+    lines.push(`license: not_yet_valid (${lic.edition || "unknown"}) starts: ${lic.not_before || ""}`);
+    lines.push(`path: ${pathValue}`);
+    if (includeNextStep) lines.push(`next: ${buildLicenseGuidance(lic)}`);
+    return lines.join("\n");
+  }
+
+  if (lic.kind === "revoked" || lic.kind === "superseded") {
+    lines.push(`license: ${lic.kind} (${lic.edition || "unknown"})`);
+    lines.push(`path: ${pathValue}`);
+    if (lic.reason) lines.push(`reason: ${lic.reason}`);
+    if (includeNextStep) lines.push(`next: ${buildLicenseGuidance(lic)}`);
+    return lines.join("\n");
+  }
+
+  lines.push(`license: ok (${lic.edition}) expires: ${lic.not_after || ""}`);
+  lines.push(`path: ${pathValue}`);
+  if (lic.license_id) lines.push(`license_id: ${lic.license_id}`);
+  if (lic.key_id) lines.push(`key_id: ${lic.key_id}`);
+  if (includeNextStep) lines.push(`next: ${buildLicenseGuidance(lic)}`);
+  return lines.join("\n");
+}
+
 function showLicenseSummaryLocal() {
   const lic = readLicense();
-  if (!lic || lic.kind === "missing") return "license: missing";
-  if (lic.kind === "invalid") return `license: invalid (${lic.reason || "unknown"})`;
-  if (lic.kind === "expired") return `license: expired (${lic.edition || "unknown"}) expires: ${lic.not_after || ""}`;
-  if (lic.kind === "not_yet_valid") return `license: not_yet_valid (${lic.edition || "unknown"}) starts: ${lic.not_before || ""}`;
-  if (lic.kind === "ok") return `license: ok (${lic.edition}) expires: ${lic.not_after || ""}`;
-  return `license: ${lic.kind}`;
+  return renderLicenseStatusText({ lic, includeNextStep: true });
 }
 
 function renderGuardHelp() {
@@ -100,10 +166,11 @@ function renderGuardHelp() {
     "                       [--eventsPath <file>] [--auditPath <file>]",
     "                       [--pretty]",
     "",
-    "License (offline; signed v2):",
+    "License (offline; signed):",
     "  guard license status",
     "  guard license show",
-    "  guard license install <file>",
+    "  guard license verify --file <file>",
+    "  guard license install --file <file>",
     "  guard license remove",
     "",
     "Options:",
@@ -242,28 +309,44 @@ function effectiveTier({ policyEdition, licenseTierNum }) {
 
 function licenseStateFromFile() {
   const lic = readLicense();
-  if (!lic || lic.kind === "missing") return { state: "missing", note: "" };
+  if (!lic || lic.kind === "missing") return { kind: "missing", state: "missing", note: "", path: getLicensePath() };
   if (lic.kind === "ok") {
     return {
+      kind: "ok",
       state: lic.edition,
       note: lic.not_after ? `not_after: ${lic.not_after}` : "not_after: none",
+      path: lic.path,
     };
   }
   if (lic.kind === "expired") {
     return {
+      kind: "expired",
       state: "community (expired license)",
       note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
+      path: lic.path,
     };
   }
   if (lic.kind === "not_yet_valid") {
     return {
+      kind: "not_yet_valid",
       state: "community (not yet valid)",
       note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
+      path: lic.path,
+    };
+  }
+  if (lic.kind === "revoked" || lic.kind === "superseded") {
+    return {
+      kind: lic.kind,
+      state: `community (${lic.kind} license)`,
+      note: lic.reason ? `reason: ${lic.reason}` : `path: ${lic.path}`,
+      path: lic.path,
     };
   }
   return {
+    kind: "invalid",
     state: "community (invalid license)",
     note: lic.reason || `path: ${lic.path}`,
+    path: lic.path,
   };
 }
 
@@ -287,6 +370,8 @@ function renderStatusText({ repoRoot, policyState, driftState, licenseState, eff
   lines.push("");
   lines.push(`License: ${licenseState.state}`);
   if (licenseState.note) lines.push(`  note: ${licenseState.note}`);
+  lines.push(`  path: ${licenseState.path || getLicensePath()}`);
+  lines.push(`  next: ${buildLicenseGuidance({ kind: licenseState.kind, path: licenseState.path || getLicensePath() })}`);
   lines.push("");
   lines.push("Effective");
   lines.push("---------");
@@ -337,10 +422,25 @@ function renderLicenseHelp() {
     "Usage:",
     "  guard license status",
     "  guard license show",
-    "  guard license install <file>",
+    "  guard license verify --file <file>",
+    "  guard license install --file <file>",
     "  guard license remove",
     "",
   ].join("\n");
+}
+
+function parseLicenseFileArg(args) {
+  const fileFlag = args.find((value) => value.startsWith("--file="));
+  if (fileFlag) {
+    return fileFlag.split("=", 2)[1];
+  }
+
+  const fileIndex = args.findIndex((value) => value === "--file");
+  if (fileIndex >= 0 && args[fileIndex + 1]) {
+    return args[fileIndex + 1];
+  }
+
+  return args.find((value) => value && !value.startsWith("--")) || null;
 }
 
 function buildErrorJson({ kind, message, details = {} }) {
@@ -469,17 +569,61 @@ export async function runGuard({ argv }) {
     const sub = argv[1] || "";
     if (sub === "status") return { exitCode: 0, stdout: showLicenseSummaryLocal() + "\n" };
     if (sub === "show") return { exitCode: 0, stdout: JSON.stringify(readLicense(), null, 2) + "\n" };
-    if (sub === "install") {
-      const src = argv[2];
+    if (sub === "verify") {
+      const src = parseLicenseFileArg(argv.slice(2));
       if (!src) {
         return {
           exitCode: 2,
-          stderr: "Missing license file.\nUsage: guard license install <file>\n",
+          stderr: "Missing license file.\nUsage: guard license verify --file <file>\n",
+        };
+      }
+      const lic = readLicenseFile(src);
+      return {
+        exitCode: lic.kind === "ok" ? 0 : EXIT_ERROR_DEFAULT,
+        stdout:
+          JSON.stringify(
+            {
+              ok: lic.kind === "ok",
+              file: src,
+              install_path: getLicensePath(),
+              license: lic,
+              next_step: lic.kind === "ok" ? "Run: guard license install --file <file>" : buildLicenseGuidance(lic),
+            },
+            null,
+            2
+          ) + "\n",
+      };
+    }
+    if (sub === "install") {
+      const src = parseLicenseFileArg(argv.slice(2));
+      if (!src) {
+        return {
+          exitCode: 2,
+          stderr: "Missing license file.\nUsage: guard license install --file <file>\n",
         };
       }
       const dest = getLicensePath();
       try {
+        const validation = readLicenseFile(src);
+        if (validation.kind !== "ok") {
+          return {
+            exitCode: EXIT_ERROR_DEFAULT,
+            stdout: buildErrorJson({
+              kind: "license_install_invalid",
+              message: "License install failed validation.",
+              details: {
+                source_path: src,
+                install_path: dest,
+                state: validation.kind,
+                reason: validation.reason || null,
+                next_step: buildLicenseGuidance(validation),
+              },
+            }),
+          };
+        }
+
         const buf = fs.readFileSync(src);
+        const replacedExisting = fs.existsSync(dest);
         ensureDir(path.dirname(dest));
         fs.writeFileSync(dest, buf);
         const lic = readLicense();
@@ -510,6 +654,9 @@ export async function runGuard({ argv }) {
                   key_id: lic.key_id,
                   license_id: lic.license_id,
                   path: dest,
+                  source_path: src,
+                  replaced_existing: replacedExisting,
+                  next_step: "Run: guard license status",
                 },
               },
               null,
@@ -522,7 +669,7 @@ export async function runGuard({ argv }) {
           stderr:
             "License install failed.\n" +
             `error: ${err?.message || String(err)}\n` +
-            `path: ${dest}\n`,
+            `install_path: ${dest}\n`,
         };
       }
     }
@@ -769,4 +916,9 @@ async function main() {
   }
 }
 
-main();
+const isDirectRun =
+  process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+
+if (isDirectRun) {
+  main();
+}

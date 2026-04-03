@@ -8,6 +8,7 @@
  */
 
 import { normalizeEdition } from "./edition.mjs";
+import { getLicensePath } from "./license.mjs";
 
 export const EXIT_LICENSE_REQUIRED = 21;
 
@@ -29,7 +30,11 @@ function licenseState(lic) {
 }
 
 function installHint(requiredEdition) {
-  return `Install a signed ${normalizeEdition(requiredEdition)} license file: guard license install <file>`;
+  const path = getLicensePath();
+  return (
+    `Install a signed ${normalizeEdition(requiredEdition)} license file: guard license install --file <path>. ` +
+    `Expected install path: ${path}.`
+  );
 }
 
 /**
