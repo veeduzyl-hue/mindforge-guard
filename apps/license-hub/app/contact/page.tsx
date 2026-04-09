@@ -7,7 +7,7 @@ export default function ContactPage() {
     <SiteChrome
       eyebrow="Contact"
       title="Contact"
-      lede="Use this page for the minimum current-stage contact lanes: sales, support, and billing. This is a bounded intake page, not a full CRM or enterprise ticketing system."
+      lede="Use this page for the current published contact lanes: sales, support, and billing. This is a bounded intake page for License Hub commercial delivery, not a CRM or enterprise ticketing platform."
     >
       <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         <article style={panelStyle}>
@@ -19,7 +19,7 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Include company name, expected users, and timeline</li>
             <li>Enterprise does not use the current self-serve buy buttons</li>
-            <li>Keep requests scoped to the current Guard + License Hub commercial boundary</li>
+            <li>Route these requests to <strong>sales@your-domain</strong></li>
           </ul>
         </article>
 
@@ -32,7 +32,7 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Use the same email that completed checkout</li>
             <li>Reference your order, transaction, or license ID when possible</li>
-            <li>Start with Support if you are unsure which lane is correct</li>
+            <li>Route these requests to <strong>support@your-domain</strong></li>
           </ul>
         </article>
 
@@ -44,19 +44,22 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Refund and cancellation are different requests</li>
             <li>Refunds can revoke the associated commercial license</li>
-            <li>Billing visibility starts in the account billing page</li>
+            <li>Route these requests to <strong>billing@your-domain</strong></li>
           </ul>
         </article>
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
-        <h2 style={{ margin: 0 }}>How to reach the current team</h2>
+        <h2 style={{ margin: 0 }}>Published contact structure</h2>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
-          A dedicated live mailbox is not published yet. For this pre-live commercial phase, use the same purchase
-          email flow that License Hub already uses, then follow up with the current operator channel that issued your
-          evaluation or onboarding link. This keeps contact paths honest while live support routing is still being
-          finalized.
+          Replace the placeholder mailbox names before live, but keep the three-lane structure so support, billing, and
+          sales remain clearly separated in the public surface and internal routing.
         </p>
+        <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "#5b5444" }}>
+          <li><strong>sales@your-domain</strong> for enterprise and commercial packaging</li>
+          <li><strong>support@your-domain</strong> for portal, download, and install help</li>
+          <li><strong>billing@your-domain</strong> for refund, cancellation, and invoice review</li>
+        </ul>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <Link href="/support" style={primaryButtonStyle}>
             Support
