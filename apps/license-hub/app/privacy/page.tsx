@@ -5,15 +5,23 @@ export default function PrivacyPage() {
     <SiteChrome
       eyebrow="Legal"
       title="Privacy"
-      lede="This minimum privacy notice explains the current commercial data flow for Guard licensing, License Hub access, and the bounded Paddle billing integration."
+      lede="This privacy notice describes the minimum commercial data flow for Guard licensing, License Hub access, and the current third-party billing and email providers. It is intended for formal review before live launch."
     >
       <section style={{ display: "grid", gap: 18 }}>
         <article style={panelStyle}>
+          <h2 style={{ marginTop: 0 }}>Controller and contact</h2>
+          <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
+            Data controller: <strong>[Legal Entity Name]</strong>. Effective date: <strong>[Effective Date]</strong>.
+            Privacy contact: <strong>privacy@your-domain</strong>.
+          </p>
+        </article>
+
+        <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>What data is collected</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            The current commercial flow may collect purchase email, customer identifiers, order and billing state,
-            license identifiers, downloadable signed license artifacts, and limited webhook payloads needed to process
-            billing lifecycle events.
+            The current commercial flow may collect purchase email, customer identifiers, account session data, order
+            and billing state, license identifiers, downloadable signed license artifacts, webhook event metadata, and
+            operational mail delivery metadata needed to issue, deliver, and support commercial licenses.
           </p>
         </article>
 
@@ -31,22 +39,25 @@ export default function PrivacyPage() {
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             Paddle is used for hosted checkout and billing events. In the current commercial flow, Paddle may process
             payment method details and send signed billing webhook notifications that License Hub uses for fulfillment.
+            Email delivery providers such as <strong>[Email Provider Name]</strong> may process outbound login or
+            license-delivery messages. Replace provider placeholders with the final live providers before launch.
           </p>
         </article>
 
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Retention and visibility</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            The system keeps the order, billing, and license history needed to preserve commercial evidence and support
-            continuity. The current customer-facing visibility is limited to the License Hub portal and account pages.
+            The system keeps order, billing, session, and license history for <strong>[Retention Period]</strong> or as
+            otherwise required to preserve commercial evidence, support continuity, fraud review, and accounting
+            records. Customer-facing visibility remains limited to the License Hub portal and account pages.
           </p>
         </article>
 
         <article style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>Contact</h2>
+          <h2 style={{ marginTop: 0 }}>Requests and questions</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            Use the current Contact and Support pages for privacy questions during this pre-live phase. Dedicated live
-            mailbox publication is still part of the pre-launch closeout work.
+            Replace this placeholder with the final process for privacy access, correction, deletion, and support
+            requests. Default contact: <strong>privacy@your-domain</strong>.
           </p>
         </article>
       </section>
