@@ -1,61 +1,100 @@
-import type { CSSProperties } from "react";
+import Link from "next/link";
 
-const cardStyle: CSSProperties = {
-  background: "white",
-  borderRadius: 16,
-  padding: 20,
-  boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
-};
+import { getCommercialOffers } from "../lib/commercialCatalog";
+import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "./siteChrome";
 
 export default function HomePage() {
+  const offers = getCommercialOffers();
+  const paidOffers = offers.filter((offer) => offer.kind === "paddle_checkout");
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        padding: 32,
-        background:
-          "linear-gradient(180deg, rgba(244,241,232,1) 0%, rgba(232,225,206,1) 100%)",
-      }}
+    <SiteChrome
+      eyebrow="Phase 6.5"
+      title="MindForge License Hub"
+      lede="MindForge License Hub is the bounded commercial delivery surface for Guard licensing: verified checkout intake, signed webhook fulfillment, downloadable licenses, portal and account visibility, and local CLI verification without touching the Guard main path."
     >
-      <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gap: 20 }}>
-        <section style={cardStyle}>
-          <p style={{ letterSpacing: "0.12em", textTransform: "uppercase", color: "#946c2b" }}>
-            Phase 6
-          </p>
-          <h1 style={{ marginTop: 8, fontSize: 42 }}>MindForge License Hub</h1>
-          <p style={{ fontSize: 18, lineHeight: 1.6 }}>
-            A bounded commercial support subsystem for billing lifecycle handling, offline license issuance,
-            portal delivery, admin operations, and the new account-oriented Phase 6 skeleton. It remains
-            intentionally separate from the Guard CLI main path.
-          </p>
-        </section>
-
-        <section style={cardStyle}>
-          <h2>Available now</h2>
-          <ul>
-            <li>
-              <code>POST /api/webhooks/mock-payment</code> for <code>payment.succeeded</code>
-            </li>
-            <li>
-              <a href="/login">Magic link login</a> and customer portal license download flow
-            </li>
-            <li>Billing webhook lifecycle handling, refund/cancellation processing, and system action audit logs</li>
-            <li>Admin revoke / resend / extend / supersede actions</li>
-            <li>
-              <a href="/account">Account surface</a> for orders, licenses, billing visibility, and organization/seats overview
-            </li>
+      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+        <article style={panelStyle}>
+          <h2 style={{ marginTop: 0 }}>What is live on this surface</h2>
+          <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
+            <li>Verified sandbox checkout wiring for four commercial catalog entries</li>
+            <li>Signed webhook fulfillment into orders, billing, portal, and downloadable licenses</li>
+            <li>Local Guard CLI verify, install, license status, and guard status</li>
           </ul>
-        </section>
+        </article>
 
-        <section style={cardStyle}>
-          <h2>Phase 6 bounded skeleton</h2>
-          <ul>
-            <li>Organization and seat assignment data model + APIs</li>
-            <li>Optional online activation protocol skeleton</li>
-            <li>Offline Guard CLI install / verify remains authoritative</li>
+        <article style={panelStyle}>
+          <h2 style={{ marginTop: 0 }}>What is not being claimed</h2>
+          <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
+            <li>No live-ready production checkout promise</li>
+            <li>No team, seat, org, or dashboard platform launch claim</li>
+            <li>No authority expansion into the Guard CLI main path</li>
           </ul>
-        </section>
-      </div>
-    </main>
+        </article>
+      </section>
+
+      <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <h2 style={{ margin: 0 }}>Pricing entry</h2>
+            <p style={{ margin: "8px 0 0", color: "#5b5444", lineHeight: 1.65 }}>
+              The self-serve commercial path now points to the four verified Paddle price mappings only.
+            </p>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <Link href="/pricing" style={primaryButtonStyle}>
+              Open pricing
+            </Link>
+            <Link href="/docs" style={secondaryButtonStyle}>
+              Read docs
+            </Link>
+          </div>
+        </div>
+        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+          {paidOffers.map((offer) => (
+            <div key={offer.slug} style={{ padding: 16, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <strong>{offer.title}</strong>
+              <p style={{ margin: "8px 0 0", color: "#5b5444" }}>
+                {offer.editionLabel} | {offer.billingIntervalLabel}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        <article style={panelStyle}>
+          <h2 style={{ marginTop: 0 }}>Portal and account</h2>
+          <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
+            Customers can sign in with the purchase email, inspect orders and billing, and download the signed license
+            artifact.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <Link href="/login" style={secondaryButtonStyle}>
+              Login
+            </Link>
+            <Link href="/account" style={secondaryButtonStyle}>
+              Account
+            </Link>
+          </div>
+        </article>
+
+        <article style={panelStyle}>
+          <h2 style={{ marginTop: 0 }}>Support and legal</h2>
+          <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
+            The minimum support and legal pages are now part of this same bounded surface so the commercial path is not
+            dangling after checkout.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <Link href="/support" style={secondaryButtonStyle}>
+              Support
+            </Link>
+            <Link href="/terms" style={secondaryButtonStyle}>
+              Terms
+            </Link>
+          </div>
+        </article>
+      </section>
+    </SiteChrome>
   );
 }
