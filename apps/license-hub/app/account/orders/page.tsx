@@ -22,6 +22,7 @@ export default async function AccountOrdersPage() {
             <p>Provider: {order.paymentProvider}</p>
             <p>Payment id: {order.externalPaymentId || "n/a"}</p>
             <p>Subscription id: {order.externalSubscriptionId || "n/a"}</p>
+            <p>Status reason: {order.statusReason || "n/a"}</p>
             <p>Created: {order.createdAt}</p>
           </article>
         ))}

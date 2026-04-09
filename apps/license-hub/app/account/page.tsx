@@ -17,6 +17,7 @@ export default async function AccountPage() {
         <section style={{ padding: 16, border: "1px solid #d1cab8", borderRadius: 12 }}>
           <h2 style={{ marginTop: 0 }}>Billing</h2>
           <p>Latest payment status: {billing.latestPaymentStatus}</p>
+          <p>Fulfillment state: {billing.fulfillmentState}</p>
           <p>Orders: {billing.orderCount}</p>
           <p>Active licenses: {billing.activeLicenseCount}</p>
           <p>
