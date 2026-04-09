@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text();
     const result = await handleBillingWebhook(rawBody, request.headers);
 
-    return NextResponse.json({
-      ok: true,
-      ...result,
-    });
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       {

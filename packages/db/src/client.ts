@@ -276,6 +276,7 @@ export interface LicenseHubDb {
   getOrderById(id: string): Promise<OrderRecord | null>;
   getOrderByExternalOrderId(externalOrderId: string): Promise<OrderRecord | null>;
   getOrderByExternalPaymentId(externalPaymentId: string): Promise<OrderRecord | null>;
+  getOrderByExternalSubscriptionId(externalSubscriptionId: string): Promise<OrderRecord | null>;
   listOrders(): Promise<OrderRecord[]>;
   findActiveLicenseByOrderId(orderId: string): Promise<LicenseRecord | null>;
   createLicense(input: Omit<LicenseRecord, "id" | "createdAt" | "updatedAt">): Promise<LicenseRecord>;
@@ -709,6 +710,11 @@ class FileLicenseHubDb implements LicenseHubDb {
   async getOrderByExternalPaymentId(externalPaymentId: string): Promise<OrderRecord | null> {
     const db = this.read();
     return db.orders.find((order) => order.externalPaymentId === externalPaymentId) ?? null;
+  }
+
+  async getOrderByExternalSubscriptionId(externalSubscriptionId: string): Promise<OrderRecord | null> {
+    const db = this.read();
+    return db.orders.find((order) => order.externalSubscriptionId === externalSubscriptionId) ?? null;
   }
 
   async listOrders(): Promise<OrderRecord[]> {
@@ -1520,6 +1526,12 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
     async getOrderByExternalPaymentId(externalPaymentId) {
       const record = await prisma.order.findFirst({
         where: { externalPaymentId },
+      });
+      return record ? mapOrderRecord(record as unknown as Record<string, unknown>) : null;
+    },
+    async getOrderByExternalSubscriptionId(externalSubscriptionId) {
+      const record = await prisma.order.findFirst({
+        where: { externalSubscriptionId },
       });
       return record ? mapOrderRecord(record as unknown as Record<string, unknown>) : null;
     },

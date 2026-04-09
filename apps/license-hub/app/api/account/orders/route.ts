@@ -19,6 +19,7 @@ export async function GET() {
         external_subscription_id: order.externalSubscriptionId,
         amount_cents: order.amountCents,
         currency: order.currency,
+        status_reason: order.statusReason,
         created_at: order.createdAt,
       })),
     });

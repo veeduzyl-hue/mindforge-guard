@@ -13,6 +13,7 @@ export default async function AccountBillingPage() {
         <Link href="/account">Back to account</Link>
       </p>
       <p>Latest payment status: {summary.latestPaymentStatus}</p>
+      <p>Fulfillment state: {summary.fulfillmentState}</p>
       <p>Latest paid order: {summary.latestPaidOrder?.externalOrderId || "none"}</p>
       <p>Order count: {summary.orderCount}</p>
       <p>License count: {summary.licenseCount}</p>

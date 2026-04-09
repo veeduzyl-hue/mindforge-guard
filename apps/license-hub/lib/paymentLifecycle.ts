@@ -56,7 +56,8 @@ async function attemptLifecycleNotification(input: {
 async function resolveCustomerAndOrder(db: LicenseHubDb, event: BillingEvent): Promise<ResolvedContext> {
   const existingOrder =
     (await db.getOrderByExternalOrderId(event.externalOrderId)) ||
-    (event.externalPaymentId ? await db.getOrderByExternalPaymentId(event.externalPaymentId) : null);
+    (event.externalPaymentId ? await db.getOrderByExternalPaymentId(event.externalPaymentId) : null) ||
+    (event.externalSubscriptionId ? await db.getOrderByExternalSubscriptionId(event.externalSubscriptionId) : null);
 
   if (existingOrder) {
     const existingCustomer = await db.getCustomerById(existingOrder.customerId);

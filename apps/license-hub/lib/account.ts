@@ -43,6 +43,18 @@ export async function buildBillingSummaryForEmail(
 
   const latestOrder = orders[0] ?? null;
   const latestPaidOrder = orders.find((order) => order.status === "paid") ?? null;
+  const hasActiveLicense = licenses.some((license) => license.status === "active");
+  const fulfillmentState = hasActiveLicense
+    ? "deliverable"
+    : latestOrder?.status === "pending"
+      ? "awaiting_payment"
+      : latestOrder?.status === "failed"
+        ? "payment_failed"
+        : latestOrder?.status === "refunded"
+          ? "refunded"
+          : latestOrder?.status === "cancelled"
+            ? "cancelled"
+            : "no_order";
 
   return {
     orderCount: orders.length,
@@ -51,6 +63,7 @@ export async function buildBillingSummaryForEmail(
     latestOrder,
     latestPaidOrder,
     latestPaymentStatus: latestOrder?.status ?? "none",
+    fulfillmentState,
     renewalHint:
       latestPaidOrder && licenses.some((license) => license.status === "active")
         ? "Renew by replacing the locally installed license with the latest signed JSON from License Hub."

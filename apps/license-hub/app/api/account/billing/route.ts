@@ -14,11 +14,13 @@ export async function GET() {
         license_count: summary.licenseCount,
         active_license_count: summary.activeLicenseCount,
         latest_payment_status: summary.latestPaymentStatus,
+        fulfillment_state: summary.fulfillmentState,
         renewal_hint: summary.renewalHint,
         latest_order: summary.latestOrder
           ? {
               external_order_id: summary.latestOrder.externalOrderId,
               status: summary.latestOrder.status,
+              status_reason: summary.latestOrder.statusReason,
               created_at: summary.latestOrder.createdAt,
             }
           : null,
