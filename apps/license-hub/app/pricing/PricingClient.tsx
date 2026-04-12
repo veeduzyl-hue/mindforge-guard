@@ -30,6 +30,33 @@ declare global {
   }
 }
 
+type CheckoutApiPayload = {
+  ok: boolean;
+  error?: string;
+  code?: string;
+  checkout?: {
+    transaction_id: string;
+    success_url: string;
+    checkout_url?: string | null;
+  };
+};
+
+async function readCheckoutApiPayload(response: Response): Promise<CheckoutApiPayload> {
+  const contentType = response.headers.get("content-type") || "";
+  const rawBody = await response.text();
+
+  if (contentType.toLowerCase().includes("application/json")) {
+    return JSON.parse(rawBody) as CheckoutApiPayload;
+  }
+
+  const compactBody = rawBody.replace(/\s+/g, " ").trim();
+  throw new Error(
+    compactBody.startsWith("<")
+      ? `Checkout endpoint returned HTML instead of JSON (status ${response.status}).`
+      : compactBody || `Checkout request failed with status ${response.status}.`
+  );
+}
+
 export function PricingClient(input: {
   environment: "sandbox" | "production";
   clientToken: string;
@@ -95,6 +122,7 @@ export function PricingClient(input: {
       const response = await fetch("/api/paddle/checkout", {
         method: "POST",
         headers: {
+          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -103,11 +131,7 @@ export function PricingClient(input: {
         }),
       });
 
-      const payload = (await response.json()) as {
-        ok: boolean;
-        error?: string;
-        checkout?: { transaction_id: string; success_url: string; checkout_url?: string | null };
-      };
+      const payload = await readCheckoutApiPayload(response);
 
       if (!response.ok || !payload.ok || !payload.checkout) {
         throw new Error(payload.error || "Unable to create Paddle checkout");
