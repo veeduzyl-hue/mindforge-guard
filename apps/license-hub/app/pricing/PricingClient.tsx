@@ -48,6 +48,10 @@ export function PricingClient(input: {
     checkoutCompletedRef.current = false;
   }, [buyerEmail]);
 
+  useEffect(() => {
+    initializePaddle();
+  }, [input.clientToken, input.environment]);
+
   function initializePaddle() {
     if (initializedRef.current || !window.Paddle || !input.clientToken) {
       return;
@@ -77,11 +81,8 @@ export function PricingClient(input: {
       return;
     }
     if (!buyerEmail.trim()) {
+      setCheckoutState("error");
       setError("Enter the purchase email that should receive License Hub access.");
-      return;
-    }
-    if (!input.clientToken || !window.Paddle) {
-      setError("Paddle checkout is not ready yet.");
       return;
     }
 
@@ -105,23 +106,46 @@ export function PricingClient(input: {
       const payload = (await response.json()) as {
         ok: boolean;
         error?: string;
-        checkout?: { transaction_id: string; success_url: string };
+        checkout?: { transaction_id: string; success_url: string; checkout_url?: string | null };
       };
 
       if (!response.ok || !payload.ok || !payload.checkout) {
         throw new Error(payload.error || "Unable to create Paddle checkout");
       }
 
-      setCheckoutState("opening");
-      window.Paddle.Checkout.open({
-        transactionId: payload.checkout.transaction_id,
-        settings: {
-          successUrl: payload.checkout.success_url,
-          allowLogout: true,
-          variant: "one-page",
-        },
-      });
-      setCheckoutState("opened");
+      const checkoutUrl = payload.checkout.checkout_url || null;
+
+      if (input.clientToken && window.Paddle) {
+        setCheckoutState("opening");
+        try {
+          window.Paddle.Checkout.open({
+            transactionId: payload.checkout.transaction_id,
+            settings: {
+              successUrl: payload.checkout.success_url,
+              allowLogout: true,
+              variant: "one-page",
+            },
+          });
+          setCheckoutState("opened");
+          return;
+        } catch (openError) {
+          if (!checkoutUrl) {
+            throw openError;
+          }
+        }
+      }
+
+      if (checkoutUrl) {
+        setCheckoutState("redirecting");
+        window.location.href = checkoutUrl;
+        return;
+      }
+
+      if (!input.clientToken) {
+        throw new Error("Paddle client token is missing, so embedded checkout cannot start.");
+      }
+
+      throw new Error("Paddle.js has not loaded yet, and no hosted checkout URL was returned.");
     } catch (caughtError) {
       setCheckoutState("error");
       setError(caughtError instanceof Error ? caughtError.message : String(caughtError));
@@ -159,7 +183,23 @@ export function PricingClient(input: {
         <p style={{ margin: 0, color: "#5b5444" }}>
           Checkout state: <strong>{checkoutState}</strong> | Environment: <strong>{input.environment}</strong>
         </p>
-        {error ? <p style={{ margin: 0, color: "#9f2c2c" }}>Error: {error}</p> : null}
+        {error ? (
+          <p
+            role="alert"
+            aria-live="assertive"
+            style={{
+              margin: 0,
+              padding: 12,
+              borderRadius: 12,
+              border: "1px solid #d7a0a0",
+              background: "#fff2f2",
+              color: "#9f2c2c",
+              fontWeight: 600,
+            }}
+          >
+            Checkout error: {error}
+          </p>
+        ) : null}
       </section>
 
       <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>

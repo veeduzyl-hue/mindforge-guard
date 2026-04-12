@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
         transaction_id: result.transactionId,
         transaction_status: result.transactionStatus,
         order_id: result.orderId,
+        checkout_url: result.checkoutUrl,
         success_url: result.successUrl,
         cancel_url: result.cancelUrl,
       },
