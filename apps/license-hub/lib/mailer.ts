@@ -13,7 +13,7 @@ type ProviderDeliveryResult = {
 type DevDeliveryResult = {
   mode: "dev";
   delivered: true;
-  debugPath: string;
+  debugPath?: string | null;
   devMagicLink?: string;
 };
 
@@ -32,6 +32,18 @@ function getDebugPath(): string {
     process.env.MAGIC_LINK_DEBUG_STORE_PATH ||
     path.join(process.cwd(), ".mindforge", "license-hub", "magic-links.jsonl")
   );
+}
+
+function shouldWriteDebugEmailToFile(): boolean {
+  if (readBooleanEnv("MAGIC_LINK_DEBUG_WRITE_TO_FILE", false)) {
+    return true;
+  }
+
+  if (process.env.VERCEL || isProductionEnv()) {
+    return false;
+  }
+
+  return true;
 }
 
 function resolveMailMode(): MailMode {
@@ -90,18 +102,29 @@ async function sendViaResend(input: TextEmailInput): Promise<void> {
 }
 
 function writeDebugEmail(input: TextEmailInput): DevDeliveryResult {
+  const entry = {
+    created_at: new Date().toISOString(),
+    type: input.debugType,
+    to: input.to,
+    subject: input.subject,
+    text: input.text,
+    ...input.debugPayload,
+  };
+
+  if (!shouldWriteDebugEmailToFile()) {
+    console.log(`[license-hub][dev-mail:${input.debugType}] ${JSON.stringify(entry)}`);
+    return {
+      mode: "dev",
+      delivered: true,
+      debugPath: null,
+    };
+  }
+
   const debugPath = getDebugPath();
   fs.mkdirSync(path.dirname(debugPath), { recursive: true });
   fs.appendFileSync(
     debugPath,
-    JSON.stringify({
-      created_at: new Date().toISOString(),
-      type: input.debugType,
-      to: input.to,
-      subject: input.subject,
-      text: input.text,
-      ...input.debugPayload,
-    }) + "\n",
+    JSON.stringify(entry) + "\n",
     "utf8"
   );
   console.log(`[license-hub][dev-mail:${input.debugType}] ${input.to} -> ${input.subject}`);

@@ -378,6 +378,19 @@ function defaultFileDbPath(): string {
   return path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json");
 }
 
+function resolveLicenseHubDbProvider(): "file" | "prisma" {
+  const configured = process.env.LICENSE_HUB_DB_PROVIDER;
+  if (configured === "file" || configured === "prisma") {
+    return configured;
+  }
+
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    return "prisma";
+  }
+
+  return "file";
+}
+
 function normalizeOrderRecord(record: OrderRecord): OrderRecord {
   return {
     ...record,
@@ -1940,7 +1953,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
 }
 
 export async function getLicenseHubDb(): Promise<LicenseHubDb> {
-  const provider = process.env.LICENSE_HUB_DB_PROVIDER || "file";
+  const provider = resolveLicenseHubDbProvider();
 
   if (provider === "prisma") {
     return createPrismaDb();
