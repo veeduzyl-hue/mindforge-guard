@@ -7,7 +7,8 @@ export async function GET(request: NextRequest) {
   const result = await consumeMagicLink(token);
 
   if (!result.ok) {
-    const url = new URL(`/login?error=${encodeURIComponent(result.reason)}`, request.url);
+    const reason = result.reason ?? "token_invalid";
+    const url = new URL(`/login?error=${encodeURIComponent(reason)}`, request.url);
     return NextResponse.redirect(url);
   }
 

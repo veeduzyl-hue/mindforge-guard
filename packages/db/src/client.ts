@@ -1465,7 +1465,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapCustomerRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapCustomerRecord(record as Record<string, unknown>));
     },
     async upsertOrder(input) {
       const record = await prisma.order.upsert({
@@ -1541,7 +1541,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapOrderRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapOrderRecord(record as Record<string, unknown>));
     },
     async findActiveLicenseByOrderId(orderId) {
       const record = await prisma.license.findFirst({
@@ -1593,7 +1593,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           issuedAt: "desc",
         },
       });
-      return records.map((record) => mapLicenseRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapLicenseRecord(record as Record<string, unknown>));
     },
     async listLicensesByCustomerEmail(email) {
       const records = await prisma.license.findMany({
@@ -1606,7 +1606,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           issuedAt: "desc",
         },
       });
-      return records.map((record) => mapLicenseRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapLicenseRecord(record as Record<string, unknown>));
     },
     async getLicenseByLicenseId(licenseId) {
       const record = await prisma.license.findUnique({
@@ -1645,7 +1645,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapAdminActionRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapAdminActionRecord(record as Record<string, unknown>));
     },
     async createSystemAction(input) {
       const record = await prisma.systemAction.create({
@@ -1669,7 +1669,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapSystemActionRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapSystemActionRecord(record as Record<string, unknown>));
     },
     async createMagicLinkToken(input) {
       const record = await prisma.magicLinkToken.create({
@@ -1709,7 +1709,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapOrderRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapOrderRecord(record as Record<string, unknown>));
     },
     async ensureOrganizationForCustomer(input) {
       const existing = await prisma.organization.findFirst({
@@ -1778,7 +1778,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapOrganizationMemberRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapOrganizationMemberRecord(record as Record<string, unknown>));
     },
     async listSeatEntitlementsByOrganizationId(organizationId) {
       const records = await prisma.seatEntitlement.findMany({
@@ -1787,7 +1787,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapSeatEntitlementRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapSeatEntitlementRecord(record as Record<string, unknown>));
     },
     async listSeatAssignmentsByOrganizationId(organizationId) {
       const records = await prisma.seatAssignment.findMany({
@@ -1796,7 +1796,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
           createdAt: "desc",
         },
       });
-      return records.map((record) => mapSeatAssignmentRecord(record as unknown as Record<string, unknown>));
+      return records.map((record: unknown) => mapSeatAssignmentRecord(record as Record<string, unknown>));
     },
     async assignSeat(input) {
       const license = await prisma.license.findUnique({

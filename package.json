@@ -1,6 +1,7 @@
 {
     "name": "mindforge-guard-workspace",
     "private": true,
+    "packageManager": "npm@11.9.0",
     "workspaces": ["packages/*", "apps/*"],
     "engines": { "node": ">=18" },
     "scripts": {
