@@ -1408,7 +1408,7 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 }
 
 async function createPrismaDb(): Promise<LicenseHubDb> {
-  const prismaModule = await import("../generated/client/index.js");
+  const prismaModule = await import("../generated/runtime-client/index.js");
   const prisma = new prismaModule.PrismaClient();
 
   return {
