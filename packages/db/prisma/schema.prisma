@@ -235,6 +235,7 @@ model Organization {
   ownerCustomer   Customer?            @relation("OrganizationOwner", fields: [ownerCustomerId], references: [id], onDelete: SetNull)
   members         OrganizationMember[]
   seatEntitlements SeatEntitlement[]
+  seatAssignments SeatAssignment[]
   activationRecords ActivationRecord[]
 
   @@index([ownerCustomerId])

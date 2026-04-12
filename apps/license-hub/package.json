@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "npm --prefix ../.. --workspace @mindforge/db run generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"

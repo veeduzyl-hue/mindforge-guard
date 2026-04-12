@@ -7,7 +7,7 @@
     ".": "./src/client.ts"
   },
   "scripts": {
-    "generate": "prisma generate",
+    "generate": "prisma generate --schema ./prisma/schema.prisma",
     "migrate:dev": "prisma migrate dev",
     "studio": "prisma studio"
   },
