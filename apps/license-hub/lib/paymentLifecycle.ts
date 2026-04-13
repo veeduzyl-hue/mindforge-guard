@@ -11,8 +11,62 @@ interface ResolvedContext {
   order: OrderRecord;
 }
 
+interface LicenseIssuanceContext {
+  eventType: string;
+  notificationId: string | null;
+  transactionId: string;
+  requestedEmail: string;
+  edition: string;
+  plan: string | null;
+  interval: string | null;
+  priceKey: string | null;
+  subscriptionId: string | null;
+  externalOrderId: string;
+  externalSubscriptionId: string | null;
+}
+
 function requireIsoNow(): string {
   return new Date().toISOString();
+}
+
+function formatErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function logLicenseIssuance(fields: {
+  event_type: string;
+  notification_id: string | null;
+  transaction_id: string;
+  requested_email: string;
+  edition: string;
+  price_key: string | null;
+  subscription_id: string | null;
+  will_issue_license: boolean;
+  issue_result?: "issued" | "idempotent" | "error";
+  issue_error?: string | null;
+}) {
+  console.info(JSON.stringify(fields));
+}
+
+function buildLicenseIssuanceContext(event: BillingEvent, customer: CustomerRecord, order: OrderRecord): LicenseIssuanceContext {
+  const requestedEmail = event.subjectEmail || event.customerEmail || customer.email;
+  if (!requestedEmail) {
+    throw new Error("requested_email is required for license issuance");
+  }
+
+  return {
+    eventType: event.eventType,
+    notificationId: event.notificationId,
+    transactionId: event.externalOrderId,
+    requestedEmail,
+    edition: event.edition || order.edition,
+    plan: event.plan,
+    interval: event.interval,
+    priceKey: event.priceKey,
+    subscriptionId: event.externalSubscriptionId,
+    externalOrderId: event.externalOrderId,
+    externalSubscriptionId: event.externalSubscriptionId,
+  };
 }
 
 async function attemptLifecycleNotification(input: {
@@ -54,6 +108,7 @@ async function attemptLifecycleNotification(input: {
 }
 
 async function resolveCustomerAndOrder(db: LicenseHubDb, event: BillingEvent): Promise<ResolvedContext> {
+  const eventEmail = event.subjectEmail || event.customerEmail;
   const existingOrder =
     (await db.getOrderByExternalOrderId(event.externalOrderId)) ||
     (event.externalPaymentId ? await db.getOrderByExternalPaymentId(event.externalPaymentId) : null) ||
@@ -80,12 +135,12 @@ async function resolveCustomerAndOrder(db: LicenseHubDb, event: BillingEvent): P
     };
   }
 
-  if (!event.customerEmail) {
+  if (!eventEmail) {
     throw new Error("customer email is required when creating a new order from billing event");
   }
 
   const customer = await db.upsertCustomer({
-    email: event.customerEmail,
+    email: eventEmail,
     name: event.customerName,
     externalCustomerId: event.externalCustomerId,
   });
@@ -220,14 +275,59 @@ export async function applyBillingLifecycle(input: {
 
   if (input.event.eventType === "payment_succeeded") {
     const issuer = getLicenseIssuerConfig();
-    const issued = await issueLicenseForPaidOrder({
-      db: input.db,
-      customer: context.customer,
-      order,
-      issuerName: issuer.issuerName,
-      keyId: issuer.keyId,
-      privateKeyPem: issuer.privateKeyPem,
-      publicKeyPem: issuer.publicKeyPem,
+    const issuance = buildLicenseIssuanceContext(input.event, context.customer, order);
+
+    logLicenseIssuance({
+      event_type: issuance.eventType,
+      notification_id: issuance.notificationId,
+      transaction_id: issuance.transactionId,
+      requested_email: issuance.requestedEmail,
+      edition: issuance.edition,
+      price_key: issuance.priceKey,
+      subscription_id: issuance.subscriptionId,
+      will_issue_license: true,
+    });
+
+    let issued: Awaited<ReturnType<typeof issueLicenseForPaidOrder>>;
+    try {
+      issued = await issueLicenseForPaidOrder({
+        db: input.db,
+        customer: context.customer,
+        order,
+        subjectEmail: issuance.requestedEmail,
+        edition: issuance.edition,
+        issuerName: issuer.issuerName,
+        keyId: issuer.keyId,
+        privateKeyPem: issuer.privateKeyPem,
+        publicKeyPem: issuer.publicKeyPem,
+      });
+    } catch (error) {
+      logLicenseIssuance({
+        event_type: issuance.eventType,
+        notification_id: issuance.notificationId,
+        transaction_id: issuance.transactionId,
+        requested_email: issuance.requestedEmail,
+        edition: issuance.edition,
+        price_key: issuance.priceKey,
+        subscription_id: issuance.subscriptionId,
+        will_issue_license: true,
+        issue_result: "error",
+        issue_error: formatErrorMessage(error),
+      });
+      throw error;
+    }
+
+    logLicenseIssuance({
+      event_type: issuance.eventType,
+      notification_id: issuance.notificationId,
+      transaction_id: issuance.transactionId,
+      requested_email: issuance.requestedEmail,
+      edition: issuance.edition,
+      price_key: issuance.priceKey,
+      subscription_id: issuance.subscriptionId,
+      will_issue_license: true,
+      issue_result: issued.idempotent ? "idempotent" : "issued",
+      issue_error: null,
     });
 
     const action = await recordSystemAction({
@@ -243,6 +343,13 @@ export async function applyBillingLifecycle(input: {
         order_status: order.status,
         license_id: issued.license.licenseId,
         idempotent: issued.idempotent,
+        subject_email: issuance.requestedEmail,
+        edition: issuance.edition,
+        plan: issuance.plan,
+        interval: issuance.interval,
+        price_key: issuance.priceKey,
+        external_order_id: issuance.externalOrderId,
+        external_subscription_id: issuance.externalSubscriptionId,
       },
     });
 
@@ -256,7 +363,7 @@ export async function applyBillingLifecycle(input: {
       webhookEventId: input.webhookEventId,
       send: () =>
         sendSignedLicenseEmail({
-          to: context.customer.email,
+          to: issuance.requestedEmail,
           licenseId: issued.license.licenseId,
           signedLicenseJson: issued.license.signedLicenseJson,
           actionLabel: issued.idempotent ? "License delivery replay" : "License issued",

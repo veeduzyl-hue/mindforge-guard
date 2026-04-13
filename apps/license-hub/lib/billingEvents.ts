@@ -8,6 +8,7 @@ export type BillingEventType =
 export interface BillingEvent {
   provider: string;
   eventId: string;
+  notificationId: string | null;
   eventType: BillingEventType;
   occurredAt: string;
   externalOrderId: string;
@@ -15,8 +16,12 @@ export interface BillingEvent {
   externalSubscriptionId: string | null;
   externalCustomerId: string | null;
   customerEmail: string | null;
+  subjectEmail: string | null;
   customerName: string | null;
   edition: string;
+  plan: string | null;
+  interval: string | null;
+  priceKey: string | null;
   amountCents: number | null;
   currency: string | null;
   statusReason: string | null;
@@ -81,6 +86,7 @@ export function normalizeBillingEvent(rawPayload: unknown, provider: string): Bi
   return {
     provider,
     eventId,
+    notificationId: eventId,
     eventType,
     occurredAt: asString(payload.occurred_at) || new Date().toISOString(),
     externalOrderId,
@@ -88,8 +94,12 @@ export function normalizeBillingEvent(rawPayload: unknown, provider: string): Bi
     externalSubscriptionId: asString(subscription.id || order.subscription_id || payment.subscription_id),
     externalCustomerId: asString(customer.id || customer.external_customer_id),
     customerEmail: asString(customer.email),
+    subjectEmail: asString(customer.email),
     customerName: asString(customer.name),
     edition: asString(order.edition) || "community",
+    plan: null,
+    interval: null,
+    priceKey: null,
     amountCents: asNumber(order.amount_cents ?? payment.amount_cents),
     currency: asString(order.currency || payment.currency),
     statusReason: asString(data.reason || payload.reason),

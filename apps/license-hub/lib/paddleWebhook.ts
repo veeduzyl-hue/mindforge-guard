@@ -177,6 +177,12 @@ export function normalizePaddleBillingEvent(rawPayload: unknown): BillingEvent |
   const customData = parseJsonObject(data.custom_data);
   const items = Array.isArray(data.items) ? data.items.map((item) => parseJsonObject(item)) : [];
   const firstPayment = Array.isArray(data.payments) ? parseJsonObject(data.payments[0]) : {};
+  const requestedEmail = asString(customData.requested_email) || asString(customData.customer_email);
+  const edition = resolveEdition({
+    customData,
+    items,
+    fallback: asString(customData.plan),
+  });
   const externalOrderId =
     asString(data.id) ||
     asString(data.transaction_id) ||
@@ -190,6 +196,7 @@ export function normalizePaddleBillingEvent(rawPayload: unknown): BillingEvent |
   return {
     provider: "paddle",
     eventId: asString(payload.event_id) || asString(payload.id) || `paddle_${eventTypeName}_${externalOrderId}`,
+    notificationId: asString(payload.notification_id) || asString(payload.event_id) || asString(payload.id),
     eventType: normalizedType,
     occurredAt: asString(payload.occurred_at) || asString(data.updated_at) || new Date().toISOString(),
     externalOrderId,
@@ -201,13 +208,13 @@ export function normalizePaddleBillingEvent(rawPayload: unknown): BillingEvent |
     externalSubscriptionId:
       normalizedType === "order_canceled" ? asString(data.id) : asString(data.subscription_id),
     externalCustomerId: asString(data.customer_id),
-    customerEmail: asString(customData.requested_email) || asString(customData.customer_email),
+    customerEmail: requestedEmail,
+    subjectEmail: requestedEmail,
     customerName: asString(customData.customer_name),
-    edition: resolveEdition({
-      customData,
-      items,
-      fallback: asString(customData.plan),
-    }),
+    edition,
+    plan: asString(customData.plan),
+    interval: asString(customData.interval),
+    priceKey: asString(customData.price_key),
     amountCents: resolveAmountCents(data),
     currency: asString(data.currency_code),
     statusReason:
