@@ -7,14 +7,19 @@
     ".": "./src/client.ts"
   },
   "scripts": {
-    "generate": "prisma generate",
+    "pregenerate": "node -e \"require('node:fs').rmSync('./generated/runtime-client', { recursive: true, force: true })\"",
+    "generate": "prisma generate --schema ./prisma/schema.prisma",
     "migrate:dev": "prisma migrate dev",
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.6.0"
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^6.19.3",
+    "@prisma/client": "^6.6.0",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
+    "@types/ws": "^8.18.1",
     "prisma": "^6.6.0"
   },
   "engines": {

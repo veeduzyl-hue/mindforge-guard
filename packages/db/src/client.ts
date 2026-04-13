@@ -1,6 +1,45 @@
+import { neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+
+type WsModule = typeof import("ws");
+
+let neonWebSocketConstructorPromise: Promise<NonNullable<typeof neonConfig.webSocketConstructor>> | null = null;
+
+function disableWsNativeAddons(): void {
+  process.env.WS_NO_BUFFER_UTIL = "1";
+  process.env.WS_NO_UTF_8_VALIDATE = "1";
+}
+
+function resolveWsWebSocketConstructor(
+  wsModule: WsModule
+): NonNullable<typeof neonConfig.webSocketConstructor> {
+  if (typeof wsModule.WebSocket === "function") {
+    return wsModule.WebSocket;
+  }
+
+  if (typeof wsModule.default === "function") {
+    return wsModule.default;
+  }
+
+  throw new Error("Unable to resolve ws WebSocket constructor for Neon");
+}
+
+async function ensureNeonWebSocketConstructor(): Promise<void> {
+  if (neonConfig.webSocketConstructor) {
+    return;
+  }
+
+  neonWebSocketConstructorPromise ??= (async () => {
+    disableWsNativeAddons();
+    const wsModule = await import("ws");
+    return resolveWsWebSocketConstructor(wsModule);
+  })();
+
+  neonConfig.webSocketConstructor = await neonWebSocketConstructorPromise;
+}
 
 export type OrderStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
 export type LicenseStatus = "active" | "superseded" | "revoked" | "refund_revoked" | "expired";
@@ -376,6 +415,43 @@ function slugify(value: string): string {
 
 function defaultFileDbPath(): string {
   return path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json");
+}
+
+function requireDatabaseUrl(): string {
+  const value = process.env.DATABASE_URL;
+  if (!value) {
+    throw new Error("Missing required environment variable: DATABASE_URL");
+  }
+  return value;
+}
+
+function decodeBase64Wasm(base64: string): ArrayBuffer {
+  const bytes = Buffer.from(base64, "base64");
+  const wasmBuffer = new Uint8Array(bytes.byteLength);
+  wasmBuffer.set(bytes);
+  return wasmBuffer.buffer;
+}
+
+function createWasmModuleLoader(base64: string): () => Promise<WebAssembly.Module> {
+  let modulePromise: Promise<WebAssembly.Module> | null = null;
+
+  return async () => {
+    modulePromise ??= WebAssembly.compile(decodeBase64Wasm(base64));
+    return modulePromise;
+  };
+}
+
+function resolveLicenseHubDbProvider(): "file" | "prisma" {
+  const configured = process.env.LICENSE_HUB_DB_PROVIDER;
+  if (configured === "file" || configured === "prisma") {
+    return configured;
+  }
+
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    return "prisma";
+  }
+
+  return "file";
 }
 
 function normalizeOrderRecord(record: OrderRecord): OrderRecord {
@@ -1395,8 +1471,64 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 }
 
 async function createPrismaDb(): Promise<LicenseHubDb> {
-  const prismaModule = await import("@prisma/client");
-  const prisma = new prismaModule.PrismaClient();
+  await ensureNeonWebSocketConstructor();
+  const prismaModule = await import("../generated/runtime-client/index.js");
+  const [queryEngineRuntimeModule, queryEngineWasmModule] = await Promise.all([
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
+    import("@prisma/client/runtime/query_engine_bg.postgresql.js"),
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
+    import("@prisma/client/runtime/query_engine_bg.postgresql.wasm-base64.js"),
+  ]);
+  const [queryCompilerRuntimeModule, queryCompilerWasmModule] = await Promise.all([
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
+    import("@prisma/client/runtime/query_compiler_bg.postgresql.js"),
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
+    import("@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.js"),
+  ]);
+  const queryEngineRuntime = (queryEngineRuntimeModule.default ?? queryEngineRuntimeModule) as Record<
+    string,
+    unknown
+  >;
+  const queryEngineWasmBase64 =
+    queryEngineWasmModule.wasm ??
+    (queryEngineWasmModule.default as { wasm?: string } | undefined)?.wasm;
+  const queryCompilerRuntime = (queryCompilerRuntimeModule.default ?? queryCompilerRuntimeModule) as Record<
+    string,
+    unknown
+  >;
+  const queryCompilerWasmBase64 =
+    queryCompilerWasmModule.wasm ??
+    (queryCompilerWasmModule.default as { wasm?: string } | undefined)?.wasm;
+  if (!queryEngineWasmBase64 || !queryCompilerWasmBase64) {
+    throw new Error("Failed to load Prisma WASM runtime assets from @prisma/client/runtime");
+  }
+  const loadQueryEngineWasmModule = createWasmModuleLoader(queryEngineWasmBase64);
+  const loadQueryCompilerWasmModule = createWasmModuleLoader(queryCompilerWasmBase64);
+  const adapter = new PrismaNeon({ connectionString: requireDatabaseUrl() });
+  const prisma = new prismaModule.PrismaClient({
+    adapter,
+    __internal: {
+      configOverride: (config: Record<string, unknown>) => ({
+        ...config,
+        engineWasm: {
+          async getRuntime() {
+            return queryEngineRuntime;
+          },
+          async getQueryEngineWasmModule() {
+            return loadQueryEngineWasmModule();
+          },
+        },
+        compilerWasm: {
+          async getRuntime() {
+            return queryCompilerRuntime;
+          },
+          async getQueryCompilerWasmModule() {
+            return loadQueryCompilerWasmModule();
+          },
+        },
+      }),
+    },
+  } as any);
 
   return {
     async getWebhookEvent(provider, eventId) {
@@ -1940,7 +2072,7 @@ async function createPrismaDb(): Promise<LicenseHubDb> {
 }
 
 export async function getLicenseHubDb(): Promise<LicenseHubDb> {
-  const provider = process.env.LICENSE_HUB_DB_PROVIDER || "file";
+  const provider = resolveLicenseHubDbProvider();
 
   if (provider === "prisma") {
     return createPrismaDb();
