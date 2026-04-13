@@ -1,4 +1,4 @@
-import crypto from "node:crypto";
+import { Environment, Paddle } from "@paddle/paddle-node-sdk";
 
 import type { BillingEvent, BillingEventType } from "./billingEvents";
 import { getPaddleConfig } from "./env";
@@ -24,62 +24,87 @@ function asNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function timingSafeEquals(a: string, b: string): boolean {
-  const left = Buffer.from(a, "utf8");
-  const right = Buffer.from(b, "utf8");
-  if (left.length !== right.length) {
-    return false;
-  }
-  return crypto.timingSafeEqual(left, right);
+let paddleClient: Paddle | null = null;
+
+function getPaddleEnvironment() {
+  return getPaddleConfig().environment === "production" ? Environment.production : Environment.sandbox;
 }
 
-function parsePaddleSignature(header: string) {
-  const parsed = new Map<string, string[]>();
-  for (const part of header.split(";")) {
-    const [key, value] = part.trim().split("=");
-    if (!key || !value) {
-      continue;
-    }
-    const current = parsed.get(key) || [];
-    current.push(value);
-    parsed.set(key, current);
+function getPaddleClient(): Paddle {
+  if (!paddleClient) {
+    const config = getPaddleConfig();
+    paddleClient = new Paddle(config.apiKey || "pdl_webhook_verifier", {
+      environment: getPaddleEnvironment(),
+    });
   }
-  const ts = parsed.get("ts")?.[0] || null;
-  const h1 = parsed.get("h1") || [];
-  return {
-    ts,
-    h1,
-  };
+
+  return paddleClient;
 }
 
-export function verifyPaddleSignature(rawBody: string, headers: Headers): void {
+function getPaddleSignatureHeader(headers: Headers): string | null {
+  return headers.get("paddle-signature") || headers.get("Paddle-Signature");
+}
+
+function logPaddleWebhookDiagnostic(fields: {
+  signature_header?: "present" | "missing";
+  webhook_secret?: "exists" | "missing";
+  webhook_secret_prefix?: string | null;
+  event_type?: string | null;
+  notification_id?: string | null;
+  verify_result?: "success" | "failure";
+}) {
+  console.info(JSON.stringify(fields));
+}
+
+export async function verifyPaddleSignature(rawBody: string, headers: Headers): Promise<void> {
   const config = getPaddleConfig();
+  const signatureHeader = getPaddleSignatureHeader(headers);
+  const webhookSecretPrefix = config.webhookSecret ? config.webhookSecret.slice(0, 12) : null;
+
+  logPaddleWebhookDiagnostic({
+    signature_header: signatureHeader ? "present" : "missing",
+    webhook_secret: config.webhookSecret ? "exists" : "missing",
+    webhook_secret_prefix: webhookSecretPrefix,
+  });
+
   if (!config.webhookSecret) {
+    logPaddleWebhookDiagnostic({
+      webhook_secret: "missing",
+      webhook_secret_prefix: null,
+      verify_result: "failure",
+    });
     throw new Error("Missing required environment variable: PADDLE_WEBHOOK_SECRET");
   }
 
-  const header = headers.get("Paddle-Signature") || headers.get("paddle-signature");
-  if (!header) {
+  if (!signatureHeader) {
+    logPaddleWebhookDiagnostic({
+      signature_header: "missing",
+      webhook_secret: "exists",
+      webhook_secret_prefix: webhookSecretPrefix,
+      verify_result: "failure",
+    });
     throw new Error("missing Paddle-Signature header");
   }
 
-  const signature = parsePaddleSignature(header);
-  if (!signature.ts || signature.h1.length === 0) {
-    throw new Error("invalid Paddle-Signature header");
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-  const timestamp = Number(signature.ts);
-  if (!Number.isFinite(timestamp)) {
-    throw new Error("invalid Paddle-Signature timestamp");
-  }
-  if (Math.abs(now - timestamp) > config.webhookToleranceSeconds) {
-    throw new Error("stale Paddle webhook timestamp");
-  }
-
-  const signedPayload = `${signature.ts}:${rawBody}`;
-  const expected = crypto.createHmac("sha256", config.webhookSecret).update(signedPayload, "utf8").digest("hex");
-  if (!signature.h1.some((candidate) => timingSafeEquals(expected, candidate))) {
+  try {
+    const eventData = await getPaddleClient().webhooks.unmarshal(rawBody, config.webhookSecret, signatureHeader);
+    logPaddleWebhookDiagnostic({
+      signature_header: "present",
+      webhook_secret: "exists",
+      webhook_secret_prefix: webhookSecretPrefix,
+      event_type: eventData.eventType || null,
+      notification_id: eventData.notificationId || null,
+      verify_result: "success",
+    });
+  } catch {
+    logPaddleWebhookDiagnostic({
+      signature_header: "present",
+      webhook_secret: "exists",
+      webhook_secret_prefix: webhookSecretPrefix,
+      event_type: null,
+      notification_id: null,
+      verify_result: "failure",
+    });
     throw new Error("invalid Paddle webhook signature");
   }
 }

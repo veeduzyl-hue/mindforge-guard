@@ -166,7 +166,7 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
 }
 
 async function handlePaddleBillingWebhook(rawBody: string, headers: Headers) {
-  verifyPaddleSignature(rawBody, headers);
+  await verifyPaddleSignature(rawBody, headers);
 
   const providerConfig = getBillingProviderConfig();
   const db = await getLicenseHubDb();
