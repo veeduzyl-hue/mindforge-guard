@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/runtime-client"
+  engineType = "client"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -235,6 +237,7 @@ model Organization {
   ownerCustomer   Customer?            @relation("OrganizationOwner", fields: [ownerCustomerId], references: [id], onDelete: SetNull)
   members         OrganizationMember[]
   seatEntitlements SeatEntitlement[]
+  seatAssignments SeatAssignment[]
   activationRecords ActivationRecord[]
 
   @@index([ownerCustomerId])

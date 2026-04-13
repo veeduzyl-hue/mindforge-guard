@@ -13,6 +13,7 @@ apps/license-hub/.env.local
 apps/license-hub/.env
 packages/db/prisma/*.db
 packages/db/prisma/*.db-journal
+packages/db/generated/
 
 tooling/license/keys/guard_ed25519_private.pem
 tooling/license/keys/*.pem
