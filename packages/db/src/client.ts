@@ -3,10 +3,42 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import ws from "ws";
 
-if (!neonConfig.webSocketConstructor) {
-  neonConfig.webSocketConstructor = ws;
+type WsModule = typeof import("ws");
+
+let neonWebSocketConstructorPromise: Promise<NonNullable<typeof neonConfig.webSocketConstructor>> | null = null;
+
+function disableWsNativeAddons(): void {
+  process.env.WS_NO_BUFFER_UTIL = "1";
+  process.env.WS_NO_UTF_8_VALIDATE = "1";
+}
+
+function resolveWsWebSocketConstructor(
+  wsModule: WsModule
+): NonNullable<typeof neonConfig.webSocketConstructor> {
+  if (typeof wsModule.WebSocket === "function") {
+    return wsModule.WebSocket;
+  }
+
+  if (typeof wsModule.default === "function") {
+    return wsModule.default;
+  }
+
+  throw new Error("Unable to resolve ws WebSocket constructor for Neon");
+}
+
+async function ensureNeonWebSocketConstructor(): Promise<void> {
+  if (neonConfig.webSocketConstructor) {
+    return;
+  }
+
+  neonWebSocketConstructorPromise ??= (async () => {
+    disableWsNativeAddons();
+    const wsModule = await import("ws");
+    return resolveWsWebSocketConstructor(wsModule);
+  })();
+
+  neonConfig.webSocketConstructor = await neonWebSocketConstructorPromise;
 }
 
 export type OrderStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
@@ -1439,6 +1471,7 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 }
 
 async function createPrismaDb(): Promise<LicenseHubDb> {
+  await ensureNeonWebSocketConstructor();
   const prismaModule = await import("../generated/runtime-client/index.js");
   const [queryEngineRuntimeModule, queryEngineWasmModule] = await Promise.all([
     // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
