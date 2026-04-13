@@ -393,6 +393,19 @@ function requireDatabaseUrl(): string {
   return value;
 }
 
+function decodeBase64Wasm(base64: string): Uint8Array {
+  return Buffer.from(base64, "base64");
+}
+
+function createWasmModuleLoader(base64: string): () => Promise<WebAssembly.Module> {
+  let modulePromise: Promise<WebAssembly.Module> | null = null;
+
+  return async () => {
+    modulePromise ??= WebAssembly.compile(decodeBase64Wasm(base64));
+    return modulePromise;
+  };
+}
+
 function resolveLicenseHubDbProvider(): "file" | "prisma" {
   const configured = process.env.LICENSE_HUB_DB_PROVIDER;
   if (configured === "file" || configured === "prisma") {
@@ -1424,8 +1437,58 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 
 async function createPrismaDb(): Promise<LicenseHubDb> {
   const prismaModule = await import("../generated/runtime-client/index.js");
+  const [queryEngineRuntimeModule, queryEngineWasmModule] = await Promise.all([
+    import("@prisma/client/runtime/query_engine_bg.postgresql.js"),
+    import("@prisma/client/runtime/query_engine_bg.postgresql.wasm-base64.js"),
+  ]);
+  const [queryCompilerRuntimeModule, queryCompilerWasmModule] = await Promise.all([
+    import("@prisma/client/runtime/query_compiler_bg.postgresql.js"),
+    import("@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.js"),
+  ]);
+  const queryEngineRuntime = (queryEngineRuntimeModule.default ?? queryEngineRuntimeModule) as Record<
+    string,
+    unknown
+  >;
+  const queryEngineWasmBase64 =
+    queryEngineWasmModule.wasm ??
+    (queryEngineWasmModule.default as { wasm?: string } | undefined)?.wasm;
+  const queryCompilerRuntime = (queryCompilerRuntimeModule.default ?? queryCompilerRuntimeModule) as Record<
+    string,
+    unknown
+  >;
+  const queryCompilerWasmBase64 =
+    queryCompilerWasmModule.wasm ??
+    (queryCompilerWasmModule.default as { wasm?: string } | undefined)?.wasm;
+  if (!queryEngineWasmBase64 || !queryCompilerWasmBase64) {
+    throw new Error("Failed to load Prisma WASM runtime assets from @prisma/client/runtime");
+  }
+  const loadQueryEngineWasmModule = createWasmModuleLoader(queryEngineWasmBase64);
+  const loadQueryCompilerWasmModule = createWasmModuleLoader(queryCompilerWasmBase64);
   const adapter = new PrismaNeon({ connectionString: requireDatabaseUrl() });
-  const prisma = new prismaModule.PrismaClient({ adapter });
+  const prisma = new prismaModule.PrismaClient({
+    adapter,
+    __internal: {
+      configOverride: (config: Record<string, unknown>) => ({
+        ...config,
+        engineWasm: {
+          async getRuntime() {
+            return queryEngineRuntime;
+          },
+          async getQueryEngineWasmModule() {
+            return loadQueryEngineWasmModule();
+          },
+        },
+        compilerWasm: {
+          async getRuntime() {
+            return queryCompilerRuntime;
+          },
+          async getQueryCompilerWasmModule() {
+            return loadQueryCompilerWasmModule();
+          },
+        },
+      }),
+    },
+  } as any);
 
   return {
     async getWebhookEvent(provider, eventId) {
