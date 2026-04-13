@@ -93,10 +93,17 @@ Do not commit any of these values.
 1. Deploy the current `main` branch to the staging project.
 2. Bind the fixed staging domain.
 3. Write the staging environment variables.
-4. Confirm the staging root page responds on the final hostname.
-5. In Paddle sandbox, update the notification destination to the staging webhook URL.
-6. In Paddle sandbox, confirm success and cancel URLs point to the staging domain.
-7. Run the staging sandbox smoke checklist in `docs/release/staging-sandbox-smoke-checklist.md`.
+4. Initialize the staging database schema from repo root:
+
+```bash
+npm.cmd run db:generate
+npm.cmd run db:push
+```
+
+5. Confirm the staging root page responds on the final hostname.
+6. In Paddle sandbox, update the notification destination to the staging webhook URL.
+7. In Paddle sandbox, confirm success and cancel URLs point to the staging domain.
+8. Run the staging sandbox smoke checklist in `docs/release/staging-sandbox-smoke-checklist.md`.
 
 ## Exit criteria
 

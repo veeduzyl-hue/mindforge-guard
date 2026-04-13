@@ -9,6 +9,7 @@
   "scripts": {
     "pregenerate": "node -e \"require('node:fs').rmSync('./generated/runtime-client', { recursive: true, force: true })\"",
     "generate": "prisma generate --schema ./prisma/schema.prisma",
+    "db:push": "prisma db push --schema ./prisma/schema.prisma",
     "migrate:dev": "prisma migrate dev",
     "studio": "prisma studio"
   },

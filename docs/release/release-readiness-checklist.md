@@ -59,7 +59,8 @@ Use this checklist before a demo environment, internal handoff, or bounded produ
 
 - [ ] `npm install`
 - [ ] `npm run db:generate` when Prisma is used
-- [ ] `npm run db:migrate:dev` when Prisma is used
+- [ ] `npm run db:push` when initializing preview / staging Prisma storage
+- [ ] `npm run db:migrate:dev` only when intentionally authoring local Prisma schema changes
 - [ ] `npm run license-hub:dev` starts
 - [ ] Guard CLI help and version commands run
 

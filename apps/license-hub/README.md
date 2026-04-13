@@ -88,12 +88,19 @@ For Prisma-backed storage:
 
 1. set `LICENSE_HUB_DB_PROVIDER=prisma`
 2. set `DATABASE_URL`
-3. run:
+3. initialize the target database schema:
 
 ```bash
 npm.cmd run db:generate
-npm.cmd run db:migrate:dev
+npm.cmd run db:push
 ```
+
+Notes:
+
+- current License Hub schema is defined in `packages/db/prisma/schema.prisma`
+- the repository does not currently ship committed Prisma migrations for License Hub
+- use `npm.cmd run db:push` for preview / staging / first-time database initialization
+- use `npm.cmd run db:migrate:dev` only when intentionally authoring new local schema changes during development
 
 ## Run
 
