@@ -1,6 +1,13 @@
+import { neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import ws from "ws";
+
+if (!neonConfig.webSocketConstructor) {
+  neonConfig.webSocketConstructor = ws;
+}
 
 export type OrderStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
 export type LicenseStatus = "active" | "superseded" | "revoked" | "refund_revoked" | "expired";
@@ -376,6 +383,14 @@ function slugify(value: string): string {
 
 function defaultFileDbPath(): string {
   return path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json");
+}
+
+function requireDatabaseUrl(): string {
+  const value = process.env.DATABASE_URL;
+  if (!value) {
+    throw new Error("Missing required environment variable: DATABASE_URL");
+  }
+  return value;
 }
 
 function resolveLicenseHubDbProvider(): "file" | "prisma" {
@@ -1409,7 +1424,8 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 
 async function createPrismaDb(): Promise<LicenseHubDb> {
   const prismaModule = await import("../generated/runtime-client/index.js");
-  const prisma = new prismaModule.PrismaClient();
+  const adapter = new PrismaNeon({ connectionString: requireDatabaseUrl() });
+  const prisma = new prismaModule.PrismaClient({ adapter });
 
   return {
     async getWebhookEvent(provider, eventId) {
