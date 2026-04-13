@@ -393,8 +393,11 @@ function requireDatabaseUrl(): string {
   return value;
 }
 
-function decodeBase64Wasm(base64: string): Uint8Array {
-  return Buffer.from(base64, "base64");
+function decodeBase64Wasm(base64: string): ArrayBuffer {
+  const bytes = Buffer.from(base64, "base64");
+  const wasmBuffer = new Uint8Array(bytes.byteLength);
+  wasmBuffer.set(bytes);
+  return wasmBuffer.buffer;
 }
 
 function createWasmModuleLoader(base64: string): () => Promise<WebAssembly.Module> {
@@ -1438,11 +1441,15 @@ function mapOrderPatchForPrisma(patch: OrderUpdatePatch): Record<string, unknown
 async function createPrismaDb(): Promise<LicenseHubDb> {
   const prismaModule = await import("../generated/runtime-client/index.js");
   const [queryEngineRuntimeModule, queryEngineWasmModule] = await Promise.all([
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
     import("@prisma/client/runtime/query_engine_bg.postgresql.js"),
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
     import("@prisma/client/runtime/query_engine_bg.postgresql.wasm-base64.js"),
   ]);
   const [queryCompilerRuntimeModule, queryCompilerWasmModule] = await Promise.all([
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
     import("@prisma/client/runtime/query_compiler_bg.postgresql.js"),
+    // @ts-expect-error Prisma runtime internal entrypoints do not ship declaration files.
     import("@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.js"),
   ]);
   const queryEngineRuntime = (queryEngineRuntimeModule.default ?? queryEngineRuntimeModule) as Record<
