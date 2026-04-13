@@ -23,8 +23,11 @@ export function getLicenseIssuerConfig() {
 }
 
 export function getLicenseHubDbDefaults() {
+  const provider =
+    process.env.LICENSE_HUB_DB_PROVIDER ||
+    (process.env.VERCEL || process.env.NODE_ENV === "production" ? "prisma" : "file");
   return {
-    provider: process.env.LICENSE_HUB_DB_PROVIDER || "file",
+    provider,
     fileDbPath:
       process.env.LICENSE_HUB_FILE_DB_PATH ||
       path.join(process.cwd(), ".mindforge", "license-hub", "dev-db.json"),

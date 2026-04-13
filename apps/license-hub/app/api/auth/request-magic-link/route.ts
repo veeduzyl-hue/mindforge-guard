@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       ...(result.delivery.mode === "dev" && result.delivery.devMagicLink
         ? {
             devMagicLink: result.delivery.devMagicLink,
-            debugPath: result.delivery.debugPath,
+            ...(result.delivery.debugPath ? { debugPath: result.delivery.debugPath } : {}),
           }
         : {}),
     });

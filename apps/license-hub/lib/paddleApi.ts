@@ -13,6 +13,24 @@ export interface PaddleTransactionResponse {
   } | null;
 }
 
+export class PaddleApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message || `paddle_api_${status}`);
+    this.name = "PaddleApiError";
+    this.status = status;
+  }
+}
+
+function parseJsonSafely(value: string): unknown {
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return null;
+  }
+}
+
 export async function paddleApiRequest<T>(pathname: string, init?: RequestInit): Promise<T> {
   const config = getPaddleConfig();
   if (!config.apiKey) {
@@ -30,21 +48,27 @@ export async function paddleApiRequest<T>(pathname: string, init?: RequestInit):
     cache: "no-store",
   });
 
-  const payload = (await response.json()) as
+  const rawBody = await response.text();
+  const parsedPayload = parseJsonSafely(rawBody) as
     | PaddleApiResponse<T>
-    | { error?: { detail?: string; code?: string; type?: string } };
+    | { error?: { detail?: string; code?: string; type?: string } }
+    | null;
 
   if (!response.ok) {
     const detail =
-      "error" in payload && payload.error
-        ? payload.error.detail || payload.error.code || payload.error.type
-        : `paddle_api_${response.status}`;
-    throw new Error(detail || `paddle_api_${response.status}`);
+      parsedPayload && "error" in parsedPayload && parsedPayload.error
+        ? parsedPayload.error.detail || parsedPayload.error.code || parsedPayload.error.type
+        : rawBody.trim() || `paddle_api_${response.status}`;
+    throw new PaddleApiError(response.status, detail || `paddle_api_${response.status}`);
   }
 
-  if (!("data" in payload)) {
+  if (!parsedPayload) {
     throw new Error("invalid Paddle API response");
   }
 
-  return payload.data;
+  if (!("data" in parsedPayload)) {
+    throw new Error("invalid Paddle API response");
+  }
+
+  return parsedPayload.data;
 }
