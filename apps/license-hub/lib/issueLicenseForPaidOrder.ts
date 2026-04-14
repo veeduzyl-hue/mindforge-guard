@@ -12,6 +12,8 @@ interface IssueLicenseForPaidOrderInput {
   db: LicenseHubDb;
   customer: CustomerRecord;
   order: OrderRecord;
+  subjectEmail?: string;
+  edition?: string;
   issuerName: string;
   keyId: string;
   privateKeyPem: string;
@@ -48,20 +50,22 @@ export async function issueLicenseForPaidOrder(input: IssueLicenseForPaidOrderIn
   }
 
   const window = buildWindow(input);
+  const subjectEmail = input.subjectEmail || input.customer.email;
+  const edition = input.edition || input.order.edition;
   const payload = createUnsignedLicensePayload({
     version: 1,
     license_id: `lic_${crypto.randomUUID()}`,
     customer_id: input.customer.id,
     order_id: input.order.id,
     subject: {
-      email: input.customer.email,
+      email: subjectEmail,
     },
-    edition: input.order.edition,
+    edition,
     issued_at: new Date().toISOString(),
     not_before: window.notBefore,
     not_after: window.notAfter,
     status: "active",
-    entitlements: resolveEntitlementsForEdition(input.order.edition),
+    entitlements: resolveEntitlementsForEdition(edition),
     issuer: {
       name: input.issuerName,
       key_id: input.keyId,

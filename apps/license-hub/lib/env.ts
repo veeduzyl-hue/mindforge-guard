@@ -8,17 +8,33 @@ function requireEnv(name: string): string {
   return value;
 }
 
-function normalizePem(value: string): string {
+function wrapPem(label: string, base64Body: string): string {
+  const body = base64Body.replace(/\s+/g, "");
+  const lines = body.match(/.{1,64}/g) || [];
+  return [`-----BEGIN ${label}-----`, ...lines, `-----END ${label}-----`].join("\n");
+}
+
+function normalizePem(value: string, label: "PRIVATE KEY" | "PUBLIC KEY"): string {
   const trimmed = value.trim().replace(/^"(.*)"$/, "$1");
-  return trimmed.includes("\\n") ? trimmed.replace(/\\+n/g, "\n") : trimmed;
+  const normalized = trimmed.includes("\\n") ? trimmed.replace(/\\+n/g, "\n") : trimmed;
+
+  if (normalized.startsWith("-----BEGIN ")) {
+    return normalized;
+  }
+
+  if (/^[A-Za-z0-9+/=\s]+$/.test(normalized)) {
+    return wrapPem(label, normalized);
+  }
+
+  return normalized;
 }
 
 export function getLicenseIssuerConfig() {
   return {
     issuerName: process.env.LICENSE_ISSUER_NAME || "MindForge Licensing Authority",
     keyId: requireEnv("LICENSE_KEY_ID"),
-    privateKeyPem: normalizePem(requireEnv("LICENSE_PRIVATE_KEY_PEM")),
-    publicKeyPem: normalizePem(requireEnv("LICENSE_PUBLIC_KEY_PEM")),
+    privateKeyPem: normalizePem(requireEnv("LICENSE_PRIVATE_KEY_PEM"), "PRIVATE KEY"),
+    publicKeyPem: normalizePem(requireEnv("LICENSE_PUBLIC_KEY_PEM"), "PUBLIC KEY"),
   };
 }
 
