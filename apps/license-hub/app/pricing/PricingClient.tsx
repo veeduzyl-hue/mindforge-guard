@@ -152,7 +152,7 @@ export function PricingClient(input: {
             },
             settings: {
               successUrl: payload.checkout.success_url,
-              allowLogout: true,
+              allowLogout: false,
               variant: "one-page",
             },
           });
