@@ -4,6 +4,11 @@ import { getPaddleConfig } from "./env";
 import { paddleApiRequest, type PaddleTransactionResponse } from "./paddleApi";
 import { getPaddlePriceById, getPaddlePriceByKey, listPaddlePrices, type PaddlePriceDefinition } from "./paddlePrices";
 
+interface PaddleCustomerResponse {
+  id: string;
+  email: string;
+}
+
 function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
 }
@@ -30,6 +35,34 @@ function resolvePrice(input: { priceId?: string; priceKey?: string }): PaddlePri
   throw new Error("unsupported Paddle price");
 }
 
+function logPaddleCheckoutEmail(fields: {
+  purchase_email: string;
+  paddle_customer_email: string;
+  price_key: string;
+  edition: string;
+}) {
+  console.info(JSON.stringify(fields));
+}
+
+async function getPaddleCustomerByEmail(email: string): Promise<PaddleCustomerResponse | null> {
+  const customers = await paddleApiRequest<PaddleCustomerResponse[]>(`/customers?email=${encodeURIComponent(email)}`);
+  return customers[0] || null;
+}
+
+async function ensurePaddleCustomer(email: string): Promise<PaddleCustomerResponse> {
+  const existingCustomer = await getPaddleCustomerByEmail(email);
+  if (existingCustomer) {
+    return existingCustomer;
+  }
+
+  return paddleApiRequest<PaddleCustomerResponse>("/customers", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+    }),
+  });
+}
+
 export async function createPaddleCheckout(input: {
   buyerEmail: string;
   priceId?: string;
@@ -38,6 +71,14 @@ export async function createPaddleCheckout(input: {
   const buyerEmail = requireEmail(input.buyerEmail);
   const price = resolvePrice(input);
   const paddle = getPaddleConfig();
+  const paddleCustomer = await ensurePaddleCustomer(buyerEmail);
+
+  logPaddleCheckoutEmail({
+    purchase_email: buyerEmail,
+    paddle_customer_email: paddleCustomer.email,
+    price_key: price.key,
+    edition: price.edition,
+  });
 
   const transaction = await paddleApiRequest<PaddleTransactionResponse>("/transactions", {
     method: "POST",
@@ -49,6 +90,7 @@ export async function createPaddleCheckout(input: {
         },
       ],
       collection_mode: "automatic",
+      customer_id: paddleCustomer.id,
       custom_data: {
         integration: "mindforge_guard",
         integration_phase: "paddle_phase1",

@@ -19,6 +19,9 @@ declare global {
       Checkout: {
         open(input: {
           transactionId: string;
+          customer?: {
+            email?: string;
+          };
           settings?: {
             successUrl?: string;
             allowLogout?: boolean;
@@ -144,6 +147,9 @@ export function PricingClient(input: {
         try {
           window.Paddle.Checkout.open({
             transactionId: payload.checkout.transaction_id,
+            customer: {
+              email: buyerEmail.trim().toLowerCase(),
+            },
             settings: {
               successUrl: payload.checkout.success_url,
               allowLogout: true,
