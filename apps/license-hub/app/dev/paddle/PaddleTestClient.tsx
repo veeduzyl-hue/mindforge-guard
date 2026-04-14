@@ -123,7 +123,7 @@ export function PaddleTestClient(input: {
         transactionId: payload.checkout.transaction_id,
         settings: {
           successUrl: payload.checkout.success_url,
-          allowLogout: true,
+          allowLogout: false,
           variant: "one-page",
         },
       });
