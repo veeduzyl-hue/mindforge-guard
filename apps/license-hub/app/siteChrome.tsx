@@ -56,9 +56,11 @@ export const secondaryButtonStyle: CSSProperties = {
   background: "transparent",
 };
 
+export const pricingPageHref = "/pricing";
+
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/pricing", label: "Pricing" },
+  { href: pricingPageHref, label: "Pricing" },
   { href: "/docs", label: "Docs" },
   { href: "/support", label: "Support" },
   { href: "/contact", label: "Contact" },

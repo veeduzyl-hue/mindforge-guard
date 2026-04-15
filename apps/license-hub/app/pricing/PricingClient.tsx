@@ -40,6 +40,7 @@ type CheckoutApiPayload = {
   checkout?: {
     transaction_id: string;
     success_url: string;
+    cancel_url?: string;
     checkout_url?: string | null;
   };
 };
@@ -81,10 +82,16 @@ export function PricingClient(input: {
   const [error, setError] = useState<string | null>(null);
   const [checkoutState, setCheckoutState] = useState("idle");
   const checkoutCompletedRef = useRef(false);
+  const hostedFallbackStartedRef = useRef(false);
+  const activeCheckoutRef = useRef<{
+    transactionId: string;
+    checkoutUrl: string | null;
+  } | null>(null);
   const initializedRef = useRef(false);
 
   useEffect(() => {
     checkoutCompletedRef.current = false;
+    hostedFallbackStartedRef.current = false;
   }, [buyerEmail]);
 
   useEffect(() => {
@@ -105,14 +112,37 @@ export function PricingClient(input: {
       eventCallback(event) {
         if (event?.name === "checkout.completed") {
           checkoutCompletedRef.current = true;
+          hostedFallbackStartedRef.current = false;
+          activeCheckoutRef.current = null;
           setCheckoutState("completed");
         }
+
+        if (event?.name === "checkout.payment.error" || event?.name === "checkout.error") {
+          redirectToHostedCheckout("payment error in overlay");
+          return;
+        }
+
         if (event?.name === "checkout.closed" && !checkoutCompletedRef.current) {
-          window.location.href = `${input.cancelUrl}?reason=closed`;
+          redirectToHostedCheckout("overlay closed before payment completion");
         }
       },
     });
     initializedRef.current = true;
+  }
+
+  function redirectToHostedCheckout(reason: string) {
+    const activeCheckout = activeCheckoutRef.current;
+    if (!activeCheckout?.checkoutUrl || hostedFallbackStartedRef.current) {
+      if (!activeCheckout?.checkoutUrl && !checkoutCompletedRef.current) {
+        window.location.href = `${input.cancelUrl}?reason=closed`;
+      }
+      return;
+    }
+
+    hostedFallbackStartedRef.current = true;
+    setError(`Overlay checkout could not finish (${reason}). Switching to the secure hosted checkout page...`);
+    setCheckoutState("switching_to_hosted");
+    window.location.href = activeCheckout.checkoutUrl;
   }
 
   async function beginCheckout(offer: CommercialOffer) {
@@ -129,6 +159,8 @@ export function PricingClient(input: {
     setBusySlug(offer.slug);
     setCheckoutState("creating");
     checkoutCompletedRef.current = false;
+    hostedFallbackStartedRef.current = false;
+    activeCheckoutRef.current = null;
 
     try {
       const response = await fetch("/api/paddle/checkout", {
@@ -149,6 +181,10 @@ export function PricingClient(input: {
         throw new Error(payload.error || "Unable to create Paddle checkout");
       }
 
+      activeCheckoutRef.current = {
+        transactionId: payload.checkout.transaction_id,
+        checkoutUrl: payload.checkout.checkout_url || null,
+      };
       const checkoutUrl = payload.checkout.checkout_url || null;
 
       if (input.clientToken && window.Paddle) {
@@ -171,11 +207,14 @@ export function PricingClient(input: {
           if (!checkoutUrl) {
             throw openError;
           }
+          redirectToHostedCheckout("overlay launch failed");
+          return;
         }
       }
 
       if (checkoutUrl) {
-        setCheckoutState("redirecting");
+        setError("Embedded checkout is unavailable. Switching to the secure hosted checkout page...");
+        setCheckoutState("switching_to_hosted");
         window.location.href = checkoutUrl;
         return;
       }
@@ -186,6 +225,7 @@ export function PricingClient(input: {
 
       throw new Error("Paddle.js has not loaded yet, and no hosted checkout URL was returned.");
     } catch (caughtError) {
+      activeCheckoutRef.current = null;
       setCheckoutState("error");
       setError(caughtError instanceof Error ? caughtError.message : String(caughtError));
     } finally {

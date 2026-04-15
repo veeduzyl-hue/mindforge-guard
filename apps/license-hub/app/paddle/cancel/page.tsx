@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../../siteChrome";
+import { SiteChrome, panelStyle, pricingPageHref, primaryButtonStyle, secondaryButtonStyle } from "../../siteChrome";
 
 export default async function PaddleCancelPage(props: {
   searchParams?: Promise<{ reason?: string }>;
@@ -24,7 +24,7 @@ export default async function PaddleCancelPage(props: {
           <li>Use Support if you expected a paid order but the billing state now looks inconsistent.</li>
         </ul>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-          <Link href="/pricing" style={primaryButtonStyle}>
+          <Link href={pricingPageHref} style={primaryButtonStyle}>
             Return to pricing
           </Link>
           <Link href="/contact" style={secondaryButtonStyle}>
