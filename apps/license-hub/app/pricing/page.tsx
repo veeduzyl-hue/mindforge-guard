@@ -19,8 +19,8 @@ export default function PricingPage() {
         <p style={{ margin: 0, fontWeight: 700 }}>What this page does</p>
         <p style={{ margin: 0, lineHeight: 1.65, color: "#5b5444" }}>
           Community does not go through payment. Pro and Pro+ map to the verified Paddle-hosted checkout catalog.
-          Enterprise stays contact-led. Nothing here implies a fully launched control plane, team billing platform, or
-          live-ready production checkout.
+          Enterprise stays contact-led. This page is limited to commercial intake, signed license delivery, and
+          account visibility for the existing License Hub surface.
         </p>
       </section>
 

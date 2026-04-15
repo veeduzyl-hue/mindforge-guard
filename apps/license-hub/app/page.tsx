@@ -17,7 +17,7 @@ export default function HomePage() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>What is live on this surface</h2>
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-            <li>Verified sandbox checkout wiring for four commercial catalog entries</li>
+            <li>Verified hosted checkout entry for four commercial catalog entries</li>
             <li>Signed webhook fulfillment into orders, billing, portal, and downloadable licenses</li>
             <li>Local Guard CLI verify, install, license status, and guard status</li>
           </ul>
@@ -26,9 +26,9 @@ export default function HomePage() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>What is not being claimed</h2>
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-            <li>No live-ready production checkout promise</li>
             <li>No team, seat, org, or dashboard platform launch claim</li>
             <li>No authority expansion into the Guard CLI main path</li>
+            <li>No control-plane takeover or autonomous execution claim</li>
           </ul>
         </article>
       </section>
