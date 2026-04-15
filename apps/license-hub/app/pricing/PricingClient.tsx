@@ -44,6 +44,15 @@ type CheckoutApiPayload = {
   };
 };
 
+type CheckoutOffer = CommercialOffer & {
+  kind: "paddle_checkout";
+  priceKey: string;
+};
+
+function isCheckoutOffer(offer: CommercialOffer): offer is CheckoutOffer {
+  return offer.kind === "paddle_checkout" && typeof offer.priceKey === "string" && offer.priceKey.length > 0;
+}
+
 async function readCheckoutApiPayload(response: Response): Promise<CheckoutApiPayload> {
   const contentType = response.headers.get("content-type") || "";
   const rawBody = await response.text();
@@ -184,6 +193,111 @@ export function PricingClient(input: {
     }
   }
 
+  function requireCheckoutOffer(priceKey: string): CheckoutOffer {
+    const offer = input.offers.find((candidate) => isCheckoutOffer(candidate) && candidate.priceKey === priceKey);
+    if (!offer || !isCheckoutOffer(offer)) {
+      throw new Error(`Missing checkout offer for ${priceKey}`);
+    }
+    return offer;
+  }
+
+  const proMonthly = requireCheckoutOffer("pro_monthly");
+  const proYearly = requireCheckoutOffer("pro_annual");
+  const proPlusMonthly = requireCheckoutOffer("pro_plus_monthly");
+  const proPlusYearly = requireCheckoutOffer("pro_plus_annual");
+
+  const cards = [
+    {
+      slug: "community",
+      eyebrow: "Community",
+      title: "Community",
+      summary: "Free for open-source and repository-level use when commercial checkout is not needed.",
+      bullets: [
+        "Current governance state",
+        "Policy validation and audit baseline",
+        "Snapshot and action classification",
+        "No commercial checkout or commercial license delivery",
+      ],
+      actions: [
+        {
+          kind: "link" as const,
+          href: "/docs",
+          label: "Read docs",
+          tone: "secondary" as const,
+        },
+      ],
+    },
+    {
+      slug: "pro",
+      eyebrow: "Commercial",
+      title: "Pro",
+      summary: "For individual developers and small teams that need commercial access and governance trend visibility.",
+      bullets: [
+        "Everything in Community",
+        "Drift timeline",
+        "Commercial license delivery",
+        "Account and order visibility",
+      ],
+      actions: [
+        {
+          kind: "checkout" as const,
+          offer: proMonthly,
+          label: "Buy Pro Monthly \u2014 $19 / month",
+        },
+        {
+          kind: "checkout" as const,
+          offer: proYearly,
+          label: "Buy Pro Yearly \u2014 $199 / year",
+        },
+      ],
+    },
+    {
+      slug: "pro-plus",
+      eyebrow: "Commercial",
+      title: "Pro+",
+      summary: "For teams that need deeper comparison and correlation signals in commercial use.",
+      bullets: [
+        "Everything in Pro",
+        "Drift compare",
+        "Assoc correlate",
+        "Deeper change and signal analysis",
+      ],
+      actions: [
+        {
+          kind: "checkout" as const,
+          offer: proPlusMonthly,
+          label: "Buy Pro+ Monthly \u2014 $49 / month",
+        },
+        {
+          kind: "checkout" as const,
+          offer: proPlusYearly,
+          label: "Buy Pro+ Yearly \u2014 $499 / year",
+        },
+      ],
+    },
+    {
+      slug: "enterprise",
+      eyebrow: "Enterprise",
+      title: "Enterprise",
+      summary:
+        "For procurement-led adoption, organizational rollout, and commercial coordination beyond self-serve checkout.",
+      bullets: [
+        "Contact-led purchasing",
+        "Organizational adoption path",
+        "Commercial coordination",
+        "Not sold through the current self-serve checkout",
+      ],
+      actions: [
+        {
+          kind: "link" as const,
+          href: "/contact",
+          label: "Contact sales",
+          tone: "primary" as const,
+        },
+      ],
+    },
+  ] as const;
+
   return (
     <>
       <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" strategy="afterInteractive" onLoad={initializePaddle} />
@@ -207,12 +321,13 @@ export function PricingClient(input: {
           />
         </label>
         <p style={{ margin: 0, color: "#5b5444" }}>
-          Use the same email later for <Link href="/login">License Hub login</Link>, license downloads, and account
-          billing lookup.
+          Use the same email later for <Link href="/login">account access</Link> and commercial purchase visibility.
         </p>
-        <p style={{ margin: 0, color: "#5b5444" }}>
-          Checkout state: <strong>{checkoutState}</strong> | Environment: <strong>{input.environment}</strong>
-        </p>
+        {checkoutState !== "idle" ? (
+          <p style={{ margin: 0, color: "#5b5444" }}>
+            Checkout status: <strong>{checkoutState}</strong>
+          </p>
+        ) : null}
         {error ? (
           <p
             role="alert"
@@ -232,14 +347,13 @@ export function PricingClient(input: {
         ) : null}
       </section>
 
-      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-        {input.offers.map((offer) => {
-          const isPaid = offer.kind === "paddle_checkout";
-          const isBusy = busySlug === offer.slug;
+      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
+        {cards.map((card) => {
+          const isCommercialCard = card.actions.some((action) => action.kind === "checkout");
 
           return (
             <article
-              key={offer.slug}
+              key={card.slug}
               style={{
                 display: "grid",
                 gap: 14,
@@ -248,82 +362,76 @@ export function PricingClient(input: {
                 background: "#ffffff",
                 border: "1px solid #d8ccae",
                 boxShadow: "0 12px 32px rgba(46, 38, 20, 0.08)",
+                alignContent: "start",
               }}
             >
               <div style={{ display: "grid", gap: 6 }}>
                 <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
-                  {offer.editionLabel}
+                  {card.eyebrow}
                 </p>
-                <h2 style={{ margin: 0, fontSize: 28 }}>{offer.title}</h2>
-                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>{offer.summary}</p>
-              </div>
-
-              <div style={{ display: "grid", gap: 4, color: "#3e382b" }}>
-                {offer.priceDisplay ? (
-                  <div style={{ fontSize: 26, fontWeight: 800, color: "#1f3b63" }}>{offer.priceDisplay}</div>
-                ) : null}
-                <div>Billing interval: {offer.billingIntervalLabel}</div>
-                <div>Delivery: {offer.deliveryLabel}</div>
-                {offer.priceId ? <div style={{ color: "#7b715d", fontSize: 12 }}>Verified checkout wiring is centralized in server config.</div> : null}
+                <h2 style={{ margin: 0, fontSize: 28 }}>{card.title}</h2>
+                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>{card.summary}</p>
               </div>
 
               <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
-                {offer.bullets.map((bullet) => (
+                {card.bullets.map((bullet) => (
                   <li key={bullet}>{bullet}</li>
                 ))}
               </ul>
 
-              {offer.kind === "paddle_checkout" ? (
-                <button
-                  type="button"
-                  onClick={() => void beginCheckout(offer)}
-                  disabled={isBusy}
-                  style={{
-                    padding: "13px 16px",
-                    borderRadius: 12,
-                    border: "none",
-                    background: "#1f3b63",
-                    color: "#ffffff",
-                    fontWeight: 700,
-                    cursor: isBusy ? "progress" : "pointer",
-                  }}
-                >
-                  {isBusy ? "Starting checkout..." : offer.ctaLabel}
-                </button>
-              ) : null}
+              <div style={{ display: "grid", gap: 10, marginTop: "auto" }}>
+                {card.actions.map((action) => {
+                  if (action.kind === "checkout") {
+                    const isBusy = busySlug === action.offer.slug;
 
-              {offer.kind === "community" ? (
-                <Link
-                  href="/docs"
-                  style={{
-                    display: "inline-block",
-                    padding: "13px 16px",
-                    borderRadius: 12,
-                    border: "1px solid #c4b79d",
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 700,
-                  }}
-                >
-                  {offer.ctaLabel}
-                </Link>
-              ) : null}
+                    return (
+                      <button
+                        key={action.label}
+                        type="button"
+                        onClick={() => void beginCheckout(action.offer)}
+                        disabled={isBusy}
+                        style={{
+                          padding: "13px 16px",
+                          borderRadius: 12,
+                          border: "none",
+                          background: "#1f3b63",
+                          color: "#ffffff",
+                          fontWeight: 700,
+                          cursor: isBusy ? "progress" : "pointer",
+                          textAlign: "left",
+                        }}
+                      >
+                        {isBusy ? "Starting checkout..." : action.label}
+                      </button>
+                    );
+                  }
 
-              {offer.kind === "contact" ? (
-                <Link
-                  href="/contact"
-                  style={{
-                    display: "inline-block",
-                    padding: "13px 16px",
-                    borderRadius: 12,
-                    border: "1px solid #c4b79d",
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 700,
-                  }}
-                >
-                  {offer.ctaLabel}
-                </Link>
+                  return (
+                    <Link
+                      key={action.label}
+                      href={action.href}
+                      style={{
+                        display: "inline-block",
+                        padding: "13px 16px",
+                        borderRadius: 12,
+                        border: action.tone === "primary" ? "none" : "1px solid #c4b79d",
+                        textDecoration: "none",
+                        color: action.tone === "primary" ? "#ffffff" : "#3e382b",
+                        fontWeight: 700,
+                        background: action.tone === "primary" ? "#1f3b63" : "transparent",
+                        textAlign: "left",
+                      }}
+                    >
+                      {action.label}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {isCommercialCard ? (
+                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: "#7b715d" }}>
+                  Self-serve checkout opens from the buttons above and keeps the existing purchase wiring unchanged.
+                </p>
               ) : null}
             </article>
           );

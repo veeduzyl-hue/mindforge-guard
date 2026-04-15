@@ -11,16 +11,16 @@ export default function PricingPage() {
 
   return (
     <SiteChrome
-      eyebrow="Commercial Intake"
+      eyebrow="Pricing"
       title="Pricing"
-      lede="Choose one of the four verified commercial checkout paths, then receive a signed license through License Hub for local Guard CLI verification, installation, and status checks."
+      lede="Choose Community, Pro, Pro+, or Enterprise based on the level of commercial access and governance visibility you need. Monthly and yearly billing live inside Pro and Pro+ once the edition is clear."
     >
       <section style={{ ...subtlePanelStyle, display: "grid", gap: 10 }}>
-        <p style={{ margin: 0, fontWeight: 700 }}>What this page does</p>
+        <p style={{ margin: 0, fontWeight: 700 }}>Choose the edition first</p>
         <p style={{ margin: 0, lineHeight: 1.65, color: "#5b5444" }}>
-          Community does not go through payment. Pro and Pro+ map to the verified Paddle-hosted checkout catalog.
-          Enterprise stays contact-led. This page is limited to commercial intake, signed license delivery, and
-          account visibility for the existing License Hub surface.
+          Community is documentation-led, Pro and Pro+ are self-serve commercial plans, and Enterprise stays
+          contact-led. The page is intentionally organized around plan differences first so monthly versus yearly is a
+          second decision, not the first one.
         </p>
       </section>
 
@@ -34,33 +34,30 @@ export default function PricingPage() {
 
       <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         <div style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>After purchase</h2>
+          <h2 style={{ marginTop: 0 }}>Need help choosing?</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            A successful checkout hands off to signed webhook fulfillment, then License Hub exposes the order, billing
-            state, downloadable license JSON, and portal/account visibility.
+            Start with docs if you are staying on the community path. Use support if you need help deciding between Pro
+            and Pro+, or if you have questions about an existing commercial purchase.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link href="/paddle/success" style={secondaryButtonStyle}>
-              Success flow
+            <Link href="/docs" style={secondaryButtonStyle}>
+              Read docs
             </Link>
-            <Link href="/login" style={secondaryButtonStyle}>
-              License Hub login
+            <Link href="/support" style={secondaryButtonStyle}>
+              Support
             </Link>
           </div>
         </div>
 
         <div style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>Need a hand?</h2>
+          <h2 style={{ marginTop: 0 }}>Enterprise conversations</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            Use Support for billing, download, install, refund, or cancellation questions. Use Contact for sales,
-            rollout, or procurement conversations.
+            Procurement-led rollout, organization-wide adoption, and commercial coordination beyond self-serve checkout
+            still run through the contact path.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link href="/support" style={primaryButtonStyle}>
-              Support
-            </Link>
-            <Link href="/contact" style={secondaryButtonStyle}>
-              Contact
+            <Link href="/contact" style={primaryButtonStyle}>
+              Contact sales
             </Link>
           </div>
         </div>
