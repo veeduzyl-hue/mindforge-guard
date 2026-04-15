@@ -14,7 +14,7 @@ export default function RefundPolicyPage() {
           <h2 style={{ marginTop: 0 }}>Policy owner and effective date</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             Policy owner: <strong>[Legal Entity Name]</strong>. Effective date: <strong>[Effective Date]</strong>.
-            Billing contact: <strong>billing@your-domain</strong>.
+            Billing contact: <strong>billing@mail.mindforge.run</strong>.
           </p>
         </article>
 
@@ -32,7 +32,7 @@ export default function RefundPolicyPage() {
           <h2 style={{ marginTop: 0 }}>How to request a refund</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             Start from account billing or Support, then include the purchase email and order or transaction reference.
-            Refund requests should be sent to <strong>billing@your-domain</strong> so the request remains tied to the
+            Refund requests should be sent to <strong>billing@mail.mindforge.run</strong> so the request remains tied to the
             recorded billing lifecycle.
           </p>
         </article>
