@@ -19,7 +19,7 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Include company name, expected users, and timeline</li>
             <li>Enterprise does not use the current self-serve buy buttons</li>
-            <li>Route these requests to <strong>sales@your-domain</strong></li>
+            <li>Route these requests to <strong>sales@mail.mindforge.run</strong></li>
           </ul>
         </article>
 
@@ -32,7 +32,7 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Use the same email that completed checkout</li>
             <li>Reference your order, transaction, or license ID when possible</li>
-            <li>Route these requests to <strong>support@your-domain</strong></li>
+            <li>Route these requests to <strong>support@mail.mindforge.run</strong></li>
           </ul>
         </article>
 
@@ -44,7 +44,7 @@ export default function ContactPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Refund and cancellation are different requests</li>
             <li>Refunds can revoke the associated commercial license</li>
-            <li>Route these requests to <strong>billing@your-domain</strong></li>
+            <li>Route these requests to <strong>billing@mail.mindforge.run</strong></li>
           </ul>
         </article>
       </section>
@@ -52,13 +52,13 @@ export default function ContactPage() {
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
         <h2 style={{ margin: 0 }}>Published contact structure</h2>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
-          Replace the placeholder mailbox names before live, but keep the three-lane structure so support, billing, and
-          sales remain clearly separated in the public surface and internal routing.
+          Keep the three-lane structure so support, billing, and sales remain clearly separated in the public surface
+          and internal routing.
         </p>
         <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "#5b5444" }}>
-          <li><strong>sales@your-domain</strong> for enterprise and commercial packaging</li>
-          <li><strong>support@your-domain</strong> for portal, download, and install help</li>
-          <li><strong>billing@your-domain</strong> for refund, cancellation, and invoice review</li>
+          <li><strong>sales@mail.mindforge.run</strong> for enterprise and commercial packaging</li>
+          <li><strong>support@mail.mindforge.run</strong> for portal, download, and install help</li>
+          <li><strong>billing@mail.mindforge.run</strong> for refund, cancellation, and invoice review</li>
         </ul>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <Link href="/support" style={primaryButtonStyle}>

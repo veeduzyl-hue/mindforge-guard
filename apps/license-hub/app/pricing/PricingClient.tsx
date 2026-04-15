@@ -259,6 +259,9 @@ export function PricingClient(input: {
               </div>
 
               <div style={{ display: "grid", gap: 4, color: "#3e382b" }}>
+                {offer.priceDisplay ? (
+                  <div style={{ fontSize: 26, fontWeight: 800, color: "#1f3b63" }}>{offer.priceDisplay}</div>
+                ) : null}
                 <div>Billing interval: {offer.billingIntervalLabel}</div>
                 <div>Delivery: {offer.deliveryLabel}</div>
                 {offer.priceId ? <div style={{ color: "#7b715d", fontSize: 12 }}>Verified checkout wiring is centralized in server config.</div> : null}

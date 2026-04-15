@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           <h2 style={{ marginTop: 0 }}>Controller and contact</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             Data controller: <strong>[Legal Entity Name]</strong>. Effective date: <strong>[Effective Date]</strong>.
-            Privacy contact: <strong>privacy@your-domain</strong>.
+            Privacy contact: <strong>privacy@mail.mindforge.run</strong>.
           </p>
         </article>
 
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           <h2 style={{ marginTop: 0 }}>Requests and questions</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             Replace this placeholder with the final process for privacy access, correction, deletion, and support
-            requests. Default contact: <strong>privacy@your-domain</strong>.
+            requests. Default contact: <strong>privacy@mail.mindforge.run</strong>.
           </p>
         </article>
       </section>

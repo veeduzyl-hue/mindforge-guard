@@ -19,7 +19,7 @@ export default function SupportPage() {
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             <li>Confirm the purchase email used at checkout</li>
             <li>Include the order or transaction reference when available</li>
-            <li>Use <strong>billing@your-domain</strong> for refunds, cancellations, invoice questions, or duplicate charges</li>
+            <li>Use <strong>billing@mail.mindforge.run</strong> for refunds, cancellations, invoice questions, or duplicate charges</li>
           </ul>
         </article>
 
@@ -33,7 +33,7 @@ export default function SupportPage() {
             <li>Login with the purchase email</li>
             <li>Download the latest signed license JSON</li>
             <li>Run local CLI verify, install, and status commands</li>
-            <li>Use <strong>support@your-domain</strong> for portal access, download, or install help</li>
+            <li>Use <strong>support@mail.mindforge.run</strong> for portal access, download, or install help</li>
           </ul>
         </article>
 
@@ -71,13 +71,13 @@ export default function SupportPage() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Support routing</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            Replace the placeholder addresses below with the final published mailboxes before live. Keep the routing
-            structure intact so billing, license support, and sales requests do not collapse into one ambiguous lane.
+            Use the published mailboxes below so billing, license support, and sales requests stay in distinct routing
+            lanes.
           </p>
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-            <li><strong>support@your-domain</strong> for account, portal, download, and install support</li>
-            <li><strong>billing@your-domain</strong> for refunds, cancellations, invoices, and charge questions</li>
-            <li><strong>sales@your-domain</strong> for enterprise, procurement, and rollout timing</li>
+            <li><strong>support@mail.mindforge.run</strong> for account, portal, download, and install support</li>
+            <li><strong>billing@mail.mindforge.run</strong> for refunds, cancellations, invoices, and charge questions</li>
+            <li><strong>sales@mail.mindforge.run</strong> for enterprise, procurement, and rollout timing</li>
           </ul>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             <Link href="/contact" style={primaryButtonStyle}>
