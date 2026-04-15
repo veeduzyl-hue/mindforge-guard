@@ -7,14 +7,14 @@ export default function DocsPage() {
     <SiteChrome
       eyebrow="Commercial Notes"
       title="Docs"
-      lede="This short note captures the current commercial delivery boundary: sandbox checkout is validated, License Hub fulfillment is working, and local Guard CLI verification remains authoritative."
+      lede="This short note captures the current commercial delivery boundary: hosted checkout intake, License Hub fulfillment, signed license delivery, and local Guard CLI verification remain bounded and authoritative."
     >
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <h2 style={{ margin: 0 }}>Current stage</h2>
         <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-          <li>Paddle sandbox hosted checkout has been validated end to end.</li>
+          <li>Hosted checkout intake is wired to the four commercial catalog entries.</li>
           <li>Official webhook fulfillment, order updates, license issuance, and CLI install flow are working.</li>
-          <li>The public sales surface is still pre-live and should not be described as production-ready checkout.</li>
+          <li>The public sales surface is limited to commercial intake, support, legal, and account or license delivery.</li>
         </ul>
       </section>
 
@@ -29,11 +29,11 @@ export default function DocsPage() {
         </article>
 
         <article style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>Before live</h2>
+          <h2 style={{ marginTop: 0 }}>Operational expectations</h2>
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-            <li>Stable staging or production ingress instead of quick tunnel infrastructure</li>
-            <li>Live Paddle catalog, live credentials, and final webhook destination management</li>
-            <li>Published support mailbox and finalized legal copy review</li>
+            <li>Published pricing, support, refund, privacy, and terms pages stay aligned with the live commercial surface.</li>
+            <li>Paddle catalog, credentials, and notification destination stay synchronized with the deployed environment.</li>
+            <li>Support, legal, and billing handling remain bounded to the current License Hub commercial scope.</li>
           </ul>
         </article>
       </section>

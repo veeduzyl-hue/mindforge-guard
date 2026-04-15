@@ -120,8 +120,9 @@ export function SiteChrome(input: {
               color: "#5b4720",
             }}
           >
-            Sandbox checkout is validated, but this surface is not yet live-ready. It is a bounded commercial intake
-            layer for License Hub delivery, signed license downloads, and local Guard CLI verification only.
+            MindForge License Hub is the bounded production intake and delivery surface for commercial licensing. It
+            covers hosted checkout entry, signed license delivery, account visibility, and local Guard CLI
+            verification without expanding authority into the Guard main path.
           </div>
         </header>
 

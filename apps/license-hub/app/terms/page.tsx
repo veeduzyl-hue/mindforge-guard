@@ -5,14 +5,15 @@ export default function TermsPage() {
     <SiteChrome
       eyebrow="Legal"
       title="Terms"
-      lede="These terms describe the minimum commercial boundary for MindForge Guard and License Hub. They are intended for formal review before live launch and do not describe a broader control plane, platform, or fully launched enterprise billing system."
+      lede="These terms describe the minimum commercial boundary for MindForge Guard and License Hub. They apply to the bounded commercial delivery surface and do not describe a broader control plane, platform, or enterprise billing system."
     >
       <section style={{ display: "grid", gap: 18 }}>
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Provider and effective date</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            These terms are provided by <strong>[Legal Entity Name]</strong> and take effect on <strong>[Effective Date]</strong>.
-            Contact: <strong>legal@your-domain</strong>.
+            These terms govern the commercial delivery surface made available through MindForge License Hub and apply
+            when a customer purchases, accesses, or downloads commercial license materials through this site. Use the
+            support or contact channels on this site for billing or legal questions related to this surface.
           </p>
         </article>
 
@@ -37,7 +38,7 @@ export default function TermsPage() {
           <h2 style={{ marginTop: 0 }}>Prohibited use</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
             You may not misrepresent the commercial delivery surface as granting rights beyond the purchased license,
-            bypass account or billing controls, or present this current pre-live commercial surface as a fully launched
+            bypass account or billing controls, or present this bounded commercial surface as a fully launched
             enterprise control plane.
           </p>
         </article>
@@ -45,9 +46,9 @@ export default function TermsPage() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Disclaimer</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            The current commercial surface is provided on a bounded, evolving basis. Sandbox validation does not mean
-            the checkout, support, or deployment path is live-ready for production payments. Features not explicitly
-            described in the current commercial surface are not promised.
+            The current commercial surface is provided on a bounded basis. Its scope is limited to checkout intake,
+            account and portal visibility, signed license delivery, and related billing lifecycle handling. Features
+            not explicitly described in the current commercial surface are not promised.
           </p>
         </article>
 
@@ -64,9 +65,9 @@ export default function TermsPage() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Governing law and disputes</h2>
           <p style={{ color: "#5b5444", lineHeight: 1.65 }}>
-            These terms should identify the governing law, venue, and dispute handling process before live launch.
-            Replace this placeholder with the approved clause for <strong>[Jurisdiction]</strong> and the agreed
-            escalation or dispute process.
+            Commercial disputes and escalation should follow the governing terms, order record, and support handling
+            path associated with the relevant purchase. Nothing on this page expands the commercial surface beyond the
+            bounded License Hub delivery path.
           </p>
         </article>
       </section>
