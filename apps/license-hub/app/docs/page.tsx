@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
+import { SiteChrome, panelStyle, pricingPageHref, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
 
 export default function DocsPage() {
   return (
@@ -39,7 +39,7 @@ export default function DocsPage() {
       </section>
 
       <section style={{ ...panelStyle, display: "flex", flexWrap: "wrap", gap: 12 }}>
-        <Link href="/pricing" style={primaryButtonStyle}>
+        <Link href={pricingPageHref} style={primaryButtonStyle}>
           Pricing
         </Link>
         <Link href="/support" style={secondaryButtonStyle}>

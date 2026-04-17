@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
+import { SiteChrome, panelStyle, pricingPageHref, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
 
 export default function SupportPage() {
   return (
@@ -83,7 +83,7 @@ export default function SupportPage() {
             <Link href="/contact" style={primaryButtonStyle}>
               Contact
             </Link>
-            <Link href="/pricing" style={secondaryButtonStyle}>
+            <Link href={pricingPageHref} style={secondaryButtonStyle}>
               Pricing
             </Link>
           </div>
