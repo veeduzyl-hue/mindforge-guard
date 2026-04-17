@@ -29,6 +29,14 @@ function normalizePem(value: string, label: "PRIVATE KEY" | "PUBLIC KEY"): strin
   return normalized;
 }
 
+function trimTrailingSlash(value: string): string {
+  return value.replace(/\/+$/, "");
+}
+
+function getLicenseHubBaseUrl(): string {
+  return trimTrailingSlash(process.env.LICENSE_HUB_BASE_URL || "http://localhost:3000");
+}
+
 export function getLicenseIssuerConfig() {
   return {
     issuerName: process.env.LICENSE_ISSUER_NAME || "MindForge Licensing Authority",
@@ -66,6 +74,7 @@ export function getBillingProviderConfig() {
 export function getPaddleConfig() {
   const environment: "sandbox" | "production" =
     (process.env.PADDLE_ENV || "sandbox").toLowerCase() === "production" ? "production" : "sandbox";
+  const licenseHubBaseUrl = getLicenseHubBaseUrl();
   return {
     environment,
     apiBaseUrl: environment === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com",
@@ -73,12 +82,9 @@ export function getPaddleConfig() {
     clientToken: process.env.PADDLE_CLIENT_TOKEN || "",
     webhookSecret: process.env.PADDLE_WEBHOOK_SECRET || "",
     webhookToleranceSeconds: Number(process.env.PADDLE_WEBHOOK_TOLERANCE_SECONDS || "300"),
-    checkoutSuccessUrl:
-      process.env.PADDLE_CHECKOUT_SUCCESS_URL ||
-      `${process.env.LICENSE_HUB_BASE_URL || "http://localhost:3000"}/paddle/success`,
-    checkoutCancelUrl:
-      process.env.PADDLE_CHECKOUT_CANCEL_URL ||
-      `${process.env.LICENSE_HUB_BASE_URL || "http://localhost:3000"}/paddle/cancel`,
+    checkoutSuccessUrl: process.env.PADDLE_CHECKOUT_SUCCESS_URL || `${licenseHubBaseUrl}/paddle/success`,
+    checkoutCancelUrl: process.env.PADDLE_CHECKOUT_CANCEL_URL || `${licenseHubBaseUrl}/paddle/cancel`,
+    checkoutTargetUrl: `${licenseHubBaseUrl}/pricing`,
   };
 }
 
