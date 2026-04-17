@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { getCommercialOffers } from "../lib/commercialCatalog";
-import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "./siteChrome";
+import { SiteChrome, panelStyle, pricingPageHref, primaryButtonStyle, secondaryButtonStyle } from "./siteChrome";
 
 export default function HomePage() {
   const offers = getCommercialOffers();
@@ -42,7 +42,7 @@ export default function HomePage() {
             </p>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-            <Link href="/pricing" style={primaryButtonStyle}>
+            <Link href={pricingPageHref} style={primaryButtonStyle}>
               Open pricing
             </Link>
             <Link href="/docs" style={secondaryButtonStyle}>
