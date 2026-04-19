@@ -5,7 +5,7 @@ import { getLicenseHubDb } from "@mindforge/db";
 import { getBillingProviderConfig, isProductionEnv } from "./env";
 import { normalizeBillingEvent } from "./billingEvents";
 import { applyBillingLifecycle } from "./paymentLifecycle";
-import { normalizePaddleBillingEvent, verifyPaddleSignature } from "./paddleWebhook";
+import { getPaddleSignatureHeader, normalizePaddleBillingEvent, verifyPaddleSignature } from "./paddleWebhook";
 
 type StagedError = Error & {
   stage?: string;
@@ -84,7 +84,8 @@ function extractLedgerMetadata(rawPayload: unknown, rawBody: string) {
 
 export async function handleBillingWebhook(rawBody: string, headers: Headers) {
   const providerConfig = getBillingProviderConfig();
-  if (providerConfig.provider === "paddle") {
+  const isPaddleRequest = Boolean(getPaddleSignatureHeader(headers));
+  if (providerConfig.provider === "paddle" || isPaddleRequest) {
     return handlePaddleBillingWebhook(rawBody, headers);
   }
 
