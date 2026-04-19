@@ -95,6 +95,30 @@ npm.cmd run db:generate
 npm.cmd run db:migrate:dev
 ```
 
+## Ops baseline
+
+For the minimum live ops surface, apply the SQL baseline in:
+
+- [license-hub-ops-baseline.sql](./sql/license-hub-ops-baseline.sql)
+
+Reference guide:
+
+- [license-hub-ops-baseline.md](../../docs/commercial/license-hub-ops-baseline.md)
+
+This baseline adds only:
+
+- fixed read-only operations views
+- optional `ops_notes` for manual annotations
+
+This baseline does **not** change:
+
+- checkout behavior
+- billing webhook behavior
+- license issuance semantics
+- pricing
+- admin surface scope
+- core schema shape of existing runtime tables
+
 ## Run
 
 ```bash
@@ -296,6 +320,7 @@ node scripts/verify_license_hub_skeleton_phase1.mjs
 node scripts/verify_license_hub_phase2_boundary.mjs
 node scripts/verify_license_hub_phase3_admin_boundary.mjs
 node scripts/verify_license_hub_phase4_payment_lifecycle_boundary.mjs
+node scripts/verify_license_hub_ops_baseline.mjs
 ```
 
 Manual verification:
