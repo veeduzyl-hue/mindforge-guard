@@ -4,6 +4,11 @@ import type { BillingEvent, BillingEventType } from "./billingEvents";
 import { getPaddleConfig } from "./env";
 import { getPaddlePriceById } from "./paddlePrices";
 
+type StagedError = Error & {
+  stage?: string;
+  reason?: string;
+};
+
 function parseJsonObject(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
@@ -56,6 +61,13 @@ function logPaddleWebhookDiagnostic(fields: {
   console.info(JSON.stringify(fields));
 }
 
+function createStagedError(message: string, stage: string, reason: string): Error {
+  return Object.assign(new Error(message), {
+    stage,
+    reason,
+  } satisfies Pick<StagedError, "stage" | "reason">);
+}
+
 export async function verifyPaddleSignature(rawBody: string, headers: Headers): Promise<void> {
   const config = getPaddleConfig();
   const signatureHeader = getPaddleSignatureHeader(headers);
@@ -73,7 +85,11 @@ export async function verifyPaddleSignature(rawBody: string, headers: Headers): 
       webhook_secret_prefix: null,
       verify_result: "failure",
     });
-    throw new Error("Missing required environment variable: PADDLE_WEBHOOK_SECRET");
+    throw createStagedError(
+      "Missing required environment variable: PADDLE_WEBHOOK_SECRET",
+      "verify_signature",
+      "missing_paddle_webhook_secret"
+    );
   }
 
   if (!signatureHeader) {
@@ -83,7 +99,11 @@ export async function verifyPaddleSignature(rawBody: string, headers: Headers): 
       webhook_secret_prefix: webhookSecretPrefix,
       verify_result: "failure",
     });
-    throw new Error("missing Paddle-Signature header");
+    throw createStagedError(
+      "missing Paddle-Signature header",
+      "verify_signature",
+      "missing_paddle_signature_header"
+    );
   }
 
   try {
@@ -105,7 +125,11 @@ export async function verifyPaddleSignature(rawBody: string, headers: Headers): 
       notification_id: null,
       verify_result: "failure",
     });
-    throw new Error("invalid Paddle webhook signature");
+    throw createStagedError(
+      "invalid Paddle webhook signature",
+      "verify_signature",
+      "invalid_paddle_signature"
+    );
   }
 }
 

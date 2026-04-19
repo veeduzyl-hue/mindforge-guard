@@ -7,6 +7,11 @@ import { normalizeBillingEvent } from "./billingEvents";
 import { applyBillingLifecycle } from "./paymentLifecycle";
 import { normalizePaddleBillingEvent, verifyPaddleSignature } from "./paddleWebhook";
 
+type StagedError = Error & {
+  stage?: string;
+  reason?: string;
+};
+
 function sha256Hex(secret: string, value: string): string {
   return crypto.createHmac("sha256", secret).update(value, "utf8").digest("hex");
 }
@@ -48,6 +53,16 @@ function fallbackEventId(rawBody: string): string {
 
 function safeParseRawPayload(rawBody: string): unknown {
   return JSON.parse(rawBody) as unknown;
+}
+
+function withStage(error: unknown, stage: string, reason?: string): Error {
+  const normalized = error instanceof Error ? error : new Error(String(error));
+  const staged = normalized as StagedError;
+  staged.stage = staged.stage || stage;
+  if (reason && !staged.reason) {
+    staged.reason = reason;
+  }
+  return normalized;
 }
 
 function extractLedgerMetadata(rawPayload: unknown, rawBody: string) {
@@ -166,12 +181,27 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
 }
 
 async function handlePaddleBillingWebhook(rawBody: string, headers: Headers) {
-  await verifyPaddleSignature(rawBody, headers);
+  try {
+    await verifyPaddleSignature(rawBody, headers);
+  } catch (error) {
+    throw withStage(error, "verify_signature");
+  }
 
   const providerConfig = getBillingProviderConfig();
   const db = await getLicenseHubDb();
-  const rawPayload = safeParseRawPayload(rawBody);
-  const normalized = normalizePaddleBillingEvent(rawPayload);
+  let rawPayload: unknown;
+  try {
+    rawPayload = safeParseRawPayload(rawBody);
+  } catch (error) {
+    throw withStage(error, "parse_raw_payload", "invalid_webhook_json");
+  }
+
+  let normalized;
+  try {
+    normalized = normalizePaddleBillingEvent(rawPayload);
+  } catch (error) {
+    throw withStage(error, "normalize_event", "invalid_paddle_event");
+  }
   const payloadRecord = rawPayload && typeof rawPayload === "object" ? (rawPayload as Record<string, unknown>) : {};
   const ledger = {
     eventId:
@@ -255,11 +285,12 @@ async function handlePaddleBillingWebhook(rawBody: string, headers: Headers) {
       publicLicenseId: result.license?.licenseId ?? null,
     };
   } catch (error) {
+    const stagedError = withStage(error, "apply_billing_lifecycle");
     await db.markWebhookEvent(webhookEvent.id, {
       status: "error",
       processedAt: new Date().toISOString(),
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorMessage: stagedError.message,
     });
-    throw error;
+    throw stagedError;
   }
 }
