@@ -46,7 +46,7 @@ function getPaddleClient(): Paddle {
   return paddleClient;
 }
 
-function getPaddleSignatureHeader(headers: Headers): string | null {
+export function getPaddleSignatureHeader(headers: Headers): string | null {
   return headers.get("paddle-signature") || headers.get("Paddle-Signature");
 }
 
