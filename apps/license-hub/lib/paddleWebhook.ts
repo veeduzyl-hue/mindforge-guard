@@ -29,6 +29,17 @@ function asNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function firstString(...values: unknown[]): string | null {
+  for (const value of values) {
+    const resolved = asString(value);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
+  return null;
+}
+
 let paddleClient: Paddle | null = null;
 
 function getPaddleEnvironment() {
@@ -161,6 +172,35 @@ function resolveAmountCents(data: Record<string, unknown>): number | null {
   );
 }
 
+function resolveBillingPeriodBounds(data: Record<string, unknown>, customData: Record<string, unknown>) {
+  const billingPeriod = parseJsonObject(data.billing_period);
+  const currentBillingPeriod = parseJsonObject(data.current_billing_period);
+  const subscription = parseJsonObject(data.subscription);
+  const subscriptionBillingPeriod = parseJsonObject(subscription.current_billing_period);
+
+  return {
+    startsAt: firstString(
+      billingPeriod.starts_at,
+      billingPeriod.start_at,
+      currentBillingPeriod.starts_at,
+      currentBillingPeriod.start_at,
+      subscriptionBillingPeriod.starts_at,
+      subscriptionBillingPeriod.start_at,
+      customData.billing_period_starts_at
+    ),
+    endsAt: firstString(
+      billingPeriod.ends_at,
+      billingPeriod.end_at,
+      currentBillingPeriod.ends_at,
+      currentBillingPeriod.end_at,
+      subscriptionBillingPeriod.ends_at,
+      subscriptionBillingPeriod.end_at,
+      data.next_billed_at,
+      customData.billing_period_ends_at
+    ),
+  };
+}
+
 function normalizePaddleEventType(eventType: string, payloadData: Record<string, unknown>): BillingEventType | null {
   switch (eventType) {
     case "transaction.completed":
@@ -207,6 +247,7 @@ export function normalizePaddleBillingEvent(rawPayload: unknown): BillingEvent |
     items,
     fallback: asString(customData.plan),
   });
+  const billingPeriod = resolveBillingPeriodBounds(data, customData);
   const externalOrderId =
     asString(data.id) ||
     asString(data.transaction_id) ||
@@ -223,6 +264,8 @@ export function normalizePaddleBillingEvent(rawPayload: unknown): BillingEvent |
     notificationId: asString(payload.notification_id) || asString(payload.event_id) || asString(payload.id),
     eventType: normalizedType,
     occurredAt: asString(payload.occurred_at) || asString(data.updated_at) || new Date().toISOString(),
+    billingPeriodStartsAt: billingPeriod.startsAt,
+    billingPeriodEndsAt: billingPeriod.endsAt,
     externalOrderId,
     externalPaymentId:
       normalizedType === "order_canceled"

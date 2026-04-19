@@ -2,6 +2,7 @@ import type { CustomerRecord, LicenseHubDb, LicenseRecord, OrderRecord } from "@
 
 import { getLicenseIssuerConfig } from "./env";
 import { issueLicenseForPaidOrder } from "./issueLicenseForPaidOrder";
+import { resolveLicenseValidityWindow } from "./licenseValidity";
 import { sendLicenseStatusEmail, sendSignedLicenseEmail, type MailDeliveryResult } from "./mailer";
 import { recordSystemAction } from "./systemActions";
 import type { BillingEvent } from "./billingEvents";
@@ -20,6 +21,8 @@ interface LicenseIssuanceContext {
   plan: string | null;
   interval: string | null;
   priceKey: string | null;
+  billingPeriodStartsAt: string | null;
+  billingPeriodEndsAt: string | null;
   subscriptionId: string | null;
   externalOrderId: string;
   externalSubscriptionId: string | null;
@@ -63,6 +66,8 @@ function buildLicenseIssuanceContext(event: BillingEvent, customer: CustomerReco
     plan: event.plan,
     interval: event.interval,
     priceKey: event.priceKey,
+    billingPeriodStartsAt: event.billingPeriodStartsAt,
+    billingPeriodEndsAt: event.billingPeriodEndsAt,
     subscriptionId: event.externalSubscriptionId,
     externalOrderId: event.externalOrderId,
     externalSubscriptionId: event.externalSubscriptionId,
@@ -288,6 +293,14 @@ export async function applyBillingLifecycle(input: {
       will_issue_license: true,
     });
 
+    const validityWindow = resolveLicenseValidityWindow({
+      occurredAt: input.event.occurredAt,
+      billingPeriodStartsAt: issuance.billingPeriodStartsAt,
+      billingPeriodEndsAt: issuance.billingPeriodEndsAt,
+      interval: issuance.interval,
+      priceKey: issuance.priceKey,
+    });
+
     let issued: Awaited<ReturnType<typeof issueLicenseForPaidOrder>>;
     try {
       issued = await issueLicenseForPaidOrder({
@@ -300,6 +313,8 @@ export async function applyBillingLifecycle(input: {
         keyId: issuer.keyId,
         privateKeyPem: issuer.privateKeyPem,
         publicKeyPem: issuer.publicKeyPem,
+        notBefore: validityWindow?.notBefore,
+        notAfter: validityWindow?.notAfter,
       });
     } catch (error) {
       logLicenseIssuance({

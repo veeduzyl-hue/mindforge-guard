@@ -11,6 +11,8 @@ export interface BillingEvent {
   notificationId: string | null;
   eventType: BillingEventType;
   occurredAt: string;
+  billingPeriodStartsAt: string | null;
+  billingPeriodEndsAt: string | null;
   externalOrderId: string;
   externalPaymentId: string | null;
   externalSubscriptionId: string | null;
@@ -89,6 +91,8 @@ export function normalizeBillingEvent(rawPayload: unknown, provider: string): Bi
     notificationId: eventId,
     eventType,
     occurredAt: asString(payload.occurred_at) || new Date().toISOString(),
+    billingPeriodStartsAt: null,
+    billingPeriodEndsAt: null,
     externalOrderId,
     externalPaymentId: asString(payment.id || payment.external_payment_id),
     externalSubscriptionId: asString(subscription.id || order.subscription_id || payment.subscription_id),
