@@ -24,12 +24,7 @@ export interface PricingEdition {
   eyebrow: string;
   priceLabel: string;
   summary: string;
-  audience: string;
-  audienceLabel: string;
-  includesLead: string;
-  includes: readonly string[];
-  upgradeNote: string;
-  billingNote?: string;
+  features: readonly string[];
   mode: PricingEditionMode;
   ctaLabel?: string;
   ctaHref?: string;
@@ -185,16 +180,8 @@ export function getPricingEditions(): readonly PricingEdition[] {
       title: community.title,
       eyebrow: "Open path",
       priceLabel: "Free",
-      summary: "Start with the open Guard path when you want to evaluate, learn, or stay on a community-only buying motion.",
-      audience: "Independent developers, evaluators, and teams that are not yet buying Guard commercially.",
-      audienceLabel: "Best for",
-      includesLead: "Base community capabilities include:",
-      includes: [
-        "Open access to the existing Guard community surface",
-        "A straightforward way to explore Guard before any commercial commitment",
-        "A clean upgrade path to Pro when you want commercial buying and account access",
-      ],
-      upgradeNote: "Upgrade to Pro when you want self-serve commercial purchase, portal access, and post-purchase account visibility.",
+      summary: "Open evaluation path for local use and early adoption.",
+      features: ["Open docs", "Local workflow", "Community path"],
       mode: "community",
       ctaLabel: "Explore Community",
       ctaHref: "/docs",
@@ -203,19 +190,9 @@ export function getPricingEditions(): readonly PricingEdition[] {
       slug: "pro",
       title: "Pro",
       eyebrow: "Self-serve",
-      priceLabel: "Monthly or Yearly",
-      summary: "Move from evaluation into a clean commercial buying path for developers and smaller teams ready to adopt Guard seriously.",
-      audience: "Individuals and small teams that want to buy Guard without switching into a contact-led sales process.",
-      audienceLabel: "Best for",
-      includesLead: "Includes Community all capabilities, plus:",
-      includes: [
-        "Self-serve commercial checkout for Guard",
-        "License Hub portal access with order and billing visibility",
-        "Commercial license delivery tied to the purchase email",
-        "The same Pro edition whether you choose monthly or yearly billing",
-      ],
-      upgradeNote: "Upgrade to Pro+ when you want the higher commercial edition for broader internal rollout and a stronger buyer-facing package.",
-      billingNote: "Choose the billing cadence that matches your budget. Monthly and yearly stay inside the same Pro edition.",
+      priceLabel: "Monthly / Yearly",
+      summary: "Self-serve commercial buying for individuals and small teams.",
+      features: ["Drift timeline", "License Hub access", "Billing visibility"],
       mode: "self_serve",
       monthlyOffer: proMonthly,
       yearlyOffer: proAnnual,
@@ -224,19 +201,9 @@ export function getPricingEditions(): readonly PricingEdition[] {
       slug: "pro-plus",
       title: "Pro+",
       eyebrow: "Higher commercial edition",
-      priceLabel: "Monthly or Yearly",
-      summary: "Choose the higher commercial edition when your team wants a stronger rollout posture while keeping the same easy self-serve purchase flow.",
-      audience: "Teams and organizations expanding beyond an individual buying motion and preparing for broader adoption.",
-      audienceLabel: "Best for",
-      includesLead: "Includes Pro all capabilities, plus:",
-      includes: [
-        "A higher commercial edition than Pro",
-        "A clearer package for broader team rollout and internal stakeholder buy-in",
-        "The same License Hub access and self-serve buying motion with a stronger commercial tier",
-        "The same Pro+ edition whether you choose monthly or yearly billing",
-      ],
-      upgradeNote: "Move to Enterprise when procurement, legal review, or a contact-led buying process becomes part of the decision.",
-      billingNote: "Choose monthly for flexibility or yearly for a committed buying cycle. Both stay inside the same Pro+ edition.",
+      priceLabel: "Monthly / Yearly",
+      summary: "Higher commercial tier for broader rollout and internal buy-in.",
+      features: ["Drift compare", "Assoc correlate", "Higher commercial tier"],
       mode: "self_serve",
       monthlyOffer: proPlusMonthly,
       yearlyOffer: proPlusAnnual,
@@ -245,17 +212,9 @@ export function getPricingEditions(): readonly PricingEdition[] {
       slug: "enterprise",
       title: enterprise.title,
       eyebrow: "Contact-led",
-      priceLabel: "Talk to us",
-      summary: "Keep Enterprise contact-led when your buying process includes procurement, stakeholder review, or a tailored rollout conversation.",
-      audience: "Teams with procurement, legal, security review, or customized commercial buying requirements.",
-      audienceLabel: "Best for",
-      includesLead: "Enterprise buying support includes:",
-      includes: [
-        "A contact-led commercial conversation instead of forced self-serve checkout",
-        "Space for procurement, legal, and rollout planning",
-        "A clearer path for larger-team or organization-level buying discussions",
-      ],
-      upgradeNote: "Use Enterprise when the decision needs a team buying motion rather than an individual self-serve purchase.",
+      priceLabel: "Contact us",
+      summary: "Contact-led buying for procurement-managed teams.",
+      features: ["Same current CLI surface as Pro+", "Contact-led buying", "Procurement support"],
       mode: "contact",
       ctaLabel: "Contact Enterprise",
       ctaHref: "/contact",

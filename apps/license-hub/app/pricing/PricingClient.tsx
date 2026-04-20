@@ -221,38 +221,42 @@ export function PricingClient(input: {
       <section
         style={{
           display: "grid",
-          gap: 14,
+          gap: 18,
           padding: 22,
           borderRadius: 18,
           background: "#fffaf0",
           border: "1px solid #d8ccae",
         }}
       >
-        <div style={{ display: "grid", gap: 6 }}>
-          <h2 style={{ margin: 0 }}>Pricing grid</h2>
-          <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
-            Choose the edition that matches your stage today, then use one purchase email for checkout, License Hub
-            access, and future account lookup.
-          </p>
+        <div
+          style={{
+            display: "grid",
+            gap: 16,
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            alignItems: "end",
+          }}
+        >
+          <div style={{ display: "grid", gap: 6 }}>
+            <h2 style={{ margin: 0 }}>Choose your edition</h2>
+            <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
+              Use one purchase email for checkout and <Link href="/login">License Hub access</Link>.
+            </p>
+          </div>
+          <label style={{ display: "grid", gap: 8 }}>
+            <span style={{ fontWeight: 700 }}>Purchase email</span>
+            <input
+              value={buyerEmail}
+              onChange={(event) => {
+                setBuyerEmail(event.target.value);
+                if (error) {
+                  setError(null);
+                }
+              }}
+              placeholder="buyer@example.com"
+              style={{ padding: 14, borderRadius: 12, border: "1px solid #c4b79d" }}
+            />
+          </label>
         </div>
-        <label style={{ display: "grid", gap: 8 }}>
-          <span style={{ fontWeight: 700 }}>Purchase email</span>
-          <input
-            value={buyerEmail}
-            onChange={(event) => {
-              setBuyerEmail(event.target.value);
-              if (error) {
-                setError(null);
-              }
-            }}
-            placeholder="buyer@example.com"
-            style={{ padding: 14, borderRadius: 12, border: "1px solid #c4b79d" }}
-          />
-        </label>
-        <p style={{ margin: 0, color: "#5b5444" }}>
-          Pro and Pro+ stay self-serve. Buy with the email that should own the commercial access, then use that same
-          email later for <Link href="/login">License Hub login</Link>.
-        </p>
         {error ? (
           <p
             role="alert"
@@ -285,7 +289,7 @@ export function PricingClient(input: {
               key={edition.slug}
               style={{
                 display: "grid",
-                gap: 14,
+                gap: 18,
                 padding: 22,
                 borderRadius: 18,
                 background:
@@ -299,174 +303,61 @@ export function PricingClient(input: {
                     : "0 12px 32px rgba(46, 38, 20, 0.08)",
               }}
             >
-              <div style={{ display: "grid", gap: 6 }}>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-                  <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
-                    {edition.eyebrow}
-                  </p>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "5px 10px",
-                      borderRadius: 999,
-                      background: edition.slug === "pro-plus" ? "#f8d98b" : "#f4efe3",
-                      color: "#4d3b19",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {edition.priceLabel}
-                  </span>
+              <div style={{ display: "grid", gap: 8 }}>
+                <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
+                  {edition.eyebrow}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "baseline", justifyContent: "space-between" }}>
+                  <h2 style={{ margin: 0, fontSize: 28 }}>{edition.title}</h2>
+                  <span style={{ color: "#4d3b19", fontSize: 16, fontWeight: 700 }}>{edition.priceLabel}</span>
                 </div>
-                <h2 style={{ margin: 0, fontSize: 28 }}>{edition.title}</h2>
-                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>{edition.summary}</p>
+                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{edition.summary}</p>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gap: 10,
-                  padding: 14,
-                  borderRadius: 14,
-                  background: "#fffaf0",
-                  border: "1px solid #e1d4b4",
-                  color: "#3e382b",
-                }}
-              >
-                <div>
-                  <strong>{edition.audienceLabel}</strong>
-                  <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.audience}</p>
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gap: 10 }}>
-                <div>
-                  <strong>What is included</strong>
-                  <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.includesLead}</p>
-                </div>
-                <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
-                  {edition.includes.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div
-                style={{
-                  padding: 14,
-                  borderRadius: 14,
-                  background: edition.slug === "community" ? "#f7f2e8" : "#f9f5eb",
-                  border: "1px solid #e1d4b4",
-                }}
-              >
-                <strong>Upgrade path</strong>
-                <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.upgradeNote}</p>
-              </div>
+              <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
+                {edition.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
 
               {edition.mode === "self_serve" && monthlyOffer && yearlyOffer ? (
-                <div
-                  style={{
-                    display: "grid",
-                    gap: 12,
-                    padding: 16,
-                    borderRadius: 14,
-                    background: "#fffaf0",
-                    border: "1px solid #e1d4b4",
-                  }}
-                >
-                  <strong>Choose your billing cadence</strong>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "6px 10px",
-                        borderRadius: 999,
-                        background: "#ffffff",
-                        border: "1px solid #d8ccae",
-                        color: "#5b5444",
-                        fontSize: 12,
-                        fontWeight: 700,
-                      }}
-                    >
-                      Monthly
-                    </span>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "6px 10px",
-                        borderRadius: 999,
-                        background: "#ffffff",
-                        border: "1px solid #d8ccae",
-                        color: "#5b5444",
-                        fontSize: 12,
-                        fontWeight: 700,
-                      }}
-                    >
-                      Yearly
-                    </span>
-                  </div>
-                  {edition.billingNote ? (
-                    <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{edition.billingNote}</p>
-                  ) : null}
-                  <div style={{ display: "grid", gap: 10 }}>
-                    <button
-                      type="button"
-                      onClick={() => void beginCheckout(monthlyOffer)}
-                      disabled={anyBusy}
-                      style={{
-                        padding: "13px 16px",
-                        borderRadius: 12,
-                        border: "none",
-                        background: "#1f3b63",
-                        color: "#ffffff",
-                        fontWeight: 700,
-                        cursor: anyBusy ? "progress" : "pointer",
-                      }}
-                    >
-                      {monthlyBusy ? "Starting checkout..." : "Choose Monthly"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void beginCheckout(yearlyOffer)}
-                      disabled={anyBusy}
-                      style={{
-                        padding: "13px 16px",
-                        borderRadius: 12,
-                        border: "1px solid #b9ab8b",
-                        background: "#ffffff",
-                        color: "#3e382b",
-                        fontWeight: 700,
-                        cursor: anyBusy ? "progress" : "pointer",
-                      }}
-                    >
-                      {yearlyBusy ? "Starting checkout..." : "Choose Yearly"}
-                    </button>
-                  </div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => void beginCheckout(monthlyOffer)}
+                    disabled={anyBusy}
+                    style={{
+                      padding: "13px 16px",
+                      borderRadius: 12,
+                      border: "none",
+                      background: "#1f3b63",
+                      color: "#ffffff",
+                      fontWeight: 700,
+                      cursor: anyBusy ? "progress" : "pointer",
+                    }}
+                  >
+                    {monthlyBusy ? "Starting checkout..." : "Choose Monthly"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void beginCheckout(yearlyOffer)}
+                    disabled={anyBusy}
+                    style={{
+                      padding: "13px 16px",
+                      borderRadius: 12,
+                      border: "1px solid #b9ab8b",
+                      background: "#ffffff",
+                      color: "#3e382b",
+                      fontWeight: 700,
+                      cursor: anyBusy ? "progress" : "pointer",
+                    }}
+                  >
+                    {yearlyBusy ? "Starting checkout..." : "Choose Yearly"}
+                  </button>
                 </div>
               ) : null}
 
-              {edition.mode === "community" && edition.ctaHref && edition.ctaLabel ? (
-                <Link
-                  href={edition.ctaHref}
-                  style={{
-                    display: "inline-block",
-                    padding: "13px 16px",
-                    borderRadius: 12,
-                    border: "1px solid #c4b79d",
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 700,
-                    textAlign: "center",
-                  }}
-                >
-                  {edition.ctaLabel}
-                </Link>
-              ) : null}
-
-              {edition.mode === "contact" && edition.ctaHref && edition.ctaLabel ? (
+              {edition.mode !== "self_serve" && edition.ctaHref && edition.ctaLabel ? (
                 <Link
                   href={edition.ctaHref}
                   style={{

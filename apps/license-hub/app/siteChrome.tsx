@@ -75,6 +75,9 @@ export function SiteChrome(input: {
   eyebrow: string;
   lede: string;
   children: ReactNode;
+  hideNav?: boolean;
+  showHeaderNote?: boolean;
+  showFooter?: boolean;
 }) {
   return (
     <main style={pageBackgroundStyle}>
@@ -93,50 +96,56 @@ export function SiteChrome(input: {
               <p style={eyebrowStyle}>{input.eyebrow}</p>
               <h1 style={{ margin: 0, fontSize: 42, lineHeight: 1.05 }}>{input.title}</h1>
             </div>
-            <nav style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  style={{
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 600,
-                    padding: "8px 12px",
-                    borderRadius: 999,
-                    background: "rgba(244, 241, 232, 0.95)",
-                  }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            {input.hideNav ? null : (
+              <nav style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      textDecoration: "none",
+                      color: "#3e382b",
+                      fontWeight: 600,
+                      padding: "8px 12px",
+                      borderRadius: 999,
+                      background: "rgba(244, 241, 232, 0.95)",
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
           </div>
           <p style={{ ...mutedTextStyle, margin: 0, maxWidth: 860, fontSize: 18 }}>{input.lede}</p>
-          <div
-            style={{
-              borderRadius: 16,
-              padding: 16,
-              background: "#fff8e2",
-              border: "1px solid #d8bd74",
-              color: "#5b4720",
-            }}
-          >
-            MindForge License Hub is the bounded production intake and delivery surface for commercial licensing. It
-            covers hosted checkout entry, signed license delivery, account visibility, and local Guard CLI
-            verification without expanding authority into the Guard main path.
-          </div>
+          {input.showHeaderNote === false ? null : (
+            <div
+              style={{
+                borderRadius: 16,
+                padding: 16,
+                background: "#fff8e2",
+                border: "1px solid #d8bd74",
+                color: "#5b4720",
+              }}
+            >
+              MindForge License Hub is the bounded production intake and delivery surface for commercial licensing. It
+              covers hosted checkout entry, signed license delivery, account visibility, and local Guard CLI
+              verification without expanding authority into the Guard main path.
+            </div>
+          )}
         </header>
 
         {input.children}
 
-        <footer style={{ ...subtlePanelStyle, display: "grid", gap: 10 }}>
-          <p style={{ margin: 0, fontWeight: 700 }}>MindForge Guard commercial delivery stays bounded.</p>
-          <p style={{ ...mutedTextStyle, margin: 0 }}>
-            No control-plane, dashboard-first, or autonomous execution claims are made here. Community stays outside
-            payment, commercial checkout maps to License Hub issuance, and enterprise discussions remain contact-led.
-          </p>
-        </footer>
+        {input.showFooter === false ? null : (
+          <footer style={{ ...subtlePanelStyle, display: "grid", gap: 10 }}>
+            <p style={{ margin: 0, fontWeight: 700 }}>MindForge Guard commercial delivery stays bounded.</p>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              No control-plane, dashboard-first, or autonomous execution claims are made here. Community stays outside
+              payment, commercial checkout maps to License Hub issuance, and enterprise discussions remain contact-led.
+            </p>
+          </footer>
+        )}
       </div>
     </main>
   );
