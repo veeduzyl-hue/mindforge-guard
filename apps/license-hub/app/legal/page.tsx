@@ -1,8 +1,6 @@
 import Link from "next/link";
 
 import {
-  eyebrowStyle,
-  mutedTextStyle,
   pageBackgroundStyle,
   panelStyle,
   primaryButtonStyle,
@@ -43,7 +41,7 @@ export default function LegalPage() {
   return (
     <main style={pageBackgroundStyle}>
       <div style={{ maxWidth: 1120, margin: "0 auto", display: "grid", gap: 18 }}>
-        <section style={{ ...panelStyle, display: "grid", gap: 10 }}>
+        <section style={panelStyle}>
           <div
             style={{
               display: "flex",
@@ -53,12 +51,9 @@ export default function LegalPage() {
               alignItems: "center",
             }}
           >
-            <div style={{ display: "grid", gap: 8 }}>
-              <p style={eyebrowStyle}>{"\u5408\u6cd5\u7684"}</p>
-              <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.04 }}>
-                {"\u6761\u6b3e\u3001\u9690\u79c1\u548c\u9000\u6b3e\u3002"}
-              </h1>
-            </div>
+            <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.04 }}>
+              {"\u6761\u6b3e\u3001\u9690\u79c1\u548c\u9000\u6b3e\u3002"}
+            </h1>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               <Link href="/#pricing" style={secondaryButtonStyle}>
                 {"\u5b9a\u4ef7"}
@@ -68,9 +63,6 @@ export default function LegalPage() {
               </Link>
             </div>
           </div>
-          <p style={{ ...mutedTextStyle, margin: 0, fontSize: 18, maxWidth: 760 }}>
-            {"\u672c\u9875\u6c47\u603b\u8d2d\u4e70\u76f8\u5173\u6761\u6b3e\u3001\u9690\u79c1\u4e0e\u9000\u6b3e\u8bf4\u660e\u3002"}
-          </p>
         </section>
 
         <section style={{ display: "grid", gap: 12 }}>

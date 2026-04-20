@@ -64,7 +64,7 @@ export default function HomePage() {
               <Link href="/#pricing" style={secondaryButtonStyle}>
                 {"\u5b9a\u4ef7"}
               </Link>
-              <Link href="/#quick-help" style={secondaryButtonStyle}>
+              <Link href="/#contact" style={secondaryButtonStyle}>
                 {"\u5e2e\u52a9"}
               </Link>
               <Link href="/legal" style={secondaryButtonStyle}>
@@ -111,10 +111,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div
-            id="contact"
-            style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
-          >
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
             {faqItems.map((item) => (
               <article
                 key={item.question}
@@ -124,6 +121,28 @@ export default function HomePage() {
                 <p style={{ ...mutedTextStyle, margin: "6px 0 0" }}>{item.answer}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section
+          id="contact"
+          style={{
+            ...panelStyle,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 12,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: 22 }}>Docs / Contact</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <Link href="/docs" style={secondaryButtonStyle}>
+              Docs
+            </Link>
+            <Link href="/contact" style={primaryButtonStyle}>
+              Contact
+            </Link>
           </div>
         </section>
       </div>
