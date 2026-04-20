@@ -8,6 +8,7 @@ export interface CommercialOffer {
   summary: string;
   editionLabel: string;
   billingIntervalLabel: string;
+  priceDisplay?: string;
   deliveryLabel: string;
   ctaLabel: string;
   kind: CommercialOfferKind;
@@ -46,6 +47,7 @@ function checkoutOffer(input: {
   summary: string;
   editionLabel: string;
   billingIntervalLabel: string;
+  priceDisplay: string;
   deliveryLabel: string;
   bullets: readonly string[];
   priceKey: PaddlePlanKey;
@@ -57,6 +59,7 @@ function checkoutOffer(input: {
     summary: input.summary,
     editionLabel: input.editionLabel,
     billingIntervalLabel: input.billingIntervalLabel,
+    priceDisplay: input.priceDisplay,
     deliveryLabel: input.deliveryLabel,
     ctaLabel: `Buy ${input.title}`,
     kind: "paddle_checkout",
@@ -89,6 +92,7 @@ export function getCommercialOffers(): readonly CommercialOffer[] {
       summary: "Commercial Guard delivery for individual developers or small teams that want a signed license and account visibility on a monthly billing cycle.",
       editionLabel: "Pro",
       billingIntervalLabel: "Monthly",
+      priceDisplay: "$19 / month",
       deliveryLabel: "License Hub + CLI install",
       bullets: [
         "Signed license JSON delivered through License Hub",
@@ -99,10 +103,11 @@ export function getCommercialOffers(): readonly CommercialOffer[] {
     }),
     checkoutOffer({
       slug: "pro-annual",
-      title: "Pro Annual",
+      title: "Pro Yearly",
       summary: "Annual commercial delivery for the same bounded Pro surface, using the verified Paddle-hosted checkout path.",
       editionLabel: "Pro",
-      billingIntervalLabel: "Annual",
+      billingIntervalLabel: "Yearly",
+      priceDisplay: "$199 / year",
       deliveryLabel: "License Hub + CLI install",
       bullets: [
         "Uses the same commercial license semantics as Pro Monthly",
@@ -117,6 +122,7 @@ export function getCommercialOffers(): readonly CommercialOffer[] {
       summary: "Monthly checkout for the higher commercial edition while preserving the same offline license installation model.",
       editionLabel: "Pro+",
       billingIntervalLabel: "Monthly",
+      priceDisplay: "$49 / month",
       deliveryLabel: "License Hub + CLI install",
       bullets: [
         "Commercial fulfillment still ends in a signed downloadable license",
@@ -127,10 +133,11 @@ export function getCommercialOffers(): readonly CommercialOffer[] {
     }),
     checkoutOffer({
       slug: "pro-plus-annual",
-      title: "Pro+ Annual",
+      title: "Pro Plus Yearly",
       summary: "Annual checkout for the higher commercial edition using the same verified License Hub delivery and Guard CLI install path.",
       editionLabel: "Pro+",
-      billingIntervalLabel: "Annual",
+      billingIntervalLabel: "Yearly",
+      priceDisplay: "$499 / year",
       deliveryLabel: "License Hub + CLI install",
       bullets: [
         "Same bounded product posture as the rest of the commercial line",

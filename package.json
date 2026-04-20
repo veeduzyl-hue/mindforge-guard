@@ -17,6 +17,7 @@
       "verify:phase6-seats-account-activation": "node scripts/verify_phase6_seats_account_activation_boundary.mjs",
       "verify:phase6-5-commercial-packaging": "node scripts/verify_phase6_5_commercial_packaging_boundary.mjs",
       "verify:guard-cli-activation-ux-phase5": "node scripts/verify_guard_cli_activation_ux_phase5.mjs",
+      "verify:license-hub-license-validity-semantics": "node scripts/verify_license_hub_license_validity_semantics.mjs",
       "verify:license-hub-ops-baseline": "node scripts/verify_license_hub_ops_baseline.mjs",
       "verify:license-hub-phase4": "node scripts/verify_license_hub_phase4_payment_lifecycle_boundary.mjs",
       "verify:license-hub-phase3": "node scripts/verify_license_hub_phase3_admin_boundary.mjs",

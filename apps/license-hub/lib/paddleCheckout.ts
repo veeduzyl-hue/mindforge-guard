@@ -90,6 +90,9 @@ export async function createPaddleCheckout(input: {
         },
       ],
       collection_mode: "automatic",
+      checkout: {
+        url: paddle.checkoutTargetUrl,
+      },
       customer_id: paddleCustomer.id,
       custom_data: {
         integration: "mindforge_guard",
