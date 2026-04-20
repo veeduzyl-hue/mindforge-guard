@@ -310,7 +310,10 @@ export function PricingClient(input: {
               }}
             >
               <div style={{ display: "grid", gap: 6 }}>
-                <h2 style={{ margin: 0, fontSize: 26 }}>{edition.title}</h2>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "baseline", justifyContent: "space-between" }}>
+                  <h2 style={{ margin: 0, fontSize: 26 }}>{edition.title}</h2>
+                  <span style={{ color: "#4d3b19", fontSize: 15, fontWeight: 700 }}>{edition.priceLabel}</span>
+                </div>
                 <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.45 }}>{edition.summary}</p>
               </div>
 

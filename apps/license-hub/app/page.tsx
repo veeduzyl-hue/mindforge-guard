@@ -17,15 +17,15 @@ export default function HomePage() {
   const deliverySteps = [
     {
       title: "\u9009\u62e9\u7248\u672c",
-      body: "\u9009\u62e9 Community\u3001Pro\u3001Pro+ \u6216 Enterprise\u3002",
+      body: "\u9009\u62e9\u9700\u8981\u7684\u7248\u672c\u3002",
     },
     {
       title: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1",
-      body: "\u7528\u540c\u4e00\u4e2a\u90ae\u7bb1\u5b8c\u6210\u7ed3\u8d26\u4e0e\u767b\u5f55\u3002",
+      body: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1\u5b8c\u6210\u7ed3\u8d26\u3002",
     },
     {
       title: "\u8bbf\u95ee\u8bb8\u53ef\u8bc1\u4e2d\u5fc3",
-      body: "\u8d2d\u4e70\u540e\u767b\u5f55\u67e5\u770b\u8bb8\u53ef\u8bc1\u4e0e\u8d26\u5355\u3002",
+      body: "\u767b\u5f55\u67e5\u770b\u8bb8\u53ef\u8bc1\u4e0e\u8d26\u5355\u3002",
     },
   ] as const;
   const faqItems = [
@@ -61,15 +61,6 @@ export default function HomePage() {
               <p style={{ ...mutedTextStyle, margin: 0, fontSize: 18 }}>{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</p>
             </div>
             <nav style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              <Link href="/#pricing" style={secondaryButtonStyle}>
-                {"\u5b9a\u4ef7"}
-              </Link>
-              <Link href="/#contact" style={secondaryButtonStyle}>
-                {"\u5e2e\u52a9"}
-              </Link>
-              <Link href="/legal" style={secondaryButtonStyle}>
-                {"\u5408\u6cd5\u7684"}
-              </Link>
               <Link href="/login" style={primaryButtonStyle}>
                 {"\u767b\u5f55"}
               </Link>
@@ -89,7 +80,7 @@ export default function HomePage() {
 
         <section id="how-it-works" style={{ ...panelStyle, display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0 }}>{"\u5206\u4e09\u6b65\u8d2d\u4e70"}</h2>
+            <h2 style={{ margin: 0 }}>{"\u8d2d\u4e70\u6b65\u9aa4"}</h2>
           </div>
           <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
             {deliverySteps.map((step) => (
@@ -128,21 +119,42 @@ export default function HomePage() {
           id="contact"
           style={{
             ...panelStyle,
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 12,
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: "grid",
+            gap: 14,
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 22 }}>Docs / Contact</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <Link href="/docs" style={secondaryButtonStyle}>
-              Docs
-            </Link>
-            <Link href="/contact" style={primaryButtonStyle}>
-              Contact
-            </Link>
+          <div style={{ display: "grid", gap: 6 }}>
+            <h2 style={{ margin: 0, fontSize: 22 }}>Docs / Contact / Legacy</h2>
+          </div>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <strong>Docs</strong>
+              <div style={{ marginTop: 10 }}>
+                <Link href="/docs" style={secondaryButtonStyle}>
+                  Docs
+                </Link>
+              </div>
+            </article>
+            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <strong>Contact</strong>
+              <div style={{ marginTop: 10 }}>
+                <Link href="/contact" style={primaryButtonStyle}>
+                  Contact
+                </Link>
+              </div>
+            </article>
+            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <strong>Legacy</strong>
+              <p style={{ ...mutedTextStyle, margin: "8px 0 10px" }}>{"\u65e7\u5165\u53e3\u4ecd\u4fdd\u6301\u517c\u5bb9\u8df3\u8f6c\u3002"}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                <Link href="/pricing" style={secondaryButtonStyle}>
+                  Pricing
+                </Link>
+                <Link href="/legal" style={secondaryButtonStyle}>
+                  Legal
+                </Link>
+              </div>
+            </article>
           </div>
         </section>
       </div>
