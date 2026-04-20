@@ -3,84 +3,50 @@ import Link from "next/link";
 import { getPricingEditions } from "../lib/commercialCatalog";
 import { getPaddleClientBootConfig } from "../lib/paddleCheckout";
 import {
-  eyebrowStyle,
   mutedTextStyle,
   pageBackgroundStyle,
   panelStyle,
   primaryButtonStyle,
   secondaryButtonStyle,
-  subtlePanelStyle,
 } from "./siteChrome";
 import { PricingClient } from "./pricing/PricingClient";
-
-const docsHref = "https://github.com/veeduzyl-hue/mindforge-guard/tree/main/apps/license-hub";
 
 export default function HomePage() {
   const editions = getPricingEditions();
   const config = getPaddleClientBootConfig();
   const deliverySteps = [
     {
-      title: "Choose your edition",
-      body: "Pick Community, Pro, Pro+, or Enterprise.",
+      title: "\u9009\u62e9\u7248\u672c",
+      body: "\u9009\u62e9 Community\u3001Pro\u3001Pro+ \u6216 Enterprise\u3002",
     },
     {
-      title: "Buy with your email",
-      body: "Use one email for checkout and License Hub.",
+      title: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1",
+      body: "\u7528\u540c\u4e00\u4e2a\u90ae\u7bb1\u5b8c\u6210\u7ed3\u8d26\u4e0e\u767b\u5f55\u3002",
     },
     {
-      title: "Access License Hub",
-      body: "Sign in after purchase to view billing and licenses.",
+      title: "\u8bbf\u95ee\u8bb8\u53ef\u8bc1\u4e2d\u5fc3",
+      body: "\u8d2d\u4e70\u540e\u767b\u5f55\u67e5\u770b\u8bb8\u53ef\u8bc1\u4e0e\u8d26\u5355\u3002",
     },
   ] as const;
   const faqItems = [
     {
-      question: "Monthly vs Yearly",
-      answer: "Monthly and Yearly change billing cadence only. Pro stays Pro, and Pro+ stays Pro+.",
+      question: "\u6708\u4ed8\u548c\u5e74\u5ea6\u6709\u4ec0\u4e48\u533a\u522b\uff1f",
+      answer: "\u53ea\u5f71\u54cd\u8ba1\u8d39\u5468\u671f\uff0c\u7248\u672c\u80fd\u529b\u4e0d\u53d8\u3002",
     },
     {
-      question: "How do I access License Hub after purchase?",
-      answer: "Use the purchase email at login to open your portal and account surfaces.",
+      question: "\u8d2d\u4e70\u540e\u5982\u4f55\u767b\u5f55\u8bb8\u53ef\u8bc1\u4e2d\u5fc3\uff1f",
+      answer: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1\u767b\u5f55\u5373\u53ef\u3002",
     },
     {
-      question: "How do I buy Enterprise?",
-      answer: "Enterprise stays contact-led. Use the contact lane below to start procurement review.",
-    },
-  ] as const;
-  const helpCards = [
-    {
-      title: "Login",
-      body: "Open License Hub with the purchase email.",
-      href: "/login",
-      label: "Open Login",
-      style: primaryButtonStyle,
-    },
-    {
-      title: "Contact",
-      body: "Use sales, support, or billing contact lanes.",
-      href: "/#contact",
-      label: "Open Contact",
-      style: secondaryButtonStyle,
-    },
-    {
-      title: "Docs",
-      body: "Read the repo guide for install and verify.",
-      href: docsHref,
-      label: "Open Docs",
-      style: secondaryButtonStyle,
-    },
-    {
-      title: "Legal",
-      body: "Terms, privacy, and refund policy in one page.",
-      href: "/legal",
-      label: "Open Legal",
-      style: secondaryButtonStyle,
+      question: "\u5982\u4f55\u8d2d\u4e70 Enterprise\uff1f",
+      answer: "\u901a\u8fc7\u8054\u7cfb\u5165\u53e3\u53d1\u8d77\u91c7\u8d2d\u5ba1\u67e5\u3002",
     },
   ] as const;
 
   return (
     <main style={pageBackgroundStyle}>
       <div style={{ maxWidth: 1120, margin: "0 auto", display: "grid", gap: 18 }}>
-        <section style={{ ...panelStyle, display: "grid", gap: 24, padding: 28 }}>
+        <section style={{ ...panelStyle, display: "grid", gap: 18, padding: 28 }}>
           <div
             style={{
               display: "flex",
@@ -90,77 +56,28 @@ export default function HomePage() {
               alignItems: "center",
             }}
           >
-            <div style={{ display: "grid", gap: 8 }}>
-              <p style={eyebrowStyle}>License Hub</p>
-              <h1 style={{ margin: 0, fontSize: 44, lineHeight: 1.02 }}>Buy MindForge Guard fast.</h1>
+            <div style={{ display: "grid", gap: 6 }}>
+              <h1 style={{ margin: 0, fontSize: 44, lineHeight: 1.02 }}>MindForge Guard</h1>
+              <p style={{ ...mutedTextStyle, margin: 0, fontSize: 18 }}>{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</p>
             </div>
             <nav style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               <Link href="/#pricing" style={secondaryButtonStyle}>
-                Pricing
+                {"\u5b9a\u4ef7"}
               </Link>
               <Link href="/#quick-help" style={secondaryButtonStyle}>
-                Help
+                {"\u5e2e\u52a9"}
               </Link>
               <Link href="/legal" style={secondaryButtonStyle}>
-                Legal
+                {"\u5408\u6cd5\u7684"}
               </Link>
               <Link href="/login" style={primaryButtonStyle}>
-                Login
+                {"\u767b\u5f55"}
               </Link>
             </nav>
-          </div>
-
-          <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-            <div style={{ display: "grid", gap: 14 }}>
-              <p style={{ ...mutedTextStyle, margin: 0, fontSize: 18, maxWidth: 640 }}>
-                Choose your edition, buy with your email, and get into License Hub without extra steps.
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                <Link href="/#pricing" style={primaryButtonStyle}>
-                  Choose a Plan
-                </Link>
-                <Link href="/login" style={secondaryButtonStyle}>
-                  Portal Login
-                </Link>
-              </div>
-            </div>
-
-            <div
-              style={{
-                ...subtlePanelStyle,
-                display: "grid",
-                gap: 10,
-                padding: 18,
-                alignContent: "start",
-              }}
-            >
-              <strong>What you get</strong>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {["Self-serve checkout", "License Hub access", "Billing visibility"].map((item) => (
-                  <span
-                    key={item}
-                    style={{
-                      borderRadius: 999,
-                      padding: "8px 12px",
-                      background: "#fffaf0",
-                      border: "1px solid #d8ccae",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
         <section id="pricing" style={{ display: "grid", gap: 12 }}>
-          <div style={{ ...panelStyle, display: "grid", gap: 8, padding: 24 }}>
-            <p style={eyebrowStyle}>Pricing</p>
-            <h2 style={{ margin: 0, fontSize: 34, lineHeight: 1.05 }}>Choose your edition</h2>
-            <p style={{ ...mutedTextStyle, margin: 0 }}>Four editions. Two self-serve paths. One email through checkout and portal.</p>
-          </div>
           <PricingClient
             environment={config.environment}
             clientToken={config.clientToken}
@@ -172,8 +89,7 @@ export default function HomePage() {
 
         <section id="how-it-works" style={{ ...panelStyle, display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gap: 6 }}>
-            <p style={eyebrowStyle}>How it works</p>
-            <h2 style={{ margin: 0 }}>Buy in three steps</h2>
+            <h2 style={{ margin: 0 }}>{"\u5206\u4e09\u6b65\u8d2d\u4e70"}</h2>
           </div>
           <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
             {deliverySteps.map((step) => (
@@ -188,13 +104,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="quick-help" style={{ ...panelStyle, display: "grid", gap: 16 }}>
+        <section id="quick-help" style={{ ...panelStyle, display: "grid", gap: 16 }} aria-labelledby="faq-heading">
           <div style={{ display: "grid", gap: 6 }}>
-            <p style={eyebrowStyle}>Quick help</p>
-            <h2 style={{ margin: 0 }}>FAQ and next actions</h2>
+            <h2 id="faq-heading" style={{ margin: 0 }}>
+              {"\u5e38\u89c1\u95ee\u9898"}
+            </h2>
           </div>
 
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+          <div
+            id="contact"
+            style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
+          >
             {faqItems.map((item) => (
               <article
                 key={item.question}
@@ -202,30 +122,6 @@ export default function HomePage() {
               >
                 <strong>{item.question}</strong>
                 <p style={{ ...mutedTextStyle, margin: "6px 0 0" }}>{item.answer}</p>
-              </article>
-            ))}
-          </div>
-
-          <div
-            id="contact"
-            style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
-          >
-            {helpCards.map((card) => (
-              <article
-                key={card.title}
-                style={{ padding: 16, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}
-              >
-                <strong>{card.title}</strong>
-                <p style={{ ...mutedTextStyle, margin: "6px 0 12px" }}>{card.body}</p>
-                {card.href.startsWith("http") ? (
-                  <a href={card.href} style={card.style}>
-                    {card.label}
-                  </a>
-                ) : (
-                  <Link href={card.href} style={card.style}>
-                    {card.label}
-                  </Link>
-                )}
               </article>
             ))}
           </div>
