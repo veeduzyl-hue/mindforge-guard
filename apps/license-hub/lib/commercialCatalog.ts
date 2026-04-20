@@ -17,6 +17,22 @@ export interface CommercialOffer {
   priceId?: string;
 }
 
+export type PricingEditionMode = "community" | "self_serve" | "contact";
+
+export interface PricingEdition {
+  slug: string;
+  title: string;
+  eyebrow: string;
+  priceLabel: string;
+  summary: string;
+  features: readonly string[];
+  mode: PricingEditionMode;
+  ctaLabel?: string;
+  ctaHref?: string;
+  monthlyOffer?: CommercialOffer;
+  yearlyOffer?: CommercialOffer;
+}
+
 function requirePrice(key: PaddlePlanKey) {
   const price = getPaddlePriceByKey(key);
   if (!price) {
@@ -144,6 +160,71 @@ export function getCommercialOffers(): readonly CommercialOffer[] {
         "Use contact intake for procurement, legal, or rollout questions",
         "Do not assume a fully launched team or admin platform from this page",
       ],
+    },
+  ] as const;
+}
+
+function requireOffer(offers: readonly CommercialOffer[], slug: string): CommercialOffer {
+  const offer = offers.find((entry) => entry.slug === slug);
+  if (!offer) {
+    throw new Error(`Missing commercial offer for ${slug}`);
+  }
+  return offer;
+}
+
+export function getPricingEditions(): readonly PricingEdition[] {
+  const offers = getCommercialOffers();
+  const community = requireOffer(offers, "community");
+  const proMonthly = requireOffer(offers, "pro-monthly");
+  const proAnnual = requireOffer(offers, "pro-annual");
+  const proPlusMonthly = requireOffer(offers, "pro-plus-monthly");
+  const proPlusAnnual = requireOffer(offers, "pro-plus-annual");
+  const enterprise = requireOffer(offers, "enterprise");
+
+  return [
+    {
+      slug: "community",
+      title: community.title,
+      eyebrow: "Open path",
+      priceLabel: "Free",
+      summary: "Free path for evaluation and local use.",
+      features: ["Open docs", "Local verification", "No checkout"],
+      mode: "community",
+      ctaLabel: "View Docs",
+      ctaHref: "/#quick-help",
+    },
+    {
+      slug: "pro",
+      title: "Pro",
+      eyebrow: "Self-serve",
+      priceLabel: "Monthly / Yearly",
+      summary: "Self-serve commercial buying for individuals and small teams.",
+      features: ["Self-serve checkout", "License Hub access", "Billing visibility"],
+      mode: "self_serve",
+      monthlyOffer: proMonthly,
+      yearlyOffer: proAnnual,
+    },
+    {
+      slug: "pro-plus",
+      title: "Pro+",
+      eyebrow: "Higher commercial edition",
+      priceLabel: "Monthly / Yearly",
+      summary: "Higher commercial tier for broader rollout.",
+      features: ["Drift timeline", "Assoc correlate", "Higher commercial tier"],
+      mode: "self_serve",
+      monthlyOffer: proPlusMonthly,
+      yearlyOffer: proPlusAnnual,
+    },
+    {
+      slug: "enterprise",
+      title: enterprise.title,
+      eyebrow: "Contact-led",
+      priceLabel: "Contact us",
+      summary: "Contact-led buying for procurement-managed teams.",
+      features: ["Contact-led buying", "Procurement review", "Custom terms"],
+      mode: "contact",
+      ctaLabel: "Contact Sales",
+      ctaHref: "/#contact",
     },
   ] as const;
 }
