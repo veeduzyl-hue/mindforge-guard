@@ -221,29 +221,29 @@ export function PricingClient(input: {
       <section
         style={{
           display: "grid",
-          gap: 18,
-          padding: 22,
-          borderRadius: 18,
-          background: "#fffaf0",
+          gap: 14,
+          padding: 18,
+          borderRadius: 16,
+          background: "rgba(255,255,255,0.92)",
           border: "1px solid #d8ccae",
         }}
       >
         <div
           style={{
             display: "grid",
-            gap: 16,
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 12,
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
             alignItems: "end",
           }}
         >
           <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0 }}>Choose your edition</h2>
-            <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
-              Use one purchase email for checkout and <Link href="/login">License Hub access</Link>.
+            <h2 style={{ margin: 0, fontSize: 24 }}>Choose your edition</h2>
+            <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.5 }}>
+              Use one email for checkout and <Link href="/login">License Hub</Link>.
             </p>
           </div>
           <label style={{ display: "grid", gap: 8 }}>
-            <span style={{ fontWeight: 700 }}>Purchase email</span>
+            <span style={{ fontWeight: 700, fontSize: 14 }}>Purchase email</span>
             <input
               value={buyerEmail}
               onChange={(event) => {
@@ -253,7 +253,7 @@ export function PricingClient(input: {
                 }
               }}
               placeholder="buyer@example.com"
-              style={{ padding: 14, borderRadius: 12, border: "1px solid #c4b79d" }}
+              style={{ padding: 13, borderRadius: 12, border: "1px solid #c4b79d", background: "#fffdf8" }}
             />
           </label>
         </div>
@@ -276,7 +276,7 @@ export function PricingClient(input: {
         ) : null}
       </section>
 
-      <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+      <section style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
         {input.editions.map((edition) => {
           const monthlyBusy = busySlug === edition.monthlyOffer?.slug;
           const yearlyBusy = busySlug === edition.yearlyOffer?.slug;
@@ -289,9 +289,9 @@ export function PricingClient(input: {
               key={edition.slug}
               style={{
                 display: "grid",
-                gap: 18,
-                padding: 22,
-                borderRadius: 18,
+                gap: 14,
+                padding: 20,
+                borderRadius: 16,
                 background:
                   edition.slug === "pro-plus"
                     ? "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,248,232,0.98) 100%)"
@@ -299,22 +299,22 @@ export function PricingClient(input: {
                 border: edition.slug === "pro-plus" ? "1px solid #cfa24c" : "1px solid #d8ccae",
                 boxShadow:
                   edition.slug === "pro-plus"
-                    ? "0 18px 40px rgba(108, 74, 16, 0.14)"
-                    : "0 12px 32px rgba(46, 38, 20, 0.08)",
+                    ? "0 14px 32px rgba(108, 74, 16, 0.12)"
+                    : "0 10px 26px rgba(46, 38, 20, 0.07)",
               }}
             >
-              <div style={{ display: "grid", gap: 8 }}>
-                <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
+              <div style={{ display: "grid", gap: 6 }}>
+                <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
                   {edition.eyebrow}
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "baseline", justifyContent: "space-between" }}>
-                  <h2 style={{ margin: 0, fontSize: 28 }}>{edition.title}</h2>
-                  <span style={{ color: "#4d3b19", fontSize: 16, fontWeight: 700 }}>{edition.priceLabel}</span>
+                  <h2 style={{ margin: 0, fontSize: 26 }}>{edition.title}</h2>
+                  <span style={{ color: "#4d3b19", fontSize: 15, fontWeight: 700 }}>{edition.priceLabel}</span>
                 </div>
-                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{edition.summary}</p>
+                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.45 }}>{edition.summary}</p>
               </div>
 
-              <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
+              <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.55 }}>
                 {edition.features.map((feature) => (
                   <li key={feature}>{feature}</li>
                 ))}
@@ -327,7 +327,7 @@ export function PricingClient(input: {
                     onClick={() => void beginCheckout(monthlyOffer)}
                     disabled={anyBusy}
                     style={{
-                      padding: "13px 16px",
+                      padding: "12px 14px",
                       borderRadius: 12,
                       border: "none",
                       background: "#1f3b63",
@@ -343,7 +343,7 @@ export function PricingClient(input: {
                     onClick={() => void beginCheckout(yearlyOffer)}
                     disabled={anyBusy}
                     style={{
-                      padding: "13px 16px",
+                      padding: "12px 14px",
                       borderRadius: 12,
                       border: "1px solid #b9ab8b",
                       background: "#ffffff",
@@ -362,7 +362,7 @@ export function PricingClient(input: {
                   href={edition.ctaHref}
                   style={{
                     display: "inline-block",
-                    padding: "13px 16px",
+                    padding: "12px 14px",
                     borderRadius: 12,
                     border: "1px solid #c4b79d",
                     textDecoration: "none",
