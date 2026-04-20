@@ -4,7 +4,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
-import type { CommercialOffer } from "../../lib/commercialCatalog";
+import type { CommercialOffer, PricingEdition } from "../../lib/commercialCatalog";
 
 declare global {
   interface Window {
@@ -66,12 +66,11 @@ export function PricingClient(input: {
   clientToken: string;
   successUrl: string;
   cancelUrl: string;
-  offers: readonly CommercialOffer[];
+  editions: readonly PricingEdition[];
 }) {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [busySlug, setBusySlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [checkoutState, setCheckoutState] = useState("idle");
   const checkoutCompletedRef = useRef(false);
   const hostedFallbackStartedRef = useRef(false);
   const activeCheckoutRef = useRef<{
@@ -105,7 +104,6 @@ export function PricingClient(input: {
           checkoutCompletedRef.current = true;
           hostedFallbackStartedRef.current = false;
           activeCheckoutRef.current = null;
-          setCheckoutState("completed");
         }
 
         if (event?.name === "checkout.payment.error" || event?.name === "checkout.error") {
@@ -132,7 +130,6 @@ export function PricingClient(input: {
 
     hostedFallbackStartedRef.current = true;
     setError(`Overlay checkout could not finish (${reason}). Switching to the secure hosted checkout page...`);
-    setCheckoutState("switching_to_hosted");
     window.location.href = activeCheckout.checkoutUrl;
   }
 
@@ -141,14 +138,12 @@ export function PricingClient(input: {
       return;
     }
     if (!buyerEmail.trim()) {
-      setCheckoutState("error");
       setError("Enter the purchase email that should receive License Hub access.");
       return;
     }
 
     setError(null);
     setBusySlug(offer.slug);
-    setCheckoutState("creating");
     checkoutCompletedRef.current = false;
     hostedFallbackStartedRef.current = false;
     activeCheckoutRef.current = null;
@@ -179,7 +174,6 @@ export function PricingClient(input: {
       const checkoutUrl = payload.checkout.checkout_url || null;
 
       if (input.clientToken && window.Paddle) {
-        setCheckoutState("opening");
         try {
           window.Paddle.Checkout.open({
             transactionId: payload.checkout.transaction_id,
@@ -192,7 +186,6 @@ export function PricingClient(input: {
               variant: "one-page",
             },
           });
-          setCheckoutState("opened");
           return;
         } catch (openError) {
           if (!checkoutUrl) {
@@ -205,7 +198,6 @@ export function PricingClient(input: {
 
       if (checkoutUrl) {
         setError("Embedded checkout is unavailable. Switching to the secure hosted checkout page...");
-        setCheckoutState("switching_to_hosted");
         window.location.href = checkoutUrl;
         return;
       }
@@ -217,7 +209,6 @@ export function PricingClient(input: {
       throw new Error("Paddle.js has not loaded yet, and no hosted checkout URL was returned.");
     } catch (caughtError) {
       activeCheckoutRef.current = null;
-      setCheckoutState("error");
       setError(caughtError instanceof Error ? caughtError.message : String(caughtError));
     } finally {
       setBusySlug(null);
@@ -237,21 +228,30 @@ export function PricingClient(input: {
           border: "1px solid #d8ccae",
         }}
       >
+        <div style={{ display: "grid", gap: 6 }}>
+          <h2 style={{ margin: 0 }}>Pricing grid</h2>
+          <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>
+            Choose the edition that matches your stage today, then use one purchase email for checkout, License Hub
+            access, and future account lookup.
+          </p>
+        </div>
         <label style={{ display: "grid", gap: 8 }}>
           <span style={{ fontWeight: 700 }}>Purchase email</span>
           <input
             value={buyerEmail}
-            onChange={(event) => setBuyerEmail(event.target.value)}
+            onChange={(event) => {
+              setBuyerEmail(event.target.value);
+              if (error) {
+                setError(null);
+              }
+            }}
             placeholder="buyer@example.com"
             style={{ padding: 14, borderRadius: 12, border: "1px solid #c4b79d" }}
           />
         </label>
         <p style={{ margin: 0, color: "#5b5444" }}>
-          Use the same email later for <Link href="/login">License Hub login</Link>, license downloads, and account
-          billing lookup.
-        </p>
-        <p style={{ margin: 0, color: "#5b5444" }}>
-          Checkout state: <strong>{checkoutState}</strong> | Environment: <strong>{input.environment}</strong>
+          Pro and Pro+ stay self-serve. Buy with the email that should own the commercial access, then use that same
+          email later for <Link href="/login">License Hub login</Link>.
         </p>
         {error ? (
           <p
@@ -273,65 +273,184 @@ export function PricingClient(input: {
       </section>
 
       <section style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-        {input.offers.map((offer) => {
-          const isPaid = offer.kind === "paddle_checkout";
-          const isBusy = busySlug === offer.slug;
+        {input.editions.map((edition) => {
+          const monthlyBusy = busySlug === edition.monthlyOffer?.slug;
+          const yearlyBusy = busySlug === edition.yearlyOffer?.slug;
+          const anyBusy = busySlug !== null;
+          const monthlyOffer = edition.monthlyOffer;
+          const yearlyOffer = edition.yearlyOffer;
 
           return (
             <article
-              key={offer.slug}
+              key={edition.slug}
               style={{
                 display: "grid",
                 gap: 14,
                 padding: 22,
                 borderRadius: 18,
-                background: "#ffffff",
-                border: "1px solid #d8ccae",
-                boxShadow: "0 12px 32px rgba(46, 38, 20, 0.08)",
+                background:
+                  edition.slug === "pro-plus"
+                    ? "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,248,232,0.98) 100%)"
+                    : "#ffffff",
+                border: edition.slug === "pro-plus" ? "1px solid #cfa24c" : "1px solid #d8ccae",
+                boxShadow:
+                  edition.slug === "pro-plus"
+                    ? "0 18px 40px rgba(108, 74, 16, 0.14)"
+                    : "0 12px 32px rgba(46, 38, 20, 0.08)",
               }}
             >
               <div style={{ display: "grid", gap: 6 }}>
-                <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
-                  {offer.editionLabel}
-                </p>
-                <h2 style={{ margin: 0, fontSize: 28 }}>{offer.title}</h2>
-                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>{offer.summary}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+                  <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
+                    {edition.eyebrow}
+                  </p>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "5px 10px",
+                      borderRadius: 999,
+                      background: edition.slug === "pro-plus" ? "#f8d98b" : "#f4efe3",
+                      color: "#4d3b19",
+                      fontSize: 12,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {edition.priceLabel}
+                  </span>
+                </div>
+                <h2 style={{ margin: 0, fontSize: 28 }}>{edition.title}</h2>
+                <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.65 }}>{edition.summary}</p>
               </div>
 
-              <div style={{ display: "grid", gap: 4, color: "#3e382b" }}>
-                <div>Billing interval: {offer.billingIntervalLabel}</div>
-                <div>Delivery: {offer.deliveryLabel}</div>
-                {offer.priceId ? <div style={{ color: "#7b715d", fontSize: 12 }}>Verified checkout wiring is centralized in server config.</div> : null}
+              <div
+                style={{
+                  display: "grid",
+                  gap: 10,
+                  padding: 14,
+                  borderRadius: 14,
+                  background: "#fffaf0",
+                  border: "1px solid #e1d4b4",
+                  color: "#3e382b",
+                }}
+              >
+                <div>
+                  <strong>{edition.audienceLabel}</strong>
+                  <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.audience}</p>
+                </div>
               </div>
 
-              <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
-                {offer.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
+              <div style={{ display: "grid", gap: 10 }}>
+                <div>
+                  <strong>What is included</strong>
+                  <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.includesLead}</p>
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 18, color: "#3e382b", lineHeight: 1.7 }}>
+                  {edition.includes.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
 
-              {offer.kind === "paddle_checkout" ? (
-                <button
-                  type="button"
-                  onClick={() => void beginCheckout(offer)}
-                  disabled={isBusy}
+              <div
+                style={{
+                  padding: 14,
+                  borderRadius: 14,
+                  background: edition.slug === "community" ? "#f7f2e8" : "#f9f5eb",
+                  border: "1px solid #e1d4b4",
+                }}
+              >
+                <strong>Upgrade path</strong>
+                <p style={{ margin: "6px 0 0", color: "#5b5444", lineHeight: 1.6 }}>{edition.upgradeNote}</p>
+              </div>
+
+              {edition.mode === "self_serve" && monthlyOffer && yearlyOffer ? (
+                <div
                   style={{
-                    padding: "13px 16px",
-                    borderRadius: 12,
-                    border: "none",
-                    background: "#1f3b63",
-                    color: "#ffffff",
-                    fontWeight: 700,
-                    cursor: isBusy ? "progress" : "pointer",
+                    display: "grid",
+                    gap: 12,
+                    padding: 16,
+                    borderRadius: 14,
+                    background: "#fffaf0",
+                    border: "1px solid #e1d4b4",
                   }}
                 >
-                  {isBusy ? "Starting checkout..." : offer.ctaLabel}
-                </button>
+                  <strong>Choose your billing cadence</strong>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "6px 10px",
+                        borderRadius: 999,
+                        background: "#ffffff",
+                        border: "1px solid #d8ccae",
+                        color: "#5b5444",
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      Monthly
+                    </span>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "6px 10px",
+                        borderRadius: 999,
+                        background: "#ffffff",
+                        border: "1px solid #d8ccae",
+                        color: "#5b5444",
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      Yearly
+                    </span>
+                  </div>
+                  {edition.billingNote ? (
+                    <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{edition.billingNote}</p>
+                  ) : null}
+                  <div style={{ display: "grid", gap: 10 }}>
+                    <button
+                      type="button"
+                      onClick={() => void beginCheckout(monthlyOffer)}
+                      disabled={anyBusy}
+                      style={{
+                        padding: "13px 16px",
+                        borderRadius: 12,
+                        border: "none",
+                        background: "#1f3b63",
+                        color: "#ffffff",
+                        fontWeight: 700,
+                        cursor: anyBusy ? "progress" : "pointer",
+                      }}
+                    >
+                      {monthlyBusy ? "Starting checkout..." : "Choose Monthly"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void beginCheckout(yearlyOffer)}
+                      disabled={anyBusy}
+                      style={{
+                        padding: "13px 16px",
+                        borderRadius: 12,
+                        border: "1px solid #b9ab8b",
+                        background: "#ffffff",
+                        color: "#3e382b",
+                        fontWeight: 700,
+                        cursor: anyBusy ? "progress" : "pointer",
+                      }}
+                    >
+                      {yearlyBusy ? "Starting checkout..." : "Choose Yearly"}
+                    </button>
+                  </div>
+                </div>
               ) : null}
 
-              {offer.kind === "community" ? (
+              {edition.mode === "community" && edition.ctaHref && edition.ctaLabel ? (
                 <Link
-                  href="/docs"
+                  href={edition.ctaHref}
                   style={{
                     display: "inline-block",
                     padding: "13px 16px",
@@ -340,15 +459,16 @@ export function PricingClient(input: {
                     textDecoration: "none",
                     color: "#3e382b",
                     fontWeight: 700,
+                    textAlign: "center",
                   }}
                 >
-                  {offer.ctaLabel}
+                  {edition.ctaLabel}
                 </Link>
               ) : null}
 
-              {offer.kind === "contact" ? (
+              {edition.mode === "contact" && edition.ctaHref && edition.ctaLabel ? (
                 <Link
-                  href="/contact"
+                  href={edition.ctaHref}
                   style={{
                     display: "inline-block",
                     padding: "13px 16px",
@@ -357,9 +477,10 @@ export function PricingClient(input: {
                     textDecoration: "none",
                     color: "#3e382b",
                     fontWeight: 700,
+                    textAlign: "center",
                   }}
                 >
-                  {offer.ctaLabel}
+                  {edition.ctaLabel}
                 </Link>
               ) : null}
             </article>
