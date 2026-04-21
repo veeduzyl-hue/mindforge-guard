@@ -34,15 +34,15 @@ export default function HomePage() {
   const faqItems = [
     {
       question: "\u6708\u4ed8\u548c\u5e74\u5ea6\u6709\u4ec0\u4e48\u533a\u522b\uff1f",
-      answer: "\u53ea\u5f71\u54cd\u8ba1\u8d39\u5468\u671f\uff0c\u7248\u672c\u80fd\u529b\u4e0d\u53d8\u3002",
+      answer: "\u4ec5\u8ba1\u8d39\u5468\u671f\u4e0d\u540c\u3002",
     },
     {
       question: "\u8d2d\u4e70\u540e\u5982\u4f55\u767b\u5f55\u8bb8\u53ef\u8bc1\u4e2d\u5fc3\uff1f",
-      answer: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1\u767b\u5f55\u5373\u53ef\u3002",
+      answer: "\u4f7f\u7528\u8d2d\u4e70\u90ae\u7bb1\u767b\u5f55\u3002",
     },
     {
       question: "\u5982\u4f55\u8d2d\u4e70 Enterprise\uff1f",
-      answer: "\u901a\u8fc7\u8054\u7cfb\u5165\u53e3\u53d1\u8d77\u91c7\u8d2d\u5ba1\u67e5\u3002",
+      answer: "\u8054\u7cfb\u9500\u552e\u5f00\u59cb\u91c7\u8d2d\u5ba1\u67e5\u3002",
     },
   ] as const;
 
@@ -122,20 +122,29 @@ export default function HomePage() {
           id="contact"
           style={{
             ...panelStyle,
-            display: "flex",
-            flexWrap: "wrap",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
             gap: 10,
-            justifyContent: "center",
-            alignItems: "center",
+            alignItems: "start",
           }}
         >
-          <Link href="/docs" style={secondaryButtonStyle}>
-            Docs
+          <Link href="/docs" style={{ ...secondaryButtonStyle, display: "block", boxSizing: "border-box", textAlign: "center" }}>
+            {"\u6587\u6863"}
           </Link>
-          <a href={contactHref} aria-label={`Contact ${contactEmail}`} title={contactEmail} style={primaryButtonStyle}>
-            Contact: {contactEmail}
-          </a>
-          <Link href="/legal" style={secondaryButtonStyle}>
+          <div style={{ display: "grid", gap: 6, minWidth: 0 }}>
+            <a
+              href={contactHref}
+              aria-label={`Contact ${contactEmail}`}
+              title={contactEmail}
+              style={{ ...primaryButtonStyle, display: "block", boxSizing: "border-box", textAlign: "center" }}
+            >
+              {"\u8054\u7cfb"}
+            </a>
+            <span style={{ ...mutedTextStyle, minWidth: 0, overflowWrap: "anywhere", textAlign: "center", fontSize: 12 }}>
+              {contactEmail}
+            </span>
+          </div>
+          <Link href="/legal" style={{ ...secondaryButtonStyle, display: "block", boxSizing: "border-box", textAlign: "center" }}>
             Legal
           </Link>
         </section>

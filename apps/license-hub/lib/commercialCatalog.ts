@@ -189,7 +189,7 @@ export function getPricingEditions(): readonly PricingEdition[] {
       title: community.title,
       eyebrow: "",
       priceLabel: "\u514d\u8d39",
-      summary: "\u67e5\u770b\u5f53\u524d\u6cbb\u7406\u72b6\u6001\u3002",
+      summary: "\u5f53\u524d\u6cbb\u7406\u72b6\u6001\u3002",
       features: [
         "\u67e5\u770b\u5f53\u524d policy\u3001audit \u4e0e snapshot \u7ed3\u679c",
         "\u5206\u7c7b action \u5e76\u67e5\u770b\u5f53\u524d drift \u72b6\u6001",
@@ -204,7 +204,7 @@ export function getPricingEditions(): readonly PricingEdition[] {
       title: "Pro",
       eyebrow: "",
       priceLabel: "\u6708\u4ed8 / \u5e74\u5ea6",
-      summary: "\u67e5\u770b\u6cbb\u7406\u8d8b\u52bf\u3002",
+      summary: "\u6cbb\u7406\u8d8b\u52bf\u3002",
       features: [
         "\u5305\u542b Community \u7684\u5f53\u524d\u72b6\u6001\u80fd\u529b",
         "\u67e5\u770b drift \u65f6\u95f4\u7ebf",
@@ -219,7 +219,7 @@ export function getPricingEditions(): readonly PricingEdition[] {
       title: "Pro+",
       eyebrow: "",
       priceLabel: "\u6708\u4ed8 / \u5e74\u5ea6",
-      summary: "\u6bd4\u8f83\u53d8\u5316\u5e76\u53d1\u73b0\u66f4\u6df1\u5c42\u4fe1\u53f7\u3002",
+      summary: "\u53d8\u5316\u6bd4\u8f83\u4e0e\u5173\u8054\u4fe1\u53f7\u3002",
       features: [
         "\u5305\u542b Pro \u7684\u8d8b\u52bf\u80fd\u529b",
         "\u6bd4\u8f83 drift \u53d8\u5316",
@@ -234,7 +234,7 @@ export function getPricingEditions(): readonly PricingEdition[] {
       title: enterprise.title,
       eyebrow: "",
       priceLabel: "\u8054\u7cfb\u9500\u552e",
-      summary: "\u6807\u51c6\u5316\u91c7\u8d2d\u4e0e\u7ec4\u7ec7\u843d\u5730\u3002",
+      summary: "\u4f01\u4e1a\u91c7\u8d2d\u4e0e\u7ec4\u7ec7\u843d\u5730\u3002",
       features: [
         "\u5f53\u524d CLI \u80fd\u529b\u8fb9\u754c\u4e0e Pro+ \u4e00\u81f4",
         "\u652f\u6301\u4f01\u4e1a\u91c7\u8d2d\u8fb9\u754c\u4e0b\u7684\u91c7\u8d2d\u6d41\u7a0b",

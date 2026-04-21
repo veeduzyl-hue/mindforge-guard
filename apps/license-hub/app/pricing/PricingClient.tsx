@@ -241,7 +241,7 @@ export function PricingClient(input: {
           }}
         >
           <p style={{ flex: "1 1 260px", minWidth: 0, margin: 0, color: "#5b5444", lineHeight: 1.5, fontWeight: 600 }}>
-            {"\u4f7f\u7528\u540c\u4e00\u4e2a\u8d2d\u4e70\u90ae\u7bb1\u5b8c\u6210\u7ed3\u8d26\u5e76\u767b\u5f55"}
+            {"\u8d2d\u4e70\u90ae\u7bb1\u7528\u4e8e\u7ed3\u8d26\u548c\u767b\u5f55"}
             <Link href="/login">{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</Link>
             {"\u3002"}
           </p>
