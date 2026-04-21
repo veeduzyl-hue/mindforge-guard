@@ -61,6 +61,10 @@ async function readCheckoutApiPayload(response: Response): Promise<CheckoutApiPa
   );
 }
 
+function isExternalHref(href: string): boolean {
+  return href.startsWith("http://") || href.startsWith("https://") || href.startsWith("mailto:");
+}
+
 export function PricingClient(input: {
   environment: "sandbox" | "production";
   clientToken: string;
@@ -233,16 +237,15 @@ export function PricingClient(input: {
             display: "flex",
             flexWrap: "wrap",
             gap: 12,
-            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.5, fontWeight: 600 }}>
+          <p style={{ flex: "1 1 260px", minWidth: 0, margin: 0, color: "#5b5444", lineHeight: 1.5, fontWeight: 600 }}>
             {"\u4f7f\u7528\u540c\u4e00\u4e2a\u8d2d\u4e70\u90ae\u7bb1\u5b8c\u6210\u7ed3\u8d26\u5e76\u767b\u5f55"}
             <Link href="/login">{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</Link>
             {"\u3002"}
           </p>
-          <label style={{ display: "block", minWidth: "min(380px, 100%)", flex: "1 1 360px" }}>
+          <label style={{ display: "block", flex: "1 1 320px", minWidth: 0, maxWidth: 420, width: "100%" }}>
             <input
               aria-label="\u8d2d\u4e70\u90ae\u7bb1"
               value={buyerEmail}
@@ -254,7 +257,10 @@ export function PricingClient(input: {
               }}
               placeholder="buyer@example.com"
               style={{
+                boxSizing: "border-box",
                 width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
                 padding: 13,
                 borderRadius: 12,
                 border: "1px solid #c4b79d",
@@ -289,6 +295,7 @@ export function PricingClient(input: {
           const anyBusy = busySlug !== null;
           const monthlyOffer = edition.monthlyOffer;
           const yearlyOffer = edition.yearlyOffer;
+          const ctaIsExternal = edition.ctaHref ? isExternalHref(edition.ctaHref) : false;
 
           return (
             <article
@@ -361,21 +368,41 @@ export function PricingClient(input: {
               ) : null}
 
               {edition.mode !== "self_serve" && edition.ctaHref && edition.ctaLabel ? (
-                <Link
-                  href={edition.ctaHref}
-                  style={{
-                    display: "inline-block",
-                    padding: "12px 14px",
-                    borderRadius: 12,
-                    border: "1px solid #c4b79d",
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 700,
-                    textAlign: "center",
-                  }}
-                >
-                  {edition.ctaLabel}
-                </Link>
+                ctaIsExternal ? (
+                  <a
+                    href={edition.ctaHref}
+                    target={edition.ctaHref.startsWith("http") ? "_blank" : undefined}
+                    rel={edition.ctaHref.startsWith("http") ? "noreferrer" : undefined}
+                    style={{
+                      display: "inline-block",
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      border: "1px solid #c4b79d",
+                      textDecoration: "none",
+                      color: "#3e382b",
+                      fontWeight: 700,
+                      textAlign: "center",
+                    }}
+                  >
+                    {edition.ctaLabel}
+                  </a>
+                ) : (
+                  <Link
+                    href={edition.ctaHref}
+                    style={{
+                      display: "inline-block",
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      border: "1px solid #c4b79d",
+                      textDecoration: "none",
+                      color: "#3e382b",
+                      fontWeight: 700,
+                      textAlign: "center",
+                    }}
+                  >
+                    {edition.ctaLabel}
+                  </Link>
+                )
               ) : null}
             </article>
           );

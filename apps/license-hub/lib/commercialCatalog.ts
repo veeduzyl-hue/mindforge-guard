@@ -1,5 +1,7 @@
 import { getPaddlePriceByKey, type PaddlePlanKey } from "./paddlePrices";
 
+const publicProjectDocsUrl = "https://github.com/veeduzyl-hue/mindforge-guard";
+
 export type CommercialOfferKind = "community" | "paddle_checkout" | "contact";
 
 export interface CommercialOffer {
@@ -195,7 +197,7 @@ export function getPricingEditions(): readonly PricingEdition[] {
       ],
       mode: "community",
       ctaLabel: "\u67e5\u770b\u6587\u6863",
-      ctaHref: "/docs",
+      ctaHref: publicProjectDocsUrl,
     },
     {
       slug: "pro",
@@ -234,9 +236,9 @@ export function getPricingEditions(): readonly PricingEdition[] {
       priceLabel: "\u8054\u7cfb\u9500\u552e",
       summary: "\u6807\u51c6\u5316\u91c7\u8d2d\u4e0e\u7ec4\u7ec7\u843d\u5730\u3002",
       features: [
-        "\u5f53\u524d CLI entitlement \u4e0e Pro+ \u4e00\u81f4",
-        "\u652f\u6301 enterprise purchasing boundary \u4e0b\u7684\u91c7\u8d2d\u6d41\u7a0b",
-        "\u4e0d\u627f\u8bfa\u989d\u5916 runtime authority",
+        "\u5f53\u524d CLI \u80fd\u529b\u8fb9\u754c\u4e0e Pro+ \u4e00\u81f4",
+        "\u652f\u6301\u4f01\u4e1a\u91c7\u8d2d\u8fb9\u754c\u4e0b\u7684\u91c7\u8d2d\u6d41\u7a0b",
+        "\u4e0d\u627f\u8bfa\u989d\u5916\u8fd0\u884c\u65f6\u6743\u9650",
       ],
       mode: "contact",
       ctaLabel: "\u8054\u7cfb\u9500\u552e",

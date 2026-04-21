@@ -12,6 +12,7 @@ import {
 import { PricingClient } from "./pricing/PricingClient";
 
 const contactEmail = "billing@mail.mindforge.run";
+const contactHref = `mailto:${contactEmail}?subject=MindForge%20Guard%20License%20Hub`;
 
 export default function HomePage() {
   const editions = getPricingEditions();
@@ -131,7 +132,7 @@ export default function HomePage() {
           <Link href="/docs" style={secondaryButtonStyle}>
             Docs
           </Link>
-          <a href={`mailto:${contactEmail}`} style={primaryButtonStyle}>
+          <a href={contactHref} aria-label={`Contact ${contactEmail}`} title={contactEmail} style={primaryButtonStyle}>
             Contact: {contactEmail}
           </a>
           <Link href="/legal" style={secondaryButtonStyle}>
