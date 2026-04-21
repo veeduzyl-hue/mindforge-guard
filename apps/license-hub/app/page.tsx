@@ -11,6 +11,8 @@ import {
 } from "./siteChrome";
 import { PricingClient } from "./pricing/PricingClient";
 
+const contactEmail = "billing@mail.mindforge.run";
+
 export default function HomePage() {
   const editions = getPricingEditions();
   const config = getPaddleClientBootConfig();
@@ -119,43 +121,22 @@ export default function HomePage() {
           id="contact"
           style={{
             ...panelStyle,
-            display: "grid",
-            gap: 14,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0, fontSize: 22 }}>Docs / Contact / Legacy</h2>
-          </div>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
-              <strong>Docs</strong>
-              <div style={{ marginTop: 10 }}>
-                <Link href="/docs" style={secondaryButtonStyle}>
-                  Docs
-                </Link>
-              </div>
-            </article>
-            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
-              <strong>Contact</strong>
-              <div style={{ marginTop: 10 }}>
-                <Link href="/contact" style={primaryButtonStyle}>
-                  Contact
-                </Link>
-              </div>
-            </article>
-            <article style={{ padding: 14, borderRadius: 14, background: "#fffaf0", border: "1px solid #d8ccae" }}>
-              <strong>Legacy</strong>
-              <p style={{ ...mutedTextStyle, margin: "8px 0 10px" }}>{"\u65e7\u5165\u53e3\u4ecd\u4fdd\u6301\u517c\u5bb9\u8df3\u8f6c\u3002"}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                <Link href="/pricing" style={secondaryButtonStyle}>
-                  Pricing
-                </Link>
-                <Link href="/legal" style={secondaryButtonStyle}>
-                  Legal
-                </Link>
-              </div>
-            </article>
-          </div>
+          <Link href="/docs" style={secondaryButtonStyle}>
+            Docs
+          </Link>
+          <a href={`mailto:${contactEmail}`} style={primaryButtonStyle}>
+            Contact: {contactEmail}
+          </a>
+          <Link href="/legal" style={secondaryButtonStyle}>
+            Legal
+          </Link>
         </section>
       </div>
     </main>
