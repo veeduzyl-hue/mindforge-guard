@@ -1,5 +1,7 @@
 import { getPaddlePriceByKey, type PaddlePlanKey } from "./paddlePrices";
 
+const publicProjectDocsUrl = "https://github.com/veeduzyl-hue/mindforge-guard";
+
 export type CommercialOfferKind = "community" | "paddle_checkout" | "contact";
 
 export interface CommercialOffer {
@@ -185,21 +187,29 @@ export function getPricingEditions(): readonly PricingEdition[] {
     {
       slug: "community",
       title: community.title,
-      eyebrow: "Open path",
-      priceLabel: "Free",
-      summary: "Free path for evaluation and local use.",
-      features: ["Open docs", "Local verification", "No checkout"],
+      eyebrow: "",
+      priceLabel: "\u514d\u8d39",
+      summary: "\u5f53\u524d\u6cbb\u7406\u72b6\u6001\u3002",
+      features: [
+        "\u67e5\u770b\u5f53\u524d policy\u3001audit \u4e0e snapshot \u7ed3\u679c",
+        "\u5206\u7c7b action \u5e76\u67e5\u770b\u5f53\u524d drift \u72b6\u6001",
+        "\u5b89\u88c5\u3001\u67e5\u770b\u548c\u79fb\u9664\u672c\u5730 license",
+      ],
       mode: "community",
-      ctaLabel: "View Docs",
-      ctaHref: "/#quick-help",
+      ctaLabel: "\u67e5\u770b\u6587\u6863",
+      ctaHref: publicProjectDocsUrl,
     },
     {
       slug: "pro",
       title: "Pro",
-      eyebrow: "Self-serve",
-      priceLabel: "Monthly / Yearly",
-      summary: "Self-serve commercial buying for individuals and small teams.",
-      features: ["Self-serve checkout", "License Hub access", "Billing visibility"],
+      eyebrow: "",
+      priceLabel: "\u6708\u4ed8 / \u5e74\u5ea6",
+      summary: "\u6cbb\u7406\u8d8b\u52bf\u3002",
+      features: [
+        "\u5305\u542b Community \u7684\u5f53\u524d\u72b6\u6001\u80fd\u529b",
+        "\u67e5\u770b drift \u65f6\u95f4\u7ebf",
+        "\u8ddf\u8e2a\u6cbb\u7406\u53d8\u5316\u7684\u65f6\u95f4\u8d8b\u52bf",
+      ],
       mode: "self_serve",
       monthlyOffer: proMonthly,
       yearlyOffer: proAnnual,
@@ -207,10 +217,14 @@ export function getPricingEditions(): readonly PricingEdition[] {
     {
       slug: "pro-plus",
       title: "Pro+",
-      eyebrow: "Higher commercial edition",
-      priceLabel: "Monthly / Yearly",
-      summary: "Higher commercial tier for broader rollout.",
-      features: ["Drift timeline", "Assoc correlate", "Higher commercial tier"],
+      eyebrow: "",
+      priceLabel: "\u6708\u4ed8 / \u5e74\u5ea6",
+      summary: "\u53d8\u5316\u6bd4\u8f83\u4e0e\u5173\u8054\u4fe1\u53f7\u3002",
+      features: [
+        "\u5305\u542b Pro \u7684\u8d8b\u52bf\u80fd\u529b",
+        "\u6bd4\u8f83 drift \u53d8\u5316",
+        "\u53d1\u73b0\u66f4\u6df1\u5c42\u5173\u8054\u4fe1\u53f7\u4e0e correlate \u7ed3\u679c",
+      ],
       mode: "self_serve",
       monthlyOffer: proPlusMonthly,
       yearlyOffer: proPlusAnnual,
@@ -218,13 +232,17 @@ export function getPricingEditions(): readonly PricingEdition[] {
     {
       slug: "enterprise",
       title: enterprise.title,
-      eyebrow: "Contact-led",
-      priceLabel: "Contact us",
-      summary: "Contact-led buying for procurement-managed teams.",
-      features: ["Contact-led buying", "Procurement review", "Custom terms"],
+      eyebrow: "",
+      priceLabel: "\u8054\u7cfb\u9500\u552e",
+      summary: "\u4f01\u4e1a\u91c7\u8d2d\u4e0e\u7ec4\u7ec7\u843d\u5730\u3002",
+      features: [
+        "\u5f53\u524d CLI \u80fd\u529b\u8fb9\u754c\u4e0e Pro+ \u4e00\u81f4",
+        "\u652f\u6301\u4f01\u4e1a\u91c7\u8d2d\u8fb9\u754c\u4e0b\u7684\u91c7\u8d2d\u6d41\u7a0b",
+        "\u4e0d\u627f\u8bfa\u989d\u5916\u8fd0\u884c\u65f6\u6743\u9650",
+      ],
       mode: "contact",
-      ctaLabel: "Contact Sales",
-      ctaHref: "/#contact",
+      ctaLabel: "\u8054\u7cfb\u9500\u552e",
+      ctaHref: "/contact",
     },
   ] as const;
 }

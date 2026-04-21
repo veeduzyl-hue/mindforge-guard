@@ -61,6 +61,10 @@ async function readCheckoutApiPayload(response: Response): Promise<CheckoutApiPa
   );
 }
 
+function isExternalHref(href: string): boolean {
+  return href.startsWith("http://") || href.startsWith("https://") || href.startsWith("mailto:");
+}
+
 export function PricingClient(input: {
   environment: "sandbox" | "production";
   clientToken: string;
@@ -221,8 +225,8 @@ export function PricingClient(input: {
       <section
         style={{
           display: "grid",
-          gap: 14,
-          padding: 18,
+          gap: 12,
+          padding: 16,
           borderRadius: 16,
           background: "rgba(255,255,255,0.92)",
           border: "1px solid #d8ccae",
@@ -230,21 +234,20 @@ export function PricingClient(input: {
       >
         <div
           style={{
-            display: "grid",
+            display: "flex",
+            flexWrap: "wrap",
             gap: 12,
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            alignItems: "end",
+            alignItems: "center",
           }}
         >
-          <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0, fontSize: 24 }}>Choose your edition</h2>
-            <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.5 }}>
-              Use one email for checkout and <Link href="/login">License Hub</Link>.
-            </p>
-          </div>
-          <label style={{ display: "grid", gap: 8 }}>
-            <span style={{ fontWeight: 700, fontSize: 14 }}>Purchase email</span>
+          <p style={{ flex: "1 1 260px", minWidth: 0, margin: 0, color: "#5b5444", lineHeight: 1.5, fontWeight: 600 }}>
+            {"\u8d2d\u4e70\u90ae\u7bb1\u7528\u4e8e\u7ed3\u8d26\u548c\u767b\u5f55"}
+            <Link href="/login">{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</Link>
+            {"\u3002"}
+          </p>
+          <label style={{ display: "block", flex: "1 1 320px", minWidth: 0, maxWidth: 420, width: "100%" }}>
             <input
+              aria-label="\u8d2d\u4e70\u90ae\u7bb1"
               value={buyerEmail}
               onChange={(event) => {
                 setBuyerEmail(event.target.value);
@@ -253,7 +256,16 @@ export function PricingClient(input: {
                 }
               }}
               placeholder="buyer@example.com"
-              style={{ padding: 13, borderRadius: 12, border: "1px solid #c4b79d", background: "#fffdf8" }}
+              style={{
+                boxSizing: "border-box",
+                width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
+                padding: 13,
+                borderRadius: 12,
+                border: "1px solid #c4b79d",
+                background: "#fffdf8",
+              }}
             />
           </label>
         </div>
@@ -283,6 +295,7 @@ export function PricingClient(input: {
           const anyBusy = busySlug !== null;
           const monthlyOffer = edition.monthlyOffer;
           const yearlyOffer = edition.yearlyOffer;
+          const ctaIsExternal = edition.ctaHref ? isExternalHref(edition.ctaHref) : false;
 
           return (
             <article
@@ -304,10 +317,7 @@ export function PricingClient(input: {
               }}
             >
               <div style={{ display: "grid", gap: 6 }}>
-                <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "#946c2b" }}>
-                  {edition.eyebrow}
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "baseline", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "baseline", justifyContent: "space-between" }}>
                   <h2 style={{ margin: 0, fontSize: 26 }}>{edition.title}</h2>
                   <span style={{ color: "#4d3b19", fontSize: 15, fontWeight: 700 }}>{edition.priceLabel}</span>
                 </div>
@@ -336,7 +346,7 @@ export function PricingClient(input: {
                       cursor: anyBusy ? "progress" : "pointer",
                     }}
                   >
-                    {monthlyBusy ? "Starting checkout..." : "Choose Monthly"}
+                    {monthlyBusy ? "\u6b63\u5728\u6253\u5f00..." : "\u9009\u62e9\u6708\u4ed8"}
                   </button>
                   <button
                     type="button"
@@ -352,27 +362,47 @@ export function PricingClient(input: {
                       cursor: anyBusy ? "progress" : "pointer",
                     }}
                   >
-                    {yearlyBusy ? "Starting checkout..." : "Choose Yearly"}
+                    {yearlyBusy ? "\u6b63\u5728\u6253\u5f00..." : "\u9009\u62e9\u5e74\u5ea6"}
                   </button>
                 </div>
               ) : null}
 
               {edition.mode !== "self_serve" && edition.ctaHref && edition.ctaLabel ? (
-                <Link
-                  href={edition.ctaHref}
-                  style={{
-                    display: "inline-block",
-                    padding: "12px 14px",
-                    borderRadius: 12,
-                    border: "1px solid #c4b79d",
-                    textDecoration: "none",
-                    color: "#3e382b",
-                    fontWeight: 700,
-                    textAlign: "center",
-                  }}
-                >
-                  {edition.ctaLabel}
-                </Link>
+                ctaIsExternal ? (
+                  <a
+                    href={edition.ctaHref}
+                    target={edition.ctaHref.startsWith("http") ? "_blank" : undefined}
+                    rel={edition.ctaHref.startsWith("http") ? "noreferrer" : undefined}
+                    style={{
+                      display: "inline-block",
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      border: "1px solid #c4b79d",
+                      textDecoration: "none",
+                      color: "#3e382b",
+                      fontWeight: 700,
+                      textAlign: "center",
+                    }}
+                  >
+                    {edition.ctaLabel}
+                  </a>
+                ) : (
+                  <Link
+                    href={edition.ctaHref}
+                    style={{
+                      display: "inline-block",
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      border: "1px solid #c4b79d",
+                      textDecoration: "none",
+                      color: "#3e382b",
+                      fontWeight: 700,
+                      textAlign: "center",
+                    }}
+                  >
+                    {edition.ctaLabel}
+                  </Link>
+                )
               ) : null}
             </article>
           );
