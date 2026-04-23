@@ -1,11 +1,12 @@
 -- MindForge License Hub ops baseline
 -- Boundary:
 -- - read-only operations views only
--- - no ops_notes table or index in this Neon execution range
+-- - ops_notes intentionally skipped in this execution scope
 -- - no checkout, webhook, pricing, or license issuance behavior changes
--- Skipped this round:
--- - create table if not exists ops_notes
--- - create index if not exists idx_ops_notes_subject
+
+-- skipped on purpose:
+-- create table if not exists ops_notes ...
+-- create index if not exists idx_ops_notes_subject ...
 
 create or replace view ops_recent_paid_orders as
 select
@@ -183,7 +184,7 @@ select
   l."issuedAt" as event_at,
   o.id as order_record_id,
   o."externalOrderId" as external_order_id,
-  l.id as license_record_id,
+  l.id::text as license_record_id,
   l."licenseId" as license_id,
   null::text as magic_link_token_id,
   jsonb_build_object(
@@ -209,7 +210,7 @@ select
   null::text as external_order_id,
   null::text as license_record_id,
   null::text as license_id,
-  m.id as magic_link_token_id,
+  m.id::text as magic_link_token_id,
   jsonb_build_object(
     'purpose', m.purpose,
     'expires_at', m."expiresAt",
@@ -232,7 +233,7 @@ select
   null::text as external_order_id,
   null::text as license_record_id,
   null::text as license_id,
-  m.id as magic_link_token_id,
+  m.id::text as magic_link_token_id,
   jsonb_build_object(
     'purpose', m.purpose,
     'requested_email', m.email
