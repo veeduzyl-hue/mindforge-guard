@@ -4,10 +4,11 @@ This document records the current License Hub Sample 2 success result and the fi
 
 Status summary:
 
-- Current stage: failure path round 1 and read-only ops baseline preparation.
+- Current stage: failure path round 1 closeout and read-only ops baseline available in Neon production.
 - Passed sample: Sample 2, `Pro+ Monthly`, paid path complete, portal license visible, monthly validity correct.
-- Known failure sample: failed payment marked `potentially fraudulent`, classified as provider risk / payment rejection.
-- Next scope: checkout close, unauthenticated portal, magic link reuse / expiry, webhook failure / retry observability, and read-only ops queries.
+- Round 1 lightweight failure-path checks: passed.
+- Known failure sample: failed payment marked `potentially fraudulent`, archived as provider risk / payment rejection.
+- Remaining open item: webhook failure / retry observability.
 
 Boundary:
 
@@ -108,6 +109,32 @@ Expected evidence shape:
 Failure conclusion:
 
 - The observed `Failed payment` / `potentially fraudulent` case belongs to payment provider risk handling and card/payment rejection, not to a License Hub checkout, webhook, magic-link, portal, or validity bug.
+
+Archive conclusion:
+
+- Provider-side / issuer-side payment risk rejection.
+- Not a License Hub main-path defect.
+- No paid entitlement inferred.
+- No active license should be issued.
+
+## Round 1 Verification Summary
+
+- Sample 2 success path: passed.
+- Round 1 lightweight failure-path checks: passed.
+- Remaining open item: webhook failure / retry observability.
+
+## Round 1 Passed
+
+- Unauthenticated `/portal` redirects to `/login`.
+- Unauthenticated `/portal/licenses` redirects to `/login`.
+- Checkout close does not create a paid order.
+- Checkout close does not create an active license.
+- Magic link second click returns `token_already_used`.
+- Expired magic link does not establish a session.
+- Read-only ops views are available in Neon production.
+- `ops_recent_paid_orders` showed no new paid order for the checkout-close check.
+- `ops_issued_licenses` showed no new license for the checkout-close check.
+- `ops_webhook_failures` is currently empty; the view exists and an empty result is normal when no persisted webhook failures are present.
 
 ## First-Round Failure Path Checklist
 
@@ -308,21 +335,26 @@ where customer_email = '<sample-2-buyer-email>'
 order by event_at desc;
 ```
 
-## Next Execution Order
+## Round 1 Closeout Order
 
-1. Archive the non-secret Sample 2 pass evidence using the fields in this document.
-2. Archive the existing `Failed payment` / `potentially fraudulent` case as payment-provider risk rejection.
-3. Run checkout-open-then-close.
-4. Run portal access without login.
-5. Run magic link reused.
-6. Run magic link expired.
-7. Run webhook failure / retry observability with a controlled persisted failure.
-8. Apply or confirm the read-only ops baseline in Neon.
-9. Re-run the read-only queries and attach query outputs to the private evidence bundle.
+1. Sample 2 pass evidence archived in non-secret summary form.
+2. Existing `Failed payment` / `potentially fraudulent` case archived as payment-provider risk rejection.
+3. Checkout-open-then-close passed.
+4. Portal access without login passed for `/portal` and `/portal/licenses`.
+5. Magic link reused passed.
+6. Magic link expired passed.
+7. Read-only ops baseline confirmed available in Neon.
+8. Read-only ops queries used for round 1 evidence checks.
+9. Round 1 lightweight failure-path summary recorded here.
+
+## Next recommended step
+
+- Run webhook failure / retry observability with a controlled persisted failure.
+- Optionally export evidence from the Neon read-only ops views into a private operator evidence bundle.
 
 ## Compatibility Conclusion
 
-This closeout stage remains documentation and read-only operations preparation.
+This closeout stage remains documentation and read-only verification recording.
 
 - checkout unchanged
 - webhook unchanged
