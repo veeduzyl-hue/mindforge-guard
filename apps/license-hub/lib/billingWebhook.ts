@@ -6,6 +6,7 @@ import { getBillingProviderConfig, isProductionEnv } from "./env";
 import { normalizeBillingEvent } from "./billingEvents";
 import { applyBillingLifecycle } from "./paymentLifecycle";
 import { getPaddleSignatureHeader, normalizePaddleBillingEvent, verifyPaddleSignature } from "./paddleWebhook";
+import { maybeThrowControlledWebhookFailure } from "./webhookFailureInjection";
 
 type StagedError = Error & {
   stage?: string;
@@ -147,6 +148,7 @@ export async function handleBillingWebhook(rawBody: string, headers: Headers) {
 
   try {
     const event = normalizeBillingEvent(rawPayload, providerConfig.provider);
+    maybeThrowControlledWebhookFailure(event);
     const result = await applyBillingLifecycle({
       db,
       webhookEventId: webhookEvent.id,
@@ -261,6 +263,7 @@ async function handlePaddleBillingWebhook(rawBody: string, headers: Headers) {
   }
 
   try {
+    maybeThrowControlledWebhookFailure(normalized);
     const result = await applyBillingLifecycle({
       db,
       webhookEventId: webhookEvent.id,

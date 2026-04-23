@@ -133,7 +133,7 @@ export function PricingClient(input: {
     }
 
     hostedFallbackStartedRef.current = true;
-    setError(`Overlay checkout could not finish (${reason}). Switching to the secure hosted checkout page...`);
+    setError(`Checkout could not finish (${reason}). Switching to the secure hosted checkout page...`);
     window.location.href = activeCheckout.checkoutUrl;
   }
 
@@ -201,16 +201,16 @@ export function PricingClient(input: {
       }
 
       if (checkoutUrl) {
-        setError("Embedded checkout is unavailable. Switching to the secure hosted checkout page...");
+        setError("Checkout is opening on the secure hosted checkout page...");
         window.location.href = checkoutUrl;
         return;
       }
 
       if (!input.clientToken) {
-        throw new Error("Paddle client token is missing, so embedded checkout cannot start.");
+        throw new Error("Checkout is temporarily unavailable. Please contact support.");
       }
 
-      throw new Error("Paddle.js has not loaded yet, and no hosted checkout URL was returned.");
+      throw new Error("Checkout is temporarily unavailable. Please contact support.");
     } catch (caughtError) {
       activeCheckoutRef.current = null;
       setError(caughtError instanceof Error ? caughtError.message : String(caughtError));
@@ -283,7 +283,7 @@ export function PricingClient(input: {
               fontWeight: 600,
             }}
           >
-            Checkout error: {error}
+            Checkout notice: {error}
           </p>
         ) : null}
       </section>

@@ -33,7 +33,7 @@ function LoginPageContent() {
       return;
     }
 
-    setMessage(`Magic link prepared for ${result.email}.`);
+    setMessage(`Check ${result.email} for your one-time sign-in link.`);
     if (result.devMagicLink) {
       setDevMagicLink(result.devMagicLink);
     }
@@ -66,7 +66,7 @@ function LoginPageContent() {
       {error ? <p style={{ marginTop: 16, color: "#9a2d20" }}>Last login attempt: {error}</p> : null}
       {devMagicLink ? (
         <p style={{ marginTop: 16 }}>
-          Dev link: <a href={devMagicLink}>{devMagicLink}</a>
+          Sign-in link: <a href={devMagicLink}>{devMagicLink}</a>
         </p>
       ) : null}
     </main>
