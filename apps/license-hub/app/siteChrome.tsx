@@ -57,12 +57,14 @@ export const secondaryButtonStyle: CSSProperties = {
 };
 
 export const pricingPageHref = "/#pricing";
+export const mainSiteHref = "https://mindforge.run";
 
 const navItems = [
+  { href: "/product", label: "Product" },
   { href: pricingPageHref, label: "Pricing" },
-  { href: "/#quick-help", label: "Help" },
-  { href: "/legal", label: "Legal" },
-  { href: "/login", label: "Login" },
+  { href: "/#demos", label: "Demos" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/login", label: "Customer Portal" },
 ] as const;
 
 export function SiteChrome(input: {
@@ -123,9 +125,9 @@ export function SiteChrome(input: {
                 color: "#5b4720",
               }}
             >
-              MindForge License Hub is the bounded production intake and delivery surface for commercial licensing. It
-              covers hosted checkout entry, signed license delivery, account visibility, and local Guard CLI
-              verification without expanding authority into the Guard main path.
+              MindForge Guard Licensing Center is the bounded purchase, license delivery, and customer portal surface
+              for MindForge Guard. It supports hosted checkout, signed license delivery, account visibility, and local
+              Guard CLI verification without expanding authority into the Guard main path.
             </div>
           )}
         </header>
@@ -137,7 +139,8 @@ export function SiteChrome(input: {
             <p style={{ margin: 0, fontWeight: 700 }}>MindForge Guard commercial delivery stays bounded.</p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
               No control-plane, dashboard-first, or autonomous execution claims are made here. Community stays outside
-              payment, commercial checkout maps to License Hub issuance, and enterprise discussions remain contact-led.
+              payment, commercial checkout maps to Licensing Center delivery, and enterprise discussions remain
+              contact-led.
             </p>
           </footer>
         )}

@@ -121,7 +121,7 @@ The standard install path is:
 - Windows: `C:\Users\<user>\.guard\license.json`
 - macOS/Linux: `~/.guard/license.json`
 
-Download the license file from License Hub, then install it locally with the CLI.
+Download the license file from the MindForge Guard Licensing Center / Customer Portal, then install it locally with the CLI.
 
 ---
 
@@ -230,7 +230,8 @@ MindForge Guard does **not** become:
 
 - `docs/product/current-product-baseline.md` - current commercial packaging baseline
 - `docs/product/capability-baseline.md` - sellable capability and SKU baseline
-- `docs/product/user-journey.md` - buyer, operator, and CLI journey
+- `docs/product/main-site-release-announcement-v1.md` - official launch announcement copy
+- `docs/product/user-journey.md` - buyer, customer portal, and CLI journey
 - `docs/demo/commercial-demo-paths.md` - commercial demo scripts
 - `docs/release/release-readiness-checklist.md` - deployment and readiness checklist
 
