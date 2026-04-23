@@ -4,11 +4,11 @@ This document records the current License Hub Sample 2 success result and the fi
 
 Status summary:
 
-- Current stage: failure path round 1 closeout and read-only ops baseline available in Neon production.
+- Current stage: launch preparation closeout with read-only ops baseline available in Neon production.
 - Passed sample: Sample 2, `Pro+ Monthly`, paid path complete, portal license visible, monthly validity correct.
 - Round 1 lightweight failure-path checks: passed.
 - Known failure sample: failed payment marked `potentially fraudulent`, archived as provider risk / payment rejection.
-- Remaining open item: webhook failure / retry observability.
+- Webhook failure / retry observability: implementation-ready; operator rehearsal deferred; not a launch blocker.
 
 Boundary:
 
@@ -121,7 +121,7 @@ Archive conclusion:
 
 - Sample 2 success path: passed.
 - Round 1 lightweight failure-path checks: passed.
-- Remaining open item: webhook failure / retry observability.
+- Webhook failure / retry observability is implementation-ready; operator rehearsal is deferred and not a launch blocker.
 
 ## Round 1 Passed
 
@@ -349,12 +349,59 @@ order by event_at desc;
 
 ## Next recommended step
 
-- Run webhook failure / retry observability with a controlled persisted failure.
+- Proceed with launch preparation using the confirmed success path, round 1 checks, and Neon read-only ops baseline.
+- Keep webhook failure / retry observability available as a default-off operator rehearsal capability for a later safety window.
 - Optionally export evidence from the Neon read-only ops views into a private operator evidence bundle.
+
+## Webhook Failure / Retry Observability
+
+Status:
+
+- Implementation-ready.
+- Operator rehearsal deferred.
+- Not a main-path blocker.
+- Not a launch blocker.
+- Operational observability capability for persisted failure, retry, duplicate, and eventual success evidence.
+
+Current foundation:
+
+- Successful payment, webhook processing, license issuance, magic link delivery, portal login, and license visibility are already confirmed.
+- `webhook_events` records provider event id, event type, status, processing time, error message, order linkage, and license linkage.
+- Existing webhook handling marks lifecycle failures as `error`.
+- Existing retry behavior can reuse an event ledger that is not yet `processed`.
+- Existing duplicate handling returns idempotently after a webhook event is already `processed`.
+- Existing license issuance checks `findActiveLicenseByOrderId` before creating an active license.
+- Neon read-only view `ops_webhook_failures` is available for persisted error rows.
+
+Prepared safety-window mechanism:
+
+- A default-off controlled failure gate is available for manual rehearsal.
+- The gate requires `LICENSE_HUB_WEBHOOK_FAILURE_INJECTION_ENABLED=true`.
+- The gate also requires an explicit event id selector or marker selector.
+- The injected failure occurs after webhook event ledger creation and before billing lifecycle application.
+- The injected failure is intended to create a persisted `webhook_events.status = error` row without changing order or license state.
+
+Operator rehearsal runbook:
+
+- [license-hub-webhook-failure-retry-runbook.md](./license-hub-webhook-failure-retry-runbook.md)
+
+Deferred:
+
+- The human safety-window rehearsal is deferred until after launch readiness work.
+- No production-risk action should be automated from this document.
+
+Close conditions:
+
+- Controlled failure is visible in `webhook_events` and `ops_webhook_failures`.
+- Retry reaches `processed`.
+- Duplicate replay after success is idempotent.
+- Final order and license state are consistent with the billing event.
+- No duplicate active license is created.
+- Failure gate is restored to default off.
 
 ## Compatibility Conclusion
 
-This closeout stage remains documentation and read-only verification recording.
+This closeout stage remains documentation and launch-readiness verification recording.
 
 - checkout unchanged
 - webhook unchanged

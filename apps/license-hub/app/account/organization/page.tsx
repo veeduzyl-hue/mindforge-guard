@@ -27,7 +27,7 @@ export default async function AccountOrganizationPage() {
           </ul>
         </>
       ) : (
-        <p>No organization scaffold is attached to this account yet.</p>
+        <p>No organization is attached to this account yet.</p>
       )}
     </main>
   );

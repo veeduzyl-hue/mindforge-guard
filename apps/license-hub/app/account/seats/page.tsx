@@ -17,7 +17,7 @@ export default async function AccountSeatsPage() {
         <p key={note} style={{ color: "#6a604b" }}>{note}</p>
       ))}
       <h2>Entitlements</h2>
-      {overview.entitlements.length === 0 ? <p>No seat entitlements have been scaffolded yet.</p> : null}
+      {overview.entitlements.length === 0 ? <p>No seat entitlements are available for this account yet.</p> : null}
       <ul>
         {overview.entitlements.map((entitlement) => (
           <li key={entitlement.id}>
