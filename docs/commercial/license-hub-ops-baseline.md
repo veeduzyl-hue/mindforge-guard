@@ -5,7 +5,7 @@ This document defines the minimum manual operations baseline for the live MindFo
 Boundary:
 
 - read-only operations views first
-- optional `ops_notes` table for manual annotations only
+- `ops_notes` table and index deferred for this round
 - no admin panel expansion
 - no checkout changes
 - no billing webhook behavior changes
@@ -28,10 +28,11 @@ Recommended fixed views:
 - `ops_customer_journey`
   - Purpose: produce a single customer-centric event stream across order creation, payment, license issuance, and magic link activity.
 
-Recommended optional table:
+Deferred optional table:
 
 - `ops_notes`
   - Purpose: manual operator notes attached to an order, license, customer, webhook event, or other support subject without changing product-path tables.
+  - Current Neon execution range: skipped.
   - Minimal fields:
     - `id`
     - `subject_type`
@@ -70,9 +71,8 @@ Apply:
 Characteristics:
 
 - all views are read-only selects over existing tables
-- `ops_notes` is isolated from checkout, webhook, pricing, and issuance tables
-- `create or replace view` keeps rollback simple
-- `create table if not exists` keeps repeated apply safe
+- `ops_notes` table/index creation is intentionally omitted from the current SQL execution range
+- `create or replace view` keeps repeated apply and rollback simple
 
 ## Neon Usage
 
@@ -82,6 +82,16 @@ In Neon SQL Editor:
 2. Paste the contents of `apps/license-hub/sql/license-hub-ops-baseline.sql`.
 3. Run the script once.
 4. Query the views directly.
+
+Current execution scope:
+
+- Apply `ops_recent_paid_orders`.
+- Apply `ops_issued_licenses`.
+- Apply `ops_webhook_failures`.
+- Apply `ops_magic_link_activity`.
+- Apply `ops_customer_journey`.
+- Skip `create table if not exists ops_notes`.
+- Skip `create index if not exists idx_ops_notes_subject`.
 
 Example queries:
 
@@ -120,28 +130,6 @@ where customer_email = 'buyer@example.com'
 order by event_at desc;
 ```
 
-Optional manual notes:
-
-```sql
-insert into ops_notes (subject_type, subject_id, note_text, author_email)
-values ('order', 'ord_live_123', 'Customer confirmed payment, waiting on webhook replay.', 'ops@example.com');
-```
-
-```sql
-select *
-from ops_notes
-where subject_type = 'order'
-  and subject_id = 'ord_live_123'
-order by created_at desc;
-```
-
-```sql
-update ops_notes
-set note_text = 'Customer confirmed payment. Webhook replay completed.',
-    updated_at = current_timestamp
-where id = 1;
-```
-
 ## Suggested Operator Patterns
 
 - Use `ops_recent_paid_orders` to confirm a paid order reached the DB and whether a license is already linked.
@@ -149,4 +137,4 @@ where id = 1;
 - Use `ops_webhook_failures` first when payment completed externally but license issuance did not happen.
 - Use `ops_magic_link_activity` when a portal login complaint is likely token expiry or reuse.
 - Use `ops_customer_journey` to reconstruct the sequence for one customer during support handling.
-- Use `ops_notes` only for human annotations; do not treat it as workflow state or product authority.
+- Do not enable `ops_notes` in this round.

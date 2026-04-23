@@ -247,6 +247,8 @@ Current minimum necessary read-only views:
 Optional manual annotation table, not required for this round:
 
 - `ops_notes`
+- Current Neon execution range skips `create table if not exists ops_notes`.
+- Current Neon execution range skips `create index if not exists idx_ops_notes_subject`.
 
 Why this is the minimum:
 
