@@ -16,15 +16,15 @@ export default function HomePage() {
   const purchaseFlow = [
     {
       title: "Choose an edition",
-      body: "Pick Community, Pro, Pro+, or Enterprise based on how you plan to buy and manage access.",
+      body: "Pick Community, Pro, Pro+, or Enterprise.",
     },
     {
       title: "Use your purchase email",
-      body: "Enter the email that should receive checkout access, sign-in access, and delivery visibility.",
+      body: "Use one email for checkout, sign-in, and delivery visibility.",
     },
     {
       title: "Sign in after purchase",
-      body: "Use the same email to open License Hub and access licenses, billing, and account details.",
+      body: "Open License Hub with the same email for licenses and billing.",
     },
   ] as const;
   const compactFaq = [
@@ -94,9 +94,7 @@ export default function HomePage() {
         <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gap: 6 }}>
             <h2 style={{ margin: 0 }}>Purchase flow</h2>
-            <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Keep the path simple: choose an edition, use the purchase email, then sign in to access delivery and account details.
-            </p>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>Three steps: buy, sign in, manage access.</p>
           </div>
           <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
             {purchaseFlow.map((step) => (
@@ -114,7 +112,7 @@ export default function HomePage() {
               Purchase and account FAQ
             </h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Use these links when you need help buying, signing in, or finding legal and support details.
+              Use these answers when you need help buying, signing in, or finding support.
             </p>
           </div>
           <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
@@ -125,20 +123,14 @@ export default function HomePage() {
               </article>
             ))}
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <Link href="/login" style={secondaryButtonStyle}>
-              Login
-            </Link>
-            <Link href="#quick-help" style={secondaryButtonStyle}>
-              FAQ
-            </Link>
-            <Link href="/legal" style={secondaryButtonStyle}>
+          <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+            <Link href="/legal" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
               Legal
             </Link>
-            <Link href="/support" style={secondaryButtonStyle}>
+            <Link href="/support" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
               Support
             </Link>
-            <Link href="/docs" style={secondaryButtonStyle}>
+            <Link href="/docs" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
               Docs
             </Link>
           </div>
