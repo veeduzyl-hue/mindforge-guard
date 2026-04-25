@@ -11,7 +11,7 @@ export default async function PortalLicensesPage() {
       <h1>Your Licenses</h1>
       <p>Signed in as {session.email}</p>
       <p>
-        <Link href="/portal">Back to portal</Link>
+        <Link href="/portal">Back to License Hub</Link>
       </p>
 
       {licenses.length === 0 ? <p>No licenses found for this email yet.</p> : null}
@@ -22,9 +22,9 @@ export default async function PortalLicensesPage() {
             <h2 style={{ marginTop: 0 }}>{license.licenseId}</h2>
             <p>Edition: {license.edition}</p>
             <p>Status: {license.status}</p>
-            <p>Issued: {license.issuedAt}</p>
+            <p>Issued on: {license.issuedAt}</p>
             <p>Valid: {license.notBefore} to {license.notAfter}</p>
-            <p>Key: {license.keyId}</p>
+            <p>Key ID: {license.keyId}</p>
             <p>
               <Link href={`/portal/licenses/${license.licenseId}`}>View details</Link>
             </p>

@@ -57,12 +57,14 @@ export const secondaryButtonStyle: CSSProperties = {
 };
 
 export const pricingPageHref = "/#pricing";
+export const mainSiteHref = "https://mindforge.run";
 
 const navItems = [
+  { href: "/product", label: "Product" },
   { href: pricingPageHref, label: "Pricing" },
-  { href: "/#quick-help", label: "Help" },
-  { href: "/legal", label: "Legal" },
-  { href: "/login", label: "Login" },
+  { href: "/#demos", label: "Demos" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/login", label: "License Hub" },
 ] as const;
 
 export function SiteChrome(input: {
@@ -123,9 +125,9 @@ export function SiteChrome(input: {
                 color: "#5b4720",
               }}
             >
-              MindForge License Hub is the bounded production intake and delivery surface for commercial licensing. It
-              covers hosted checkout entry, signed license delivery, account visibility, and local Guard CLI
-              verification without expanding authority into the Guard main path.
+              MindForge Guard License Hub is the bounded purchase, billing, signed license delivery, and account
+              center for MindForge Guard. It supports secure checkout, license delivery, and account visibility without
+              changing Guard CLI behavior or expanding authority into the Guard main path.
             </div>
           )}
         </header>
@@ -137,7 +139,7 @@ export function SiteChrome(input: {
             <p style={{ margin: 0, fontWeight: 700 }}>MindForge Guard commercial delivery stays bounded.</p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
               No control-plane, dashboard-first, or autonomous execution claims are made here. Community stays outside
-              payment, commercial checkout maps to License Hub issuance, and enterprise discussions remain contact-led.
+              payment, commercial checkout flows through License Hub, and Enterprise remains contact-led.
             </p>
           </footer>
         )}

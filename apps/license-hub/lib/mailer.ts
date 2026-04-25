@@ -154,7 +154,7 @@ async function sendTextEmail(input: TextEmailInput): Promise<MailDeliveryResult>
 export async function sendMagicLinkEmail(to: string, magicLink: string): Promise<MailDeliveryResult> {
   const delivery = await sendTextEmail({
     to,
-    subject: "Your MindForge License Hub sign-in link",
+    subject: "Your MindForge Guard License Hub sign-in link",
     text: `Use this sign-in link: ${magicLink}`,
     debugType: "magic_link",
     debugPayload: {

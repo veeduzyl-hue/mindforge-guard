@@ -19,7 +19,7 @@ export default async function AccountBillingPage() {
       <p>License count: {summary.licenseCount}</p>
       <p>Renewal hint: {summary.renewalHint}</p>
       <p style={{ color: "#6a604b" }}>
-        Billing visibility is provided for account review and license fulfillment context.
+        Billing visibility is provided for account review and signed license delivery context.
       </p>
     </main>
   );

@@ -6,22 +6,23 @@ export default function PaddleSuccessPage() {
   return (
     <SiteChrome
       eyebrow="Checkout Return"
-      title="Payment submitted"
-      lede="Paddle reported a completed checkout return. License delivery still depends on the signed webhook being accepted and mapped into the existing billing lifecycle before the downloadable license appears."
+      title="Payment received"
+      lede="Your MindForge Guard purchase has been submitted. License Hub will make the signed license available in your account as soon as the paid order is ready for delivery."
     >
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <h2 style={{ margin: 0 }}>Next steps</h2>
         <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-          <li>Wait a moment for webhook fulfillment to update the order and issue the license.</li>
-          <li>Sign in with the purchase email to view portal licenses and account billing.</li>
-          <li>If the order does not settle correctly, use Support instead of retrying random checkout attempts.</li>
+          <li>Use the purchase email to sign in to License Hub.</li>
+          <li>Open licenses to view or download the signed license JSON.</li>
+          <li>Install the downloaded license locally with the Guard CLI.</li>
+          <li>If the license is not visible after a short delay, contact Support with the purchase email.</li>
         </ul>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <Link href="/login" style={primaryButtonStyle}>
-            Login
+            License Hub
           </Link>
           <Link href="/portal/licenses" style={secondaryButtonStyle}>
-            Portal licenses
+            View licenses
           </Link>
           <Link href="/account/billing" style={secondaryButtonStyle}>
             Account billing
