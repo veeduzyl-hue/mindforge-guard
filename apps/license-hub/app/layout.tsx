@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "MindForge License Hub",
-  description: "Commercial license delivery and account access for MindForge Guard",
+  title: "MindForge Guard License Hub",
+  description: "Purchase, billing, signed license delivery, and account access for MindForge Guard",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

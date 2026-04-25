@@ -9,23 +9,23 @@ export default async function AccountSeatsPage() {
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: 32, fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
-      <h1>Seat Assignments</h1>
+      <h1>Seats</h1>
       <p>
         <Link href="/account">Back to account</Link>
       </p>
       {overview.notes.map((note) => (
         <p key={note} style={{ color: "#6a604b" }}>{note}</p>
       ))}
-      <h2>Entitlements</h2>
+      <h2>Seat entitlements</h2>
       {overview.entitlements.length === 0 ? <p>No seat entitlements are available for this account yet.</p> : null}
       <ul>
         {overview.entitlements.map((entitlement) => (
           <li key={entitlement.id}>
-            License {entitlement.license?.licenseId || entitlement.licenseId} - seats {entitlement.activeAssignments}/{entitlement.seatCount}
+            License {entitlement.license?.licenseId || entitlement.licenseId}: {entitlement.activeAssignments} of {entitlement.seatCount} seats assigned
           </li>
         ))}
       </ul>
-      <h2>Assignments</h2>
+      <h2>Seat assignments</h2>
       {overview.assignments.length === 0 ? <p>No seat assignments yet.</p> : null}
       <ul>
         {overview.assignments.map((assignment) => (

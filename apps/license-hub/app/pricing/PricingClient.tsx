@@ -241,13 +241,12 @@ export function PricingClient(input: {
           }}
         >
           <p style={{ flex: "1 1 260px", minWidth: 0, margin: 0, color: "#5b5444", lineHeight: 1.5, fontWeight: 600 }}>
-            {"\u8d2d\u4e70\u90ae\u7bb1\u7528\u4e8e\u7ed3\u8d26\u548c\u767b\u5f55"}
-            <Link href="/login">{"\u8bb8\u53ef\u8bc1\u4e2d\u5fc3"}</Link>
-            {"\u3002"}
+            Use the same purchase email for checkout and later License Hub sign-in.{" "}
+            <Link href="/login">Open License Hub</Link>.
           </p>
           <label style={{ display: "block", flex: "1 1 320px", minWidth: 0, maxWidth: 420, width: "100%" }}>
             <input
-              aria-label="\u8d2d\u4e70\u90ae\u7bb1"
+              aria-label="Purchase email"
               value={buyerEmail}
               onChange={(event) => {
                 setBuyerEmail(event.target.value);
@@ -346,7 +345,7 @@ export function PricingClient(input: {
                       cursor: anyBusy ? "progress" : "pointer",
                     }}
                   >
-                    {monthlyBusy ? "\u6b63\u5728\u6253\u5f00..." : "\u9009\u62e9\u6708\u4ed8"}
+                    {monthlyBusy ? "Opening..." : "Buy monthly"}
                   </button>
                   <button
                     type="button"
@@ -362,7 +361,7 @@ export function PricingClient(input: {
                       cursor: anyBusy ? "progress" : "pointer",
                     }}
                   >
-                    {yearlyBusy ? "\u6b63\u5728\u6253\u5f00..." : "\u9009\u62e9\u5e74\u5ea6"}
+                    {yearlyBusy ? "Opening..." : "Buy yearly"}
                   </button>
                 </div>
               ) : null}

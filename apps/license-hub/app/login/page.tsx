@@ -41,8 +41,8 @@ function LoginPageContent() {
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: 32, fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
-      <h1>License Hub Login</h1>
-      <p>Enter the email used for your purchase to request a one-time sign-in link.</p>
+      <h1>MindForge Guard License Hub</h1>
+      <p>Enter the purchase email for your Guard license to request a one-time sign-in link.</p>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
         <input
@@ -58,15 +58,15 @@ function LoginPageContent() {
           disabled={submitting}
           style={{ padding: 12, borderRadius: 8, border: 0, background: "#1b1b18", color: "white" }}
         >
-          {submitting ? "Sending..." : "Request Magic Link"}
+          {submitting ? "Sending..." : "Email sign-in link"}
         </button>
       </form>
 
       {message ? <p style={{ marginTop: 16 }}>{message}</p> : null}
-      {error ? <p style={{ marginTop: 16, color: "#9a2d20" }}>Last login attempt: {error}</p> : null}
+      {error ? <p style={{ marginTop: 16, color: "#9a2d20" }}>Last sign-in attempt: {error}</p> : null}
       {devMagicLink ? (
         <p style={{ marginTop: 16 }}>
-          Sign-in link: <a href={devMagicLink}>{devMagicLink}</a>
+          Development sign-in link: <a href={devMagicLink}>{devMagicLink}</a>
         </p>
       ) : null}
     </main>

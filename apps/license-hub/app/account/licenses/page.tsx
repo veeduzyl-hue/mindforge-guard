@@ -8,7 +8,7 @@ export default async function AccountLicensesPage() {
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: 32, fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
-      <h1>Account Licenses</h1>
+      <h1>Licenses</h1>
       <p>
         <Link href="/account">Back to account</Link>
       </p>
@@ -16,12 +16,12 @@ export default async function AccountLicensesPage() {
       <div style={{ display: "grid", gap: 12 }}>
         {licenses.map((license) => (
           <article key={license.id} style={{ padding: 16, border: "1px solid #d1cab8", borderRadius: 12 }}>
-            <h2 style={{ marginTop: 0 }}>{license.licenseId}</h2>
+            <h2 style={{ marginTop: 0 }}>License {license.licenseId}</h2>
             <p>Status: {license.status}</p>
             <p>Edition: {license.edition}</p>
-            <p>Issued: {license.issuedAt}</p>
+            <p>Issued on: {license.issuedAt}</p>
             <p>Valid: {license.notBefore} to {license.notAfter}</p>
-            <p>Portal detail: <Link href={`/portal/licenses/${license.licenseId}`}>Open delivery detail</Link></p>
+            <p>Delivery detail: <Link href={`/portal/licenses/${license.licenseId}`}>Open license details</Link></p>
           </article>
         ))}
       </div>

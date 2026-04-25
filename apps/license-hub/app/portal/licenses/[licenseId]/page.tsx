@@ -18,24 +18,24 @@ export default async function PortalLicenseDetailPage({
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: 32, fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
-      <h1>License Detail</h1>
+      <h1>License details</h1>
       <p>
         <Link href="/portal/licenses">Back to licenses</Link>
       </p>
       <dl>
-        <dt>license_id</dt>
+        <dt>License ID</dt>
         <dd>{license.licenseId}</dd>
-        <dt>edition</dt>
+        <dt>Edition</dt>
         <dd>{license.edition}</dd>
-        <dt>issued_at</dt>
+        <dt>Issued on</dt>
         <dd>{license.issuedAt}</dd>
-        <dt>not_before</dt>
+        <dt>Valid from</dt>
         <dd>{license.notBefore}</dd>
-        <dt>not_after</dt>
+        <dt>Valid until</dt>
         <dd>{license.notAfter}</dd>
-        <dt>status</dt>
+        <dt>Status</dt>
         <dd>{license.status}</dd>
-        <dt>key_id</dt>
+        <dt>Key ID</dt>
         <dd>{license.keyId}</dd>
       </dl>
       <p>
