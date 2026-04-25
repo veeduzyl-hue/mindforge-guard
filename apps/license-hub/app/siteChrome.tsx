@@ -61,7 +61,7 @@ export const mainSiteHref = "https://mindforge.run";
 
 const navItems = [
   { href: pricingPageHref, label: "Pricing" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/#quick-help", label: "FAQ" },
   { href: "/legal", label: "Legal" },
   { href: "/support", label: "Support" },
   { href: "/login", label: "Login" },
