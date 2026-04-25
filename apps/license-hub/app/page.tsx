@@ -6,7 +6,6 @@ import {
   mutedTextStyle,
   pageBackgroundStyle,
   panelStyle,
-  primaryButtonStyle,
   secondaryButtonStyle,
 } from "./siteChrome";
 import { PricingClient } from "./pricing/PricingClient";
@@ -58,7 +57,7 @@ export default function HomePage() {
   return (
     <main style={pageBackgroundStyle}>
       <div style={{ maxWidth: 1120, margin: "0 auto", display: "grid", gap: 18 }}>
-        <section style={{ ...panelStyle, display: "grid", gap: 16, padding: 24 }}>
+        <section style={{ ...panelStyle, display: "grid", gap: 12, padding: 20 }}>
           <div
             style={{
               display: "flex",
@@ -68,24 +67,16 @@ export default function HomePage() {
               alignItems: "center",
             }}
           >
-            <div style={{ display: "grid", gap: 6, maxWidth: 720 }}>
-              <p style={{ margin: 0, color: "#946c2b", fontSize: 12, fontWeight: 800, textTransform: "uppercase" }}>
-                MindForge Guard License Hub
-              </p>
-              <h1 style={{ margin: 0, fontSize: 34, lineHeight: 1.08 }}>
-                Purchase and account center
+            <div style={{ display: "grid", gap: 4 }}>
+              <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.05 }}>
+                MindForge Guard
               </h1>
-              <p style={{ ...mutedTextStyle, margin: 0, fontSize: 16 }}>
-                Buy a license, sign in with your purchase email, and manage delivery and account access in one place.
+              <p style={{ margin: 0, color: "#5b5444", fontSize: 15, fontWeight: 600 }}>
+                License Hub
               </p>
             </div>
             <Link href="/login" style={secondaryButtonStyle}>
               Sign in
-            </Link>
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <Link href="#pricing" style={primaryButtonStyle}>
-              See pricing
             </Link>
           </div>
         </section>
@@ -138,7 +129,7 @@ export default function HomePage() {
             <Link href="/login" style={secondaryButtonStyle}>
               Login
             </Link>
-            <Link href="/faq" style={secondaryButtonStyle}>
+            <Link href="#quick-help" style={secondaryButtonStyle}>
               FAQ
             </Link>
             <Link href="/legal" style={secondaryButtonStyle}>
