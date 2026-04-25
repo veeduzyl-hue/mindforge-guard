@@ -14,17 +14,43 @@ import { PricingClient } from "./pricing/PricingClient";
 export default function HomePage() {
   const editions = getPricingEditions();
   const config = getPaddleClientBootConfig();
+  const purchaseFlow = [
+    {
+      title: "Choose an edition",
+      body: "Pick Community, Pro, Pro+, or Enterprise based on how you plan to buy and manage access.",
+    },
+    {
+      title: "Use your purchase email",
+      body: "Enter the email that should receive checkout access, sign-in access, and delivery visibility.",
+    },
+    {
+      title: "Sign in after purchase",
+      body: "Use the same email to open License Hub and access licenses, billing, and account details.",
+    },
+  ] as const;
   const compactFaq = [
     {
-      question: "Where do I buy?",
-      answer: "Choose Community, Pro, Pro+, or Enterprise below. Use the purchase email field before starting checkout.",
+      question: "Where does checkout happen?",
+      answer: "Checkout starts below on the License Hub pricing surface after you enter the purchase email.",
     },
     {
       question: "How do I sign in after purchase?",
       answer: "Use the same purchase email to sign in to License Hub and access licenses, billing, and account pages.",
     },
     {
-      question: "Where do legal, support, and boundary details live?",
+      question: "How are licenses delivered?",
+      answer: "After purchase, signed licenses are delivered through License Hub for download and account visibility.",
+    },
+    {
+      question: "Is MindForge Guard still local after purchase?",
+      answer: "Yes. License Hub adds purchase, delivery, and account access without changing local Guard CLI behavior.",
+    },
+    {
+      question: "How does Enterprise purchasing work?",
+      answer: "Enterprise remains contact-led. Use the Enterprise card or Contact/Support paths for procurement and rollout questions.",
+    },
+    {
+      question: "Where can I find legal and support information?",
       answer: "Use Legal for terms, privacy, refunds, and boundaries. Use Support for purchase, delivery, and account help.",
     },
   ] as const;
@@ -32,24 +58,34 @@ export default function HomePage() {
   return (
     <main style={pageBackgroundStyle}>
       <div style={{ maxWidth: 1120, margin: "0 auto", display: "grid", gap: 18 }}>
-        <section style={{ ...panelStyle, display: "grid", gap: 18, padding: 28 }}>
-          <div style={{ display: "grid", gap: 10, maxWidth: 760 }}>
-            <p style={{ margin: 0, color: "#946c2b", fontSize: 12, fontWeight: 800, textTransform: "uppercase" }}>
-              MindForge Guard License Hub
-            </p>
-            <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.05 }}>
-              Purchase, sign in, and manage your License Hub account.
-            </h1>
-            <p style={{ ...mutedTextStyle, margin: 0, fontSize: 17, maxWidth: 720 }}>
-              Buy a license, sign in with your purchase email, and manage delivery and account access in one place.
-            </p>
+        <section style={{ ...panelStyle, display: "grid", gap: 16, padding: 24 }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ display: "grid", gap: 6, maxWidth: 720 }}>
+              <p style={{ margin: 0, color: "#946c2b", fontSize: 12, fontWeight: 800, textTransform: "uppercase" }}>
+                MindForge Guard License Hub
+              </p>
+              <h1 style={{ margin: 0, fontSize: 34, lineHeight: 1.08 }}>
+                Purchase and account center
+              </h1>
+              <p style={{ ...mutedTextStyle, margin: 0, fontSize: 16 }}>
+                Buy a license, sign in with your purchase email, and manage delivery and account access in one place.
+              </p>
+            </div>
+            <Link href="/login" style={secondaryButtonStyle}>
+              Sign in
+            </Link>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link href="#pricing" style={primaryButtonStyle}>
               See pricing
-            </Link>
-            <Link href="/login" style={secondaryButtonStyle}>
-              Sign in
             </Link>
           </div>
         </section>
@@ -62,6 +98,23 @@ export default function HomePage() {
             cancelUrl={config.cancelUrl}
             editions={editions}
           />
+        </section>
+
+        <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+          <div style={{ display: "grid", gap: 6 }}>
+            <h2 style={{ margin: 0 }}>Purchase flow</h2>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              Keep the path simple: choose an edition, use the purchase email, then sign in to access delivery and account details.
+            </p>
+          </div>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+            {purchaseFlow.map((step) => (
+              <article key={step.title} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+                <strong>{step.title}</strong>
+                <p style={{ ...mutedTextStyle, margin: "6px 0 0" }}>{step.body}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section id="quick-help" style={{ ...panelStyle, display: "grid", gap: 16 }} aria-labelledby="faq-heading">
