@@ -60,11 +60,11 @@ export const pricingPageHref = "/#pricing";
 export const mainSiteHref = "https://mindforge.run";
 
 const navItems = [
-  { href: "/product", label: "Product" },
   { href: pricingPageHref, label: "Pricing" },
-  { href: "/#demos", label: "Demos" },
   { href: "/faq", label: "FAQ" },
-  { href: "/login", label: "License Hub" },
+  { href: "/legal", label: "Legal" },
+  { href: "/support", label: "Support" },
+  { href: "/login", label: "Login" },
 ] as const;
 
 export function SiteChrome(input: {
@@ -119,15 +119,14 @@ export function SiteChrome(input: {
             <div
               style={{
                 borderRadius: 16,
-                padding: 16,
+                padding: 14,
                 background: "#fff8e2",
                 border: "1px solid #d8bd74",
                 color: "#5b4720",
               }}
             >
-              MindForge Guard License Hub is the bounded purchase, billing, signed license delivery, and account
-              center for MindForge Guard. It supports secure checkout, license delivery, and account visibility without
-              changing Guard CLI behavior or expanding authority into the Guard main path.
+              License Hub handles purchase, sign-in, signed license delivery, and account access without changing
+              Guard CLI behavior.
             </div>
           )}
         </header>
@@ -138,8 +137,8 @@ export function SiteChrome(input: {
           <footer style={{ ...subtlePanelStyle, display: "grid", gap: 10 }}>
             <p style={{ margin: 0, fontWeight: 700 }}>MindForge Guard commercial delivery stays bounded.</p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              No control-plane, dashboard-first, or autonomous execution claims are made here. Community stays outside
-              payment, commercial checkout flows through License Hub, and Enterprise remains contact-led.
+              No control-plane or execution authority is introduced here. License Hub stays limited to purchase,
+              account, and delivery surfaces.
             </p>
           </footer>
         )}
