@@ -16,7 +16,7 @@ export default function DocsPage() {
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
             <strong>Launch announcement</strong>
             <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              The launch announcement lives in the repository history, but this page no longer links to the outdated release note path.
+              Release updates are published occasionally. For the latest product and documentation context, use the repository docs and the main site.
             </p>
           </article>
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>

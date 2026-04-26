@@ -123,14 +123,46 @@ export default function HomePage() {
               </article>
             ))}
           </div>
-          <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
-            <Link href="/legal" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "nowrap",
+            }}
+          >
+            <Link
+              href="/legal"
+              style={{
+                ...secondaryButtonStyle,
+                minWidth: 88,
+                padding: "9px 14px",
+                textAlign: "center",
+              }}
+            >
               Legal
             </Link>
-            <Link href="/support" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
+            <Link
+              href="/support"
+              style={{
+                ...secondaryButtonStyle,
+                minWidth: 88,
+                padding: "9px 14px",
+                textAlign: "center",
+              }}
+            >
               Support
             </Link>
-            <Link href="/docs" style={{ ...secondaryButtonStyle, width: "100%", textAlign: "center" }}>
+            <Link
+              href="/docs"
+              style={{
+                ...secondaryButtonStyle,
+                minWidth: 88,
+                padding: "9px 14px",
+                textAlign: "center",
+              }}
+            >
               Docs
             </Link>
           </div>
