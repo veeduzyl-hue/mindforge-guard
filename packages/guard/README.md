@@ -14,32 +14,48 @@ It remains:
 - non-executing
 - default-off
 
-## Formal CLI Surface
+## Official Install Path
 
-Run from the repository root:
+Install the public CLI package with npm:
 
 ```bash
-node packages/guard/bin/guard.mjs --version
-node packages/guard/bin/guard.mjs --help
-node packages/guard/bin/guard.mjs status
-node packages/guard/bin/guard.mjs validate-policy
-node packages/guard/bin/guard.mjs audit . --staged
-node packages/guard/bin/guard.mjs snapshot .
-node packages/guard/bin/guard.mjs action classify --text "write file README.md"
-node packages/guard/bin/guard.mjs drift status --format json
-node packages/guard/bin/guard.mjs license status
-node packages/guard/bin/guard.mjs license show
-node packages/guard/bin/guard.mjs license verify --file <file>
-node packages/guard/bin/guard.mjs license install --file <file>
-node packages/guard/bin/guard.mjs license remove
+npm install -g @veeduzyl/mindforge-guard
+```
+
+## Fallback Install Path
+
+If npm registry install is unavailable, install the shipped package tarball directly:
+
+```bash
+npm install -g ./veeduzyl-mindforge-guard-6.13.1.tgz
+```
+
+## First Commands After Install
+
+Run these commands after install to confirm the CLI is present and working:
+
+```bash
+guard --version
+guard --help
+guard status
+guard validate-policy
+guard drift status --format json
+```
+
+Run these inside a repository when you want working-tree governance output:
+
+```bash
+guard audit . --staged
+guard snapshot .
+guard action classify --text "write file README.md"
 ```
 
 Paid analytics commands:
 
 ```bash
-node packages/guard/bin/guard.mjs drift timeline
-node packages/guard/bin/guard.mjs drift compare
-node packages/guard/bin/guard.mjs assoc correlate
+guard drift timeline
+guard drift compare
+guard assoc correlate
 ```
 
 ## Edition Boundary
@@ -53,9 +69,9 @@ node packages/guard/bin/guard.mjs assoc correlate
 
 See:
 
-- [docs/EDITIONS.md](../../docs/EDITIONS.md)
-- [docs/LICENSE.md](../../docs/LICENSE.md)
-- [docs/VERIFY.md](../../docs/VERIFY.md)
+- [EDITIONS.md](./EDITIONS.md)
+- [License Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/LICENSE.md)
+- [Verification Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/VERIFY.md)
 
 ## License Activation UX
 
@@ -67,10 +83,10 @@ Guard installs the local license file to:
 Recommended flow:
 
 ```bash
-node packages/guard/bin/guard.mjs license verify --file downloaded-license.json
-node packages/guard/bin/guard.mjs license install --file downloaded-license.json
-node packages/guard/bin/guard.mjs license status
-node packages/guard/bin/guard.mjs status
+guard license verify --file downloaded-license.json
+guard license install --file downloaded-license.json
+guard license status
+guard status
 ```
 
 Get the signed license JSON from License Hub:
@@ -84,12 +100,9 @@ Helpful surfaces:
 - `guard license show` returns the structured local inspection result
 - `guard status` includes the repo policy, drift summary, and local license guidance
 
-## Commercial Packaging References
+## Help
 
-For the current buyer, deployment, and demo baseline, see:
-
-- [Current Commercial Baseline](../../docs/product/current-product-baseline.md)
-- [Capability Baseline](../../docs/product/capability-baseline.md)
-- [User Journey](../../docs/product/user-journey.md)
-- [Commercial Demo Paths](../../docs/demo/commercial-demo-paths.md)
-- [Release Readiness Checklist](../../docs/release/release-readiness-checklist.md)
+- `guard --help` lists the formal CLI surface
+- `guard license show` prints structured local license inspection
+- [MindForge Guard homepage](https://mindforge.run)
+- [Issue tracker](https://github.com/veeduzyl-hue/mindforge-guard/issues)
