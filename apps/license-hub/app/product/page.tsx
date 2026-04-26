@@ -30,7 +30,7 @@ export default function ProductPage() {
           <Link href="/#pricing" style={primaryButtonStyle}>
             {primaryCtas.buy}
           </Link>
-          <Link href="/#demos" style={secondaryButtonStyle}>
+          <Link href="#demos" style={secondaryButtonStyle}>
             {primaryCtas.demos}
           </Link>
           <Link href="/faq" style={secondaryButtonStyle}>
@@ -59,7 +59,7 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+      <section id="demos" style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <h2 style={{ margin: 0 }}>Evaluation demos</h2>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
           {demoCards.map((demo) => (

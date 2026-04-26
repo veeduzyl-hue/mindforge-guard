@@ -1,6 +1,8 @@
 # License Hub Webhook Failure / Retry Observability Runbook
 
-This runbook is for a bounded manual safety-window rehearsal only.
+This runbook is retained for a bounded post-launch operator-only safety-window rehearsal.
+
+License Hub is already live. Do not treat this document as an active public launch blocker or storefront work item.
 
 Boundary:
 

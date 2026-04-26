@@ -1,21 +1,21 @@
-# Phase 3 Web Sales Readiness Note
+# Phase 3 Web Sales Readiness Note (Historical)
+
+This note captured the final pre-launch readiness boundary before License Hub went live.
 
 Current status:
 
-- Paddle sandbox hosted checkout has been validated end to end.
-- Official webhook fulfillment into License Hub is working.
-- Signed license download and Guard CLI local verify/install/status are working.
-- Web pricing, support, contact, and minimum legal pages are now wired for bounded commercial intake.
+- License Hub is live for checkout, webhook fulfillment, license issuance, magic-link sign-in, and portal access.
+- The public launch path is closed.
 
-Still not live-ready:
+Use instead:
 
-- do not present the current checkout path as production-ready payments
-- do not rely on quick tunnel ingress for a final environment
-- do not imply a fully launched enterprise billing platform, team console, or control plane
+- `docs/commercial/license-hub-launch-closeout.md` for the current post-launch closeout state.
+- `docs/commercial/license-hub-verification-baseline.md` for launch-path evidence and operator reference.
 
-Before live:
+Historical scope captured here:
 
-- publish stable staging/live ingress
-- switch to live Paddle catalog and credentials
-- finalize support routing
-- finalize legal copy review
+- sandbox checkout validation
+- pre-launch sales/readiness gating
+- ingress, support, and legal cutover items that were closed before launch
+
+Do not use this note to reopen launch gating or public-surface decisions.

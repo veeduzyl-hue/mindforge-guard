@@ -1,14 +1,16 @@
 # License Hub Sample 2 Success And Failure Path Baseline
 
-This document records the current License Hub Sample 2 success result and the first bounded failure-path / ops-baseline verification scope.
+This document records the launch-path Sample 2 success result and the first bounded failure-path / ops-baseline verification scope that supported License Hub go-live.
+
+License Hub is now live. Keep this file as historical launch evidence plus live operator reference. Do not treat it as an active launch blocker list.
 
 Status summary:
 
-- Current stage: launch preparation closeout with read-only ops baseline available in Neon production.
+- Current stage: post-launch verification baseline retained with read-only ops views available in Neon production.
 - Passed sample: Sample 2, `Pro+ Monthly`, paid path complete, portal license visible, monthly validity correct.
 - Round 1 lightweight failure-path checks: passed.
 - Known failure sample: failed payment marked `potentially fraudulent`, archived as provider risk / payment rejection.
-- Webhook failure / retry observability: implementation-ready; operator rehearsal deferred; not a launch blocker.
+- Webhook failure / retry observability: implementation-ready; operator-only rehearsal remains deferred; not a reason to reopen public launch status.
 
 Boundary:
 
@@ -349,8 +351,9 @@ order by event_at desc;
 
 ## Next recommended step
 
-- Proceed with launch preparation using the confirmed success path, round 1 checks, and Neon read-only ops baseline.
-- Keep webhook failure / retry observability available as a default-off operator rehearsal capability for a later safety window.
+- Keep this baseline as the historical launch evidence record and live ops reference.
+- Keep webhook failure / retry observability available as a default-off operator rehearsal capability for a later safety window if explicitly needed.
+- Use `license-hub-launch-closeout.md` as the current post-launch state summary.
 - Optionally export evidence from the Neon read-only ops views into a private operator evidence bundle.
 
 ## Webhook Failure / Retry Observability
@@ -358,9 +361,9 @@ order by event_at desc;
 Status:
 
 - Implementation-ready.
-- Operator rehearsal deferred.
+- Operator rehearsal remains deferred unless explicitly scheduled in a safety window.
 - Not a main-path blocker.
-- Not a launch blocker.
+- Not a reason to reopen public launch status.
 - Operational observability capability for persisted failure, retry, duplicate, and eventual success evidence.
 
 Current foundation:
@@ -387,7 +390,7 @@ Operator rehearsal runbook:
 
 Deferred:
 
-- The human safety-window rehearsal is deferred until after launch readiness work.
+- The human safety-window rehearsal remains optional post-launch operator work.
 - No production-risk action should be automated from this document.
 
 Close conditions:
@@ -401,7 +404,7 @@ Close conditions:
 
 ## Compatibility Conclusion
 
-This closeout stage remains documentation and launch-readiness verification recording.
+This record remains bounded historical verification and live-ops reference.
 
 - checkout unchanged
 - webhook unchanged

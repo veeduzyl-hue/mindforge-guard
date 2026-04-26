@@ -14,9 +14,9 @@ export default function DocsPage() {
         <h2 style={{ margin: 0 }}>Documentation paths</h2>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
-            <strong>Launch announcement</strong>
+            <strong>Launch status</strong>
             <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              Release updates are published occasionally. For the latest product and documentation context, use the repository docs and the main site.
+              License Hub is live. For current product and documentation context, use the repository docs and the main site.
             </p>
           </article>
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
