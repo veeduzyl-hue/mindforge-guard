@@ -32,7 +32,7 @@ export default function FaqPage() {
           <Link href="/#pricing" style={primaryButtonStyle}>
             {primaryCtas.pricing}
           </Link>
-          <Link href="/#demos" style={secondaryButtonStyle}>
+          <Link href="/product#demos" style={secondaryButtonStyle}>
             {primaryCtas.demos}
           </Link>
           <Link href="/support" style={secondaryButtonStyle}>

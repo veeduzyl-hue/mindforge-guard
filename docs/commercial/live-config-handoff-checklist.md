@@ -1,12 +1,14 @@
-# Live Config Handoff Checklist
+# Live Config Handoff Checklist (Historical)
 
-This checklist prepares the commercial line for a future live cutover.
+This checklist captured the pre-live cutover inputs before License Hub went live.
 
-Current boundary:
+License Hub is now live. Keep this file as historical operator reference only, and do not treat it as a current blocker for the public commercial surface.
 
-- sandbox validated
-- not live-ready
-- do not expose live buy surfaces until the staging and rehearsal steps are complete
+Historical boundary:
+
+- sandbox validation was completed before launch
+- live cutover is closed
+- do not reopen staging or rehearsal decisions unless a future operator incident requires it
 
 ## A. Human-provided inputs
 
@@ -63,7 +65,7 @@ These values are consumed by the app or deployment platform:
 - `LICENSE_KEY_ID`
 - `DATABASE_URL`
 
-## C. Live switch order
+## C. Original live switch order
 
 1. Finalize staging deployment and pass the staging sandbox smoke checklist.
 2. Finalize support mailbox routing and legal page placeholders.
@@ -74,9 +76,9 @@ These values are consumed by the app or deployment platform:
 7. Run the pre-live cutover rehearsal in `docs/release/pre-live-cutover-rehearsal.md`.
 8. Only after rehearsal passes, decide whether to expose the live buy surface.
 
-## D. Handoff checks
+## D. Original handoff checks
 
-Before any live switch:
+Before the original live switch:
 
 - confirm no sandbox values remain in live configuration
 - confirm no temporary tunnel language remains in public pages
