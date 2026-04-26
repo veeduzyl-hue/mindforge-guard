@@ -20,7 +20,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/veeduzyl-hue/mindforge-guard.git"
+    "url": "git+https://github.com/veeduzyl-hue/mindforge-guard.git",
+    "directory": "packages/guard"
   },
   "bugs": {
     "url": "https://github.com/veeduzyl-hue/mindforge-guard/issues"
