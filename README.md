@@ -91,6 +91,30 @@ See the full edition boundary in `docs/EDITIONS.md`.
 
 ## Quick start
 
+Official public install path:
+
+```bash
+npm install -g @veeduzyl/mindforge-guard
+```
+
+Fallback install path:
+
+```bash
+npm install -g ./veeduzyl-mindforge-guard-6.13.1.tgz
+```
+
+First commands after install:
+
+```bash
+guard --version
+guard --help
+guard status
+guard validate-policy
+guard drift status --format json
+```
+
+For paid editions, use the license activation flow below after install.
+
 Install dependencies and run the Community baseline:
 
 ```bash
