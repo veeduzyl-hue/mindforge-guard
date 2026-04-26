@@ -103,12 +103,12 @@ Fallback install path:
 npm install -g ./veeduzyl-mindforge-guard-6.13.1.tgz
 ```
 
-First commands after install:
+Verification after install:
 
 ```bash
 guard --version
-guard --help
 guard status
+guard --help
 guard validate-policy
 guard drift status --format json
 ```

@@ -1,6 +1,6 @@
 # MindForge Guard Release Process
 
-MindForge Guard should use npm as the official public install path for the buyer-facing CLI package.
+MindForge Guard now uses npm as the official public install path for the buyer-facing CLI package.
 
 A packaged `.tgz` install artifact remains the bounded fallback delivery path for direct handoff, mirrored release assets, or support-led recovery installs.
 
@@ -18,9 +18,9 @@ This release remains:
 - non-executing
 - default-off
 
-## Recommended Next Release
+## Current Install-Facing Release
 
-The recommended next release is:
+The current published install-facing release is:
 
 - `v6.13.1 = npm Installation Delivery Closeout`
 
@@ -29,11 +29,12 @@ Why `v6.13.1`:
 - it stays on the current commercial release line
 - it makes npm the explicit official buyer install path
 - it keeps a local `.tgz` install fallback without changing CLI semantics
-- it fixes package-delivery clarity without reopening the `v6.13.0` boundary
+- it closes package-delivery clarity without reopening the `v6.13.0` boundary
+- it is the published install-facing release for `@veeduzyl/mindforge-guard`
 
 ## Scope Of `v6.13.1`
 
-`v6.13.1` should formalize:
+`v6.13.1` formalizes:
 
 - official public install path = npm package install
 - fallback install path = direct `.tgz` package install
