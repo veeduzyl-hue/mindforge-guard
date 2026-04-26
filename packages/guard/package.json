@@ -1,6 +1,6 @@
 {
   "name": "@veeduzyl/mindforge-guard",
-  "version": "6.13.0",
+  "version": "6.13.1",
   "description": "MindForge Guard - AI coding governance layer (CLI)",
   "license": "MIT",
   "private": false,
@@ -11,12 +11,6 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@veeduzyl/mindforge-kernel": "file:../kernel"
-  },
-  "bundledDependencies": [
-    "@veeduzyl/mindforge-kernel"
-  ],
   "files": [
     "bin/",
     "src/",
