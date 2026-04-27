@@ -75,6 +75,11 @@ License Hub supports the commercial delivery path for MindForge Guard editions:
 
 Across all editions, Guard remains local. License Hub handles the commercial delivery and account access layer where applicable.
 
+## Related Docs
+
+- [Product Baseline](../../docs/product/current-product-baseline.md)
+- [Commercial Demo Paths](../../docs/demo/commercial-demo-paths.md)
+
 ## Status
 
 License Hub is live and production-ready for:

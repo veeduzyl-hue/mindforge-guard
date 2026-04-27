@@ -51,7 +51,7 @@ JSON shape:
     "required_edition": "pro",
     "current_edition": "community",
     "license_state": "missing",
-    "hint": "Install a signed pro license file: guard license install <file>"
+    "hint": "Install a signed pro license file: guard license install --file <file>"
   }
 }
 ```
@@ -71,7 +71,7 @@ JSON shape:
     "required_edition": "pro_plus",
     "current_edition": "pro",
     "license_state": "valid",
-    "hint": "Install a signed pro_plus license file: guard license install <file>"
+    "hint": "Install a signed pro_plus license file: guard license install --file <file>"
   }
 }
 ```
@@ -114,7 +114,11 @@ JSON output contract:
 - returns the structured result of local license inspection
 - includes state, edition, path, and lifecycle metadata when available
 
-### `guard license install <file>`
+### `guard license verify --file <file>`
+
+Verifies a downloaded license file before installation.
+
+### `guard license install --file <file>`
 
 Success:
 

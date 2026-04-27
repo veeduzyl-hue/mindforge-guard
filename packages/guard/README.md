@@ -72,6 +72,8 @@ See:
 - [EDITIONS.md](./EDITIONS.md)
 - [License Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/LICENSE.md)
 - [Verification Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/VERIFY.md)
+- [Product Baseline](../../docs/product/current-product-baseline.md)
+- [Release Checklist](../../docs/release/release-readiness-checklist.md)
 
 ## License Activation UX
 

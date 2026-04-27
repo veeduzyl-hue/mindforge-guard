@@ -80,12 +80,19 @@ node scripts/verify_commercial_edition_boundary.mjs
 
 | Edition | Buyer outcome | Includes |
 |---|---|---|
-| **Community** | See the current governance state | `status`, `validate-policy`, `audit`, `snapshot`, `action classify`, `drift status`, license install/status/show/remove |
+| **Community** | See the current governance state | `status`, `validate-policy`, `audit`, `snapshot`, `action classify`, `drift status`, license verify/install/status/show/remove |
 | **Pro** | See governance trends over time | Everything in Community + `drift timeline` |
 | **Pro+** | Compare change and uncover deeper signals | Everything in Pro + `drift compare` + `assoc correlate` |
 | **Enterprise** | Standardize procurement and organizational adoption | Current CLI entitlement same as Pro+, with enterprise purchasing boundary and **no extra runtime authority promised in this release** |
 
 See the full edition boundary in `docs/EDITIONS.md`.
+
+## Onboarding Guides
+
+- [Quickstart](./docs/quickstart.md)
+- [License activation](./docs/license-activation.md)
+- [Editions and command map](./docs/EDITIONS.md)
+- [First 10 minutes with Guard](./docs/first-10-minutes.md)
 
 ---
 
@@ -107,10 +114,10 @@ Verification after install:
 
 ```bash
 guard --version
-guard status
 guard --help
-guard validate-policy
-guard drift status --format json
+guard status
+guard drift status --format json --pretty
+guard action classify --text "write file README.md"
 ```
 
 For paid editions, use the license activation flow below after install.
@@ -121,10 +128,12 @@ Install dependencies and run the Community baseline:
 npm install
 node packages/guard/src/runGuard.mjs --version
 node packages/guard/src/runGuard.mjs status
+node packages/guard/src/runGuard.mjs drift status --format json --pretty
+node packages/guard/src/runGuard.mjs action classify --text "write file README.md"
+node packages/guard/src/runGuard.mjs init
 node packages/guard/src/runGuard.mjs validate-policy
 node packages/guard/src/runGuard.mjs audit . --staged
 node packages/guard/src/runGuard.mjs snapshot .
-node packages/guard/src/runGuard.mjs drift status --format json
 ```
 
 ### License activation
