@@ -13,3 +13,5 @@ Current users should start with:
 - [Demos](../demos/README.md)
 
 Historical status and phase records are kept under [archive/status/](./status/).
+
+This archive also includes the historical `docs/status/` directory, preserved under [archive/status/v5.3/](./status/v5.3/).
