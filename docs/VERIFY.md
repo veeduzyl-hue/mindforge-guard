@@ -53,7 +53,7 @@ This verification confirms:
 
 The canonical release-boundary evidence for `v6.13.0` is:
 
-- [docs/STATUS_v6.13_commercial_edition_boundary_completion.md](/D:/AI%20project/mindforge-guard/docs/STATUS_v6.13_commercial_edition_boundary_completion.md)
+- [docs/archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md](/D:/AI%20project/mindforge-guard/docs/archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md)
 
 It is valid for:
 

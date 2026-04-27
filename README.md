@@ -93,6 +93,8 @@ See the full edition boundary in `docs/EDITIONS.md`.
 - [License activation](./docs/license-activation.md)
 - [Editions and command map](./docs/EDITIONS.md)
 - [First 10 minutes with Guard](./docs/first-10-minutes.md)
+- [Demos](./docs/demos/README.md)
+- [Archived status notes](./docs/archive/README.md)
 
 ---
 
