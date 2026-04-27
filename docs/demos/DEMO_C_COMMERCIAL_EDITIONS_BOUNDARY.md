@@ -58,7 +58,7 @@ Expected gated output shape:
     "required_edition": "pro",
     "current_edition": "community",
     "license_state": "missing",
-    "hint": "Install a signed pro license file: guard license install <file>"
+    "hint": "Install a signed pro license file: guard license install --file <file>"
   }
 }
 ```
@@ -107,7 +107,7 @@ Expected gated output shape for the still-blocked command:
     "required_edition": "pro_plus",
     "current_edition": "pro",
     "license_state": "valid",
-    "hint": "Install a signed pro_plus license file: guard license install <file>"
+    "hint": "Install a signed pro_plus license file: guard license install --file <file>"
   }
 }
 ```
