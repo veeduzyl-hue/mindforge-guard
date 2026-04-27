@@ -1,6 +1,12 @@
 # License Hub Staging Deployment Runbook
 
-This runbook prepares `apps/license-hub` for a fixed staging deployment.
+This runbook is preserved as historical project record for the retired License Hub staging deployment.
+
+Current state:
+
+- `mindforge-license-hub-live` is the active License Hub deployment
+- the former Vercel staging project used for Paddle sandbox testing and pre-live rehearsal has been retired and deleted
+- future PRs should not expect a staging Vercel deployment check unless a new staging plan is intentionally reintroduced
 
 Current boundary:
 
@@ -9,7 +15,7 @@ Current boundary:
 - do not commit real secrets into the repo
 - do not change checkout, webhook, or fulfillment core semantics
 
-## Recommended platform
+## Historical platform recommendation
 
 Primary recommendation: `Vercel`
 
@@ -30,7 +36,7 @@ Use it only if Vercel is unavailable. Keep the same staging domain, webhook path
 - Root workspace manifest: `/package.json`
 - App manifest: `/apps/license-hub/package.json`
 
-## Vercel project setup
+## Historical Vercel project setup
 
 1. Create a new Vercel project from the `mindforge-guard` repository.
 2. Set the Root Directory to `apps/license-hub`.
@@ -38,7 +44,7 @@ Use it only if Vercel is unavailable. Keep the same staging domain, webhook path
 4. Ensure the project installs from the monorepo root so workspace dependencies remain available.
 5. Set Node.js to a version compatible with `>=18`.
 
-## Recommended staging domain
+## Historical staging domain
 
 Choose one fixed hostname and keep it stable:
 
@@ -49,7 +55,7 @@ This document assumes:
 
 - Base URL: `https://staging-license.mindforgeguard.com`
 
-## Paddle sandbox URLs for staging
+## Historical Paddle sandbox URLs for staging
 
 Use the fixed staging domain for all outward-facing sandbox URLs:
 
@@ -62,7 +68,7 @@ Use the fixed staging domain for all outward-facing sandbox URLs:
 
 Do not keep temporary tunnel URLs in Paddle once staging is available.
 
-## Staging environment variables
+## Historical staging environment variables
 
 At minimum, configure these in the staging deployment:
 
@@ -88,7 +94,7 @@ At minimum, configure these in the staging deployment:
 
 Do not commit any of these values.
 
-## Deployment steps
+## Historical deployment steps
 
 1. Deploy the current `main` branch to the staging project.
 2. Bind the fixed staging domain.
@@ -98,7 +104,7 @@ Do not commit any of these values.
 6. In Paddle sandbox, confirm success and cancel URLs point to the staging domain.
 7. Run the staging sandbox smoke checklist in `docs/release/staging-sandbox-smoke-checklist.md`.
 
-## Exit criteria
+## Historical exit criteria
 
 Staging is ready when:
 
@@ -108,7 +114,7 @@ Staging is ready when:
 - the webhook is processed on staging
 - portal, account, download, and CLI smoke all pass
 
-## Render fallback
+## Historical Render fallback
 
 If Vercel is unavailable:
 

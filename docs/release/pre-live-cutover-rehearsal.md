@@ -1,6 +1,12 @@
 # Pre-Live Cutover Rehearsal
 
-Use this checklist after staging is stable and before exposing any live buy surface.
+This checklist is preserved as historical launch record.
+
+Current state:
+
+- `mindforge-license-hub-live` is the active License Hub deployment
+- the former staging deployment used before launch has been retired
+- future PRs should not expect a staging Vercel rehearsal gate unless a new staging path is deliberately created
 
 Current posture:
 
@@ -70,3 +76,5 @@ Do not expose live buy controls until:
 - support routing is monitored
 - legal placeholders are replaced
 - pre-live rehearsal checks are signed off
+
+The gate above reflects the original launch path and is kept for historical reference only.
