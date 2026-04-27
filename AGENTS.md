@@ -29,6 +29,44 @@ The active development posture is:
 - do not expand into multi-agent orchestration drift
 - do not convert supporting artifacts into execution authority
 
+## Commercial baseline and roadmap boundary
+
+The current stable commercial user-facing baseline is `v6.13`.
+Treat `v6.14+` as an additive evolution track, not as a currently available capability set.
+
+Preserve the current `v6.13` commercial surface unless a later change is separately implemented and released:
+
+- CLI outputs unchanged unless explicitly scoped
+- JSON contracts unchanged unless explicitly scoped
+- exit semantics unchanged unless explicitly scoped
+- license gating and offline license authority unchanged unless explicitly scoped
+- install instructions unchanged unless explicitly scoped
+- demo paths unchanged unless explicitly scoped
+
+The following areas are future/additive only unless separately implemented and released:
+
+- Authority / Intent Boundary
+- Admissibility
+- Commit Gate Dry-run
+- Multi-Agent Handoff
+- Graph-aware Governance
+- Enterprise Runtime Governance
+
+Guard remains:
+
+- recommendation-only
+- additive-only
+- non-executing by default
+- preview-first for execution-adjacent features
+- default-off for consumption or gate behavior where applicable
+
+Guard does not become:
+
+- an orchestrator
+- a control plane
+- an agent builder
+- an IAM replacement
+
 ## Hard invariants
 
 The following invariants must be preserved unless the user explicitly states otherwise:
