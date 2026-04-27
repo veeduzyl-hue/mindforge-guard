@@ -98,7 +98,7 @@ What this shows:
 
 These repository artifacts support the buyer-facing release-governance story:
 
-- [docs/STATUS_v6.12_delivery_manifest_acceptance_semantics_final_acceptance_phase3.md](../STATUS_v6.12_delivery_manifest_acceptance_semantics_final_acceptance_phase3.md)
+- [docs/archive/status/STATUS_v6.12_delivery_manifest_acceptance_semantics_final_acceptance_phase3.md](../archive/status/STATUS_v6.12_delivery_manifest_acceptance_semantics_final_acceptance_phase3.md)
   - explains that final acceptance is closed and compatibility freeze is preserved
 - [docs/governance/review-decision-closure-evidence-package-delivery-manifest-acceptance-semantics-final-acceptance-contract.md](../governance/review-decision-closure-evidence-package-delivery-manifest-acceptance-semantics-final-acceptance-contract.md)
   - explains what the final acceptance contract freezes and what must continue to be rejected
