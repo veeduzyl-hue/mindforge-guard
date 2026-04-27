@@ -1,6 +1,12 @@
 # Staging Sandbox Smoke Checklist
 
-Run this checklist against the fixed staging deployment while Paddle remains in `sandbox`.
+This checklist is preserved as historical launch record for the retired staging deployment.
+
+Current state:
+
+- `mindforge-license-hub-live` is the active License Hub deployment
+- the former staging deployment used for Paddle sandbox validation has been retired
+- this checklist is not part of the active deployment path unless a future team intentionally reintroduces staging
 
 ## 1. Page reachability
 

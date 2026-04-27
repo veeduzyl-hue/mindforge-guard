@@ -2,12 +2,13 @@
 
 This checklist captured the pre-live cutover inputs before License Hub went live.
 
-License Hub is now live. Keep this file as historical operator reference only, and do not treat it as a current blocker for the public commercial surface.
+License Hub is now live on `mindforge-license-hub-live`. Keep this file as historical operator reference only, and do not treat it as a current blocker for the public commercial surface.
 
 Historical boundary:
 
 - sandbox validation was completed before launch
 - live cutover is closed
+- the former Vercel staging project used for Paddle sandbox rehearsal has been retired
 - do not reopen staging or rehearsal decisions unless a future operator incident requires it
 
 ## A. Human-provided inputs
@@ -66,6 +67,8 @@ These values are consumed by the app or deployment platform:
 - `DATABASE_URL`
 
 ## C. Original live switch order
+
+The steps below are preserved as historical launch record only. Future PRs should not expect a staging Vercel deployment check.
 
 1. Finalize staging deployment and pass the staging sandbox smoke checklist.
 2. Finalize support mailbox routing and legal page placeholders.

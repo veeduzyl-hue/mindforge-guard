@@ -90,6 +90,8 @@ License Hub is live and production-ready for:
 - license viewing and download
 - account visibility
 
+The active hosted License Hub deployment is `mindforge-license-hub-live`.
+
 Operational observability is in place for billing, issuance, and portal-related support workflows.
 
 ## Running Locally
