@@ -77,15 +77,15 @@ export default function DocsPage() {
         <div style={{ display: "grid", gap: 6 }}>
           <h2 style={{ margin: 0 }}>Trust and demo pack</h2>
           <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-            Evaluate Guard before choosing a license. Start with the current trust, setup, edition, and demo guides.
+            This is the canonical trust and demo entry for License Hub visitors evaluating Guard before they choose a license.
           </p>
         </div>
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", alignItems: "stretch" }}>
           {trustDemoPackDocs.map((doc) => (
-            <article key={doc.title} style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
+            <article key={doc.title} style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12, background: "#fffdf8", alignContent: "start" }}>
               <strong>{doc.title}</strong>
               <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{doc.body}</p>
-              <a href={doc.href} style={secondaryButtonStyle}>
+              <a href={doc.href} style={{ ...secondaryButtonStyle, marginTop: "auto" }}>
                 Open guide
               </a>
             </article>

@@ -83,9 +83,9 @@ export default function ProductPage() {
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
-        <h2 style={{ margin: 0 }}>Start with current trust and demo docs</h2>
+        <h2 style={{ margin: 0 }}>Start with trust and demo docs</h2>
         <p style={{ ...mutedTextStyle, margin: 0 }}>
-          Evaluate Guard before choosing a license. Understand what Guard does and does not do, then run the current demos before upgrading.
+          Understand the current boundary, compare editions, and run the current demos before you upgrade.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {trustDemoPackDocs.map((doc) => (
