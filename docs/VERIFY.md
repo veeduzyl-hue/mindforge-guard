@@ -1,15 +1,20 @@
 # VERIFY.md - Release Verification Matrix
 
 **Purpose**: Document the current verification surface for `mindforge-guard`.  
-**Last Updated**: 2026-04-01  
-**Released Baseline**: `v6.12.0`  
-**Next Recommended Release**: `v6.13.0`
+**Last Updated**: 2026-04-28  
+**Released Baseline**: `v6.13.1`  
+**Next Recommended Maintenance Release**: `v6.13.2`
 
 ---
 
 ## 1. Released Baseline Verification
 
-`v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+The current published install package is `v6.13.1`.
+
+It continues the released verification line built on:
+
+- `v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+- `v6.13.0 = Commercial Edition Boundary Completion`
 
 The released baseline remains:
 
@@ -31,7 +36,7 @@ npm run verify:v612
 
 ## 2. Commercial Edition Boundary Verification
 
-The next recommended release `v6.13.0` formalizes the commercial edition promise surface.
+The current commercial release line preserves the commercial edition promise surface introduced in `v6.13.0`.
 
 Required targeted verification:
 
@@ -64,7 +69,7 @@ It is valid for:
 
 ## 4. Stable Compatibility Commitments
 
-The current release and the next commercial boundary release both preserve:
+The current release line preserves:
 
 - `audit` main output unchanged
 - `audit` verdict unchanged
@@ -85,7 +90,7 @@ Current commercial gate contract:
 - license gate: `21`
 - command-scoped validation / runtime error: `30`
 
-`v6.13.0` formalizes:
+The commercial edition boundary formalizes:
 
 - `license_required` for missing / invalid / expired / not_yet_valid license states
 - `edition_mismatch` for valid-but-insufficient edition states
