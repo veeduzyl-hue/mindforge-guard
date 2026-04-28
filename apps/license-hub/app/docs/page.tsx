@@ -33,6 +33,18 @@ const trustDemoCoreDocs = trustDemoPackDocs.slice(0, 3);
 const trustDemoSupportingDocs = trustDemoPackDocs.slice(3);
 
 export default function DocsPage() {
+  const cardButtonStyle = {
+    ...secondaryButtonStyle,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center" as const,
+    minHeight: 44,
+    padding: "0 18px",
+    lineHeight: 1.2,
+    fontWeight: 700,
+  };
+
   return (
     <SiteChrome
       eyebrow="Docs"
@@ -83,18 +95,12 @@ export default function DocsPage() {
             This is the canonical trust and demo entry for License Hub visitors evaluating Guard before they choose a license.
           </p>
         </div>
-        <div style={{ display: "grid", gap: 12, maxWidth: 980 }}>
-          <div
-            style={{
-              display: "grid",
-              gap: 12,
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              alignItems: "stretch",
-            }}
-          >
+        <div className="licenseHubTrustPack">
+          <div className="licenseHubTrustPackCore">
             {trustDemoCoreDocs.map((doc) => (
               <article
                 key={doc.title}
+                className="licenseHubTrustCard licenseHubTrustCardTall"
                 style={{
                   padding: 16,
                   border: "1px solid #d8ccae",
@@ -103,28 +109,21 @@ export default function DocsPage() {
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
-                  minHeight: 188,
                 }}
               >
                 <strong>{doc.title}</strong>
                 <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{doc.body}</p>
-                <a href={doc.href} style={{ ...secondaryButtonStyle, marginTop: "auto" }}>
+                <a href={doc.href} style={{ ...cardButtonStyle, marginTop: "auto" }}>
                   Open guide
                 </a>
               </article>
             ))}
           </div>
-          <div
-            style={{
-              display: "grid",
-              gap: 12,
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              alignItems: "stretch",
-            }}
-          >
+          <div className="licenseHubTrustPackSupporting">
             {trustDemoSupportingDocs.map((doc) => (
               <article
                 key={doc.title}
+                className="licenseHubTrustCard licenseHubTrustCardShort"
                 style={{
                   padding: 16,
                   border: "1px solid #d8ccae",
@@ -133,12 +132,11 @@ export default function DocsPage() {
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
-                  minHeight: 176,
                 }}
               >
                 <strong>{doc.title}</strong>
                 <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{doc.body}</p>
-                <a href={doc.href} style={{ ...secondaryButtonStyle, marginTop: "auto" }}>
+                <a href={doc.href} style={{ ...cardButtonStyle, marginTop: "auto" }}>
                   Open guide
                 </a>
               </article>
@@ -146,6 +144,62 @@ export default function DocsPage() {
           </div>
         </div>
       </section>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .licenseHubTrustPack {
+              display: grid;
+              gap: 12px;
+              max-width: 980px;
+            }
+
+            .licenseHubTrustPackCore {
+              display: grid;
+              gap: 12px;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              align-items: stretch;
+            }
+
+            .licenseHubTrustPackSupporting {
+              display: grid;
+              gap: 12px;
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+              align-items: stretch;
+              max-width: 760px;
+            }
+
+            .licenseHubTrustCard {
+              align-self: stretch;
+            }
+
+            .licenseHubTrustCardTall {
+              min-height: 196px;
+            }
+
+            .licenseHubTrustCardShort {
+              min-height: 184px;
+            }
+
+            @media (max-width: 960px) {
+              .licenseHubTrustPackCore {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+              }
+
+              .licenseHubTrustPackSupporting {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                max-width: none;
+              }
+            }
+
+            @media (max-width: 640px) {
+              .licenseHubTrustPackCore,
+              .licenseHubTrustPackSupporting {
+                grid-template-columns: minmax(0, 1fr);
+              }
+            }
+          `,
+        }}
+      />
     </SiteChrome>
   );
 }
