@@ -154,9 +154,21 @@ export default function HomePage() {
               Review the current trust, setup, and demo docs before you upgrade.
             </p>
           </div>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", alignItems: "stretch" }}>
+          <div className="helper-grid">
             {trustDemoHelperCards.map((card) => (
-              <article key={card.title} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 10, alignContent: "start" }}>
+              <article
+                key={card.title}
+                style={{
+                  padding: 16,
+                  borderRadius: 12,
+                  background: "#fffaf0",
+                  border: "1px solid #d8ccae",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  minHeight: 184,
+                }}
+              >
                 <strong>{card.title}</strong>
                 <p style={{ ...mutedTextStyle, margin: 0 }}>{card.body}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: "auto" }}>
@@ -180,9 +192,21 @@ export default function HomePage() {
               Use these answers when you need help buying, signing in, or finding support.
             </p>
           </div>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", alignItems: "stretch" }}>
+          <div className="faq-grid">
             {compactFaq.map((item) => (
-              <article key={item.question} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 8, alignContent: "start", minHeight: 0 }}>
+              <article
+                key={item.question}
+                style={{
+                  padding: 16,
+                  borderRadius: 12,
+                  background: "#fffaf0",
+                  border: "1px solid #d8ccae",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  minHeight: 172,
+                }}
+              >
                 <strong>{item.question}</strong>
                 <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
               </article>
@@ -233,6 +257,36 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      <style jsx>{`
+        .helper-grid {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          align-items: stretch;
+          max-width: 980px;
+        }
+
+        .faq-grid {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          align-items: stretch;
+        }
+
+        @media (max-width: 960px) {
+          .helper-grid,
+          .faq-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 640px) {
+          .helper-grid,
+          .faq-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+        }
+      `}</style>
     </main>
   );
 }
