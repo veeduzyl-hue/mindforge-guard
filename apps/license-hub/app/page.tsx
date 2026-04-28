@@ -10,31 +10,44 @@ import {
 } from "./siteChrome";
 import { PricingClient } from "./pricing/PricingClient";
 
-const trustDemoPackDocs = [
+const trustDemoHelperCards = [
   {
-    title: "First 10 Minutes With Guard",
-    body: "Start with the current first-run path before you choose a paid license.",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/first-10-minutes.md",
+    title: "Start with a safe first run",
+    body: "Verify what Guard helps your team inspect before you choose a paid license.",
+    links: [
+      {
+        label: "First 10 Minutes",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/first-10-minutes.md",
+      },
+    ],
   },
   {
-    title: "Safety Boundary",
-    body: "Understand what Guard does and does not do before it enters higher-risk delivery paths.",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/trust/safety-boundary.md",
+    title: "Understand the boundary",
+    body: "Review what Guard does and does not do before it enters higher-risk delivery paths.",
+    links: [
+      {
+        label: "Safety Boundary",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/trust/safety-boundary.md",
+      },
+      {
+        label: "Trust FAQ",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/trust-faq.md",
+      },
+    ],
   },
   {
-    title: "Choose the Right Guard Edition",
-    body: "Review the buyer-readable edition value map before upgrading.",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
-  },
-  {
-    title: "Current Product Demos",
-    body: "Run the current demos before upgrading or choosing a team rollout path.",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/demos/current/README.md",
-  },
-  {
-    title: "Trust FAQ",
-    body: "Use the current FAQ for trust, positioning, and commercial boundary questions.",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/trust-faq.md",
+    title: "Choose and compare with confidence",
+    body: "Use the current edition guide and demos before you upgrade or buy for a team.",
+    links: [
+      {
+        label: "Choose the Right Edition",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
+      },
+      {
+        label: "Current Product Demos",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/demos/current/README.md",
+      },
+    ],
   },
 ] as const;
 
@@ -136,19 +149,23 @@ export default function HomePage() {
 
         <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0 }}>Evaluate Guard before choosing a license</h2>
+            <h2 style={{ margin: 0 }}>Before you choose a license</h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Use the current trust and demo docs to verify what Guard helps teams inspect, verify, and govern before you upgrade.
+              Review the current trust, setup, and demo docs before you upgrade.
             </p>
           </div>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-            {trustDemoPackDocs.map((doc) => (
-              <article key={doc.title} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 8 }}>
-                <strong>{doc.title}</strong>
-                <p style={{ ...mutedTextStyle, margin: 0 }}>{doc.body}</p>
-                <a href={doc.href} style={secondaryButtonStyle}>
-                  Open guide
-                </a>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", alignItems: "stretch" }}>
+            {trustDemoHelperCards.map((card) => (
+              <article key={card.title} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 10, alignContent: "start" }}>
+                <strong>{card.title}</strong>
+                <p style={{ ...mutedTextStyle, margin: 0 }}>{card.body}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: "auto" }}>
+                  {card.links.map((link) => (
+                    <a key={link.label} href={link.href} style={secondaryButtonStyle}>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
               </article>
             ))}
           </div>
@@ -163,11 +180,11 @@ export default function HomePage() {
               Use these answers when you need help buying, signing in, or finding support.
             </p>
           </div>
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", alignItems: "stretch" }}>
             {compactFaq.map((item) => (
-              <article key={item.question} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <article key={item.question} style={{ padding: 16, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 8, alignContent: "start", minHeight: 0 }}>
                 <strong>{item.question}</strong>
-                <p style={{ ...mutedTextStyle, margin: "6px 0 0" }}>{item.answer}</p>
+                <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
               </article>
             ))}
           </div>
@@ -177,7 +194,7 @@ export default function HomePage() {
               gap: 10,
               justifyContent: "center",
               alignItems: "center",
-              flexWrap: "nowrap",
+              flexWrap: "wrap",
             }}
           >
             <Link
