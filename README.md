@@ -96,6 +96,18 @@ See the full edition boundary in `docs/EDITIONS.md`.
 - [Demos](./docs/demos/README.md)
 - [Archived status notes](./docs/archive/README.md)
 
+## Start Here
+
+MindForge Guard helps teams inspect, verify, and govern AI-generated software changes before they enter higher-risk delivery paths.
+
+New users can start with:
+
+- [First 10 Minutes With Guard](./docs/first-10-minutes.md)
+- [Safety Boundary](./docs/trust/safety-boundary.md)
+- [Choose the Right Guard Edition](./docs/product/current/edition-value-map.md)
+- [Current Product Demos](./docs/demos/current/README.md)
+- [Trust FAQ](./docs/product/current/trust-faq.md)
+
 ---
 
 ## Quick start
