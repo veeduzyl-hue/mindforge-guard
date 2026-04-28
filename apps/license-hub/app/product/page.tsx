@@ -11,6 +11,29 @@ import {
 } from "../launchCopy";
 import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle, mutedTextStyle } from "../siteChrome";
 
+const trustDemoPackDocs = [
+  {
+    title: "First 10 Minutes With Guard",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/first-10-minutes.md",
+  },
+  {
+    title: "Safety Boundary",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/trust/safety-boundary.md",
+  },
+  {
+    title: "Choose the Right Guard Edition",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
+  },
+  {
+    title: "Current Product Demos",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/demos/current/README.md",
+  },
+  {
+    title: "Trust FAQ",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/trust-faq.md",
+  },
+] as const;
+
 export default function ProductPage() {
   return (
     <SiteChrome
@@ -55,6 +78,20 @@ export default function ProductPage() {
             <div key={reason} style={{ padding: 14, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
               <strong>{reason}</strong>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
+        <h2 style={{ margin: 0 }}>Start with current trust and demo docs</h2>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          Evaluate Guard before choosing a license. Understand what Guard does and does not do, then run the current demos before upgrading.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {trustDemoPackDocs.map((doc) => (
+            <a key={doc.title} href={doc.href} style={secondaryButtonStyle}>
+              {doc.title}
+            </a>
           ))}
         </div>
       </section>
