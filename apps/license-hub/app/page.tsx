@@ -94,7 +94,17 @@ export default function HomePage() {
       answer: "Use Legal for terms, privacy, refunds, and boundaries. Use Support for purchase, delivery, and account help.",
     },
   ] as const;
-  const faqRows = [compactFaq.slice(0, 3), compactFaq.slice(3, 6)] as const;
+  const cardButtonStyle = {
+    ...secondaryButtonStyle,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center" as const,
+    minHeight: 44,
+    padding: "0 18px",
+    lineHeight: 1.2,
+    fontWeight: 700,
+  };
 
   return (
     <main style={pageBackgroundStyle}>
@@ -155,18 +165,11 @@ export default function HomePage() {
               Review the current trust, setup, and demo docs before you upgrade.
             </p>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gap: 12,
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              alignItems: "stretch",
-              maxWidth: 980,
-            }}
-          >
+          <div className="licenseHubHelperGrid">
             {trustDemoHelperCards.map((card) => (
               <article
                 key={card.title}
+                className="licenseHubCard licenseHubHelperCard"
                 style={{
                   padding: 16,
                   borderRadius: 12,
@@ -175,14 +178,13 @@ export default function HomePage() {
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
-                  minHeight: 184,
                 }}
               >
                 <strong>{card.title}</strong>
                 <p style={{ ...mutedTextStyle, margin: 0 }}>{card.body}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: "auto" }}>
+                <div className="licenseHubButtonRow">
                   {card.links.map((link) => (
-                    <a key={link.label} href={link.href} style={secondaryButtonStyle}>
+                    <a key={link.label} href={link.href} style={cardButtonStyle}>
                       {link.label}
                     </a>
                   ))}
@@ -201,36 +203,24 @@ export default function HomePage() {
               Use these answers when you need help buying, signing in, or finding support.
             </p>
           </div>
-          <div style={{ display: "grid", gap: 12 }}>
-            {faqRows.map((row, rowIndex) => (
-              <div
-                key={`faq-row-${rowIndex}`}
+          <div className="licenseHubFaqGrid">
+            {compactFaq.map((item) => (
+              <article
+                key={item.question}
+                className="licenseHubCard licenseHubFaqCard"
                 style={{
-                  display: "grid",
-                  gap: 12,
-                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                  alignItems: "stretch",
+                  padding: 16,
+                  borderRadius: 12,
+                  background: "#fffaf0",
+                  border: "1px solid #d8ccae",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
                 }}
               >
-                {row.map((item) => (
-                  <article
-                    key={item.question}
-                    style={{
-                      padding: 16,
-                      borderRadius: 12,
-                      background: "#fffaf0",
-                      border: "1px solid #d8ccae",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 8,
-                      minHeight: 172,
-                    }}
-                  >
-                    <strong>{item.question}</strong>
-                    <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
-                  </article>
-                ))}
-              </div>
+                <strong>{item.question}</strong>
+                <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
+              </article>
             ))}
           </div>
           <div
@@ -245,10 +235,9 @@ export default function HomePage() {
             <Link
               href="/legal"
               style={{
-                ...secondaryButtonStyle,
+                ...cardButtonStyle,
                 minWidth: 88,
-                padding: "9px 14px",
-                textAlign: "center",
+                padding: "0 16px",
               }}
             >
               Legal
@@ -256,10 +245,9 @@ export default function HomePage() {
             <Link
               href="/support"
               style={{
-                ...secondaryButtonStyle,
+                ...cardButtonStyle,
                 minWidth: 88,
-                padding: "9px 14px",
-                textAlign: "center",
+                padding: "0 16px",
               }}
             >
               Support
@@ -267,10 +255,9 @@ export default function HomePage() {
             <Link
               href="/docs"
               style={{
-                ...secondaryButtonStyle,
+                ...cardButtonStyle,
                 minWidth: 88,
-                padding: "9px 14px",
-                textAlign: "center",
+                padding: "0 16px",
               }}
             >
               Docs
@@ -278,6 +265,60 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .licenseHubHelperGrid {
+              display: grid;
+              gap: 12px;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              align-items: stretch;
+              max-width: 980px;
+            }
+
+            .licenseHubFaqGrid {
+              display: grid;
+              gap: 12px;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              align-items: stretch;
+            }
+
+            .licenseHubCard {
+              align-self: stretch;
+            }
+
+            .licenseHubHelperCard {
+              min-height: 196px;
+            }
+
+            .licenseHubFaqCard {
+              min-height: 184px;
+            }
+
+            .licenseHubButtonRow {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+              margin-top: auto;
+              align-items: center;
+            }
+
+            @media (max-width: 960px) {
+              .licenseHubHelperGrid,
+              .licenseHubFaqGrid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+              }
+            }
+
+            @media (max-width: 640px) {
+              .licenseHubHelperGrid,
+              .licenseHubFaqGrid {
+                grid-template-columns: minmax(0, 1fr);
+              }
+            }
+          `,
+        }}
+      />
     </main>
   );
 }
