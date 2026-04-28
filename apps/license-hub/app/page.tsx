@@ -94,6 +94,7 @@ export default function HomePage() {
       answer: "Use Legal for terms, privacy, refunds, and boundaries. Use Support for purchase, delivery, and account help.",
     },
   ] as const;
+  const faqRows = [compactFaq.slice(0, 3), compactFaq.slice(3, 6)] as const;
 
   return (
     <main style={pageBackgroundStyle}>
@@ -154,7 +155,15 @@ export default function HomePage() {
               Review the current trust, setup, and demo docs before you upgrade.
             </p>
           </div>
-          <div className="helper-grid">
+          <div
+            style={{
+              display: "grid",
+              gap: 12,
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              alignItems: "stretch",
+              maxWidth: 980,
+            }}
+          >
             {trustDemoHelperCards.map((card) => (
               <article
                 key={card.title}
@@ -165,7 +174,7 @@ export default function HomePage() {
                   border: "1px solid #d8ccae",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 10,
+                  gap: 8,
                   minHeight: 184,
                 }}
               >
@@ -192,24 +201,36 @@ export default function HomePage() {
               Use these answers when you need help buying, signing in, or finding support.
             </p>
           </div>
-          <div className="faq-grid">
-            {compactFaq.map((item) => (
-              <article
-                key={item.question}
+          <div style={{ display: "grid", gap: 12 }}>
+            {faqRows.map((row, rowIndex) => (
+              <div
+                key={`faq-row-${rowIndex}`}
                 style={{
-                  padding: 16,
-                  borderRadius: 12,
-                  background: "#fffaf0",
-                  border: "1px solid #d8ccae",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                  minHeight: 172,
+                  display: "grid",
+                  gap: 12,
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  alignItems: "stretch",
                 }}
               >
-                <strong>{item.question}</strong>
-                <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
-              </article>
+                {row.map((item) => (
+                  <article
+                    key={item.question}
+                    style={{
+                      padding: 16,
+                      borderRadius: 12,
+                      background: "#fffaf0",
+                      border: "1px solid #d8ccae",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                      minHeight: 172,
+                    }}
+                  >
+                    <strong>{item.question}</strong>
+                    <p style={{ ...mutedTextStyle, margin: 0 }}>{item.answer}</p>
+                  </article>
+                ))}
+              </div>
             ))}
           </div>
           <div
@@ -257,36 +278,6 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      <style jsx>{`
-        .helper-grid {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          align-items: stretch;
-          max-width: 980px;
-        }
-
-        .faq-grid {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          align-items: stretch;
-        }
-
-        @media (max-width: 960px) {
-          .helper-grid,
-          .faq-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 640px) {
-          .helper-grid,
-          .faq-grid {
-            grid-template-columns: minmax(0, 1fr);
-          }
-        }
-      `}</style>
     </main>
   );
 }

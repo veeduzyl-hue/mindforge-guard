@@ -83,19 +83,26 @@ export default function DocsPage() {
             This is the canonical trust and demo entry for License Hub visitors evaluating Guard before they choose a license.
           </p>
         </div>
-        <div className="trust-pack">
-          <div className="trust-pack-core">
+        <div style={{ display: "grid", gap: 12, maxWidth: 980 }}>
+          <div
+            style={{
+              display: "grid",
+              gap: 12,
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              alignItems: "stretch",
+            }}
+          >
             {trustDemoCoreDocs.map((doc) => (
               <article
                 key={doc.title}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
                   padding: 16,
                   border: "1px solid #d8ccae",
                   borderRadius: 12,
                   background: "#fffdf8",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
                   minHeight: 188,
                 }}
               >
@@ -107,18 +114,25 @@ export default function DocsPage() {
               </article>
             ))}
           </div>
-          <div className="trust-pack-supporting">
+          <div
+            style={{
+              display: "grid",
+              gap: 12,
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              alignItems: "stretch",
+            }}
+          >
             {trustDemoSupportingDocs.map((doc) => (
               <article
                 key={doc.title}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
                   padding: 16,
                   border: "1px solid #d8ccae",
                   borderRadius: 12,
                   background: "#fffdf8",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
                   minHeight: 176,
                 }}
               >
@@ -132,44 +146,6 @@ export default function DocsPage() {
           </div>
         </div>
       </section>
-      <style jsx>{`
-        .trust-pack {
-          display: grid;
-          gap: 12px;
-          max-width: 980px;
-        }
-
-        .trust-pack-core {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          align-items: stretch;
-        }
-
-        .trust-pack-supporting {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          align-items: stretch;
-        }
-
-        @media (max-width: 960px) {
-          .trust-pack-core {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-
-          .trust-pack-supporting {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 640px) {
-          .trust-pack-core,
-          .trust-pack-supporting {
-            grid-template-columns: minmax(0, 1fr);
-          }
-        }
-      `}</style>
     </SiteChrome>
   );
 }
