@@ -1,0 +1,61 @@
+{
+  "schema_version": "v6.14-preview",
+  "v6_14_preview": true,
+  "recommendation_only": true,
+  "non_executing": true,
+  "default_off": true,
+  "machine_verifiable": true,
+  "no_execution_authority": true,
+  "no_commit_gate_semantics": true,
+  "no_license_gating_semantic_change": true,
+  "no_current_cli_contract_change": true,
+  "no_current_exit_code_semantic_change": true,
+  "decision": "outside_scope",
+  "actor": {
+    "actor_type": "ai_coding_assistant",
+    "display_name": "AI coding assistant",
+    "initiated_by": "user_request"
+  },
+  "intent": {
+    "summary": "Attempt to modify protected commercial or production-adjacent surfaces including License Hub, README, and current baseline docs.",
+    "change_kind": "commercial_surface_change",
+    "target_paths": [
+      "apps/license-hub/app/page.tsx",
+      "README.md",
+      "docs/product/current/commercial-baseline-v6.13.md"
+    ],
+    "protected_surfaces_touched": true
+  },
+  "context_snapshot": {
+    "repository": "mindforge-guard",
+    "branch": "docs/v6.14-authority-schema-fixtures",
+    "current_release_line": "v6.13.1",
+    "protected_surface_paths": [
+      "apps/license-hub/*",
+      "README.md",
+      "docs/product/current/*",
+      "checkout/Paddle",
+      "license issuing",
+      "license validation"
+    ],
+    "protected_surfaces_touched": true
+  },
+  "authority_scope": {
+    "requested_operation": "touch_protected_surface",
+    "boundary_summary": "This request falls outside the bounded v6.14 authority schema/fixture scope because it targets protected commercial or production surfaces.",
+    "execution_authority_granted": false,
+    "blocking_implied": false
+  },
+  "authority_receipt": {
+    "receipt_id": "authority-boundary-outside-scope-001",
+    "summary": "This receipt records an outside-scope result as a recommendation-only preview artifact and does not imply blocking, enforcement, deployment gating, or execution authority.",
+    "recommendation_only": true,
+    "non_executing": true,
+    "default_off": true,
+    "machine_verifiable": true,
+    "execution_authority_granted": false,
+    "enforcement_action": "none",
+    "blocking_effect": false,
+    "recommended_next_step": "Keep protected surfaces unchanged and route any future work through a separately scoped review on a feature branch."
+  }
+}
