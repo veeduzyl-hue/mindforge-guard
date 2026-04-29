@@ -13,6 +13,7 @@ import { buildTimeline } from "./runtime/drift/timeline.mjs";
 import { buildCompare } from "./runtime/drift/compare.mjs";
 import { buildAssociationBundle } from "./runtime/association/index.mjs";
 import { handleActionSubcommand } from "./cli/action.mjs";
+import { handleAuthoritySubcommand } from "./cli/authority.mjs";
 import {
   readLicense,
   readLicenseFile,
@@ -505,6 +506,9 @@ async function runSnapshotCommand({ repoRoot, argv }) {
 export async function runGuard({ argv }) {
   if (argv && argv[0] === "action") {
     return handleActionSubcommand(argv.slice(1));
+  }
+  if (argv && argv[0] === "authority") {
+    return handleAuthoritySubcommand(argv.slice(1));
   }
   if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
     return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
