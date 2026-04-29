@@ -1,7 +1,7 @@
 # VERIFY.md - Release Verification Matrix
 
 **Purpose**: Document the current verification surface for `mindforge-guard`.  
-**Last Updated**: 2026-04-28  
+**Last Updated**: 2026-04-29  
 **Released Baseline**: `v6.13.1`  
 **Next Recommended Maintenance Release**: `v6.13.2`
 
@@ -106,7 +106,28 @@ may pass with `staged diff=0`.
 
 That is valid smoke evidence only. It is not a broader claim of arbitrary-change coverage.
 
-## 7. See Also
+## 7. v6.14 Preview Verification
+
+`v6.14` remains preview / next-line verification only. It is not the current commercial release baseline. The current commercial release baseline remains `v6.13.1`.
+
+The `v6.14` authority preview line remains:
+
+- additive-only
+- recommendation-only
+- non-executing
+- default-off
+
+Operational preview verification:
+
+```bash
+node scripts/verify_v6_14_authority_boundary_fixtures.mjs
+node scripts/verify_v6_14_authority_check_preview.mjs
+node scripts/verify_v6_14_authority_preview_acceptance.mjs
+```
+
+For this preview line, `outside_scope` remains a decision result only.
+
+## 8. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
