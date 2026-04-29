@@ -1,0 +1,53 @@
+{
+  "schema_version": "v6.14-preview",
+  "v6_14_preview": true,
+  "recommendation_only": true,
+  "non_executing": true,
+  "default_off": true,
+  "machine_verifiable": true,
+  "no_execution_authority": true,
+  "no_commit_gate_semantics": true,
+  "no_license_gating_semantic_change": true,
+  "no_current_cli_contract_change": true,
+  "no_current_exit_code_semantic_change": true,
+  "decision": "inside_scope",
+  "actor": {
+    "actor_type": "ai_coding_assistant",
+    "display_name": "AI coding assistant",
+    "initiated_by": "documented_plan"
+  },
+  "intent": {
+    "summary": "Define a v6.14 planning artifact for docs/product/next without touching runtime or production surfaces.",
+    "change_kind": "docs_only",
+    "target_paths": [
+      "docs/product/next/v6.14-authority-intent-boundary.md",
+      "docs/product/roadmap/v6.14-authority-boundary-pr-plan.md"
+    ],
+    "protected_surfaces_touched": false
+  },
+  "context_snapshot": {
+    "repository": "mindforge-guard",
+    "branch": "docs/v6.14-authority-schema-fixtures",
+    "current_release_line": "v6.13.1",
+    "protected_surface_paths": [],
+    "protected_surfaces_touched": false
+  },
+  "authority_scope": {
+    "requested_operation": "plan_docs_only",
+    "boundary_summary": "Requested work stays inside v6.14 planning docs and does not target protected commercial or production surfaces.",
+    "execution_authority_granted": false,
+    "blocking_implied": false
+  },
+  "authority_receipt": {
+    "receipt_id": "authority-boundary-inside-scope-001",
+    "summary": "This receipt records an inside-scope planning action as a recommendation-only, non-executing, default-off preview artifact.",
+    "recommendation_only": true,
+    "non_executing": true,
+    "default_off": true,
+    "machine_verifiable": true,
+    "execution_authority_granted": false,
+    "enforcement_action": "none",
+    "blocking_effect": false,
+    "recommended_next_step": "Proceed only through normal review on a feature branch if later implementation is approved."
+  }
+}
