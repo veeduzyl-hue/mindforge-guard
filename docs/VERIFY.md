@@ -1,7 +1,7 @@
 # VERIFY.md - Release Verification Matrix
 
 **Purpose**: Document the current verification surface for `mindforge-guard`.  
-**Last Updated**: 2026-04-29  
+**Last Updated**: 2026-04-30  
 **Released Baseline**: `v6.13.1`  
 **Next Recommended Maintenance Release**: `v6.13.2`
 
@@ -127,7 +127,40 @@ node scripts/verify_v6_14_authority_preview_acceptance.mjs
 
 For this preview line, `outside_scope` remains a decision result only.
 
-## 8. See Also
+## 8. v6.15 Preview Verification
+
+`v6.15` remains preview / next-line verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+
+The `v6.15` authority explain preview line remains:
+
+- additive-only
+- preview-only
+- fixture-backed
+- explanation-only
+- non-enforcing
+- derived-only
+- default-off
+- machine-verifiable
+
+Operational preview verification:
+
+```bash
+node scripts/verify_v6_15_authority_explain_preview.mjs
+node scripts/verify_v6_15_authority_explain_acceptance.mjs
+```
+
+This preview line preserves:
+
+- `guard authority check --preview --json --fixture-file <file>` unchanged
+- `guard authority explain --preview --json --fixture-file <file>` additive-only
+- `state_validity_at_bind_time` with `enforced: false`
+- reserved-only `admissibility_result`
+- reserved-only `commitment_candidate`
+- deferred `commitment_receipt`
+- no exit `21`
+- no exit `25`
+
+## 9. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
