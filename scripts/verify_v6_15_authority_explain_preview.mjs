@@ -14,6 +14,15 @@ function parseJsonOutput(result, label) {
   }
 }
 
+function expectExactKeys(actual, expectedKeys, label) {
+  const actualKeys = Object.keys(actual).sort();
+  const expectedSorted = [...expectedKeys].sort();
+  expect(
+    JSON.stringify(actualKeys) === JSON.stringify(expectedSorted),
+    `${label} keys mismatch: expected ${expectedSorted.join(", ")} got ${actualKeys.join(", ")}`
+  );
+}
+
 function buildExpectedCheckPayload(fixture) {
   return {
     kind: "authority_check_preview",
@@ -61,16 +70,40 @@ function expectCoverageMatrix(payload) {
     "bind_time_validity_v1.implemented_as mismatch"
   );
   expect(
+    payload.coverage_matrix.bind_time_validity_v1?.enforced === false,
+    "bind_time_validity_v1.enforced must be false"
+  );
+  expect(
     payload.coverage_matrix.commitment_candidate_v1?.status === "reserved",
     "commitment_candidate_v1.status must be reserved"
+  );
+  expect(
+    payload.coverage_matrix.commitment_candidate_v1?.evaluated === false,
+    "commitment_candidate_v1.evaluated must be false"
+  );
+  expect(
+    payload.coverage_matrix.commitment_candidate_v1?.result === "not_evaluated",
+    "commitment_candidate_v1.result must be not_evaluated"
   );
   expect(
     payload.coverage_matrix.admissibility_result_v1?.status === "reserved",
     "admissibility_result_v1.status must be reserved"
   );
   expect(
+    payload.coverage_matrix.admissibility_result_v1?.evaluated === false,
+    "admissibility_result_v1.evaluated must be false"
+  );
+  expect(
+    payload.coverage_matrix.admissibility_result_v1?.result === "not_evaluated",
+    "admissibility_result_v1.result must be not_evaluated"
+  );
+  expect(
     payload.coverage_matrix.commitment_receipt_v1?.status === "deferred",
     "commitment_receipt_v1.status must be deferred"
+  );
+  expect(
+    payload.coverage_matrix.commitment_receipt_v1?.implemented === false,
+    "commitment_receipt_v1.implemented must be false"
   );
 }
 
@@ -91,6 +124,7 @@ function expectExplainPayload(payload, expectedDecision, expectedVerdict, label)
   expect(payload.receipt_linkage, `${label} receipt_linkage must exist`);
   expect(payload.non_enforcement_boundary, `${label} non_enforcement_boundary must exist`);
   expect(payload.authority_check_ref.decision === expectedDecision, `${label} decision mismatch`);
+  expect(!("commitment_receipt" in payload), `${label} must not create a top-level commitment_receipt object`);
 
   expectCoverageMatrix(payload);
 
@@ -142,6 +176,11 @@ function expectExplainPayload(payload, expectedDecision, expectedVerdict, label)
     !["admit", "deny", "defer", "requires_human_confirmation"].includes(payload.admissibility_result.result),
     `${label} admissibility_result must remain reserved`
   );
+  expectExactKeys(
+    payload.admissibility_result,
+    ["schema_version", "status", "evaluated", "result", "reserved_result_values"],
+    `${label} admissibility_result`
+  );
 
   expect(payload.commitment_candidate.evaluated === false, `${label} commitment_candidate.evaluated mismatch`);
   expect(
@@ -151,6 +190,15 @@ function expectExplainPayload(payload, expectedDecision, expectedVerdict, label)
   expect(
     payload.commitment_candidate.commit_decision === "not_evaluated",
     `${label} commitment_candidate.commit_decision mismatch`
+  );
+  expect(
+    !["allowed", "blocked", "approved", "denied"].includes(payload.commitment_candidate.commit_decision),
+    `${label} commitment_candidate must not emit a real commit decision`
+  );
+  expectExactKeys(
+    payload.commitment_candidate,
+    ["schema_version", "status", "evaluated", "result", "commit_decision"],
+    `${label} commitment_candidate`
   );
 
   expect(
@@ -162,6 +210,15 @@ function expectExplainPayload(payload, expectedDecision, expectedVerdict, label)
     payload.receipt_linkage.commitment_receipt?.implemented === false,
     `${label} commitment_receipt must remain deferred`
   );
+  expect(
+    payload.receipt_linkage.commitment_receipt?.deferred_to === "commit_gate_phase",
+    `${label} commitment_receipt.deferred_to mismatch`
+  );
+  expectExactKeys(
+    payload.receipt_linkage.commitment_receipt,
+    ["implemented", "deferred_to"],
+    `${label} receipt_linkage.commitment_receipt`
+  );
 
   expect(payload.non_enforcement_boundary.recommendation_only === true, `${label} recommendation_only mismatch`);
   expect(payload.non_enforcement_boundary.non_executing === true, `${label} non_executing mismatch`);
@@ -171,6 +228,64 @@ function expectExplainPayload(payload, expectedDecision, expectedVerdict, label)
   expect(
     payload.non_enforcement_boundary.execution_authority_granted === false,
     `${label} execution_authority_granted mismatch`
+  );
+  expect(
+    payload.non_enforcement_boundary.does_not_create_commit_gate === true,
+    `${label} does_not_create_commit_gate mismatch`
+  );
+  expect(
+    payload.non_enforcement_boundary.does_not_decide_admissibility === true,
+    `${label} does_not_decide_admissibility mismatch`
+  );
+  expect(
+    payload.non_enforcement_boundary.does_not_create_commitment_receipt === true,
+    `${label} does_not_create_commitment_receipt mismatch`
+  );
+}
+
+function expectDeterministicStability(firstPayload, secondPayload, label) {
+  expect(
+    firstPayload.state_validity_at_bind_time.state_hash === secondPayload.state_validity_at_bind_time.state_hash,
+    `${label} state_hash must be stable`
+  );
+  expect(
+    firstPayload.state_validity_at_bind_time.policy_hash === secondPayload.state_validity_at_bind_time.policy_hash,
+    `${label} policy_hash must be stable`
+  );
+  expect(
+    firstPayload.state_validity_at_bind_time.evidence_hash === secondPayload.state_validity_at_bind_time.evidence_hash,
+    `${label} evidence_hash must be stable`
+  );
+  expect(
+    firstPayload.receipt_linkage.deterministic_hash === secondPayload.receipt_linkage.deterministic_hash,
+    `${label} deterministic_hash must be stable`
+  );
+  expect(
+    firstPayload.receipt_linkage.authority_explain_receipt_id ===
+      secondPayload.receipt_linkage.authority_explain_receipt_id,
+    `${label} authority_explain_receipt_id must be stable`
+  );
+  expect(
+    JSON.stringify(firstPayload.coverage_matrix) === JSON.stringify(secondPayload.coverage_matrix),
+    `${label} coverage_matrix must be stable`
+  );
+  expect(
+    JSON.stringify(firstPayload.admissibility_result) === JSON.stringify(secondPayload.admissibility_result),
+    `${label} admissibility_result must be stable`
+  );
+  expect(
+    JSON.stringify(firstPayload.commitment_candidate) === JSON.stringify(secondPayload.commitment_candidate),
+    `${label} commitment_candidate must be stable`
+  );
+  expect(
+    firstPayload.state_validity_at_bind_time.evaluated_at ===
+      secondPayload.state_validity_at_bind_time.evaluated_at,
+    `${label} evaluated_at must be stable`
+  );
+  expect(
+    firstPayload.state_validity_at_bind_time.expires_at ===
+      secondPayload.state_validity_at_bind_time.expires_at,
+    `${label} expires_at must be stable`
   );
 }
 
@@ -253,6 +368,17 @@ expect(insideResult.exitCode !== 25, "inside explain must not use exit 25");
 const insidePayload = parseJsonOutput(insideResult, "inside explain");
 expectExplainPayload(insidePayload, "inside_scope", "valid", "inside explain");
 
+const insideRepeatResult = await runAuthorityExplain([
+  "--preview",
+  "--json",
+  "--fixture-file",
+  "fixtures/authority/authority-boundary.inside-scope.valid.json",
+]);
+expect(insideRepeatResult.exitCode === 0, "repeat inside explain should exit 0");
+const insideRepeatPayload = parseJsonOutput(insideRepeatResult, "repeat inside explain");
+expectExplainPayload(insideRepeatPayload, "inside_scope", "valid", "repeat inside explain");
+expectDeterministicStability(insidePayload, insideRepeatPayload, "inside explain");
+
 const outsideResult = await runAuthorityExplain([
   "--preview",
   "--json",
@@ -264,6 +390,10 @@ expect(outsideResult.exitCode !== 21, "outside explain must not use exit 21");
 expect(outsideResult.exitCode !== 25, "outside explain must not use exit 25");
 const outsidePayload = parseJsonOutput(outsideResult, "outside explain");
 expectExplainPayload(outsidePayload, "outside_scope", "valid", "outside explain");
+expect(
+  outsidePayload.authority_check_ref.decision === "outside_scope",
+  "outside_scope must remain a successful decision result, not a denial"
+);
 
 const missingPreview = await runAuthorityExplain([
   "--json",
@@ -285,6 +415,24 @@ const missingFixtureFlag = await runAuthorityExplain([
 ]);
 expect(missingFixtureFlag.exitCode === 2, "missing --fixture-file should exit 2");
 
+const unknownOptionResult = await runAuthorityExplain([
+  "--preview",
+  "--json",
+  "--fixture-file",
+  "fixtures/authority/authority-boundary.inside-scope.valid.json",
+  "--unknown-option",
+]);
+expect(unknownOptionResult.exitCode === 2, "unknown option should exit 2");
+
+const malformedUsageResult = await runAuthorityExplain([
+  "--preview",
+  "--json",
+  "--fixture-file",
+  "fixtures/authority/authority-boundary.inside-scope.valid.json",
+  "unexpected-positional",
+]);
+expect(malformedUsageResult.exitCode === 2, "malformed usage should exit 2");
+
 const { tempRoot, staleFixturePath, mismatchFixturePath, unknownFixturePath, malformedFixturePath, invalidJsonPath } =
   createTempFixtures();
 
@@ -296,7 +444,8 @@ try {
     staleFixturePath,
   ]);
   expect(staleResult.exitCode === 0, "stale bind-time state should exit 0");
-  expectExplainPayload(parseJsonOutput(staleResult, "stale explain"), "inside_scope", "stale", "stale explain");
+  const stalePayload = parseJsonOutput(staleResult, "stale explain");
+  expectExplainPayload(stalePayload, "inside_scope", "stale", "stale explain");
 
   const mismatchResult = await runAuthorityExplain([
     "--preview",
@@ -305,8 +454,9 @@ try {
     mismatchFixturePath,
   ]);
   expect(mismatchResult.exitCode === 0, "mismatch bind-time state should exit 0");
+  const mismatchPayload = parseJsonOutput(mismatchResult, "mismatch explain");
   expectExplainPayload(
-    parseJsonOutput(mismatchResult, "mismatch explain"),
+    mismatchPayload,
     "inside_scope",
     "mismatch",
     "mismatch explain"
@@ -319,8 +469,9 @@ try {
     unknownFixturePath,
   ]);
   expect(unknownResult.exitCode === 0, "unknown bind-time state should exit 0");
+  const unknownPayload = parseJsonOutput(unknownResult, "unknown explain");
   expectExplainPayload(
-    parseJsonOutput(unknownResult, "unknown explain"),
+    unknownPayload,
     "insufficient_context",
     "unknown",
     "unknown explain"

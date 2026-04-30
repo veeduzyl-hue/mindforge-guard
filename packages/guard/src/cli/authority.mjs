@@ -116,6 +116,28 @@ function parseAuthorityArgs(args) {
   return parsed;
 }
 
+function findUnexpectedAuthorityArg(args) {
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--help" || arg === "-h" || arg === "--preview" || arg === "--json") {
+      continue;
+    }
+    if (arg.startsWith("--fixture-file=")) {
+      continue;
+    }
+    if (arg === "--fixture-file") {
+      const next = args[i + 1];
+      if (next && !next.startsWith("--")) {
+        i += 1;
+      }
+      continue;
+    }
+    return arg;
+  }
+
+  return null;
+}
+
 function stableSerialize(value) {
   if (Array.isArray(value)) {
     return `[${value.map((entry) => stableSerialize(entry)).join(",")}]`;
@@ -294,7 +316,17 @@ function buildPreviewResult(fixture) {
   };
 }
 
-function validateRequiredPreviewArgs(args, usage) {
+function validateRequiredPreviewArgs(args, usage, options = {}) {
+  if (options.strict === true) {
+    const unexpectedArg = findUnexpectedAuthorityArg(args);
+    if (unexpectedArg) {
+      const message = unexpectedArg.startsWith("--")
+        ? `Unknown option: ${unexpectedArg}`
+        : `Unexpected argument: ${unexpectedArg}`;
+      return { response: usageError(message, usage) };
+    }
+  }
+
   const parsed = parseAuthorityArgs(args);
   if (parsed.help) return { response: { exitCode: 0, stdout: renderAuthorityHelp() + "\n" } };
   if (!parsed.preview) return { response: usageError("Missing required option: --preview", usage) };
@@ -679,7 +711,9 @@ export function handleAuthoritySubcommand(args) {
   }
 
   const usage = sub === "check" ? AUTHORITY_CHECK_USAGE : AUTHORITY_EXPLAIN_USAGE;
-  const argsResult = validateRequiredPreviewArgs(args.slice(1), usage);
+  const argsResult = validateRequiredPreviewArgs(args.slice(1), usage, {
+    strict: sub === "explain",
+  });
   if (argsResult.response) return argsResult.response;
 
   const loaded = loadValidatedAuthorityFixture(argsResult.parsed, {
