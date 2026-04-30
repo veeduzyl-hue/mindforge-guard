@@ -53,6 +53,8 @@ async function expectPassScript(scriptPath, expectedStdout) {
 }
 
 async function main() {
+  // Phase 2 hardening must continue to prove the full frozen v6.14 baseline
+  // before asserting any v6.15 authority explain preview behavior.
   await expectPassScript(
     "scripts/verify_v6_14_authority_boundary_fixtures.mjs",
     "PASS verify_v6_14_authority_boundary_fixtures\n"
