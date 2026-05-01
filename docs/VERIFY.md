@@ -161,7 +161,39 @@ This preview line preserves:
 - no exit `21`
 - no exit `25`
 
-## 9. See Also
+## 9. v6.16 Preview Verification
+
+`v6.16` remains preview / next-line verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+
+The `v6.16` grounding / provenance preview line remains:
+
+- additive-only
+- preview-only
+- fixture-backed
+- explanation-only
+- supporting-only
+- non-enforcing
+- default-off
+- machine-verifiable
+
+Operational preview verification:
+
+```bash
+node scripts/verify_v6_16_grounding_boundary_fixtures.mjs
+node scripts/verify_v6_16_grounding_explain_preview.mjs
+node scripts/verify_v6_16_grounding_explain_acceptance.mjs
+node scripts/verify_v6_16_grounding_explain_final_acceptance.mjs
+```
+
+This preview line preserves:
+
+- `guard grounding explain --preview --json --fixture-file <file>` additive-only
+- explicit `evidence_adequacy` as supporting-only and non-authoritative
+- reserved-only `admissibility_readiness`
+- no exit `21`
+- no exit `25`
+
+## 10. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
