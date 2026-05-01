@@ -59,7 +59,12 @@ const FORBIDDEN_FIELDS = [
   "commitment_receipt",
   "commit_gate",
   "deployment_gate",
+  "deployment_approval",
   "permit_gate",
+  "risk_acceptance",
+  "regulatory_reporting",
+  "means_motive_opportunity",
+  "insider_threat",
   "runtime_enforcement",
 ];
 const FORBIDDEN_STRING_VALUES = ["admit", "deny", "defer"];
@@ -382,6 +387,73 @@ function validateFixture(fixture) {
     }
   }
 
+  const evidenceAdequacy = fixture?.evidence_adequacy;
+  if (!isPlainObject(evidenceAdequacy)) {
+    issues.push("evidence_adequacy must exist");
+  } else {
+    for (const [field, expectedValue] of [
+      ["supporting_only", true],
+      ["authoritative", false],
+      ["creates_permission", false],
+      ["changes_authority", false],
+      ["changes_exit_semantics", false],
+      ["evidence_records_explicit", true],
+    ]) {
+      if (evidenceAdequacy[field] !== expectedValue) {
+        issues.push(`evidence_adequacy.${field} must be ${expectedValue}`);
+      }
+    }
+    if (!Array.isArray(evidenceAdequacy.omissions)) {
+      issues.push("evidence_adequacy.omissions must be an array");
+    } else {
+      for (const [index, omission] of evidenceAdequacy.omissions.entries()) {
+        if (!isPlainObject(omission)) {
+          issues.push(`evidence_adequacy.omissions[${index}] must be an object`);
+          continue;
+        }
+        if (typeof omission.reason !== "string" || omission.reason.length === 0) {
+          issues.push(`evidence_adequacy.omissions[${index}].reason must be a non-empty string`);
+        }
+      }
+    }
+    if (!Array.isArray(evidenceAdequacy.uncertainty_notes)) {
+      issues.push("evidence_adequacy.uncertainty_notes must be an array");
+    } else {
+      for (const [index, note] of evidenceAdequacy.uncertainty_notes.entries()) {
+        if (!isPlainObject(note)) {
+          issues.push(`evidence_adequacy.uncertainty_notes[${index}] must be an object`);
+          continue;
+        }
+        if (note.supporting_metadata_only !== true) {
+          issues.push(
+            `evidence_adequacy.uncertainty_notes[${index}].supporting_metadata_only must be true`
+          );
+        }
+      }
+    }
+    if (!Array.isArray(evidenceAdequacy.contrary_artifact_refs)) {
+      issues.push("evidence_adequacy.contrary_artifact_refs must be an array");
+    } else {
+      for (const [index, artifactRef] of evidenceAdequacy.contrary_artifact_refs.entries()) {
+        if (!isPlainObject(artifactRef)) {
+          issues.push(`evidence_adequacy.contrary_artifact_refs[${index}] must be an object`);
+          continue;
+        }
+        if (artifactRef.supporting_artifact_only !== true) {
+          issues.push(
+            `evidence_adequacy.contrary_artifact_refs[${index}].supporting_artifact_only must be true`
+          );
+        }
+      }
+    }
+    if (
+      typeof evidenceAdequacy.adequacy_explanation !== "string" ||
+      evidenceAdequacy.adequacy_explanation.length === 0
+    ) {
+      issues.push("evidence_adequacy.adequacy_explanation must be a non-empty string");
+    }
+  }
+
   if (
     evidencePackage?.declared_freshness?.freshness_state &&
     groundingStatus?.freshness_state &&
@@ -545,6 +617,10 @@ function buildAdmissibilityReadiness() {
   };
 }
 
+function buildEvidenceAdequacy(fixture) {
+  return fixture.evidence_adequacy;
+}
+
 function buildNonEnforcementBoundary() {
   return {
     preview_only: true,
@@ -563,7 +639,14 @@ function buildReceiptLinkage(fixture) {
   };
 }
 
-function buildHashes(fixture, boundary, admissibilityReadiness, receiptLinkage, nonEnforcementBoundary) {
+function buildHashes(
+  fixture,
+  boundary,
+  admissibilityReadiness,
+  evidenceAdequacy,
+  receiptLinkage,
+  nonEnforcementBoundary
+) {
   const evidenceHash = hashValue({
     evidence_items: fixture.current_evidence_package.evidence_items,
   });
@@ -586,6 +669,7 @@ function buildHashes(fixture, boundary, admissibilityReadiness, receiptLinkage, 
     provenance_classification: fixture.provenance_classification,
     grounding_status: fixture.grounding_status,
     grounding_explanation: fixture.grounding_explanation,
+    evidence_adequacy: evidenceAdequacy,
     admissibility_readiness: admissibilityReadiness,
     receipt_linkage: receiptLinkage,
     non_enforcement_boundary: nonEnforcementBoundary,
@@ -606,12 +690,14 @@ function buildGroundingExplainResult(fixturePath, fixture) {
   const boundary = buildBoundary(fixture);
   const inputRef = buildInputRef(fixturePath, fixture);
   const admissibilityReadiness = buildAdmissibilityReadiness();
+  const evidenceAdequacy = buildEvidenceAdequacy(fixture);
   const receiptLinkage = buildReceiptLinkage(fixture);
   const nonEnforcementBoundary = buildNonEnforcementBoundary();
   const hashes = buildHashes(
     fixture,
     boundary,
     admissibilityReadiness,
+    evidenceAdequacy,
     receiptLinkage,
     nonEnforcementBoundary
   );
@@ -630,6 +716,7 @@ function buildGroundingExplainResult(fixturePath, fixture) {
     provenance_classification: fixture.provenance_classification,
     grounding_status: fixture.grounding_status,
     grounding_explanation: fixture.grounding_explanation,
+    evidence_adequacy: evidenceAdequacy,
     hashes,
     admissibility_readiness: admissibilityReadiness,
     receipt_linkage: receiptLinkage,

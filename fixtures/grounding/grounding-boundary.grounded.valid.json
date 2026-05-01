@@ -102,5 +102,17 @@
       "This preview does not fetch or verify live sources.",
       "This preview does not decide admissibility or execution readiness."
     ]
+  },
+  "evidence_adequacy": {
+    "supporting_only": true,
+    "authoritative": false,
+    "creates_permission": false,
+    "changes_authority": false,
+    "changes_exit_semantics": false,
+    "evidence_records_explicit": true,
+    "omissions": [],
+    "uncertainty_notes": [],
+    "contrary_artifact_refs": [],
+    "adequacy_explanation": "Evidence and source records are explicit in the fixture-backed package, with no declared omissions required for this grounded example."
   }
 }

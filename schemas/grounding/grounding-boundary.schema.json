@@ -22,7 +22,8 @@
     "current_evidence_package",
     "provenance_classification",
     "grounding_status",
-    "grounding_explanation"
+    "grounding_explanation",
+    "evidence_adequacy"
   ],
   "properties": {
     "schema_version": {
@@ -88,6 +89,9 @@
     },
     "grounding_explanation": {
       "$ref": "#/$defs/groundingExplanation"
+    },
+    "evidence_adequacy": {
+      "$ref": "#/$defs/evidenceAdequacy"
     }
   },
   "$defs": {
@@ -376,6 +380,145 @@
             "type": "string",
             "minLength": 1
           }
+        }
+      }
+    },
+    "evidenceOmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "omission_id",
+        "artifact_kind",
+        "reason"
+      ],
+      "properties": {
+        "omission_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "uncertaintyNote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "note_id",
+        "summary",
+        "supporting_metadata_only"
+      ],
+      "properties": {
+        "note_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supporting_metadata_only": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "contraryArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_ref_id",
+        "summary",
+        "supporting_artifact_only"
+      ],
+      "properties": {
+        "artifact_ref_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supporting_artifact_only": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "evidenceAdequacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supporting_only",
+        "authoritative",
+        "creates_permission",
+        "changes_authority",
+        "changes_exit_semantics",
+        "evidence_records_explicit",
+        "omissions",
+        "uncertainty_notes",
+        "contrary_artifact_refs",
+        "adequacy_explanation"
+      ],
+      "properties": {
+        "supporting_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "authoritative": {
+          "type": "boolean",
+          "const": false
+        },
+        "creates_permission": {
+          "type": "boolean",
+          "const": false
+        },
+        "changes_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "changes_exit_semantics": {
+          "type": "boolean",
+          "const": false
+        },
+        "evidence_records_explicit": {
+          "type": "boolean",
+          "const": true
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceOmission"
+          }
+        },
+        "uncertainty_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/uncertaintyNote"
+          }
+        },
+        "contrary_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contraryArtifactRef"
+          }
+        },
+        "adequacy_explanation": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

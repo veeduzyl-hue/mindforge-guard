@@ -1,4 +1,11 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, "..");
 
 function expect(condition, message) {
   if (!condition) throw new Error(message);
@@ -6,6 +13,26 @@ function expect(condition, message) {
 
 function parseJsonFile(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function runGit(args) {
+  return execFileSync("git", args, {
+    cwd: repoRoot,
+    encoding: "utf8",
+  }).trim();
+}
+
+function changedFilesFor(paths) {
+  const mergeBase = runGit(["merge-base", "main", "HEAD"]);
+  const committed = runGit(["diff", "--name-only", `${mergeBase}...HEAD`, "--", ...paths]);
+  const unstaged = runGit(["diff", "--name-only", "--", ...paths]);
+  const staged = runGit(["diff", "--cached", "--name-only", "--", ...paths]);
+  return [...new Set(
+    [committed, unstaged, staged]
+      .flatMap((chunk) => chunk.split(/\r?\n/))
+      .map((value) => value.trim())
+      .filter(Boolean)
+  )];
 }
 
 function walk(value, visit) {
@@ -31,7 +58,12 @@ function expectNoForbiddenFields(value, label) {
     "commitment_receipt",
     "commit_gate",
     "deployment_gate",
+    "deployment_approval",
     "permit_gate",
+    "risk_acceptance",
+    "regulatory_reporting",
+    "means_motive_opportunity",
+    "insider_threat",
     "runtime_enforcement",
   ]);
   const forbiddenValues = new Set(["admit", "deny", "defer"]);
@@ -52,6 +84,7 @@ function expectFixtureSections(fixture, label) {
     "provenance_classification",
     "grounding_status",
     "grounding_explanation",
+    "evidence_adequacy",
   ]) {
     expect(fixture[section], `${label} missing ${section}`);
   }
@@ -68,6 +101,51 @@ function expectFixtureSections(fixture, label) {
     Array.isArray(fixture.current_evidence_package.source_of_truth_refs),
     `${label} source_of_truth_refs missing`
   );
+}
+
+function expectEvidenceAdequacy(evidenceAdequacy, label) {
+  expect(evidenceAdequacy.supporting_only === true, `${label} supporting_only mismatch`);
+  expect(evidenceAdequacy.authoritative === false, `${label} authoritative mismatch`);
+  expect(evidenceAdequacy.creates_permission === false, `${label} creates_permission mismatch`);
+  expect(evidenceAdequacy.changes_authority === false, `${label} changes_authority mismatch`);
+  expect(
+    evidenceAdequacy.changes_exit_semantics === false,
+    `${label} changes_exit_semantics mismatch`
+  );
+  expect(
+    evidenceAdequacy.evidence_records_explicit === true,
+    `${label} evidence_records_explicit mismatch`
+  );
+  expect(Array.isArray(evidenceAdequacy.omissions), `${label} omissions missing`);
+  expect(Array.isArray(evidenceAdequacy.uncertainty_notes), `${label} uncertainty_notes missing`);
+  expect(
+    Array.isArray(evidenceAdequacy.contrary_artifact_refs),
+    `${label} contrary_artifact_refs missing`
+  );
+  expect(
+    typeof evidenceAdequacy.adequacy_explanation === "string" &&
+      evidenceAdequacy.adequacy_explanation.length > 0,
+    `${label} adequacy_explanation missing`
+  );
+
+  for (const [index, omission] of evidenceAdequacy.omissions.entries()) {
+    expect(
+      typeof omission.reason === "string" && omission.reason.length > 0,
+      `${label} omission ${index} must include a reason`
+    );
+  }
+  for (const [index, note] of evidenceAdequacy.uncertainty_notes.entries()) {
+    expect(
+      note.supporting_metadata_only === true,
+      `${label} uncertainty note ${index} must remain supporting metadata only`
+    );
+  }
+  for (const [index, artifactRef] of evidenceAdequacy.contrary_artifact_refs.entries()) {
+    expect(
+      artifactRef.supporting_artifact_only === true,
+      `${label} contrary artifact ${index} must remain supporting-only`
+    );
+  }
 }
 
 const schema = parseJsonFile("schemas/grounding/grounding-boundary.schema.json");
@@ -87,6 +165,48 @@ expect(
 expect(
   schema.$defs?.provenanceClassification?.properties?.verification_status?.enum?.includes("declared_only"),
   "verification_status enum must include declared_only"
+);
+const changedSchemaFiles = changedFilesFor(["schemas"]);
+expect(
+  JSON.stringify(changedSchemaFiles) ===
+    JSON.stringify(["schemas/grounding/grounding-boundary.schema.json"]),
+  `only the v6.16 grounding schema may change, got: ${changedSchemaFiles.join(", ")}`
+);
+expect(
+  changedFilesFor(["packages/guard/src/cli/authority.mjs"]).length === 0,
+  "authority.mjs must remain unchanged"
+);
+expect(
+  changedFilesFor(["schemas/authority/authority-boundary.schema.json"]).length === 0,
+  "authority schema must remain unchanged"
+);
+expect(
+  changedFilesFor(["fixtures/authority"]).length === 0,
+  "authority fixtures must remain unchanged"
+);
+expect(
+  changedFilesFor(["scripts/verify_v6_14_authority_boundary_fixtures.mjs"]).length === 0 &&
+    changedFilesFor(["scripts/verify_v6_14_authority_check_preview.mjs"]).length === 0 &&
+    changedFilesFor(["scripts/verify_v6_14_authority_preview_acceptance.mjs"]).length === 0,
+  "v6.14 verifier scripts must remain unchanged"
+);
+expect(
+  changedFilesFor(["scripts/verify_v6_15_authority_explain_preview.mjs"]).length === 0 &&
+    changedFilesFor(["scripts/verify_v6_15_authority_explain_acceptance.mjs"]).length === 0 &&
+    changedFilesFor(["scripts/verify_v6_15_authority_explain_final_acceptance.mjs"]).length === 0,
+  "v6.15 verifier scripts must remain unchanged"
+);
+expect(
+  changedFilesFor([
+    "README.md",
+    "docs/product/current",
+    "docs/demos/current",
+    "docs/first-10-minutes.md",
+    "docs/trust/safety-boundary.md",
+    "apps/license-hub",
+    "vercel.json",
+  ]).length === 0,
+  "commercial and production protected paths must remain unchanged"
 );
 
 const groundedFixture = parseJsonFile("fixtures/grounding/grounding-boundary.grounded.valid.json");
@@ -134,6 +254,28 @@ expect(
   partiallyGroundedFixture.current_evidence_package.authority_explain_receipt_ref === null,
   "partially_grounded fixture authority_explain_receipt_ref must stay null"
 );
+expectEvidenceAdequacy(groundedFixture.evidence_adequacy, "grounded fixture evidence_adequacy");
+expectEvidenceAdequacy(
+  partiallyGroundedFixture.evidence_adequacy,
+  "partially_grounded fixture evidence_adequacy"
+);
+expect(groundedFixture.evidence_adequacy.omissions.length === 0, "grounded fixture must not declare omissions");
+expect(
+  groundedFixture.evidence_adequacy.contrary_artifact_refs.length === 0,
+  "grounded fixture must not require contrary artifact refs"
+);
+expect(
+  partiallyGroundedFixture.evidence_adequacy.omissions.length > 0,
+  "partially_grounded fixture must declare an explicit omission"
+);
+expect(
+  partiallyGroundedFixture.evidence_adequacy.uncertainty_notes.length > 0,
+  "partially_grounded fixture must declare uncertainty notes"
+);
+expect(
+  partiallyGroundedFixture.evidence_adequacy.contrary_artifact_refs.length > 0,
+  "partially_grounded fixture must declare contrary artifact refs"
+);
 
 const { runGuard } = await import("../packages/guard/src/runGuard.mjs");
 
@@ -178,6 +320,7 @@ for (const [label, fixturePath, expectedGroundingState] of [
       payload.non_enforcement_boundary.changes_exit_semantics === false,
     `${label} non_enforcement_boundary mismatch`
   );
+  expectEvidenceAdequacy(payload.evidence_adequacy, `${label} payload evidence_adequacy`);
   expectNoForbiddenFields(payload, `${label} payload`);
 }
 

@@ -46,7 +46,12 @@ function expectNoForbiddenFields(value, label) {
     "commitment_receipt",
     "commit_gate",
     "deployment_gate",
+    "deployment_approval",
     "permit_gate",
+    "risk_acceptance",
+    "regulatory_reporting",
+    "means_motive_opportunity",
+    "insider_threat",
     "runtime_enforcement",
   ]);
   const forbiddenValues = new Set(["admit", "deny", "defer"]);
@@ -65,6 +70,50 @@ function expectHash(hash, label) {
   expect(typeof hash === "string" && hash.startsWith("sha256:"), `${label} hash mismatch`);
 }
 
+function expectEvidenceAdequacy(evidenceAdequacy, label) {
+  expect(evidenceAdequacy.supporting_only === true, `${label} supporting_only mismatch`);
+  expect(evidenceAdequacy.authoritative === false, `${label} authoritative mismatch`);
+  expect(evidenceAdequacy.creates_permission === false, `${label} creates_permission mismatch`);
+  expect(evidenceAdequacy.changes_authority === false, `${label} changes_authority mismatch`);
+  expect(
+    evidenceAdequacy.changes_exit_semantics === false,
+    `${label} changes_exit_semantics mismatch`
+  );
+  expect(
+    evidenceAdequacy.evidence_records_explicit === true,
+    `${label} evidence_records_explicit mismatch`
+  );
+  expect(Array.isArray(evidenceAdequacy.omissions), `${label} omissions missing`);
+  expect(Array.isArray(evidenceAdequacy.uncertainty_notes), `${label} uncertainty_notes missing`);
+  expect(
+    Array.isArray(evidenceAdequacy.contrary_artifact_refs),
+    `${label} contrary_artifact_refs missing`
+  );
+  expect(
+    typeof evidenceAdequacy.adequacy_explanation === "string" &&
+      evidenceAdequacy.adequacy_explanation.length > 0,
+    `${label} adequacy_explanation missing`
+  );
+  for (const [index, omission] of evidenceAdequacy.omissions.entries()) {
+    expect(
+      typeof omission.reason === "string" && omission.reason.length > 0,
+      `${label} omission ${index} must include a reason`
+    );
+  }
+  for (const [index, note] of evidenceAdequacy.uncertainty_notes.entries()) {
+    expect(
+      note.supporting_metadata_only === true,
+      `${label} uncertainty note ${index} must remain supporting metadata only`
+    );
+  }
+  for (const [index, artifactRef] of evidenceAdequacy.contrary_artifact_refs.entries()) {
+    expect(
+      artifactRef.supporting_artifact_only === true,
+      `${label} contrary artifact ${index} must remain supporting-only`
+    );
+  }
+}
+
 function expectPayload(payload, expectedGroundingState, label) {
   expectExactKeys(
     payload,
@@ -78,6 +127,7 @@ function expectPayload(payload, expectedGroundingState, label) {
       "provenance_classification",
       "grounding_status",
       "grounding_explanation",
+      "evidence_adequacy",
       "hashes",
       "admissibility_readiness",
       "receipt_linkage",
@@ -127,6 +177,7 @@ function expectPayload(payload, expectedGroundingState, label) {
   expectHash(payload.hashes.source_hash, `${label} source`);
   expectHash(payload.hashes.provenance_hash, `${label} provenance`);
   expectHash(payload.hashes.deterministic_hash, `${label} deterministic`);
+  expectEvidenceAdequacy(payload.evidence_adequacy, `${label} evidence_adequacy`);
   expectNoForbiddenFields(payload, `${label} payload`);
 }
 
@@ -193,6 +244,24 @@ function createTempFixtures() {
   ungroundedFixture.grounding_explanation.limitations = [
     "This preview does not attempt to discover evidence automatically."
   ];
+  ungroundedFixture.evidence_adequacy.omissions = [
+    {
+      omission_id: "omission-ungrounded-001",
+      artifact_kind: "source_refs",
+      artifact_ref: null,
+      reason: "The fixture declares no retained source refs for this ungrounded state."
+    }
+  ];
+  ungroundedFixture.evidence_adequacy.uncertainty_notes = [
+    {
+      note_id: "uncertainty-ungrounded-001",
+      summary: "Ungrounded status reflects explicit source absence rather than a deny or block.",
+      supporting_metadata_only: true
+    }
+  ];
+  ungroundedFixture.evidence_adequacy.contrary_artifact_refs = [];
+  ungroundedFixture.evidence_adequacy.adequacy_explanation =
+    "Evidence adequacy stays supporting-only and records the missing evidence as an explicit omission.";
   writeJson(ungroundedPath, ungroundedFixture);
 
   const unknownFixture = structuredClone(groundedFixture);
@@ -219,6 +288,30 @@ function createTempFixtures() {
   unknownFixture.grounding_explanation.limitations = [
     "This preview does not fetch sources or infer missing provenance."
   ];
+  unknownFixture.evidence_adequacy.omissions = [
+    {
+      omission_id: "omission-unknown-001",
+      artifact_kind: "provenance_detail",
+      artifact_ref: null,
+      reason: "The fixture does not declare enough provenance detail to resolve unknown status further."
+    }
+  ];
+  unknownFixture.evidence_adequacy.uncertainty_notes = [
+    {
+      note_id: "uncertainty-unknown-001",
+      summary: "Unknown grounding remains a supporting metadata condition only.",
+      supporting_metadata_only: true
+    }
+  ];
+  unknownFixture.evidence_adequacy.contrary_artifact_refs = [
+    {
+      artifact_ref_id: "contrary-unknown-001",
+      summary: "A contrary note records that the existing metadata is insufficient to claim stronger grounding.",
+      supporting_artifact_only: true
+    }
+  ];
+  unknownFixture.evidence_adequacy.adequacy_explanation =
+    "Evidence adequacy remains non-authoritative and records unresolved provenance as an explicit omission plus uncertainty metadata.";
   writeJson(unknownPath, unknownFixture);
 
   const malformedFixture = structuredClone(groundedFixture);

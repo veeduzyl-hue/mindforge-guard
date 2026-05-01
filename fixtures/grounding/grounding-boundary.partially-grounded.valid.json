@@ -79,5 +79,36 @@
       "This preview does not attempt freshness recovery or live validation.",
       "This preview does not treat partial grounding as a deny or block."
     ]
+  },
+  "evidence_adequacy": {
+    "supporting_only": true,
+    "authoritative": false,
+    "creates_permission": false,
+    "changes_authority": false,
+    "changes_exit_semantics": false,
+    "evidence_records_explicit": true,
+    "omissions": [
+      {
+        "omission_id": "omission-001",
+        "artifact_kind": "source_of_truth_ref",
+        "artifact_ref": null,
+        "reason": "No current source-of-truth reference is declared for this partially grounded package."
+      }
+    ],
+    "uncertainty_notes": [
+      {
+        "note_id": "uncertainty-001",
+        "summary": "Declared-only verification leaves freshness and completeness uncertainty unresolved.",
+        "supporting_metadata_only": true
+      }
+    ],
+    "contrary_artifact_refs": [
+      {
+        "artifact_ref_id": "contrary-brief-001",
+        "summary": "A counterargument brief notes that the source reference may be stale without a current source-of-truth anchor.",
+        "supporting_artifact_only": true
+      }
+    ],
+    "adequacy_explanation": "Evidence adequacy remains supporting-only: the package records the missing source-of-truth reference explicitly, preserves uncertainty as metadata, and keeps contrary artifacts as non-authoritative supporting references."
   }
 }

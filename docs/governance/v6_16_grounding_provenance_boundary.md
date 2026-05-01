@@ -57,10 +57,23 @@ The preview output remains fixture-backed and explanation-only with these top-le
 - `provenance_classification`
 - `grounding_status`
 - `grounding_explanation`
+- `evidence_adequacy`
 - `hashes`
 - `admissibility_readiness`
 - `receipt_linkage`
 - `non_enforcement_boundary`
+
+`evidence_adequacy` is an internal supporting explanation layer only. It:
+
+- does not constitute deployment approval
+- does not constitute risk acceptance
+- does not implement regulatory reporting
+- does not create permission
+- does not expand authority
+- does not alter audit verdicts
+- does not alter exit semantics
+- records omissions explicitly with reasons when evidence is missing
+- keeps uncertainty notes and contrary artifact refs as supporting-only metadata
 
 `admissibility_readiness` is reserved-only in this phase:
 
