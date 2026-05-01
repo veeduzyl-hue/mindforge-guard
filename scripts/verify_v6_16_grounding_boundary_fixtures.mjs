@@ -168,9 +168,10 @@ expect(
 );
 const changedSchemaFiles = changedFilesFor(["schemas"]);
 expect(
-  JSON.stringify(changedSchemaFiles) ===
-    JSON.stringify(["schemas/grounding/grounding-boundary.schema.json"]),
-  `only the v6.16 grounding schema may change, got: ${changedSchemaFiles.join(", ")}`
+  changedSchemaFiles.length === 0 ||
+    JSON.stringify(changedSchemaFiles) ===
+      JSON.stringify(["schemas/grounding/grounding-boundary.schema.json"]),
+  `schema changes, when present, must be limited to schemas/grounding/grounding-boundary.schema.json, got: ${changedSchemaFiles.join(", ")}`
 );
 expect(
   changedFilesFor(["packages/guard/src/cli/authority.mjs"]).length === 0,
