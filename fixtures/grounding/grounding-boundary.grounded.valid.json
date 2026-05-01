@@ -1,0 +1,118 @@
+{
+  "schema_version": "v6.16-preview",
+  "v6_16_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_admissibility_decision": true,
+  "no_commit_gate": true,
+  "no_authority_contract_mutation": true,
+  "current_evidence_package": {
+    "evidence_package_id": "grounding-boundary-grounded-001",
+    "evidence_items": [
+      {
+        "evidence_item_id": "evidence-001",
+        "kind": "source_excerpt",
+        "summary": "Release-boundary note cites the bounded preview posture from an internal source-of-truth note.",
+        "source_ref_ids": [
+          "source-note-001",
+          "source-policy-001"
+        ],
+        "synthetic": false
+      },
+      {
+        "evidence_item_id": "evidence-002",
+        "kind": "supporting_summary",
+        "summary": "A machine-normalized summary preserves the same bounded preview claim without adding authority.",
+        "source_ref_ids": [
+          "source-note-001"
+        ],
+        "synthetic": true
+      }
+    ],
+    "source_refs": [
+      {
+        "source_ref_id": "source-note-001",
+        "source_type": "internal_note",
+        "locator": "fixtures://grounding/source-note-001",
+        "content_kind": "markdown"
+      },
+      {
+        "source_ref_id": "source-policy-001",
+        "source_type": "governance_snapshot",
+        "locator": "fixtures://grounding/source-policy-001",
+        "content_kind": "json"
+      }
+    ],
+    "source_of_truth_refs": [
+      {
+        "source_ref_id": "source-policy-001",
+        "source_type": "governance_snapshot",
+        "locator": "fixtures://grounding/source-policy-001",
+        "content_kind": "json"
+      }
+    ],
+    "declared_freshness": {
+      "freshness_state": "fresh",
+      "basis": "fixture_declared_current_source_of_truth"
+    },
+    "transform_chain": [
+      {
+        "step_id": "transform-001",
+        "transform_type": "normalize_excerpt",
+        "declared_by": "fixture_builder"
+      }
+    ],
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15"
+  },
+  "provenance_classification": {
+    "origin_type": "machine_transformed",
+    "source_depth": 2,
+    "generation_count": 1,
+    "transform_chain": [
+      {
+        "step_id": "transform-001",
+        "transform_type": "normalize_excerpt",
+        "declared_by": "fixture_builder"
+      }
+    ],
+    "primary_source_available": true,
+    "verification_status": "verified_by_fixture"
+  },
+  "grounding_status": {
+    "grounding_state": "grounded",
+    "source_available": true,
+    "source_of_truth_ref": "source-policy-001",
+    "primary_source_ref": "source-note-001",
+    "freshness_state": "fresh"
+  },
+  "grounding_explanation": {
+    "summary": "The evidence package is grounded because a declared source-of-truth reference and a primary source reference are both available and aligned.",
+    "basis": [
+      "Evidence items retain stable references to declared sources.",
+      "The primary source and source-of-truth refs remain present in the fixture-backed package.",
+      "The transform chain is declared and bounded to normalization only."
+    ],
+    "limitations": [
+      "This preview does not fetch or verify live sources.",
+      "This preview does not decide admissibility or execution readiness."
+    ]
+  },
+  "evidence_adequacy": {
+    "supporting_only": true,
+    "authoritative": false,
+    "creates_permission": false,
+    "changes_authority": false,
+    "changes_exit_semantics": false,
+    "evidence_records_explicit": true,
+    "omissions": [],
+    "uncertainty_notes": [],
+    "contrary_artifact_refs": [],
+    "adequacy_explanation": "Evidence and source records are explicit in the fixture-backed package, with no declared omissions required for this grounded example."
+  }
+}

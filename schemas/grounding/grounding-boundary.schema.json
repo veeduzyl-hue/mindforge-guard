@@ -1,0 +1,526 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/grounding/grounding-boundary.schema.json",
+  "title": "MindForge Guard v6.16 Grounding Provenance Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed grounding and provenance explanation artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "v6_16_preview",
+    "fixture_backed",
+    "derived_only",
+    "explanation_only",
+    "recommendation_only",
+    "non_enforcing",
+    "default_off",
+    "no_live_repo_state_reading",
+    "no_live_source_fetching",
+    "no_admissibility_decision",
+    "no_commit_gate",
+    "no_authority_contract_mutation",
+    "current_evidence_package",
+    "provenance_classification",
+    "grounding_status",
+    "grounding_explanation",
+    "evidence_adequacy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "v6.16-preview"
+    },
+    "v6_16_preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "fixture_backed": {
+      "type": "boolean",
+      "const": true
+    },
+    "derived_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_enforcing": {
+      "type": "boolean",
+      "const": true
+    },
+    "default_off": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_live_repo_state_reading": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_live_source_fetching": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_admissibility_decision": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_commit_gate": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_authority_contract_mutation": {
+      "type": "boolean",
+      "const": true
+    },
+    "current_evidence_package": {
+      "$ref": "#/$defs/currentEvidencePackage"
+    },
+    "provenance_classification": {
+      "$ref": "#/$defs/provenanceClassification"
+    },
+    "grounding_status": {
+      "$ref": "#/$defs/groundingStatus"
+    },
+    "grounding_explanation": {
+      "$ref": "#/$defs/groundingExplanation"
+    },
+    "evidence_adequacy": {
+      "$ref": "#/$defs/evidenceAdequacy"
+    }
+  },
+  "$defs": {
+    "transformStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "transform_type",
+        "declared_by"
+      ],
+      "properties": {
+        "step_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transform_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declared_by": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ref_id",
+        "source_type",
+        "locator",
+        "content_kind"
+      ],
+      "properties": {
+        "source_ref_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_item_id",
+        "kind",
+        "summary",
+        "source_ref_ids",
+        "synthetic"
+      ],
+      "properties": {
+        "evidence_item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "synthetic": {
+          "type": "boolean"
+        }
+      }
+    },
+    "declaredFreshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "freshness_state",
+        "basis"
+      ],
+      "properties": {
+        "freshness_state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "stale",
+            "expired",
+            "unknown"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "currentEvidencePackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_package_id",
+        "evidence_items",
+        "source_refs",
+        "source_of_truth_refs",
+        "declared_freshness",
+        "transform_chain"
+      ],
+      "properties": {
+        "evidence_package_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidenceItem"
+          }
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceRef"
+          }
+        },
+        "source_of_truth_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceRef"
+          }
+        },
+        "declared_freshness": {
+          "$ref": "#/$defs/declaredFreshness"
+        },
+        "transform_chain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transformStep"
+          }
+        },
+        "authority_explain_receipt_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "provenanceClassification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_type",
+        "source_depth",
+        "generation_count",
+        "transform_chain",
+        "primary_source_available",
+        "verification_status"
+      ],
+      "properties": {
+        "origin_type": {
+          "type": "string",
+          "enum": [
+            "human_authored",
+            "ai_generated",
+            "ai_assisted",
+            "machine_transformed",
+            "mixed",
+            "unknown"
+          ]
+        },
+        "source_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "generation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transform_chain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transformStep"
+          }
+        },
+        "primary_source_available": {
+          "type": "boolean"
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": [
+            "verified_by_fixture",
+            "declared_only",
+            "unverifiable",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "groundingStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grounding_state",
+        "source_available",
+        "source_of_truth_ref",
+        "primary_source_ref",
+        "freshness_state"
+      ],
+      "properties": {
+        "grounding_state": {
+          "type": "string",
+          "enum": [
+            "grounded",
+            "partially_grounded",
+            "ungrounded",
+            "unknown"
+          ]
+        },
+        "source_available": {
+          "type": "boolean"
+        },
+        "source_of_truth_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "primary_source_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "freshness_state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "stale",
+            "expired",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "groundingExplanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "basis",
+        "limitations"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "evidenceOmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "omission_id",
+        "artifact_kind",
+        "reason"
+      ],
+      "properties": {
+        "omission_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "uncertaintyNote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "note_id",
+        "summary",
+        "supporting_metadata_only"
+      ],
+      "properties": {
+        "note_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supporting_metadata_only": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "contraryArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_ref_id",
+        "summary",
+        "supporting_artifact_only"
+      ],
+      "properties": {
+        "artifact_ref_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supporting_artifact_only": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "evidenceAdequacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supporting_only",
+        "authoritative",
+        "creates_permission",
+        "changes_authority",
+        "changes_exit_semantics",
+        "evidence_records_explicit",
+        "omissions",
+        "uncertainty_notes",
+        "contrary_artifact_refs",
+        "adequacy_explanation"
+      ],
+      "properties": {
+        "supporting_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "authoritative": {
+          "type": "boolean",
+          "const": false
+        },
+        "creates_permission": {
+          "type": "boolean",
+          "const": false
+        },
+        "changes_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "changes_exit_semantics": {
+          "type": "boolean",
+          "const": false
+        },
+        "evidence_records_explicit": {
+          "type": "boolean",
+          "const": true
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceOmission"
+          }
+        },
+        "uncertainty_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/uncertaintyNote"
+          }
+        },
+        "contrary_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contraryArtifactRef"
+          }
+        },
+        "adequacy_explanation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
