@@ -147,6 +147,7 @@ Operational preview verification:
 ```bash
 node scripts/verify_v6_15_authority_explain_preview.mjs
 node scripts/verify_v6_15_authority_explain_acceptance.mjs
+node scripts/verify_v6_15_authority_explain_final_acceptance.mjs
 ```
 
 This preview line preserves:
