@@ -1,0 +1,83 @@
+{
+  "schema_version": "v6.16-preview",
+  "v6_16_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_admissibility_decision": true,
+  "no_commit_gate": true,
+  "no_authority_contract_mutation": true,
+  "current_evidence_package": {
+    "evidence_package_id": "grounding-boundary-partially-grounded-001",
+    "evidence_items": [
+      {
+        "evidence_item_id": "evidence-101",
+        "kind": "assistant_summary",
+        "summary": "The package includes an AI-assisted synthesis plus one retained source reference.",
+        "source_ref_ids": [
+          "source-brief-001"
+        ],
+        "synthetic": true
+      }
+    ],
+    "source_refs": [
+      {
+        "source_ref_id": "source-brief-001",
+        "source_type": "internal_brief",
+        "locator": "fixtures://grounding/source-brief-001",
+        "content_kind": "markdown"
+      }
+    ],
+    "source_of_truth_refs": [],
+    "declared_freshness": {
+      "freshness_state": "stale",
+      "basis": "fixture_declared_reference_without_current_source_of_truth"
+    },
+    "transform_chain": [
+      {
+        "step_id": "transform-101",
+        "transform_type": "assistant_synthesis",
+        "declared_by": "fixture_builder"
+      }
+    ],
+    "authority_explain_receipt_ref": null
+  },
+  "provenance_classification": {
+    "origin_type": "ai_assisted",
+    "source_depth": 1,
+    "generation_count": 1,
+    "transform_chain": [
+      {
+        "step_id": "transform-101",
+        "transform_type": "assistant_synthesis",
+        "declared_by": "fixture_builder"
+      }
+    ],
+    "primary_source_available": true,
+    "verification_status": "declared_only"
+  },
+  "grounding_status": {
+    "grounding_state": "partially_grounded",
+    "source_available": true,
+    "source_of_truth_ref": null,
+    "primary_source_ref": "source-brief-001",
+    "freshness_state": "stale"
+  },
+  "grounding_explanation": {
+    "summary": "The evidence package is only partially grounded because it retains a primary source reference but no declared current source-of-truth reference.",
+    "basis": [
+      "A primary source reference remains attached to the evidence item.",
+      "No source-of-truth ref is currently declared in the package.",
+      "Verification remains declared-only and does not fetch source material."
+    ],
+    "limitations": [
+      "This preview does not attempt freshness recovery or live validation.",
+      "This preview does not treat partial grounding as a deny or block."
+    ]
+  }
+}
