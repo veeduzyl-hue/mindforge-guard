@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/admissibility/admissibility-explain-preview.schema.json",
+  "title": "MindForge Guard v6.17 Admissibility Explain Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed admissibility readiness and explanation artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "v6_17_preview",
+    "fixture_backed",
+    "derived_only",
+    "explanation_only",
+    "recommendation_only",
+    "non_enforcing",
+    "default_off",
+    "no_live_repo_state_reading",
+    "no_live_source_fetching",
+    "no_admissibility_decision",
+    "no_commit_gate",
+    "no_permit_gate",
+    "no_deployment_gate",
+    "no_runtime_enforcement",
+    "no_authority_contract_mutation",
+    "authority_context",
+    "grounding_context",
+    "admissibility_input_package",
+    "admissibility_prerequisite_matrix",
+    "admissibility_explanation"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "v6.17-preview"
+    },
+    "v6_17_preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "fixture_backed": {
+      "type": "boolean",
+      "const": true
+    },
+    "derived_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_enforcing": {
+      "type": "boolean",
+      "const": true
+    },
+    "default_off": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_live_repo_state_reading": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_live_source_fetching": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_admissibility_decision": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_commit_gate": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_permit_gate": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_deployment_gate": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_runtime_enforcement": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_authority_contract_mutation": {
+      "type": "boolean",
+      "const": true
+    },
+    "authority_context": {
+      "$ref": "#/$defs/authorityContext"
+    },
+    "grounding_context": {
+      "$ref": "#/$defs/groundingContext"
+    },
+    "admissibility_input_package": {
+      "$ref": "#/$defs/admissibilityInputPackage"
+    },
+    "admissibility_prerequisite_matrix": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/prerequisiteEntry"
+      }
+    },
+    "admissibility_explanation": {
+      "$ref": "#/$defs/admissibilityExplanation"
+    }
+  },
+  "$defs": {
+    "prerequisiteState": {
+      "type": "string",
+      "enum": [
+        "explanation_ready",
+        "explanation_incomplete",
+        "explanation_blocked",
+        "explanation_unknown"
+      ]
+    },
+    "authorityContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_explain_receipt_ref",
+        "current_state_context_ref",
+        "bind_time_validity_ref",
+        "current_state_context_state",
+        "bind_time_validity_state",
+        "protected_surfaces_touched",
+        "fixture_backed",
+        "explanation_only",
+        "summary"
+      ],
+      "properties": {
+        "authority_explain_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_state_context_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bind_time_validity_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_state_context_state": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "bind_time_validity_state": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "protected_surfaces_touched": {
+          "type": "boolean"
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "groundingContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grounding_explain_receipt_ref",
+        "current_evidence_package_ref",
+        "evidence_adequacy_ref",
+        "grounding_state",
+        "evidence_lineage_state",
+        "supporting_only",
+        "fixture_backed",
+        "explanation_only",
+        "summary"
+      ],
+      "properties": {
+        "grounding_explain_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_evidence_package_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_adequacy_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_lineage_state": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "supporting_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "admissibilityInputPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_explain_receipt_ref",
+        "grounding_explain_receipt_ref",
+        "current_state_context_ref",
+        "bind_time_validity_ref",
+        "current_evidence_package_ref",
+        "evidence_adequacy_ref",
+        "input_completeness",
+        "input_consistency"
+      ],
+      "properties": {
+        "authority_explain_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding_explain_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_state_context_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bind_time_validity_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_evidence_package_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_adequacy_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_completeness": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "input_consistency": {
+          "$ref": "#/$defs/prerequisiteState"
+        }
+      }
+    },
+    "prerequisiteEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "explanation_only",
+        "decision_effect",
+        "basis_ref",
+        "reason"
+      ],
+      "properties": {
+        "state": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "decision_effect": {
+          "type": "boolean",
+          "const": false
+        },
+        "basis_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "admissibilityExplanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readiness_state",
+        "summary",
+        "basis",
+        "limitations"
+      ],
+      "properties": {
+        "readiness_state": {
+          "$ref": "#/$defs/prerequisiteState"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
