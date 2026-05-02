@@ -1,0 +1,101 @@
+{
+  "schema_version": "v6.17-preview",
+  "v6_17_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_admissibility_decision": true,
+  "no_commit_gate": true,
+  "no_permit_gate": true,
+  "no_deployment_gate": true,
+  "no_runtime_enforcement": true,
+  "no_authority_contract_mutation": true,
+  "authority_context": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "current_state_context_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "current_state_context_state": "explanation_ready",
+    "bind_time_validity_state": "explanation_ready",
+    "protected_surfaces_touched": false,
+    "fixture_backed": true,
+    "explanation_only": true,
+    "summary": "Constructible current state and bind-time validity are both fixture-backed and available for explanation."
+  },
+  "grounding_context": {
+    "grounding_explain_receipt_ref": "grounding-boundary-grounded-001:grounding-explain:v6_16",
+    "current_evidence_package_ref": "grounding-boundary-grounded-001",
+    "evidence_adequacy_ref": "grounding-boundary-grounded-001:evidence-adequacy",
+    "grounding_state": "grounded",
+    "evidence_lineage_state": "explanation_ready",
+    "supporting_only": true,
+    "fixture_backed": true,
+    "explanation_only": true,
+    "summary": "Grounding evidence remains grounded, supporting-only, and linked through a fixture-backed receipt chain."
+  },
+  "admissibility_input_package": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "grounding_explain_receipt_ref": "grounding-boundary-grounded-001:grounding-explain:v6_16",
+    "current_state_context_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "current_evidence_package_ref": "grounding-boundary-grounded-001",
+    "evidence_adequacy_ref": "grounding-boundary-grounded-001:evidence-adequacy",
+    "input_completeness": "explanation_ready",
+    "input_consistency": "explanation_ready"
+  },
+  "admissibility_prerequisite_matrix": {
+    "current_state_context_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+      "reason": "Fixture-backed current state context is present and bounded to explanation."
+    },
+    "bind_time_validity_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+      "reason": "Bind-time validity reference remains available for explanation without gating."
+    },
+    "grounding_lineage_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "grounding-boundary-grounded-001:grounding-explain:v6_16",
+      "reason": "Grounding lineage is linked to a grounded evidence package with explicit supporting-only provenance."
+    },
+    "evidence_adequacy_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "grounding-boundary-grounded-001:evidence-adequacy",
+      "reason": "Evidence adequacy remains explicit and non-authoritative."
+    },
+    "input_package_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15|grounding-boundary-grounded-001:grounding-explain:v6_16",
+      "reason": "Authority and grounding references align into one deterministic explanation package."
+    }
+  },
+  "admissibility_explanation": {
+    "readiness_state": "explanation_ready",
+    "summary": "A fixture-backed admissibility explanation can be assembled from linked authority and grounding references without making or implying an admissibility decision.",
+    "basis": [
+      "Constructible current state context is available as a fixture-backed reference.",
+      "Bind-time validity remains explanation-only and non-enforcing.",
+      "Grounding lineage and evidence adequacy remain supporting-only and explicit."
+    ],
+    "limitations": [
+      "This preview does not decide admissibility.",
+      "This preview does not grant permission or trigger any gate.",
+      "This preview does not read live repository or source state."
+    ]
+  }
+}

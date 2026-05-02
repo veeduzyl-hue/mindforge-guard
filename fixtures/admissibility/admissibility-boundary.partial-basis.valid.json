@@ -1,0 +1,101 @@
+{
+  "schema_version": "v6.17-preview",
+  "v6_17_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_admissibility_decision": true,
+  "no_commit_gate": true,
+  "no_permit_gate": true,
+  "no_deployment_gate": true,
+  "no_runtime_enforcement": true,
+  "no_authority_contract_mutation": true,
+  "authority_context": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "current_state_context_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "current_state_context_state": "explanation_ready",
+    "bind_time_validity_state": "explanation_unknown",
+    "protected_surfaces_touched": false,
+    "fixture_backed": true,
+    "explanation_only": true,
+    "summary": "Constructible current state remains available, while bind-time validity is only partially declared for explanation."
+  },
+  "grounding_context": {
+    "grounding_explain_receipt_ref": "grounding-boundary-partially-grounded-001:grounding-explain:v6_16",
+    "current_evidence_package_ref": "grounding-boundary-partially-grounded-001",
+    "evidence_adequacy_ref": "grounding-boundary-partially-grounded-001:evidence-adequacy",
+    "grounding_state": "partially_grounded",
+    "evidence_lineage_state": "explanation_incomplete",
+    "supporting_only": true,
+    "fixture_backed": true,
+    "explanation_only": true,
+    "summary": "Grounding lineage remains only partially grounded, so the explanation package is incomplete rather than decisional."
+  },
+  "admissibility_input_package": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "grounding_explain_receipt_ref": "grounding-boundary-partially-grounded-001:grounding-explain:v6_16",
+    "current_state_context_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "current_evidence_package_ref": "grounding-boundary-partially-grounded-001",
+    "evidence_adequacy_ref": "grounding-boundary-partially-grounded-001:evidence-adequacy",
+    "input_completeness": "explanation_incomplete",
+    "input_consistency": "explanation_unknown"
+  },
+  "admissibility_prerequisite_matrix": {
+    "current_state_context_v1": {
+      "state": "explanation_ready",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "constructible-current-state:authority-boundary-inside-scope-001",
+      "reason": "Current state context remains present and bounded to explanation."
+    },
+    "bind_time_validity_v1": {
+      "state": "explanation_unknown",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+      "reason": "Bind-time validity inputs are not complete enough to support a stronger explanation state."
+    },
+    "grounding_lineage_v1": {
+      "state": "explanation_incomplete",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "grounding-boundary-partially-grounded-001:grounding-explain:v6_16",
+      "reason": "Grounding lineage is present but partially grounded, leaving explanation gaps explicit."
+    },
+    "evidence_adequacy_v1": {
+      "state": "explanation_incomplete",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "grounding-boundary-partially-grounded-001:evidence-adequacy",
+      "reason": "Evidence adequacy remains supporting-only while declared omissions and uncertainty stay explicit."
+    },
+    "input_package_v1": {
+      "state": "explanation_incomplete",
+      "explanation_only": true,
+      "decision_effect": false,
+      "basis_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15|grounding-boundary-partially-grounded-001:grounding-explain:v6_16",
+      "reason": "The combined input package is intentionally incomplete and cannot imply an admissibility outcome."
+    }
+  },
+  "admissibility_explanation": {
+    "readiness_state": "explanation_incomplete",
+    "summary": "The admissibility explanation package is incomplete because grounding and bind-time inputs remain only partially established, yet the boundary still stays explanation-only and non-authoritative.",
+    "basis": [
+      "Current state context is present as a fixture-backed reference.",
+      "Grounding lineage is only partially grounded.",
+      "Bind-time validity remains uncertain and cannot imply a decision."
+    ],
+    "limitations": [
+      "This preview does not decide admissibility.",
+      "This preview does not convert incomplete inputs into a deny or block.",
+      "This preview does not trigger permission, gate, or runtime effects."
+    ]
+  }
+}
