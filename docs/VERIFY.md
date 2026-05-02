@@ -193,7 +193,17 @@ This preview line preserves:
 - no exit `21`
 - no exit `25`
 
-## 10. See Also
+## 10. v6.17 Final Acceptance Verification
+
+`v6.17` remains internal final-acceptance verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+
+Internal final acceptance verification:
+
+```bash
+node scripts/verify_v6_17_admissibility_explain_final_acceptance.mjs
+```
+
+## 11. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
