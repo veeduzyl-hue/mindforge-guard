@@ -15,6 +15,7 @@ import { buildAssociationBundle } from "./runtime/association/index.mjs";
 import { handleActionSubcommand } from "./cli/action.mjs";
 import { handleAdmissibilitySubcommand } from "./cli/admissibility.mjs";
 import { handleAuthoritySubcommand } from "./cli/authority.mjs";
+import { handleGuardrailSubcommand } from "./cli/guardrail.mjs";
 import { handleGroundingSubcommand } from "./cli/grounding.mjs";
 import {
   readLicense,
@@ -155,6 +156,7 @@ function renderGuardHelp() {
     "  guard audit . --staged",
     "  guard snapshot .",
     "  guard action classify --text \"<string>\"",
+    "  guard guardrail map --preview --json --fixture-file <file>",
     "",
     "Drift (signal-only; no policy required):",
     "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
@@ -514,6 +516,9 @@ export async function runGuard({ argv }) {
   }
   if (argv && argv[0] === "authority") {
     return handleAuthoritySubcommand(argv.slice(1));
+  }
+  if (argv && argv[0] === "guardrail") {
+    return handleGuardrailSubcommand(argv.slice(1));
   }
   if (argv && argv[0] === "grounding") {
     return handleGroundingSubcommand(argv.slice(1));

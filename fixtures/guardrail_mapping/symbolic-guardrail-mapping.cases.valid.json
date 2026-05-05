@@ -1,0 +1,75 @@
+{
+  "schema_version": "guard.symbolic_guardrail_mapping_fixture.v1",
+  "preview": true,
+  "mapping_only": true,
+  "recommendation_only": true,
+  "non_executing": true,
+  "additive_only": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_external_calls": true,
+  "no_runtime_enforcement": true,
+  "no_authority_expansion": true,
+  "cases": [
+    {
+      "case_id": "mapped-schema-001",
+      "requirement_id": "req-001",
+      "requirement_text": "An admissibility request must declare current-state and grounding references before symbolic review.",
+      "guardrail_type": "schema_constraint",
+      "mapping_status": "mapped",
+      "verification_surface": "fixture_declared",
+      "symbolic_surfaces": [
+        "admissibility_input_package.current_state_context_ref",
+        "admissibility_input_package.grounding_explain_receipt_ref",
+        "admissibility_prerequisite_matrix.input_package_v1"
+      ],
+      "mapping_explanation": "The existing admissibility preview already declares these symbolic references deterministically in the fixture-backed input package."
+    },
+    {
+      "case_id": "partial-evidence-002",
+      "requirement_id": "req-002",
+      "requirement_text": "Evidence provenance should remain explicit and freshness-aware before symbolic admissibility packaging.",
+      "guardrail_type": "evidence_check",
+      "mapping_status": "partially_mapped",
+      "verification_surface": "schema_declared",
+      "symbolic_surfaces": [
+        "grounding_context.evidence_lineage_state",
+        "current_evidence_package.declared_freshness"
+      ],
+      "mapping_explanation": "Grounding and provenance surfaces exist symbolically, but they do not fully encode every evidence sufficiency nuance required by the requirement.",
+      "coverage_gap_summary": "Human interpretation is still required to judge whether declared freshness and lineage are sufficient for the specific admissibility context."
+    },
+    {
+      "case_id": "unmapped-capability-003",
+      "requirement_id": "req-003",
+      "requirement_text": "The system should verify external provider capability attestations before symbolic admissibility packaging.",
+      "guardrail_type": "capability_check",
+      "mapping_status": "unmapped",
+      "verification_surface": "external_system_required",
+      "symbolic_surfaces": [],
+      "mapping_explanation": "No current deterministic symbolic surface in v6.14-v6.18 represents external provider capability attestations without crossing into external system dependency."
+    },
+    {
+      "case_id": "out-of-scope-deploy-004",
+      "requirement_id": "req-004",
+      "requirement_text": "A deployment approval ticket must close before the requirement can proceed.",
+      "guardrail_type": "state_check",
+      "mapping_status": "out_of_scope",
+      "verification_surface": "not_symbolically_mappable",
+      "symbolic_surfaces": [],
+      "mapping_explanation": "Deployment approval gating is outside the bounded symbolic admissibility mapping surface for v6.19 preview."
+    },
+    {
+      "case_id": "unknown-context-005",
+      "requirement_id": "req-005",
+      "requirement_text": "Ambiguous operator intent should map to a symbolic confirmation surface before admissibility packaging continues.",
+      "guardrail_type": "confirmation_required",
+      "mapping_status": "unknown",
+      "verification_surface": "human_review_required",
+      "symbolic_surfaces": [],
+      "mapping_explanation": "The current lineage exposes authority and context signals, but ambiguous natural-language intent still requires human review to determine the correct symbolic mapping."
+    }
+  ]
+}
