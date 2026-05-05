@@ -1,0 +1,50 @@
+{
+  "schema_version": "v6.18-preview",
+  "v6_18_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_execution_authority_granted": true,
+  "no_blocking_effect": true,
+  "no_exit_21": true,
+  "no_exit_25": true,
+  "no_audit_semantic_change": true,
+  "no_permit_semantic_change": true,
+  "no_classify_semantic_change": true,
+  "no_iam_or_rbac_expansion": true,
+  "no_dashboard_or_orchestrator_behavior": true,
+  "no_commercial_entitlement_change": true,
+  "source_authority_context": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "prior_execution_validity": "valid",
+    "requested_operation": "define_schema_fixture_boundary",
+    "summary": "The prior authority condition was valid at bind time, but execution-time evidence freshness is no longer reliable."
+  },
+  "execution_context": {
+    "execution_actor_ref": "ai_coding_assistant:documented_plan",
+    "execution_scope_state": "aligned",
+    "evidence_freshness_state": "expired",
+    "actor_alignment_state": "aligned",
+    "summary": "Execution-time scope and actor remain aligned, but evidence freshness has decayed beyond bounded certainty."
+  },
+  "authority_drift": {
+    "status": "unknown",
+    "execution_time_validity": "unknown",
+    "drift_factors": [
+      "evidence_decay"
+    ],
+    "reason_codes": [
+      "evidence_decay_execution_time_validity_unknown"
+    ],
+    "summary": "Evidence decay leaves execution-time authority validity unknown without implying any enforcement effect.",
+    "limitations": [
+      "This preview does not resolve uncertainty by granting authority.",
+      "This preview does not block execution or emit gate semantics.",
+      "This preview remains fixture-backed and non-enforcing."
+    ]
+  }
+}

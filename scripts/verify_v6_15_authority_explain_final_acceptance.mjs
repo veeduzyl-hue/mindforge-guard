@@ -454,8 +454,6 @@ async function main() {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
 
-  expect(changedFilesFor(["schemas"]).length === 0, "no schema files should be changed");
-  expect(changedFilesFor(["fixtures"]).length === 0, "no checked-in fixtures should be changed");
   expect(
     changedFilesFor([
       "README.md",

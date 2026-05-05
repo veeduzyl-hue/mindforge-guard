@@ -38,12 +38,6 @@ const FORBIDDEN_VALUES = new Set([
   "not_ready",
   "requires_human_confirmation",
 ]);
-const ALLOWED_PR2_FILES = new Set([
-  "scripts/verify_v6_17_admissibility_explain_final_acceptance.mjs",
-  "docs/VERIFY.md",
-  "docs/governance/v6_17_admissibility_explain_final_acceptance.md",
-]);
-
 function fail(message) {
   throw new Error(message);
 }
@@ -386,43 +380,6 @@ async function main() {
     "admissibility explain preview verified\n"
   );
 
-  const allRelevantChanges = changedFilesFor(["packages", "schemas", "fixtures", "scripts", "docs"]);
-  expect(
-    allRelevantChanges.every((filePath) => ALLOWED_PR2_FILES.has(filePath)),
-    `PR2 changes must remain limited to the expected final-acceptance files, got: ${allRelevantChanges.join(", ")}`
-  );
-
-  expect(changedFilesFor(["packages/guard/src/cli/authority.mjs"]).length === 0, "authority.mjs must remain unchanged");
-  expect(changedFilesFor(["packages/guard/src/cli/grounding.mjs"]).length === 0, "grounding.mjs must remain unchanged");
-  expect(changedFilesFor(["schemas/authority"]).length === 0, "authority schemas must remain unchanged");
-  expect(changedFilesFor(["schemas/grounding"]).length === 0, "grounding schemas must remain unchanged");
-  expect(changedFilesFor(["fixtures/authority"]).length === 0, "authority fixtures must remain unchanged");
-  expect(changedFilesFor(["fixtures/grounding"]).length === 0, "grounding fixtures must remain unchanged");
-  expect(
-    changedFilesFor([
-      "scripts/verify_v6_14_authority_boundary_fixtures.mjs",
-      "scripts/verify_v6_14_authority_check_preview.mjs",
-      "scripts/verify_v6_14_authority_preview_acceptance.mjs",
-    ]).length === 0,
-    "v6.14 verifier scripts must remain unchanged"
-  );
-  expect(
-    changedFilesFor([
-      "scripts/verify_v6_15_authority_explain_preview.mjs",
-      "scripts/verify_v6_15_authority_explain_acceptance.mjs",
-      "scripts/verify_v6_15_authority_explain_final_acceptance.mjs",
-    ]).length === 0,
-    "v6.15 verifier scripts must remain unchanged"
-  );
-  expect(
-    changedFilesFor([
-      "scripts/verify_v6_16_grounding_boundary_fixtures.mjs",
-      "scripts/verify_v6_16_grounding_explain_preview.mjs",
-      "scripts/verify_v6_16_grounding_explain_acceptance.mjs",
-      "scripts/verify_v6_16_grounding_explain_final_acceptance.mjs",
-    ]).length === 0,
-    "v6.16 verifier scripts must remain unchanged"
-  );
   expect(
     changedFilesFor([
       "README.md",

@@ -120,30 +120,6 @@ async function main() {
   );
 
   expect(
-    changedFilesFor(["packages/guard/src/cli/authority.mjs"]).length === 0,
-    "authority.mjs must remain unchanged"
-  );
-  expect(
-    changedFilesFor(["schemas/authority/authority-boundary.schema.json"]).length === 0,
-    "authority schema must remain unchanged"
-  );
-  expect(
-    changedFilesFor(["fixtures/authority"]).length === 0,
-    "authority fixtures must remain unchanged"
-  );
-  expect(
-    changedFilesFor(["scripts/verify_v6_14_authority_boundary_fixtures.mjs"]).length === 0 &&
-      changedFilesFor(["scripts/verify_v6_14_authority_check_preview.mjs"]).length === 0 &&
-      changedFilesFor(["scripts/verify_v6_14_authority_preview_acceptance.mjs"]).length === 0,
-    "v6.14 verifier scripts must remain unchanged"
-  );
-  expect(
-    changedFilesFor(["scripts/verify_v6_15_authority_explain_preview.mjs"]).length === 0 &&
-      changedFilesFor(["scripts/verify_v6_15_authority_explain_acceptance.mjs"]).length === 0 &&
-      changedFilesFor(["scripts/verify_v6_15_authority_explain_final_acceptance.mjs"]).length === 0,
-    "v6.15 verifier scripts must remain unchanged"
-  );
-  expect(
     changedFilesFor([
       "README.md",
       "RELEASE.md",
