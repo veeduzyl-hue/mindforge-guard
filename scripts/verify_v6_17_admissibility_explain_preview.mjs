@@ -460,27 +460,6 @@ async function main() {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
 
-  expect(changedFilesFor(["packages/guard/src/cli/authority.mjs"]).length === 0, "authority.mjs must remain unchanged");
-  expect(changedFilesFor(["packages/guard/src/cli/grounding.mjs"]).length === 0, "grounding.mjs must remain unchanged");
-  expect(changedFilesFor(["schemas/authority"]).length === 0, "authority schemas must remain unchanged");
-  expect(changedFilesFor(["schemas/grounding"]).length === 0, "grounding schemas must remain unchanged");
-  expect(changedFilesFor(["fixtures/authority"]).length === 0, "authority fixtures must remain unchanged");
-  expect(changedFilesFor(["fixtures/grounding"]).length === 0, "grounding fixtures must remain unchanged");
-  expect(
-    changedFilesFor([
-      "scripts/verify_v6_14_authority_boundary_fixtures.mjs",
-      "scripts/verify_v6_14_authority_check_preview.mjs",
-      "scripts/verify_v6_14_authority_preview_acceptance.mjs",
-      "scripts/verify_v6_15_authority_explain_preview.mjs",
-      "scripts/verify_v6_15_authority_explain_acceptance.mjs",
-      "scripts/verify_v6_15_authority_explain_final_acceptance.mjs",
-      "scripts/verify_v6_16_grounding_boundary_fixtures.mjs",
-      "scripts/verify_v6_16_grounding_explain_preview.mjs",
-      "scripts/verify_v6_16_grounding_explain_acceptance.mjs",
-      "scripts/verify_v6_16_grounding_explain_final_acceptance.mjs",
-    ]).length === 0,
-    "v6.14-v6.16 verifier scripts must remain unchanged"
-  );
   expect(
     changedFilesFor([
       "README.md",

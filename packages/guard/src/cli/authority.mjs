@@ -7,6 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
 const schemaPath = path.join(repoRoot, "schemas", "authority", "authority-boundary.schema.json");
+const authorityDriftSchemaPath = path.join(
+  repoRoot,
+  "schemas",
+  "authority_drift",
+  "authority-drift-preview.schema.json"
+);
 
 const EXIT_ERROR_DEFAULT = 30;
 const REQUIRED_POSTURE_FLAGS = [
@@ -35,19 +41,90 @@ const FORBIDDEN_FIELDS = [
 ];
 const AUTHORITY_CHECK_USAGE = "guard authority check --preview --json --fixture-file <file>";
 const AUTHORITY_EXPLAIN_USAGE = "guard authority explain --preview --json --fixture-file <file>";
+const AUTHORITY_DRIFT_USAGE = "guard authority drift --preview --json --fixture-file <file>";
 const AUTHORITY_EXPLAIN_SCHEMA_VERSION = "guard.authority_explain_preview.v6_15";
+const AUTHORITY_DRIFT_SCHEMA_VERSION = "guard.authority_drift_preview.v6_18";
 const CONSTRUCTIBLE_CURRENT_STATE_SCHEMA_VERSION = "guard.constructible_current_state.v1";
 const BIND_TIME_VALIDITY_SCHEMA_VERSION = "guard.bind_time_validity.v1";
 const ADMISSIBILITY_RESULT_RESERVED_SCHEMA_VERSION = "guard.admissibility_result.reserved.v1";
 const COMMITMENT_CANDIDATE_RESERVED_SCHEMA_VERSION = "guard.commitment_candidate.reserved.v1";
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const DETERMINISTIC_TIME_BASE_MS = Date.parse("2026-01-01T00:00:00.000Z");
+const REQUIRED_AUTHORITY_DRIFT_FLAGS = [
+  "v6_18_preview",
+  "fixture_backed",
+  "derived_only",
+  "explanation_only",
+  "recommendation_only",
+  "non_enforcing",
+  "default_off",
+  "no_execution_authority_granted",
+  "no_blocking_effect",
+  "no_exit_21",
+  "no_exit_25",
+  "no_audit_semantic_change",
+  "no_permit_semantic_change",
+  "no_classify_semantic_change",
+  "no_iam_or_rbac_expansion",
+  "no_dashboard_or_orchestrator_behavior",
+  "no_commercial_entitlement_change",
+];
+const ALLOWED_AUTHORITY_DRIFT_STATUS = [
+  "stable",
+  "drift_detected",
+  "unknown",
+  "not_applicable",
+];
+const ALLOWED_EXECUTION_TIME_VALIDITY = [
+  "valid",
+  "invalid",
+  "unknown",
+  "not_applicable",
+];
+const ALLOWED_PRIOR_EXECUTION_VALIDITY = [
+  "valid",
+  "invalid",
+  "unknown",
+  "not_applicable",
+];
+const ALLOWED_EXECUTION_SCOPE_STATES = [
+  "aligned",
+  "scope_drifted",
+  "outside_scope",
+  "not_authority_scoped",
+];
+const ALLOWED_EVIDENCE_FRESHNESS_STATES = [
+  "fresh",
+  "degraded",
+  "expired",
+  "not_applicable",
+];
+const ALLOWED_ACTOR_ALIGNMENT_STATES = [
+  "aligned",
+  "drifted",
+  "not_applicable",
+];
+const ALLOWED_DRIFT_FACTORS = [
+  "none_detected",
+  "scope_drift",
+  "evidence_decay",
+  "actor_drift",
+  "outside_scope_non_authority_request",
+];
+const ALLOWED_DRIFT_REASON_CODES = [
+  "authority_stable_at_execution_time",
+  "scope_drift_invalidates_execution_time_authority",
+  "evidence_decay_execution_time_validity_unknown",
+  "actor_drift_invalidates_execution_time_authority",
+  "outside_scope_non_authority_request",
+];
 
 function renderAuthorityHelp() {
   return [
     "Usage:",
     `  ${AUTHORITY_CHECK_USAGE}`,
     `  ${AUTHORITY_EXPLAIN_USAGE}`,
+    `  ${AUTHORITY_DRIFT_USAGE}`,
     "",
     "Options:",
     "  --preview             Required explicit preview opt-in",
@@ -198,6 +275,10 @@ function readJson(filePath, missingKind, invalidKind) {
   }
 }
 
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 function validateSchema(schema) {
   const issues = [];
 
@@ -274,6 +355,257 @@ function validateFixture(fixture) {
     if (fixture.authority_scope.blocking_implied !== false) {
       issues.push("authority_scope.blocking_implied must be false");
     }
+  }
+
+  const stack = [fixture];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current || typeof current !== "object") continue;
+    for (const [key, value] of Object.entries(current)) {
+      if (FORBIDDEN_FIELDS.includes(key)) {
+        issues.push(`forbidden field present: ${key}`);
+      }
+      if (value && typeof value === "object") {
+        stack.push(value);
+      }
+    }
+  }
+
+  return issues;
+}
+
+function validateEnumValue(value, allowedValues, label, issues) {
+  if (!allowedValues.includes(value)) {
+    issues.push(`${label} must be one of ${allowedValues.join(", ")}`);
+  }
+}
+
+function validateStringArray(value, allowedValues, label, issues) {
+  if (!Array.isArray(value) || value.length === 0) {
+    issues.push(`${label} must be a non-empty array`);
+    return;
+  }
+
+  for (const entry of value) {
+    if (!allowedValues.includes(entry)) {
+      issues.push(`${label} contains unexpected value ${entry}`);
+    }
+  }
+}
+
+function validateAuthorityDriftSchema(schema) {
+  const issues = [];
+
+  if (!Array.isArray(schema?.required)) issues.push("schema.required must be an array");
+  if (!schema?.properties || typeof schema.properties !== "object") issues.push("schema.properties must exist");
+
+  for (const flag of REQUIRED_AUTHORITY_DRIFT_FLAGS) {
+    if (!schema?.required?.includes(flag)) issues.push(`schema.required missing ${flag}`);
+    if (schema?.properties?.[flag]?.const !== true) issues.push(`schema.properties.${flag} must const true`);
+  }
+
+  for (const field of ["source_authority_context", "execution_context", "authority_drift"]) {
+    if (!schema?.required?.includes(field)) issues.push(`schema.required missing ${field}`);
+  }
+
+  const statusEnum = schema?.$defs?.authorityDriftStatus?.enum;
+  if (!Array.isArray(statusEnum)) {
+    issues.push("schema $defs.authorityDriftStatus.enum must exist");
+  } else {
+    for (const value of ALLOWED_AUTHORITY_DRIFT_STATUS) {
+      if (!statusEnum.includes(value)) issues.push(`authorityDriftStatus enum missing ${value}`);
+    }
+  }
+
+  const validityEnum = schema?.$defs?.executionTimeValidity?.enum;
+  if (!Array.isArray(validityEnum)) {
+    issues.push("schema $defs.executionTimeValidity.enum must exist");
+  } else {
+    for (const value of ALLOWED_EXECUTION_TIME_VALIDITY) {
+      if (!validityEnum.includes(value)) issues.push(`executionTimeValidity enum missing ${value}`);
+    }
+  }
+
+  return issues;
+}
+
+function validateAuthorityDriftFixture(fixture) {
+  const issues = [];
+
+  for (const flag of REQUIRED_AUTHORITY_DRIFT_FLAGS) {
+    if (!(flag in fixture)) issues.push(`missing boundary flag ${flag}`);
+    else if (fixture[flag] !== true) issues.push(`boundary flag ${flag} must be true`);
+  }
+
+  const sourceAuthorityContext = fixture?.source_authority_context;
+  if (!isPlainObject(sourceAuthorityContext)) {
+    issues.push("source_authority_context must exist");
+  } else {
+    for (const field of [
+      "authority_explain_receipt_ref",
+      "bind_time_validity_ref",
+      "requested_operation",
+      "summary",
+    ]) {
+      if (typeof sourceAuthorityContext[field] !== "string" || sourceAuthorityContext[field].length === 0) {
+        issues.push(`source_authority_context.${field} must be a non-empty string`);
+      }
+    }
+    validateEnumValue(
+      sourceAuthorityContext.prior_execution_validity,
+      ALLOWED_PRIOR_EXECUTION_VALIDITY,
+      "source_authority_context.prior_execution_validity",
+      issues
+    );
+  }
+
+  const executionContext = fixture?.execution_context;
+  if (!isPlainObject(executionContext)) {
+    issues.push("execution_context must exist");
+  } else {
+    if (
+      typeof executionContext.execution_actor_ref !== "string" ||
+      executionContext.execution_actor_ref.length === 0
+    ) {
+      issues.push("execution_context.execution_actor_ref must be a non-empty string");
+    }
+    validateEnumValue(
+      executionContext.execution_scope_state,
+      ALLOWED_EXECUTION_SCOPE_STATES,
+      "execution_context.execution_scope_state",
+      issues
+    );
+    validateEnumValue(
+      executionContext.evidence_freshness_state,
+      ALLOWED_EVIDENCE_FRESHNESS_STATES,
+      "execution_context.evidence_freshness_state",
+      issues
+    );
+    validateEnumValue(
+      executionContext.actor_alignment_state,
+      ALLOWED_ACTOR_ALIGNMENT_STATES,
+      "execution_context.actor_alignment_state",
+      issues
+    );
+    if (typeof executionContext.summary !== "string" || executionContext.summary.length === 0) {
+      issues.push("execution_context.summary must be a non-empty string");
+    }
+  }
+
+  const authorityDrift = fixture?.authority_drift;
+  if (!isPlainObject(authorityDrift)) {
+    issues.push("authority_drift must exist");
+  } else {
+    validateEnumValue(
+      authorityDrift.status,
+      ALLOWED_AUTHORITY_DRIFT_STATUS,
+      "authority_drift.status",
+      issues
+    );
+    validateEnumValue(
+      authorityDrift.execution_time_validity,
+      ALLOWED_EXECUTION_TIME_VALIDITY,
+      "authority_drift.execution_time_validity",
+      issues
+    );
+    validateStringArray(
+      authorityDrift.drift_factors,
+      ALLOWED_DRIFT_FACTORS,
+      "authority_drift.drift_factors",
+      issues
+    );
+    validateStringArray(
+      authorityDrift.reason_codes,
+      ALLOWED_DRIFT_REASON_CODES,
+      "authority_drift.reason_codes",
+      issues
+    );
+    if (typeof authorityDrift.summary !== "string" || authorityDrift.summary.length === 0) {
+      issues.push("authority_drift.summary must be a non-empty string");
+    }
+    if (!Array.isArray(authorityDrift.limitations)) {
+      issues.push("authority_drift.limitations must be an array");
+    }
+  }
+
+  if (
+    sourceAuthorityContext?.prior_execution_validity === "valid" &&
+    authorityDrift?.status === "stable" &&
+    authorityDrift?.execution_time_validity !== "valid"
+  ) {
+    issues.push("stable authority drift fixtures must keep execution_time_validity valid");
+  }
+
+  if (
+    authorityDrift?.status === "stable" &&
+    JSON.stringify(authorityDrift?.drift_factors) !== JSON.stringify(["none_detected"])
+  ) {
+    issues.push('stable authority drift fixtures must keep drift_factors as ["none_detected"]');
+  }
+
+  if (
+    authorityDrift?.status === "stable" &&
+    JSON.stringify(authorityDrift?.reason_codes) !== JSON.stringify(["authority_stable_at_execution_time"])
+  ) {
+    issues.push("stable authority drift fixtures must keep the stable reason code");
+  }
+
+  if (executionContext?.execution_scope_state === "scope_drifted") {
+    if (authorityDrift?.status !== "drift_detected") {
+      issues.push("scope drift fixtures must set authority_drift.status to drift_detected");
+    }
+    if (authorityDrift?.execution_time_validity !== "invalid") {
+      issues.push("scope drift fixtures must set execution_time_validity to invalid");
+    }
+    if (!authorityDrift?.drift_factors?.includes("scope_drift")) {
+      issues.push("scope drift fixtures must include scope_drift");
+    }
+  }
+
+  if (executionContext?.actor_alignment_state === "drifted") {
+    if (authorityDrift?.status !== "drift_detected") {
+      issues.push("actor drift fixtures must set authority_drift.status to drift_detected");
+    }
+    if (authorityDrift?.execution_time_validity !== "invalid") {
+      issues.push("actor drift fixtures must set execution_time_validity to invalid");
+    }
+    if (!authorityDrift?.drift_factors?.includes("actor_drift")) {
+      issues.push("actor drift fixtures must include actor_drift");
+    }
+  }
+
+  if (executionContext?.evidence_freshness_state === "expired") {
+    if (authorityDrift?.status !== "unknown") {
+      issues.push("evidence decay fixtures must set authority_drift.status to unknown");
+    }
+    if (authorityDrift?.execution_time_validity !== "unknown") {
+      issues.push("evidence decay fixtures must set execution_time_validity to unknown");
+    }
+    if (!authorityDrift?.drift_factors?.includes("evidence_decay")) {
+      issues.push("evidence decay fixtures must include evidence_decay");
+    }
+  }
+
+  if (executionContext?.execution_scope_state === "not_authority_scoped") {
+    if (sourceAuthorityContext?.prior_execution_validity !== "not_applicable") {
+      issues.push("non-authority fixtures must set prior_execution_validity to not_applicable");
+    }
+    if (authorityDrift?.status !== "not_applicable") {
+      issues.push("non-authority fixtures must set authority_drift.status to not_applicable");
+    }
+    if (authorityDrift?.execution_time_validity !== "not_applicable") {
+      issues.push("non-authority fixtures must set execution_time_validity to not_applicable");
+    }
+    if (!authorityDrift?.drift_factors?.includes("outside_scope_non_authority_request")) {
+      issues.push("non-authority fixtures must include outside_scope_non_authority_request");
+    }
+  }
+
+  if (
+    sourceAuthorityContext?.prior_execution_validity !== "not_applicable" &&
+    sourceAuthorityContext?.prior_execution_validity !== "valid"
+  ) {
+    issues.push("v6.18 preview fixtures must preserve prior_execution_validity as valid or not_applicable");
   }
 
   const stack = [fixture];
@@ -697,24 +1029,189 @@ function buildAuthorityExplainResult(fixture) {
   };
 }
 
+function loadValidatedAuthorityDriftFixture(parsed) {
+  const schemaRead = readJson(
+    authorityDriftSchemaPath,
+    "authority_drift_preview_schema_missing",
+    "authority_drift_preview_schema_invalid_json"
+  );
+  if (schemaRead.error) return schemaRead;
+
+  const fixturePath = path.resolve(process.cwd(), parsed.fixtureFile);
+  const fixtureRead = readJson(
+    fixturePath,
+    "authority_drift_preview_fixture_missing",
+    "authority_drift_preview_fixture_invalid_json"
+  );
+  if (fixtureRead.error) return fixtureRead;
+
+  const schemaIssues = validateAuthorityDriftSchema(schemaRead.value);
+  if (schemaIssues.length > 0) {
+    return {
+      error: failure(
+        "authority_drift_preview_schema_invalid",
+        "Authority drift preview schema contract is invalid.",
+        { path: authorityDriftSchemaPath, issues: schemaIssues }
+      ),
+    };
+  }
+
+  const fixtureIssues = validateAuthorityDriftFixture(fixtureRead.value);
+  if (fixtureIssues.length > 0) {
+    return {
+      error: failure(
+        "authority_drift_preview_contract_invalid",
+        "Authority drift preview fixture failed contract validation.",
+        { path: fixturePath, issues: fixtureIssues }
+      ),
+    };
+  }
+
+  return { fixturePath, fixture: fixtureRead.value };
+}
+
+function normalizeInputPath(rawFixtureFile) {
+  const absolutePath = path.resolve(process.cwd(), rawFixtureFile);
+  const relativePath = path.relative(process.cwd(), absolutePath);
+  if (relativePath && !relativePath.startsWith("..") && !path.isAbsolute(relativePath)) {
+    return relativePath.split(path.sep).join("/");
+  }
+  return `external-fixture/${path.basename(absolutePath)}`;
+}
+
+function buildAuthorityDriftBoundary(fixture) {
+  return {
+    name: "v6.18_authority_drift_execution_time_authority_validity_preview_boundary",
+    preview_only: fixture.v6_18_preview,
+    fixture_backed: fixture.fixture_backed,
+    derived_only: fixture.derived_only,
+    explanation_only: fixture.explanation_only,
+    recommendation_only: fixture.recommendation_only,
+    non_enforcing: fixture.non_enforcing,
+    default_off: fixture.default_off,
+    no_execution_authority_granted: fixture.no_execution_authority_granted,
+    no_blocking_effect: fixture.no_blocking_effect,
+    no_exit_21: fixture.no_exit_21,
+    no_exit_25: fixture.no_exit_25,
+    no_audit_semantic_change: fixture.no_audit_semantic_change,
+    no_permit_semantic_change: fixture.no_permit_semantic_change,
+    no_classify_semantic_change: fixture.no_classify_semantic_change,
+    no_iam_or_rbac_expansion: fixture.no_iam_or_rbac_expansion,
+    no_dashboard_or_orchestrator_behavior: fixture.no_dashboard_or_orchestrator_behavior,
+    no_commercial_entitlement_change: fixture.no_commercial_entitlement_change,
+  };
+}
+
+function buildAuthorityDriftInputRef(fixturePath, fixture) {
+  return {
+    kind: "fixture_file",
+    fixture_file: normalizeInputPath(fixturePath),
+    fixture_schema_version: fixture.schema_version,
+    fixture_backed: true,
+  };
+}
+
+function buildSourceAuthorityContext(fixture) {
+  return {
+    ...fixture.source_authority_context,
+    decision_effect: false,
+    authority_binding_effect: false,
+  };
+}
+
+function buildExecutionContext(fixture) {
+  return {
+    ...fixture.execution_context,
+    decision_effect: false,
+  };
+}
+
+function buildAuthorityDriftDetails(fixture) {
+  return {
+    ...fixture.authority_drift,
+    decision_effect: false,
+  };
+}
+
+function buildAuthorityDriftNonEnforcementBoundary() {
+  return {
+    preview_only: true,
+    explanation_only: true,
+    enforced: false,
+    changes_exit_semantics: false,
+    execution_authority_granted: false,
+    blocking_effect: false,
+    enforcement_action: "none",
+    exit_21_used: false,
+    exit_25_used: false,
+  };
+}
+
+function buildAuthorityDriftResult(fixturePath, fixture) {
+  const boundary = buildAuthorityDriftBoundary(fixture);
+  const inputRef = buildAuthorityDriftInputRef(fixturePath, fixture);
+  const sourceAuthorityContext = buildSourceAuthorityContext(fixture);
+  const executionContext = buildExecutionContext(fixture);
+  const authorityDrift = buildAuthorityDriftDetails(fixture);
+  const nonEnforcementBoundary = buildAuthorityDriftNonEnforcementBoundary();
+
+  const payloadWithoutHash = {
+    kind: "authority_drift_preview",
+    version: "v6.18",
+    preview: true,
+    command: "guard authority drift",
+    mode: "preview",
+    schema_version: AUTHORITY_DRIFT_SCHEMA_VERSION,
+    input_ref: inputRef,
+    boundary,
+    source_authority_context: sourceAuthorityContext,
+    execution_context: executionContext,
+    authority_drift: authorityDrift,
+    enforcement_action: "none",
+    blocking_effect: false,
+    execution_authority_granted: false,
+    non_enforcement_boundary: nonEnforcementBoundary,
+  };
+
+  return {
+    ...payloadWithoutHash,
+    deterministic_hash: hashValue(payloadWithoutHash),
+  };
+}
+
 export function handleAuthoritySubcommand(args) {
   const sub = args[0] || "";
   if (!sub || sub === "--help" || sub === "-h" || sub === "help") {
     return { exitCode: 0, stdout: renderAuthorityHelp() + "\n" };
   }
 
-  if (sub !== "check" && sub !== "explain") {
+  if (sub !== "check" && sub !== "explain" && sub !== "drift") {
     return {
       exitCode: 2,
       stderr: `Unknown authority command: ${sub}\n\n${renderAuthorityHelp()}\n`,
     };
   }
 
-  const usage = sub === "check" ? AUTHORITY_CHECK_USAGE : AUTHORITY_EXPLAIN_USAGE;
+  const usage =
+    sub === "check"
+      ? AUTHORITY_CHECK_USAGE
+      : sub === "explain"
+        ? AUTHORITY_EXPLAIN_USAGE
+        : AUTHORITY_DRIFT_USAGE;
   const argsResult = validateRequiredPreviewArgs(args.slice(1), usage, {
-    strict: sub === "explain",
+    strict: sub === "explain" || sub === "drift",
   });
   if (argsResult.response) return argsResult.response;
+
+  if (sub === "drift") {
+    const loaded = loadValidatedAuthorityDriftFixture(argsResult.parsed);
+    if (loaded.error) return loaded.error;
+
+    return {
+      exitCode: 0,
+      stdout: JSON.stringify(buildAuthorityDriftResult(loaded.fixturePath, loaded.fixture), null, 2) + "\n",
+    };
+  }
 
   const loaded = loadValidatedAuthorityFixture(argsResult.parsed, {
     schemaMissing:

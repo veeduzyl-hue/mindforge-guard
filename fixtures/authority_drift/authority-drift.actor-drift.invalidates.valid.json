@@ -1,0 +1,50 @@
+{
+  "schema_version": "v6.18-preview",
+  "v6_18_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_execution_authority_granted": true,
+  "no_blocking_effect": true,
+  "no_exit_21": true,
+  "no_exit_25": true,
+  "no_audit_semantic_change": true,
+  "no_permit_semantic_change": true,
+  "no_classify_semantic_change": true,
+  "no_iam_or_rbac_expansion": true,
+  "no_dashboard_or_orchestrator_behavior": true,
+  "no_commercial_entitlement_change": true,
+  "source_authority_context": {
+    "authority_explain_receipt_ref": "authority-boundary-inside-scope-001:authority-explain:v6_15",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-inside-scope-001",
+    "prior_execution_validity": "valid",
+    "requested_operation": "define_schema_fixture_boundary",
+    "summary": "The prior authority condition was valid at bind time for a specific bounded actor context."
+  },
+  "execution_context": {
+    "execution_actor_ref": "ai_coding_assistant:unexpected_actor",
+    "execution_scope_state": "aligned",
+    "evidence_freshness_state": "fresh",
+    "actor_alignment_state": "drifted",
+    "summary": "Execution-time actor identity has drifted away from the actor context previously explained."
+  },
+  "authority_drift": {
+    "status": "drift_detected",
+    "execution_time_validity": "invalid",
+    "drift_factors": [
+      "actor_drift"
+    ],
+    "reason_codes": [
+      "actor_drift_invalidates_execution_time_authority"
+    ],
+    "summary": "Actor drift invalidates the previously valid authority condition at execution time.",
+    "limitations": [
+      "This preview does not enforce a deny or block.",
+      "This preview does not grant execution authority.",
+      "This preview remains explanation-only and non-enforcing."
+    ]
+  }
+}

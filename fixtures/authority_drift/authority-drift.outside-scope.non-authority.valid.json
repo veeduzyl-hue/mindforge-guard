@@ -1,0 +1,50 @@
+{
+  "schema_version": "v6.18-preview",
+  "v6_18_preview": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_enforcing": true,
+  "default_off": true,
+  "no_execution_authority_granted": true,
+  "no_blocking_effect": true,
+  "no_exit_21": true,
+  "no_exit_25": true,
+  "no_audit_semantic_change": true,
+  "no_permit_semantic_change": true,
+  "no_classify_semantic_change": true,
+  "no_iam_or_rbac_expansion": true,
+  "no_dashboard_or_orchestrator_behavior": true,
+  "no_commercial_entitlement_change": true,
+  "source_authority_context": {
+    "authority_explain_receipt_ref": "authority-boundary-outside-scope-001:authority-explain:v6_15",
+    "bind_time_validity_ref": "bind-time-validity:authority-boundary-outside-scope-001",
+    "prior_execution_validity": "not_applicable",
+    "requested_operation": "outside_scope_non_authority_request",
+    "summary": "The request is outside the authority-bearing execution boundary and does not carry a previously valid execution-time authority condition."
+  },
+  "execution_context": {
+    "execution_actor_ref": "human_operator:outside_scope",
+    "execution_scope_state": "not_authority_scoped",
+    "evidence_freshness_state": "not_applicable",
+    "actor_alignment_state": "not_applicable",
+    "summary": "The request is outside the authority-drift execution scope and remains a non-authority path."
+  },
+  "authority_drift": {
+    "status": "not_applicable",
+    "execution_time_validity": "not_applicable",
+    "drift_factors": [
+      "outside_scope_non_authority_request"
+    ],
+    "reason_codes": [
+      "outside_scope_non_authority_request"
+    ],
+    "summary": "Authority drift is not applicable because the request is outside the execution-time authority boundary.",
+    "limitations": [
+      "This preview does not convert a non-authority request into an authority grant.",
+      "This preview does not block execution or emit gate semantics.",
+      "This preview remains fixture-backed and explanation-only."
+    ]
+  }
+}

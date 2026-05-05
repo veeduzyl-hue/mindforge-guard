@@ -203,7 +203,31 @@ Internal final acceptance verification:
 node scripts/verify_v6_17_admissibility_explain_final_acceptance.mjs
 ```
 
-## 11. See Also
+## 11. v6.18 Preview Verification
+
+`v6.18` remains internal preview-only verification. It does not change the current commercial release baseline, which remains `v6.13.1`.
+
+Internal preview verification:
+
+```bash
+node scripts/verify_v6_18_authority_drift_boundary_fixtures.mjs
+node scripts/verify_v6_18_authority_drift_preview.mjs
+node scripts/verify_v6_18_authority_drift_acceptance.mjs
+node scripts/verify_v6_18_authority_drift_final_acceptance.mjs
+```
+
+This preview line preserves:
+
+- `guard authority drift --preview --json --fixture-file <file>` as an additive-only internal preview surface
+- explanation-only execution-time authority validity output
+- `execution_authority_granted: false`
+- `blocking_effect: false`
+- `enforcement_action: "none"`
+- no exit `21`
+- no exit `25`
+- no current commercial entitlement change
+
+## 12. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)

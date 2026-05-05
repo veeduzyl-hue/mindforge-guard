@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/authority_drift/authority-drift-preview.schema.json",
+  "title": "MindForge Guard v6.18 Authority Drift Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed execution-time authority validity explanation artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "v6_18_preview",
+    "fixture_backed",
+    "derived_only",
+    "explanation_only",
+    "recommendation_only",
+    "non_enforcing",
+    "default_off",
+    "no_execution_authority_granted",
+    "no_blocking_effect",
+    "no_exit_21",
+    "no_exit_25",
+    "no_audit_semantic_change",
+    "no_permit_semantic_change",
+    "no_classify_semantic_change",
+    "no_iam_or_rbac_expansion",
+    "no_dashboard_or_orchestrator_behavior",
+    "no_commercial_entitlement_change",
+    "source_authority_context",
+    "execution_context",
+    "authority_drift"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "v6.18-preview"
+    },
+    "v6_18_preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "fixture_backed": {
+      "type": "boolean",
+      "const": true
+    },
+    "derived_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_enforcing": {
+      "type": "boolean",
+      "const": true
+    },
+    "default_off": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_execution_authority_granted": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_blocking_effect": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_exit_21": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_exit_25": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_audit_semantic_change": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_permit_semantic_change": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_classify_semantic_change": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_iam_or_rbac_expansion": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_dashboard_or_orchestrator_behavior": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_commercial_entitlement_change": {
+      "type": "boolean",
+      "const": true
+    },
+    "source_authority_context": {
+      "$ref": "#/$defs/sourceAuthorityContext"
+    },
+    "execution_context": {
+      "$ref": "#/$defs/executionContext"
+    },
+    "authority_drift": {
+      "$ref": "#/$defs/authorityDrift"
+    }
+  },
+  "$defs": {
+    "priorExecutionValidity": {
+      "type": "string",
+      "enum": [
+        "valid",
+        "invalid",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "authorityDriftStatus": {
+      "type": "string",
+      "enum": [
+        "stable",
+        "drift_detected",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "executionTimeValidity": {
+      "type": "string",
+      "enum": [
+        "valid",
+        "invalid",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "executionScopeState": {
+      "type": "string",
+      "enum": [
+        "aligned",
+        "scope_drifted",
+        "outside_scope",
+        "not_authority_scoped"
+      ]
+    },
+    "evidenceFreshnessState": {
+      "type": "string",
+      "enum": [
+        "fresh",
+        "degraded",
+        "expired",
+        "not_applicable"
+      ]
+    },
+    "actorAlignmentState": {
+      "type": "string",
+      "enum": [
+        "aligned",
+        "drifted",
+        "not_applicable"
+      ]
+    },
+    "driftFactor": {
+      "type": "string",
+      "enum": [
+        "none_detected",
+        "scope_drift",
+        "evidence_decay",
+        "actor_drift",
+        "outside_scope_non_authority_request"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "authority_stable_at_execution_time",
+        "scope_drift_invalidates_execution_time_authority",
+        "evidence_decay_execution_time_validity_unknown",
+        "actor_drift_invalidates_execution_time_authority",
+        "outside_scope_non_authority_request"
+      ]
+    },
+    "sourceAuthorityContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_explain_receipt_ref",
+        "bind_time_validity_ref",
+        "prior_execution_validity",
+        "requested_operation",
+        "summary"
+      ],
+      "properties": {
+        "authority_explain_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bind_time_validity_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prior_execution_validity": {
+          "$ref": "#/$defs/priorExecutionValidity"
+        },
+        "requested_operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "executionContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_actor_ref",
+        "execution_scope_state",
+        "evidence_freshness_state",
+        "actor_alignment_state",
+        "summary"
+      ],
+      "properties": {
+        "execution_actor_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "execution_scope_state": {
+          "$ref": "#/$defs/executionScopeState"
+        },
+        "evidence_freshness_state": {
+          "$ref": "#/$defs/evidenceFreshnessState"
+        },
+        "actor_alignment_state": {
+          "$ref": "#/$defs/actorAlignmentState"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "authorityDrift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "execution_time_validity",
+        "drift_factors",
+        "reason_codes",
+        "summary",
+        "limitations"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/authorityDriftStatus"
+        },
+        "execution_time_validity": {
+          "$ref": "#/$defs/executionTimeValidity"
+        },
+        "drift_factors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/driftFactor"
+          }
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reasonCode"
+          }
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
