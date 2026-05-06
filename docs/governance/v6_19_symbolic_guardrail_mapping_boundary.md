@@ -4,6 +4,8 @@
 
 `v6.19` starts as an internal preview-only governance boundary.
 
+Core narrative: `Mapping, not enforcement`.
+
 It does not change the current commercial release baseline.
 `v6.13.1` remains the current commercial baseline.
 No README, current product docs, current demo docs, License Hub, pricing, release asset, or public commercial entitlement surface is changed.
