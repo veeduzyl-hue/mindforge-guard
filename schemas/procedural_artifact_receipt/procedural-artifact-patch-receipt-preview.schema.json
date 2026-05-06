@@ -1,0 +1,573 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/procedural_artifact_receipt/procedural-artifact-patch-receipt-preview.schema.json",
+  "title": "MindForge Guard v6.21 Procedural Artifact Patch Receipt Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed procedural artifact patch receipt artifacts. Receipt of procedural change, not runtime skill execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "preview",
+    "receipt_only",
+    "explanation_only",
+    "execution_performed",
+    "installation_performed",
+    "permission_granted",
+    "workflow_deployed",
+    "agent_orchestration_performed",
+    "file_mutation_performed",
+    "enforcement_action",
+    "blocking_effect",
+    "input_ref",
+    "artifact_subject",
+    "declared_patch",
+    "consumed_receipt_refs",
+    "procedural_findings",
+    "receipt_boundary",
+    "deterministic_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "guard.procedural_artifact_patch_receipt_preview.v1"
+    },
+    "preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "receipt_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "fixture_backed": {
+      "type": "boolean",
+      "const": true
+    },
+    "deterministic": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_executing": {
+      "type": "boolean",
+      "const": true
+    },
+    "additive_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_authority_expansion": {
+      "type": "boolean",
+      "const": true
+    },
+    "execution_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "installation_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "permission_granted": {
+      "type": "boolean",
+      "const": false
+    },
+    "workflow_deployed": {
+      "type": "boolean",
+      "const": false
+    },
+    "agent_orchestration_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "file_mutation_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "enforcement_action": {
+      "type": "string",
+      "const": "none"
+    },
+    "blocking_effect": {
+      "type": "boolean",
+      "const": false
+    },
+    "input_ref": {
+      "$ref": "#/$defs/inputRef"
+    },
+    "artifact_subject": {
+      "$ref": "#/$defs/artifactSubject"
+    },
+    "declared_patch": {
+      "$ref": "#/$defs/declaredPatch"
+    },
+    "consumed_receipt_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/consumedReceiptRef"
+      }
+    },
+    "procedural_findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/proceduralFinding"
+      }
+    },
+    "receipt_boundary": {
+      "$ref": "#/$defs/receiptBoundary"
+    },
+    "deterministic_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "artifactSubjectType": {
+      "type": "string",
+      "enum": [
+        "procedure",
+        "skill_patch",
+        "workflow_instruction",
+        "tool_usage_instruction",
+        "documentation_patch"
+      ]
+    },
+    "patchStatus": {
+      "type": "string",
+      "enum": [
+        "receipted",
+        "partially_receipted",
+        "insufficient_basis",
+        "out_of_scope",
+        "unknown"
+      ]
+    },
+    "findingType": {
+      "type": "string",
+      "enum": [
+        "declared_change_recorded",
+        "consumed_receipt_ref_recorded",
+        "missing_receipt_ref",
+        "insufficient_patch_evidence",
+        "runtime_execution_out_of_scope",
+        "permission_grant_out_of_scope",
+        "workflow_deployment_out_of_scope",
+        "not_preview_determinable"
+      ]
+    },
+    "verificationSurface": {
+      "type": "string",
+      "enum": [
+        "fixture_declared",
+        "receipt_ref_declared",
+        "deterministic_summary_declared",
+        "external_system_required",
+        "human_review_required",
+        "not_preview_determinable"
+      ]
+    },
+    "sourceVersion": {
+      "type": "string",
+      "enum": [
+        "v6.17",
+        "v6.18",
+        "v6.19",
+        "v6.20"
+      ]
+    },
+    "summaryKind": {
+      "type": "string",
+      "enum": [
+        "admissibility_prerequisite_summary",
+        "authority_drift_validity_summary",
+        "symbolic_guardrail_mapping_summary",
+        "transition_validity_preservation_summary"
+      ]
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fixture_file",
+        "fixture_schema_version",
+        "case_id",
+        "fixture_backed",
+        "consumed_by_reference_only",
+        "frozen_summary_lineage"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "fixture_case"
+        },
+        "fixture_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_schema_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "consumed_by_reference_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "frozen_summary_lineage": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceVersion"
+          }
+        }
+      }
+    },
+    "artifactSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_subject_id",
+        "artifact_subject_type",
+        "declared_name",
+        "declared_summary"
+      ],
+      "properties": {
+        "artifact_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_subject_type": {
+          "$ref": "#/$defs/artifactSubjectType"
+        },
+        "declared_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declared_summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "declaredPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patch_id",
+        "declared_patch_ref",
+        "patch_summary",
+        "patch_status",
+        "procedural_change_kind"
+      ],
+      "properties": {
+        "patch_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declared_patch_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "patch_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "patch_status": {
+          "$ref": "#/$defs/patchStatus"
+        },
+        "procedural_change_kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "consumedReceiptRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_version",
+        "summary_kind",
+        "source_receipt_ref",
+        "verification_surface"
+      ],
+      "properties": {
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        },
+        "summary_kind": {
+          "$ref": "#/$defs/summaryKind"
+        },
+        "source_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        }
+      }
+    },
+    "proceduralFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "finding_type",
+        "verification_surface",
+        "finding_summary",
+        "related_receipt_ref",
+        "gap_summary"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finding_type": {
+          "$ref": "#/$defs/findingType"
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        },
+        "finding_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "related_receipt_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gap_summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "receiptBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_only",
+        "execution_performed",
+        "installation_performed",
+        "permission_granted",
+        "workflow_deployed",
+        "agent_orchestration_performed",
+        "file_mutation_performed",
+        "enforcement_action",
+        "blocking_effect",
+        "does_not_execute_skill",
+        "does_not_install_skill",
+        "does_not_grant_tool_permission",
+        "does_not_orchestrate_agents",
+        "does_not_deploy_workflow",
+        "does_not_mutate_files",
+        "does_not_prove_patch_safe_to_run"
+      ],
+      "properties": {
+        "receipt_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "execution_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "installation_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "permission_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "workflow_deployed": {
+          "type": "boolean",
+          "const": false
+        },
+        "agent_orchestration_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "file_mutation_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "enforcement_action": {
+          "type": "string",
+          "const": "none"
+        },
+        "blocking_effect": {
+          "type": "boolean",
+          "const": false
+        },
+        "does_not_execute_skill": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_install_skill": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_grant_tool_permission": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_orchestrate_agents": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_deploy_workflow": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_mutate_files": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_prove_patch_safe_to_run": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "fixtureCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "artifact_subject",
+        "declared_patch",
+        "consumed_receipt_refs",
+        "procedural_findings"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_subject": {
+          "$ref": "#/$defs/artifactSubject"
+        },
+        "declared_patch": {
+          "$ref": "#/$defs/declaredPatch"
+        },
+        "consumed_receipt_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/consumedReceiptRef"
+          }
+        },
+        "procedural_findings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/proceduralFinding"
+          }
+        }
+      }
+    },
+    "fixtureBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "preview",
+        "receipt_only",
+        "explanation_only",
+        "fixture_backed",
+        "derived_only",
+        "no_live_repo_state_reading",
+        "no_live_source_fetching",
+        "no_external_calls",
+        "no_runtime_enforcement",
+        "no_authority_expansion",
+        "frozen_summary_lineage",
+        "cases"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "guard.procedural_artifact_patch_receipt_fixture.v1"
+        },
+        "preview": {
+          "type": "boolean",
+          "const": true
+        },
+        "receipt_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "derived_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_repo_state_reading": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_source_fetching": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_external_calls": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_runtime_enforcement": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_authority_expansion": {
+          "type": "boolean",
+          "const": true
+        },
+        "frozen_summary_lineage": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceVersion"
+          }
+        },
+        "cases": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "$ref": "#/$defs/fixtureCase"
+          }
+        }
+      }
+    }
+  }
+}

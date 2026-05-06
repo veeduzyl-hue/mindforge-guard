@@ -1,0 +1,273 @@
+{
+  "schema_version": "guard.procedural_artifact_patch_receipt_fixture.v1",
+  "preview": true,
+  "receipt_only": true,
+  "explanation_only": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_external_calls": true,
+  "no_runtime_enforcement": true,
+  "no_authority_expansion": true,
+  "frozen_summary_lineage": [
+    "v6.17",
+    "v6.18",
+    "v6.19",
+    "v6.20"
+  ],
+  "cases": [
+    {
+      "case_id": "procedural-receipted-001",
+      "artifact_subject": {
+        "artifact_subject_id": "procedure-rotation-001",
+        "artifact_subject_type": "procedure",
+        "declared_name": "Operator Escalation Rotation Procedure",
+        "declared_summary": "A declared procedural artifact patch refreshes a documented escalation rotation against frozen v6.17-v6.20 lineage references only."
+      },
+      "declared_patch": {
+        "patch_id": "patch-001",
+        "declared_patch_ref": "proc-rotation.patchset.001",
+        "patch_summary": "The declared procedure patch keeps its frozen prerequisite and transition references complete enough for receipt recording.",
+        "patch_status": "receipted",
+        "procedural_change_kind": "procedure_text_revision"
+      },
+      "consumed_receipt_refs": [
+        {
+          "source_version": "v6.17",
+          "summary_kind": "admissibility_prerequisite_summary",
+          "source_receipt_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.20",
+          "summary_kind": "transition_validity_preservation_summary",
+          "source_receipt_ref": "transition-validity-preserved-001:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "procedural_findings": [
+        {
+          "finding_id": "finding-001-a",
+          "finding_type": "declared_change_recorded",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "The declared procedural change is recorded as a receipt subject against frozen lineage references only.",
+          "related_receipt_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-001-b",
+          "finding_type": "consumed_receipt_ref_recorded",
+          "verification_surface": "receipt_ref_declared",
+          "finding_summary": "All declared frozen receipt references needed for this bounded procedural receipt are explicitly present.",
+          "related_receipt_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+          "gap_summary": null
+        }
+      ]
+    },
+    {
+      "case_id": "skill-patch-partial-002",
+      "artifact_subject": {
+        "artifact_subject_id": "skill-patch-ops-002",
+        "artifact_subject_type": "skill_patch",
+        "declared_name": "Receipt-Safe Skill Patch Summary",
+        "declared_summary": "A declared skill patch summary keeps some frozen lineage references but leaves part of the receipt basis incomplete."
+      },
+      "declared_patch": {
+        "patch_id": "patch-002",
+        "declared_patch_ref": "skill-patch.summary.002",
+        "patch_summary": "The declared skill patch summary is only partially receipted because one frozen reference remains undeclared.",
+        "patch_status": "partially_receipted",
+        "procedural_change_kind": "skill_patch_summary_revision"
+      },
+      "consumed_receipt_refs": [
+        {
+          "source_version": "v6.18",
+          "summary_kind": "authority_drift_validity_summary",
+          "source_receipt_ref": "authority-drift-stable-execution-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.19",
+          "summary_kind": "symbolic_guardrail_mapping_summary",
+          "source_receipt_ref": "symbolic-guardrail-mapping:req-002:v6_19",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "procedural_findings": [
+        {
+          "finding_id": "finding-002-a",
+          "finding_type": "declared_change_recorded",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "The declared skill patch change is recorded without attempting to execute or install the patch.",
+          "related_receipt_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-002-b",
+          "finding_type": "consumed_receipt_ref_recorded",
+          "verification_surface": "receipt_ref_declared",
+          "finding_summary": "The declared lineage includes frozen authority drift and symbolic mapping references by receipt only.",
+          "related_receipt_ref": "authority-drift-stable-execution-001:authority-drift:v6_18",
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-002-c",
+          "finding_type": "missing_receipt_ref",
+          "verification_surface": "human_review_required",
+          "finding_summary": "One expected frozen receipt reference for the declared skill patch summary is not present in the compact fixture basis.",
+          "related_receipt_ref": null,
+          "gap_summary": "A reviewer must determine whether the omitted frozen receipt reference is materially required."
+        },
+        {
+          "finding_id": "finding-002-d",
+          "finding_type": "insufficient_patch_evidence",
+          "verification_surface": "human_review_required",
+          "finding_summary": "The declared skill patch summary does not include enough deterministic basis to reach a fully receipted outcome.",
+          "related_receipt_ref": null,
+          "gap_summary": "The fixture records only partial declared patch evidence for the frozen lineage."
+        }
+      ]
+    },
+    {
+      "case_id": "workflow-instruction-insufficient-003",
+      "artifact_subject": {
+        "artifact_subject_id": "workflow-instruction-003",
+        "artifact_subject_type": "workflow_instruction",
+        "declared_name": "Workflow Instruction Patch Summary",
+        "declared_summary": "A declared workflow instruction patch references frozen transition summaries but lacks enough bounded basis for full receipt confidence."
+      },
+      "declared_patch": {
+        "patch_id": "patch-003",
+        "declared_patch_ref": "workflow-instruction.summary.003",
+        "patch_summary": "The declared workflow instruction patch remains insufficient-basis because the fixture cannot determine the needed procedure-only lineage completeness.",
+        "patch_status": "insufficient_basis",
+        "procedural_change_kind": "workflow_instruction_summary_revision"
+      },
+      "consumed_receipt_refs": [
+        {
+          "source_version": "v6.20",
+          "summary_kind": "transition_validity_preservation_summary",
+          "source_receipt_ref": "transition-validity-partial-003:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "procedural_findings": [
+        {
+          "finding_id": "finding-003-a",
+          "finding_type": "insufficient_patch_evidence",
+          "verification_surface": "human_review_required",
+          "finding_summary": "The declared workflow instruction patch does not carry enough deterministic receipt evidence to move beyond an insufficient-basis outcome.",
+          "related_receipt_ref": null,
+          "gap_summary": "The fixture cannot fully tie the declared workflow instruction summary to every frozen receipt basis that a reviewer may request."
+        },
+        {
+          "finding_id": "finding-003-b",
+          "finding_type": "runtime_execution_out_of_scope",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "Any runtime execution implication is out of scope for this preview receipt boundary.",
+          "related_receipt_ref": "transition-validity-partial-003:transition-explain:v6_20",
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-003-c",
+          "finding_type": "not_preview_determinable",
+          "verification_surface": "external_system_required",
+          "finding_summary": "The preview receipt cannot deterministically resolve whether undeclared external workflow steps would be needed.",
+          "related_receipt_ref": null,
+          "gap_summary": "External system behavior is outside the frozen fixture-backed receipt boundary."
+        }
+      ]
+    },
+    {
+      "case_id": "tool-usage-out-of-scope-004",
+      "artifact_subject": {
+        "artifact_subject_id": "tool-usage-instruction-004",
+        "artifact_subject_type": "tool_usage_instruction",
+        "declared_name": "Tool Usage Instruction Patch Summary",
+        "declared_summary": "A declared tool usage instruction patch asks for behavior outside the procedural receipt boundary."
+      },
+      "declared_patch": {
+        "patch_id": "patch-004",
+        "declared_patch_ref": "tool-usage.summary.004",
+        "patch_summary": "The declared tool usage instruction patch is out of scope because it requests permission-like and deployment-like outcomes that v6.21 does not provide.",
+        "patch_status": "out_of_scope",
+        "procedural_change_kind": "tool_usage_instruction_summary_revision"
+      },
+      "consumed_receipt_refs": [
+        {
+          "source_version": "v6.18",
+          "summary_kind": "authority_drift_validity_summary",
+          "source_receipt_ref": "authority-drift-outside-scope-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.20",
+          "summary_kind": "transition_validity_preservation_summary",
+          "source_receipt_ref": "transition-validity-outside-scope-004:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "procedural_findings": [
+        {
+          "finding_id": "finding-004-a",
+          "finding_type": "permission_grant_out_of_scope",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "Any request to grant tool permissions is outside the procedural receipt boundary and is recorded only as out of scope.",
+          "related_receipt_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-004-b",
+          "finding_type": "workflow_deployment_out_of_scope",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "Any requested workflow deployment behavior is outside the procedural receipt boundary.",
+          "related_receipt_ref": "transition-validity-outside-scope-004:transition-explain:v6_20",
+          "gap_summary": null
+        }
+      ]
+    },
+    {
+      "case_id": "documentation-patch-unknown-005",
+      "artifact_subject": {
+        "artifact_subject_id": "documentation-patch-005",
+        "artifact_subject_type": "documentation_patch",
+        "declared_name": "Procedure Notes Documentation Patch",
+        "declared_summary": "A declared documentation patch references frozen admissibility summaries but remains unknown because the declared summary leaves one procedural basis unresolved."
+      },
+      "declared_patch": {
+        "patch_id": "patch-005",
+        "declared_patch_ref": "documentation.summary.005",
+        "patch_summary": "The declared documentation patch remains unknown because the compact fixture cannot deterministically resolve one unresolved declared basis.",
+        "patch_status": "unknown",
+        "procedural_change_kind": "documentation_patch_summary_revision"
+      },
+      "consumed_receipt_refs": [
+        {
+          "source_version": "v6.17",
+          "summary_kind": "admissibility_prerequisite_summary",
+          "source_receipt_ref": "admissibility-boundary-partial-basis-001:admissibility-explain:v6_17",
+          "verification_surface": "receipt_ref_declared"
+        }
+      ],
+      "procedural_findings": [
+        {
+          "finding_id": "finding-005-a",
+          "finding_type": "declared_change_recorded",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "The declared documentation patch change is recorded as a bounded procedural receipt subject.",
+          "related_receipt_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-005-b",
+          "finding_type": "not_preview_determinable",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "The compact fixture cannot deterministically determine whether the unresolved documentation basis should be treated as complete or incomplete.",
+          "related_receipt_ref": "admissibility-boundary-partial-basis-001:admissibility-explain:v6_17",
+          "gap_summary": "A human reviewer must decide whether the declared documentation basis is sufficient for a stronger receipt outcome."
+        }
+      ]
+    }
+  ]
+}
