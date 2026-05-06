@@ -1,0 +1,588 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/procedural_lineage_trajectory/procedural-lineage-trajectory-preview.schema.json",
+  "title": "MindForge Guard v6.22 Procedural Lineage Trajectory Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed procedural lineage trajectory artifacts. Trajectory visibility, not trajectory control.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "preview",
+    "visibility_only",
+    "explanation_only",
+    "trajectory_status",
+    "trajectory_control_performed",
+    "optimization_performed",
+    "rerouting_performed",
+    "workflow_execution_performed",
+    "agent_orchestration_performed",
+    "permission_granted",
+    "file_mutation_performed",
+    "enforcement_action",
+    "blocking_effect",
+    "input_ref",
+    "lineage_refs",
+    "trajectory_segments",
+    "trajectory_findings",
+    "trajectory_boundary",
+    "deterministic_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "guard.procedural_lineage_trajectory_preview.v1"
+    },
+    "preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "visibility_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "fixture_backed": {
+      "type": "boolean",
+      "const": true
+    },
+    "deterministic": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_executing": {
+      "type": "boolean",
+      "const": true
+    },
+    "additive_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "no_authority_expansion": {
+      "type": "boolean",
+      "const": true
+    },
+    "trajectory_status": {
+      "$ref": "#/$defs/trajectoryStatus"
+    },
+    "trajectory_control_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "optimization_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "rerouting_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "workflow_execution_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "agent_orchestration_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "permission_granted": {
+      "type": "boolean",
+      "const": false
+    },
+    "file_mutation_performed": {
+      "type": "boolean",
+      "const": false
+    },
+    "enforcement_action": {
+      "type": "string",
+      "const": "none"
+    },
+    "blocking_effect": {
+      "type": "boolean",
+      "const": false
+    },
+    "input_ref": {
+      "$ref": "#/$defs/inputRef"
+    },
+    "lineage_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/lineageRef"
+      }
+    },
+    "trajectory_segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/trajectorySegment"
+      }
+    },
+    "trajectory_findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/trajectoryFinding"
+      }
+    },
+    "trajectory_boundary": {
+      "$ref": "#/$defs/trajectoryBoundary"
+    },
+    "deterministic_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "trajectoryStatus": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "partially_visible",
+        "insufficient_lineage",
+        "out_of_scope",
+        "unknown"
+      ]
+    },
+    "segmentType": {
+      "type": "string",
+      "enum": [
+        "admissibility_prerequisite",
+        "authority_drift_validity",
+        "symbolic_guardrail_mapping",
+        "transition_validity",
+        "procedural_artifact_receipt"
+      ]
+    },
+    "findingType": {
+      "type": "string",
+      "enum": [
+        "lineage_ref_recorded",
+        "segment_summary_recorded",
+        "missing_lineage_ref",
+        "insufficient_lineage_evidence",
+        "trajectory_control_out_of_scope",
+        "optimization_out_of_scope",
+        "rerouting_out_of_scope",
+        "orchestration_out_of_scope",
+        "workflow_execution_out_of_scope",
+        "not_preview_determinable"
+      ]
+    },
+    "verificationSurface": {
+      "type": "string",
+      "enum": [
+        "fixture_declared",
+        "receipt_ref_declared",
+        "deterministic_summary_declared",
+        "external_system_required",
+        "human_review_required",
+        "not_preview_determinable"
+      ]
+    },
+    "sourceVersion": {
+      "type": "string",
+      "enum": [
+        "v6.17",
+        "v6.18",
+        "v6.19",
+        "v6.20",
+        "v6.21"
+      ]
+    },
+    "summaryKind": {
+      "type": "string",
+      "enum": [
+        "admissibility_prerequisite_summary",
+        "authority_drift_validity_summary",
+        "symbolic_guardrail_mapping_summary",
+        "transition_validity_preservation_summary",
+        "procedural_artifact_patch_receipt_summary"
+      ]
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fixture_file",
+        "fixture_schema_version",
+        "case_id",
+        "fixture_backed",
+        "consumed_by_reference_only",
+        "frozen_summary_lineage"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "fixture_case"
+        },
+        "fixture_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_schema_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "consumed_by_reference_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "frozen_summary_lineage": {
+          "type": "array",
+          "minItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceVersion"
+          }
+        }
+      }
+    },
+    "lineageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_version",
+        "summary_kind",
+        "source_receipt_ref",
+        "verification_surface"
+      ],
+      "properties": {
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        },
+        "summary_kind": {
+          "$ref": "#/$defs/summaryKind"
+        },
+        "source_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        }
+      }
+    },
+    "trajectorySegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "segment_id",
+        "segment_type",
+        "segment_summary",
+        "source_version",
+        "related_lineage_ref",
+        "verification_surface"
+      ],
+      "properties": {
+        "segment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "segment_type": {
+          "$ref": "#/$defs/segmentType"
+        },
+        "segment_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        },
+        "related_lineage_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        }
+      }
+    },
+    "trajectoryFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "finding_type",
+        "verification_surface",
+        "finding_summary",
+        "related_lineage_ref",
+        "gap_summary"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finding_type": {
+          "$ref": "#/$defs/findingType"
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        },
+        "finding_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "related_lineage_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gap_summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "trajectoryBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visibility_only",
+        "explanation_only",
+        "trajectory_control_performed",
+        "optimization_performed",
+        "rerouting_performed",
+        "workflow_execution_performed",
+        "agent_orchestration_performed",
+        "permission_granted",
+        "file_mutation_performed",
+        "enforcement_action",
+        "blocking_effect",
+        "does_not_control_trajectory",
+        "does_not_optimize_trajectory",
+        "does_not_reroute_tasks",
+        "does_not_execute_workflow",
+        "does_not_orchestrate_agents",
+        "does_not_grant_permission",
+        "does_not_mutate_files",
+        "does_not_approve_lineage_progression",
+        "does_not_prove_trajectory_safe_to_execute"
+      ],
+      "properties": {
+        "visibility_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "trajectory_control_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "optimization_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "rerouting_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "workflow_execution_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "agent_orchestration_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "permission_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "file_mutation_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "enforcement_action": {
+          "type": "string",
+          "const": "none"
+        },
+        "blocking_effect": {
+          "type": "boolean",
+          "const": false
+        },
+        "does_not_control_trajectory": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_optimize_trajectory": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_reroute_tasks": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_execute_workflow": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_orchestrate_agents": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_grant_permission": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_mutate_files": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_approve_lineage_progression": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_prove_trajectory_safe_to_execute": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "fixtureCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "trajectory_status",
+        "lineage_refs",
+        "trajectory_segments",
+        "trajectory_findings"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trajectory_status": {
+          "$ref": "#/$defs/trajectoryStatus"
+        },
+        "lineage_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/lineageRef"
+          }
+        },
+        "trajectory_segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/trajectorySegment"
+          }
+        },
+        "trajectory_findings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/trajectoryFinding"
+          }
+        }
+      }
+    },
+    "fixtureBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "preview",
+        "visibility_only",
+        "explanation_only",
+        "fixture_backed",
+        "derived_only",
+        "no_live_repo_state_reading",
+        "no_live_source_fetching",
+        "no_external_calls",
+        "no_runtime_enforcement",
+        "no_authority_expansion",
+        "frozen_summary_lineage",
+        "cases"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "guard.procedural_lineage_trajectory_fixture.v1"
+        },
+        "preview": {
+          "type": "boolean",
+          "const": true
+        },
+        "visibility_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "derived_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_repo_state_reading": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_source_fetching": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_external_calls": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_runtime_enforcement": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_authority_expansion": {
+          "type": "boolean",
+          "const": true
+        },
+        "frozen_summary_lineage": {
+          "type": "array",
+          "minItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceVersion"
+          }
+        },
+        "cases": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "$ref": "#/$defs/fixtureCase"
+          }
+        }
+      }
+    }
+  }
+}
