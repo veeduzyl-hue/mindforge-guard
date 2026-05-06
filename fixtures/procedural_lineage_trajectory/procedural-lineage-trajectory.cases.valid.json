@@ -1,0 +1,336 @@
+{
+  "schema_version": "guard.procedural_lineage_trajectory_fixture.v1",
+  "preview": true,
+  "visibility_only": true,
+  "explanation_only": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_external_calls": true,
+  "no_runtime_enforcement": true,
+  "no_authority_expansion": true,
+  "frozen_summary_lineage": [
+    "v6.17",
+    "v6.18",
+    "v6.19",
+    "v6.20",
+    "v6.21"
+  ],
+  "cases": [
+    {
+      "case_id": "trajectory-visible-001",
+      "trajectory_status": "visible",
+      "lineage_refs": [
+        {
+          "source_version": "v6.17",
+          "summary_kind": "admissibility_prerequisite_summary",
+          "source_receipt_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.18",
+          "summary_kind": "authority_drift_validity_summary",
+          "source_receipt_ref": "authority-drift-stable-execution-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.19",
+          "summary_kind": "symbolic_guardrail_mapping_summary",
+          "source_receipt_ref": "symbolic-guardrail-mapping:req-001:v6_19",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "source_version": "v6.20",
+          "summary_kind": "transition_validity_preservation_summary",
+          "source_receipt_ref": "transition-validity-preserved-001:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "source_version": "v6.21",
+          "summary_kind": "procedural_artifact_patch_receipt_summary",
+          "source_receipt_ref": "procedural-receipted-001:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_segments": [
+        {
+          "segment_id": "segment-001-a",
+          "segment_type": "admissibility_prerequisite",
+          "segment_summary": "The lineage begins from a fully declared admissibility prerequisite basis.",
+          "source_version": "v6.17",
+          "related_lineage_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+          "verification_surface": "fixture_declared"
+        },
+        {
+          "segment_id": "segment-001-b",
+          "segment_type": "authority_drift_validity",
+          "segment_summary": "The execution-time authority validity segment remains aligned in the frozen lineage.",
+          "source_version": "v6.18",
+          "related_lineage_ref": "authority-drift-stable-execution-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "segment_id": "segment-001-c",
+          "segment_type": "symbolic_guardrail_mapping",
+          "segment_summary": "The symbolic guardrail mapping segment remains explicitly recorded by deterministic summary.",
+          "source_version": "v6.19",
+          "related_lineage_ref": "symbolic-guardrail-mapping:req-001:v6_19",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "segment_id": "segment-001-d",
+          "segment_type": "transition_validity",
+          "segment_summary": "The declared transition validity segment preserves the execution-bound prerequisite path.",
+          "source_version": "v6.20",
+          "related_lineage_ref": "transition-validity-preserved-001:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "segment_id": "segment-001-e",
+          "segment_type": "procedural_artifact_receipt",
+          "segment_summary": "The procedural artifact receipt segment completes the visible bounded lineage path.",
+          "source_version": "v6.21",
+          "related_lineage_ref": "procedural-receipted-001:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_findings": [
+        {
+          "finding_id": "finding-001-a",
+          "finding_type": "lineage_ref_recorded",
+          "verification_surface": "receipt_ref_declared",
+          "finding_summary": "Each frozen lineage reference needed for this bounded trajectory is explicitly recorded by reference.",
+          "related_lineage_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-001-b",
+          "finding_type": "segment_summary_recorded",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "Each visible segment in the trajectory is recorded as a deterministic explanation-only summary.",
+          "related_lineage_ref": null,
+          "gap_summary": null
+        }
+      ]
+    },
+    {
+      "case_id": "trajectory-partial-002",
+      "trajectory_status": "partially_visible",
+      "lineage_refs": [
+        {
+          "source_version": "v6.17",
+          "summary_kind": "admissibility_prerequisite_summary",
+          "source_receipt_ref": "admissibility-boundary-partial-basis-001:admissibility-explain:v6_17",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.19",
+          "summary_kind": "symbolic_guardrail_mapping_summary",
+          "source_receipt_ref": "symbolic-guardrail-mapping:req-002:v6_19",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "source_version": "v6.21",
+          "summary_kind": "procedural_artifact_patch_receipt_summary",
+          "source_receipt_ref": "skill-patch-partial-002:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_segments": [
+        {
+          "segment_id": "segment-002-a",
+          "segment_type": "admissibility_prerequisite",
+          "segment_summary": "The lineage starts from a partially declared admissibility basis.",
+          "source_version": "v6.17",
+          "related_lineage_ref": "admissibility-boundary-partial-basis-001:admissibility-explain:v6_17",
+          "verification_surface": "fixture_declared"
+        },
+        {
+          "segment_id": "segment-002-b",
+          "segment_type": "symbolic_guardrail_mapping",
+          "segment_summary": "The symbolic mapping segment is visible, but it preserves only partial coverage of the frozen trajectory path.",
+          "source_version": "v6.19",
+          "related_lineage_ref": "symbolic-guardrail-mapping:req-002:v6_19",
+          "verification_surface": "deterministic_summary_declared"
+        },
+        {
+          "segment_id": "segment-002-c",
+          "segment_type": "procedural_artifact_receipt",
+          "segment_summary": "The procedural receipt segment remains only partially visible because one frozen lineage basis is undeclared.",
+          "source_version": "v6.21",
+          "related_lineage_ref": "skill-patch-partial-002:procedure-receipt:v6_21",
+          "verification_surface": "human_review_required"
+        }
+      ],
+      "trajectory_findings": [
+        {
+          "finding_id": "finding-002-a",
+          "finding_type": "missing_lineage_ref",
+          "verification_surface": "human_review_required",
+          "finding_summary": "One frozen lineage reference needed for a fully visible trajectory is undeclared in the compact basis.",
+          "related_lineage_ref": null,
+          "gap_summary": "A reviewer must determine whether the omitted lineage reference is materially required."
+        },
+        {
+          "finding_id": "finding-002-b",
+          "finding_type": "insufficient_lineage_evidence",
+          "verification_surface": "human_review_required",
+          "finding_summary": "The frozen lineage evidence is enough to show a partial trajectory but not enough to show a fully visible one.",
+          "related_lineage_ref": null,
+          "gap_summary": "The fixture records only partial basis continuity across the lineage."
+        }
+      ]
+    },
+    {
+      "case_id": "trajectory-insufficient-003",
+      "trajectory_status": "insufficient_lineage",
+      "lineage_refs": [
+        {
+          "source_version": "v6.20",
+          "summary_kind": "transition_validity_preservation_summary",
+          "source_receipt_ref": "transition-validity-partial-003:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_segments": [
+        {
+          "segment_id": "segment-003-a",
+          "segment_type": "transition_validity",
+          "segment_summary": "The available trajectory evidence narrows to a transition-validity summary without enough upstream lineage continuity.",
+          "source_version": "v6.20",
+          "related_lineage_ref": "transition-validity-partial-003:transition-explain:v6_20",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_findings": [
+        {
+          "finding_id": "finding-003-a",
+          "finding_type": "workflow_execution_out_of_scope",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "Any workflow execution interpretation is outside the bounded lineage trajectory preview.",
+          "related_lineage_ref": "transition-validity-partial-003:transition-explain:v6_20",
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-003-b",
+          "finding_type": "not_preview_determinable",
+          "verification_surface": "external_system_required",
+          "finding_summary": "The compact fixture cannot determine whether external procedural systems would be needed to make this lineage more visible.",
+          "related_lineage_ref": null,
+          "gap_summary": "External system behavior is outside the frozen fixture-backed trajectory boundary."
+        }
+      ]
+    },
+    {
+      "case_id": "trajectory-out-of-scope-004",
+      "trajectory_status": "out_of_scope",
+      "lineage_refs": [
+        {
+          "source_version": "v6.18",
+          "summary_kind": "authority_drift_validity_summary",
+          "source_receipt_ref": "authority-drift-outside-scope-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "source_version": "v6.21",
+          "summary_kind": "procedural_artifact_patch_receipt_summary",
+          "source_receipt_ref": "tool-usage-out-of-scope-004:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_segments": [
+        {
+          "segment_id": "segment-004-a",
+          "segment_type": "authority_drift_validity",
+          "segment_summary": "The lineage points to an already out-of-scope authority drift summary.",
+          "source_version": "v6.18",
+          "related_lineage_ref": "authority-drift-outside-scope-001:authority-drift:v6_18",
+          "verification_surface": "receipt_ref_declared"
+        },
+        {
+          "segment_id": "segment-004-b",
+          "segment_type": "procedural_artifact_receipt",
+          "segment_summary": "The trajectory enters an out-of-scope procedural receipt request that asks for disallowed behavior.",
+          "source_version": "v6.21",
+          "related_lineage_ref": "tool-usage-out-of-scope-004:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_findings": [
+        {
+          "finding_id": "finding-004-a",
+          "finding_type": "trajectory_control_out_of_scope",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "Any request to control the trajectory is outside the bounded preview surface.",
+          "related_lineage_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-004-b",
+          "finding_type": "optimization_out_of_scope",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "Any request to optimize the trajectory is outside the bounded preview surface.",
+          "related_lineage_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-004-c",
+          "finding_type": "rerouting_out_of_scope",
+          "verification_surface": "fixture_declared",
+          "finding_summary": "Any request to reroute tasks is outside the bounded preview surface.",
+          "related_lineage_ref": null,
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-004-d",
+          "finding_type": "orchestration_out_of_scope",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "Any request to orchestrate agents is outside the bounded preview surface.",
+          "related_lineage_ref": "tool-usage-out-of-scope-004:procedure-receipt:v6_21",
+          "gap_summary": null
+        }
+      ]
+    },
+    {
+      "case_id": "trajectory-unknown-005",
+      "trajectory_status": "unknown",
+      "lineage_refs": [
+        {
+          "source_version": "v6.21",
+          "summary_kind": "procedural_artifact_patch_receipt_summary",
+          "source_receipt_ref": "documentation-patch-unknown-005:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_segments": [
+        {
+          "segment_id": "segment-005-a",
+          "segment_type": "procedural_artifact_receipt",
+          "segment_summary": "The visible lineage ends in an unresolved documentation-oriented procedural receipt summary.",
+          "source_version": "v6.21",
+          "related_lineage_ref": "documentation-patch-unknown-005:procedure-receipt:v6_21",
+          "verification_surface": "deterministic_summary_declared"
+        }
+      ],
+      "trajectory_findings": [
+        {
+          "finding_id": "finding-005-a",
+          "finding_type": "lineage_ref_recorded",
+          "verification_surface": "receipt_ref_declared",
+          "finding_summary": "The unresolved lineage endpoint is still explicitly recorded by reference.",
+          "related_lineage_ref": "documentation-patch-unknown-005:procedure-receipt:v6_21",
+          "gap_summary": null
+        },
+        {
+          "finding_id": "finding-005-b",
+          "finding_type": "not_preview_determinable",
+          "verification_surface": "not_preview_determinable",
+          "finding_summary": "The compact fixture cannot deterministically resolve whether the unresolved endpoint should be treated as sufficiently visible.",
+          "related_lineage_ref": "documentation-patch-unknown-005:procedure-receipt:v6_21",
+          "gap_summary": "A human reviewer must decide whether the remaining lineage ambiguity is acceptable."
+        }
+      ]
+    }
+  ]
+}
