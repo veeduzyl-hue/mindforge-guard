@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/transition_validity/execution-bound-transition-validity-preview.schema.json",
+  "title": "MindForge Guard v6.20 Execution-Bound Transition Validity Preview Boundary",
+  "description": "Preview-only additive schema for fixture-backed execution-bound transition validity explanation artifacts. Transition explanation, not execution permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "preview",
+    "explanation_only",
+    "enforcement_action",
+    "blocking_effect",
+    "execution_authority_granted",
+    "input_ref",
+    "input_summary",
+    "declared_transition",
+    "prerequisite_refs",
+    "transition_findings",
+    "preservation_summary",
+    "non_enforcement_boundary",
+    "deterministic_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "guard.execution_bound_transition_validity_preview.v1"
+    },
+    "preview": {
+      "type": "boolean",
+      "const": true
+    },
+    "explanation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "recommendation_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "non_executing": {
+      "type": "boolean",
+      "const": true
+    },
+    "additive_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "enforcement_action": {
+      "type": "string",
+      "const": "none"
+    },
+    "blocking_effect": {
+      "type": "boolean",
+      "const": false
+    },
+    "execution_authority_granted": {
+      "type": "boolean",
+      "const": false
+    },
+    "input_ref": {
+      "$ref": "#/$defs/inputRef"
+    },
+    "input_summary": {
+      "$ref": "#/$defs/inputSummary"
+    },
+    "declared_transition": {
+      "$ref": "#/$defs/declaredTransition"
+    },
+    "prerequisite_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/prerequisiteRef"
+      }
+    },
+    "transition_findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/transitionFinding"
+      }
+    },
+    "preservation_summary": {
+      "$ref": "#/$defs/preservationSummary"
+    },
+    "non_enforcement_boundary": {
+      "$ref": "#/$defs/nonEnforcementBoundary"
+    },
+    "deterministic_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "transitionStatus": {
+      "type": "string",
+      "enum": [
+        "preserved",
+        "changed",
+        "partially_preserved",
+        "not_applicable",
+        "unknown"
+      ]
+    },
+    "findingType": {
+      "type": "string",
+      "enum": [
+        "prerequisite_preserved",
+        "prerequisite_changed",
+        "prerequisite_partially_preserved",
+        "insufficient_transition_evidence",
+        "not_applicable_to_transition"
+      ]
+    },
+    "verificationSurface": {
+      "type": "string",
+      "enum": [
+        "fixture_declared",
+        "receipt_ref_declared",
+        "symbolic_mapping_ref_declared",
+        "external_system_required",
+        "human_review_required",
+        "not_preview_determinable"
+      ]
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fixture_file",
+        "fixture_schema_version",
+        "fixture_backed"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "fixture_file"
+        },
+        "fixture_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_schema_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "inputSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_count",
+        "transition_status_counts",
+        "prerequisite_ref_count",
+        "fixture_backed",
+        "no_live_repo_state_reading",
+        "no_live_source_fetching",
+        "no_external_calls"
+      ],
+      "properties": {
+        "case_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "transition_status_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preserved",
+            "changed",
+            "partially_preserved",
+            "not_applicable",
+            "unknown"
+          ],
+          "properties": {
+            "preserved": { "type": "integer", "minimum": 0 },
+            "changed": { "type": "integer", "minimum": 0 },
+            "partially_preserved": { "type": "integer", "minimum": 0 },
+            "not_applicable": { "type": "integer", "minimum": 0 },
+            "unknown": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "prerequisite_ref_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_repo_state_reading": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_live_source_fetching": {
+          "type": "boolean",
+          "const": true
+        },
+        "no_external_calls": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "declaredTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_set_id",
+        "transition_summary",
+        "compared_summary_sources",
+        "fixture_backed",
+        "comparison_mode"
+      ],
+      "properties": {
+        "transition_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transition_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compared_summary_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fixture_backed": {
+          "type": "boolean",
+          "const": true
+        },
+        "comparison_mode": {
+          "type": "string",
+          "const": "deterministic_summary_only"
+        }
+      }
+    },
+    "prerequisiteRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prerequisite_ref",
+        "source_version",
+        "source_receipt_ref",
+        "verification_surface"
+      ],
+      "properties": {
+        "prerequisite_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        }
+      }
+    },
+    "transitionFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "transition_id",
+        "transition_status",
+        "finding_type",
+        "verification_surface",
+        "prerequisite_ref",
+        "source_version",
+        "source_receipt_ref",
+        "supporting_refs",
+        "finding_summary",
+        "evidence_gap_summary"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transition_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transition_status": {
+          "$ref": "#/$defs/transitionStatus"
+        },
+        "finding_type": {
+          "$ref": "#/$defs/findingType"
+        },
+        "verification_surface": {
+          "$ref": "#/$defs/verificationSurface"
+        },
+        "prerequisite_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supporting_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "finding_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_gap_summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "preservationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_status_counts",
+        "human_review_case_count",
+        "external_system_case_count",
+        "deterministic_preview_only"
+      ],
+      "properties": {
+        "transition_status_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preserved",
+            "changed",
+            "partially_preserved",
+            "not_applicable",
+            "unknown"
+          ],
+          "properties": {
+            "preserved": { "type": "integer", "minimum": 0 },
+            "changed": { "type": "integer", "minimum": 0 },
+            "partially_preserved": { "type": "integer", "minimum": 0 },
+            "not_applicable": { "type": "integer", "minimum": 0 },
+            "unknown": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "human_review_case_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "external_system_case_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deterministic_preview_only": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "nonEnforcementBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "explanation_only",
+        "enforcement_action",
+        "blocking_effect",
+        "execution_authority_granted",
+        "does_not_grant_execution_permission",
+        "does_not_create_commit_gate",
+        "does_not_create_permit_gate",
+        "does_not_create_deployment_gate",
+        "does_not_create_runtime_enforcement",
+        "does_not_prove_state_equivalence"
+      ],
+      "properties": {
+        "explanation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "enforcement_action": {
+          "type": "string",
+          "const": "none"
+        },
+        "blocking_effect": {
+          "type": "boolean",
+          "const": false
+        },
+        "execution_authority_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "does_not_grant_execution_permission": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_create_commit_gate": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_create_permit_gate": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_create_deployment_gate": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_create_runtime_enforcement": {
+          "type": "boolean",
+          "const": true
+        },
+        "does_not_prove_state_equivalence": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    }
+  }
+}
