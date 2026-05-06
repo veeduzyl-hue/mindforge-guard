@@ -1,0 +1,99 @@
+{
+  "schema_version": "guard.execution_bound_transition_validity_fixture.v1",
+  "preview": true,
+  "explanation_only": true,
+  "recommendation_only": true,
+  "non_executing": true,
+  "additive_only": true,
+  "fixture_backed": true,
+  "derived_only": true,
+  "no_live_repo_state_reading": true,
+  "no_live_source_fetching": true,
+  "no_external_calls": true,
+  "no_runtime_enforcement": true,
+  "no_authority_expansion": true,
+  "declared_transition": {
+    "transition_set_id": "transition-bundle-001",
+    "transition_summary": "The fixture declares pre-execution transitions and compares them only against frozen v6.17-v6.19 prerequisite summaries and receipt references.",
+    "compared_summary_sources": [
+      "v6.17.admissibility_prerequisite_matrix",
+      "v6.18.authority_drift.execution_time_validity",
+      "v6.19.symbolic_guardrail_mapping.mappings"
+    ],
+    "fixture_backed": true,
+    "comparison_mode": "deterministic_summary_only"
+  },
+  "cases": [
+    {
+      "case_id": "preserved-readiness-001",
+      "transition_id": "transition-001",
+      "transition_status": "preserved",
+      "finding_type": "prerequisite_preserved",
+      "verification_surface": "fixture_declared",
+      "prerequisite_ref": "admissibility_prerequisite_matrix.current_state_context_v1",
+      "source_version": "v6.17",
+      "source_receipt_ref": "admissibility-boundary-constructible-grounded-001:admissibility-explain:v6_17",
+      "supporting_refs": [
+        "constructible-current-state:authority-boundary-inside-scope-001",
+        "bind-time-validity:authority-boundary-inside-scope-001"
+      ],
+      "finding_summary": "The declared transition preserves the prerequisite context references already required by the admissibility explanation bundle."
+    },
+    {
+      "case_id": "changed-drift-002",
+      "transition_id": "transition-002",
+      "transition_status": "changed",
+      "finding_type": "prerequisite_changed",
+      "verification_surface": "receipt_ref_declared",
+      "prerequisite_ref": "authority_drift.execution_time_validity",
+      "source_version": "v6.18",
+      "source_receipt_ref": "authority-drift-stable-execution-001:authority-drift:v6_18",
+      "supporting_refs": [
+        "authority-boundary-inside-scope-001:authority-explain:v6_15",
+        "bind-time-validity:authority-boundary-inside-scope-001"
+      ],
+      "finding_summary": "The declared transition changes the execution-bound validity summary from stable toward drift-detected conditions, so the prerequisite is no longer preserved."
+    },
+    {
+      "case_id": "partial-mapping-003",
+      "transition_id": "transition-003",
+      "transition_status": "partially_preserved",
+      "finding_type": "prerequisite_partially_preserved",
+      "verification_surface": "symbolic_mapping_ref_declared",
+      "prerequisite_ref": "symbolic_guardrail_mapping.req-002",
+      "source_version": "v6.19",
+      "source_receipt_ref": "symbolic-guardrail-mapping:req-002:v6_19",
+      "supporting_refs": [
+        "grounding-boundary-grounded-001:grounding-explain:v6_16",
+        "symbolic_guardrail_mapping.mappings[req-002]"
+      ],
+      "finding_summary": "The transition preserves the declared symbolic evidence lineage reference, but only partially preserves the freshness-aware coverage gap identified by the mapping preview.",
+      "evidence_gap_summary": "Additional human interpretation is still required to judge whether the preserved symbolic evidence remains sufficient after the declared transition."
+    },
+    {
+      "case_id": "not-applicable-004",
+      "transition_id": "transition-004",
+      "transition_status": "not_applicable",
+      "finding_type": "not_applicable_to_transition",
+      "verification_surface": "not_preview_determinable",
+      "prerequisite_ref": "authority_drift.outside_scope.non_authority_request",
+      "source_version": "v6.18",
+      "source_receipt_ref": "authority-drift-outside-scope-001:authority-drift:v6_18",
+      "supporting_refs": [],
+      "finding_summary": "The declared transition is outside the bounded execution-bound validity preview because the referenced prior authority summary is already not applicable."
+    },
+    {
+      "case_id": "unknown-evidence-005",
+      "transition_id": "transition-005",
+      "transition_status": "unknown",
+      "finding_type": "insufficient_transition_evidence",
+      "verification_surface": "human_review_required",
+      "prerequisite_ref": "admissibility_prerequisite_matrix.input_package_v1",
+      "source_version": "v6.17",
+      "source_receipt_ref": "admissibility-boundary-partial-basis-001:admissibility-explain:v6_17",
+      "supporting_refs": [],
+      "finding_summary": "The declared transition does not provide enough deterministic fixture evidence to explain whether the prerequisite input package remains preserved.",
+      "evidence_gap_summary": "A reviewer must decide whether the transition evidence is sufficient before any broader execution-bound explanation can be trusted."
+    }
+  ]
+}

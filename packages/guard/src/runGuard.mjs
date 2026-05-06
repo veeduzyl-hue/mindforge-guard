@@ -17,6 +17,7 @@ import { handleAdmissibilitySubcommand } from "./cli/admissibility.mjs";
 import { handleAuthoritySubcommand } from "./cli/authority.mjs";
 import { handleGuardrailSubcommand } from "./cli/guardrail.mjs";
 import { handleGroundingSubcommand } from "./cli/grounding.mjs";
+import { handleTransitionSubcommand } from "./cli/transition.mjs";
 import {
   readLicense,
   readLicenseFile,
@@ -157,6 +158,7 @@ function renderGuardHelp() {
     "  guard snapshot .",
     "  guard action classify --text \"<string>\"",
     "  guard guardrail map --preview --json --fixture-file <file>",
+    "  guard transition explain --preview --json --fixture-file <file>",
     "",
     "Drift (signal-only; no policy required):",
     "  guard drift status   [--window 7d|14d|30d] [--format text|json] [--pretty] [--out <file>]",
@@ -522,6 +524,9 @@ export async function runGuard({ argv }) {
   }
   if (argv && argv[0] === "grounding") {
     return handleGroundingSubcommand(argv.slice(1));
+  }
+  if (argv && argv[0] === "transition") {
+    return handleTransitionSubcommand(argv.slice(1));
   }
   if (!argv || argv.length === 0 || argv.includes("--help") || argv.includes("-h")) {
     return { exitCode: 0, stdout: renderGuardHelp() + "\n" };
