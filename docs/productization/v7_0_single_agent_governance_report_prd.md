@@ -223,6 +223,74 @@ The object should be:
 - additive to existing surfaces
 - safe to keep preview-first until later release review
 
+## Absorption Boundary For Phase 2A
+
+External posts, policies, and papers may inform `v7.0` only when they strengthen the Single-Agent Governance Report evidence structure.
+
+`v7.0` absorbs evidence structure, not governance platform ambition.
+
+Absorbed evidence structure may include:
+
+- `agent_identity`
+- `capability_boundary`
+- `authority_envelope`
+- `execution_path_snapshot`
+- `proposed_action`
+- `policy_evaluation_preview`
+- `findings`
+- `review_evidence`
+- `artifact_provenance`
+
+These absorbed structures are not separate products, separate modules, commercial claims, or independent CLI features.
+
+Phase 2A may translate this structure into `single_agent_governance_report_preview v1` only as schema, fixtures, and verifier.
+
+The PRD must preserve the existing `review_posture` vocabulary.
+Do not introduce `readiness_verdict` as a parallel top-level decision field.
+
+| External wording | `v7.0` `review_posture` |
+| --- | --- |
+| `ready` | `ready_for_review` |
+| `ready_with_gaps` | `needs_human_review` |
+| `not_ready` | `insufficient_evidence` |
+| `out_of_scope` | `out_of_scope` |
+| `unknown / indeterminate` | `unknown` |
+
+`policy_evaluation_preview` is allowed only as a deterministic preview or check.
+If scoring is mentioned, it may only use severity-style classification and must not become probability scoring or legal compliance scoring.
+
+`artifact_provenance` may include `source_refs`, generated flags, and metadata completeness.
+It must not become watermark enforcement, content labeling enforcement, or legal proof.
+
+`review_evidence` may include `review_required`, `review_status`, `review_owner`, and `open_issues`.
+It must not become approval, merge authority, deployment authority, or enforcement.
+
+If incident readiness is mentioned, it must be limited to logging, receipt, and escalation owner placeholders.
+It must not create incident management, corrective action workflow, auto containment, or remediation execution.
+
+Deferred absorption:
+
+- corrective action trail
+- risk delta report
+- pooled evidence
+- capability health
+- full incident management
+- GitHub Action implementation
+
+Rejected absorption:
+
+- China compliance checker
+- fleet risk budget
+- runtime control plane
+- auto containment
+- policy enforcement engine
+- compliance certification
+- legal compliance claim
+- safe-to-merge claim
+- safe-to-deploy claim
+
+This section does not reopen commercial launch, README, current docs, License Hub, pricing, `mindforge.run`, demos, release notes, Marketplace, or GitHub Action implementation.
+
 ## GitHub Action Readiness
 
 ### Purpose
