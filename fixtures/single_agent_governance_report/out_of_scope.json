@@ -1,0 +1,236 @@
+{
+  "object_type": "single_agent_governance_report_preview",
+  "object_version": "v1",
+  "report_mode": "preview",
+  "generated_at": "2026-05-07T00:15:00Z",
+  "agent_identity": {
+    "agent_id": "agent.preview.scope-004",
+    "agent_kind": "single_agent",
+    "agent_label": "local-governance-agent",
+    "source_kind": "fixture",
+    "single_agent": true
+  },
+  "capability_boundary": {
+    "boundary_scope": "single_agent_governance_report",
+    "absorbed_evidence_structure": [
+      "agent_identity",
+      "capability_boundary",
+      "authority_envelope",
+      "execution_path_snapshot",
+      "proposed_action",
+      "policy_evaluation_preview",
+      "findings",
+      "review_evidence",
+      "artifact_provenance"
+    ],
+    "single_agent_only": true,
+    "multi_agent_in_scope": false,
+    "github_action_implementation_in_scope": false,
+    "cli_behavior_change_in_scope": false,
+    "separate_product_claim": false
+  },
+  "authority_envelope": {
+    "authority_scope": "human_review_only",
+    "recommendation_only": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "merge_authority": false,
+    "deployment_authority": false,
+    "blocking_effect": false
+  },
+  "execution_path_snapshot": {
+    "input_origin": "fixture",
+    "execution_surface": "internal_preview",
+    "runtime_execution_performed": false,
+    "workflow_execution_performed": false,
+    "github_action_wrapper_used": false,
+    "repo_ref": "mindforge-guard@fixture-scope-004",
+    "path_summary": "The proposed action asks for runtime deployment automation outside the preview report boundary."
+  },
+  "proposed_action": {
+    "action_kind": "deployment_automation_request",
+    "change_scope": "runtime_control_request",
+    "in_scope": false,
+    "summary": "Request to turn the report into a runtime deployment gate."
+  },
+  "policy_evaluation_preview": {
+    "evaluation_mode": "deterministic_preview",
+    "severity_model": "severity_only",
+    "probability_scoring": false,
+    "legal_compliance_scoring": false,
+    "checks": [
+      {
+        "check_id": "check-scope-001",
+        "check_name": "single-agent-boundary",
+        "outcome": "out_of_scope",
+        "severity": "high",
+        "summary": "The requested action is a runtime control request and therefore outside the preview report boundary."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "finding-scope-001",
+      "category": "scope_boundary",
+      "severity": "high",
+      "summary": "The requested action asks for deployment or runtime authority that the preview report cannot provide.",
+      "related_ref": "source:scope-004"
+    }
+  ],
+  "review_evidence": {
+    "review_required": false,
+    "review_status": "out_of_scope",
+    "review_owner": null,
+    "open_issues": [
+      "Return the request to a bounded human review path rather than a runtime control request."
+    ]
+  },
+  "artifact_provenance": {
+    "source_refs": [
+      "receipt:scope-004",
+      "source:scope-004"
+    ],
+    "generated_flags": {
+      "ai_assisted": true,
+      "fixture_backed": true,
+      "human_review_required": false
+    },
+    "metadata_completeness": "complete",
+    "watermark_enforcement": false,
+    "content_labeling_enforcement": false,
+    "legal_proof": false
+  },
+  "pre_v6_14_capability_foundation": {
+    "status_validate_policy": {
+      "present": true,
+      "contributes_to": [
+        "guardrail_mapping_summary",
+        "admissibility_summary"
+      ],
+      "artifact_refs": [
+        "status:scope-004",
+        "validate-policy:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "audit": {
+      "present": true,
+      "contributes_to": [
+        "evidence_summary",
+        "risk_summary",
+        "receipt_refs"
+      ],
+      "evidence_refs": [
+        "audit:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "snapshot": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "transition_summary",
+        "deterministic_hash"
+      ],
+      "snapshot_refs": [
+        "snapshot:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "action_classify": {
+      "present": true,
+      "contributes_to": [
+        "action_summary",
+        "intent_summary",
+        "risk_summary"
+      ],
+      "artifact_refs": [
+        "classify:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "drift": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "lineage_summary"
+      ],
+      "drift_refs": [
+        "drift-status:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "assoc_correlate": {
+      "present": true,
+      "contributes_to": [
+        "lineage_summary",
+        "guardrail_mapping_summary"
+      ],
+      "correlation_refs": [
+        "assoc:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "risk": {
+      "present": true,
+      "contributes_to": [
+        "risk_summary",
+        "review_posture"
+      ],
+      "risk_refs": [
+        "risk:scope-004"
+      ],
+      "contract_preserved": true
+    },
+    "license_edition_gate": {
+      "present": true,
+      "contributes_to": [
+        "non_enforcement_boundary"
+      ],
+      "artifact_refs": [
+        "license:scope-004"
+      ],
+      "contract_preserved": true,
+      "entitlement_changed": false
+    },
+    "verification_chain": {
+      "present": true,
+      "contributes_to": [
+        "deterministic_hash",
+        "receipt_refs"
+      ],
+      "verifier_refs": [
+        "verify:scope-004"
+      ],
+      "contract_preserved": true
+    }
+  },
+  "action_summary": "The artifact captures a request that falls outside the bounded single-agent report surface.",
+  "intent_summary": "The request appears intended to obtain runtime or deployment authority, which is outside scope.",
+  "authority_summary": "The preview report grants no runtime, merge, deployment, execution, or blocking authority.",
+  "evidence_summary": "Evidence is sufficient to show that the requested action is outside the report boundary.",
+  "admissibility_summary": "The artifact is not admissible for ordinary report review because the request is outside scope.",
+  "risk_summary": "The main risk is authority expansion pressure beyond the bounded preview surface.",
+  "drift_summary": "The request drifts from review evidence into runtime control behavior.",
+  "guardrail_mapping_summary": "The request conflicts with the declared non-executing and non-enforcing report contract.",
+  "transition_summary": "No bounded transition summary can move this request back into scope without changing the request itself.",
+  "procedural_receipt_summary": "A receipt can record the out-of-scope request, but it cannot turn the request into an in-scope report action.",
+  "lineage_summary": "The lineage shows a bounded report request being asked to absorb runtime control behavior outside scope.",
+  "review_posture": "out_of_scope",
+  "receipt_refs": [
+    "receipt:scope-004"
+  ],
+  "deterministic_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "non_enforcement_boundary": {
+    "recommendation_only": true,
+    "non_executing": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "blocking_effect": false,
+    "deployment_authority": false,
+    "merge_authority": false,
+    "enforcement_action": "none",
+    "legal_compliance_claim": false,
+    "message": "This report does not approve, reject, block, permit, commit, merge, deploy, or execute any change."
+  }
+}

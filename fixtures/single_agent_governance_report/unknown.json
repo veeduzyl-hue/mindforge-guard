@@ -1,0 +1,235 @@
+{
+  "object_type": "single_agent_governance_report_preview",
+  "object_version": "v1",
+  "report_mode": "preview",
+  "generated_at": "2026-05-07T00:20:00Z",
+  "agent_identity": {
+    "agent_id": "agent.preview.unknown-005",
+    "agent_kind": "single_agent",
+    "agent_label": "local-governance-agent",
+    "source_kind": "fixture",
+    "single_agent": true
+  },
+  "capability_boundary": {
+    "boundary_scope": "single_agent_governance_report",
+    "absorbed_evidence_structure": [
+      "agent_identity",
+      "capability_boundary",
+      "authority_envelope",
+      "execution_path_snapshot",
+      "proposed_action",
+      "policy_evaluation_preview",
+      "findings",
+      "review_evidence",
+      "artifact_provenance"
+    ],
+    "single_agent_only": true,
+    "multi_agent_in_scope": false,
+    "github_action_implementation_in_scope": false,
+    "cli_behavior_change_in_scope": false,
+    "separate_product_claim": false
+  },
+  "authority_envelope": {
+    "authority_scope": "human_review_only",
+    "recommendation_only": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "merge_authority": false,
+    "deployment_authority": false,
+    "blocking_effect": false
+  },
+  "execution_path_snapshot": {
+    "input_origin": "fixture",
+    "execution_surface": "internal_preview",
+    "runtime_execution_performed": false,
+    "workflow_execution_performed": false,
+    "github_action_wrapper_used": false,
+    "repo_ref": "mindforge-guard@fixture-unknown-005",
+    "path_summary": "The preview input is too indeterminate to support a narrower readiness posture."
+  },
+  "proposed_action": {
+    "action_kind": "ai_assisted_change",
+    "change_scope": "indeterminate_patch_basis",
+    "in_scope": true,
+    "summary": "The available input indicates a possible bounded patch, but the basis is too indeterminate."
+  },
+  "policy_evaluation_preview": {
+    "evaluation_mode": "deterministic_preview",
+    "severity_model": "severity_only",
+    "probability_scoring": false,
+    "legal_compliance_scoring": false,
+    "checks": [
+      {
+        "check_id": "check-unknown-001",
+        "check_name": "input-basis-declared",
+        "outcome": "indeterminate",
+        "severity": "medium",
+        "summary": "The compact input basis is too indeterminate to support a narrower report posture."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "finding-unknown-001",
+      "category": "provenance_note",
+      "severity": "medium",
+      "summary": "The available metadata is too indeterminate to classify the preview more precisely.",
+      "related_ref": null
+    }
+  ],
+  "review_evidence": {
+    "review_required": true,
+    "review_status": "unknown",
+    "review_owner": null,
+    "open_issues": [
+      "Provide a clearer input basis before narrowing the report posture."
+    ]
+  },
+  "artifact_provenance": {
+    "source_refs": [
+      "receipt:unknown-005"
+    ],
+    "generated_flags": {
+      "ai_assisted": true,
+      "fixture_backed": true,
+      "human_review_required": true
+    },
+    "metadata_completeness": "minimal",
+    "watermark_enforcement": false,
+    "content_labeling_enforcement": false,
+    "legal_proof": false
+  },
+  "pre_v6_14_capability_foundation": {
+    "status_validate_policy": {
+      "present": true,
+      "contributes_to": [
+        "guardrail_mapping_summary",
+        "admissibility_summary"
+      ],
+      "artifact_refs": [
+        "status:unknown-005",
+        "validate-policy:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "audit": {
+      "present": true,
+      "contributes_to": [
+        "evidence_summary",
+        "risk_summary",
+        "receipt_refs"
+      ],
+      "evidence_refs": [
+        "audit:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "snapshot": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "transition_summary",
+        "deterministic_hash"
+      ],
+      "snapshot_refs": [
+        "snapshot:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "action_classify": {
+      "present": true,
+      "contributes_to": [
+        "action_summary",
+        "intent_summary",
+        "risk_summary"
+      ],
+      "artifact_refs": [
+        "classify:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "drift": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "lineage_summary"
+      ],
+      "drift_refs": [
+        "drift-status:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "assoc_correlate": {
+      "present": true,
+      "contributes_to": [
+        "lineage_summary",
+        "guardrail_mapping_summary"
+      ],
+      "correlation_refs": [
+        "assoc:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "risk": {
+      "present": true,
+      "contributes_to": [
+        "risk_summary",
+        "review_posture"
+      ],
+      "risk_refs": [
+        "risk:unknown-005"
+      ],
+      "contract_preserved": true
+    },
+    "license_edition_gate": {
+      "present": true,
+      "contributes_to": [
+        "non_enforcement_boundary"
+      ],
+      "artifact_refs": [
+        "license:unknown-005"
+      ],
+      "contract_preserved": true,
+      "entitlement_changed": false
+    },
+    "verification_chain": {
+      "present": true,
+      "contributes_to": [
+        "deterministic_hash",
+        "receipt_refs"
+      ],
+      "verifier_refs": [
+        "verify:unknown-005"
+      ],
+      "contract_preserved": true
+    }
+  },
+  "action_summary": "The artifact records an indeterminate AI-assisted input state for bounded review packaging.",
+  "intent_summary": "The apparent intent is review packaging, but the input basis is too indeterminate to say more.",
+  "authority_summary": "The preview remains non-executing and non-approving despite the indeterminate input state.",
+  "evidence_summary": "Only minimal evidence references are present, and they do not narrow the posture beyond unknown.",
+  "admissibility_summary": "The package cannot support a narrower human review posture than unknown.",
+  "risk_summary": "The main risk is over-interpreting an indeterminate preview basis.",
+  "drift_summary": "No specific drift is proven, but the indeterminate state prevents a stronger conclusion.",
+  "guardrail_mapping_summary": "The preview preserves bounded non-enforcement guardrails even when the input basis is indeterminate.",
+  "transition_summary": "The preview cannot state a stronger transition conclusion without clearer source input.",
+  "procedural_receipt_summary": "A minimal receipt reference exists, but it does not resolve the indeterminate basis.",
+  "lineage_summary": "The lineage is too minimal to narrow the report posture beyond unknown.",
+  "review_posture": "unknown",
+  "receipt_refs": [
+    "receipt:unknown-005"
+  ],
+  "deterministic_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "non_enforcement_boundary": {
+    "recommendation_only": true,
+    "non_executing": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "blocking_effect": false,
+    "deployment_authority": false,
+    "merge_authority": false,
+    "enforcement_action": "none",
+    "legal_compliance_claim": false,
+    "message": "This report does not approve, reject, block, permit, commit, merge, deploy, or execute any change."
+  }
+}

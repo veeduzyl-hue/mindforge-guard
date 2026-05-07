@@ -1,0 +1,242 @@
+{
+  "object_type": "single_agent_governance_report_preview",
+  "object_version": "v1",
+  "report_mode": "preview",
+  "generated_at": "2026-05-07T00:10:00Z",
+  "agent_identity": {
+    "agent_id": "agent.preview.evidence-003",
+    "agent_kind": "single_agent",
+    "agent_label": "local-governance-agent",
+    "source_kind": "fixture",
+    "single_agent": true
+  },
+  "capability_boundary": {
+    "boundary_scope": "single_agent_governance_report",
+    "absorbed_evidence_structure": [
+      "agent_identity",
+      "capability_boundary",
+      "authority_envelope",
+      "execution_path_snapshot",
+      "proposed_action",
+      "policy_evaluation_preview",
+      "findings",
+      "review_evidence",
+      "artifact_provenance"
+    ],
+    "single_agent_only": true,
+    "multi_agent_in_scope": false,
+    "github_action_implementation_in_scope": false,
+    "cli_behavior_change_in_scope": false,
+    "separate_product_claim": false
+  },
+  "authority_envelope": {
+    "authority_scope": "human_review_only",
+    "recommendation_only": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "merge_authority": false,
+    "deployment_authority": false,
+    "blocking_effect": false
+  },
+  "execution_path_snapshot": {
+    "input_origin": "fixture",
+    "execution_surface": "internal_preview",
+    "runtime_execution_performed": false,
+    "workflow_execution_performed": false,
+    "github_action_wrapper_used": false,
+    "repo_ref": "mindforge-guard@fixture-evidence-003",
+    "path_summary": "A bounded AI-assisted patch is presented with incomplete evidence linkage."
+  },
+  "proposed_action": {
+    "action_kind": "ai_assisted_change",
+    "change_scope": "single_repository_patch",
+    "in_scope": true,
+    "summary": "Add a review-facing evidence summary without enough provenance linkage."
+  },
+  "policy_evaluation_preview": {
+    "evaluation_mode": "deterministic_preview",
+    "severity_model": "severity_only",
+    "probability_scoring": false,
+    "legal_compliance_scoring": false,
+    "checks": [
+      {
+        "check_id": "check-evidence-001",
+        "check_name": "provenance-linkage-complete",
+        "outcome": "missing_evidence",
+        "severity": "high",
+        "summary": "One required provenance link is absent from the preview package."
+      },
+      {
+        "check_id": "check-evidence-002",
+        "check_name": "receipt-refs-present",
+        "outcome": "attention_required",
+        "severity": "medium",
+        "summary": "Receipt references exist, but they do not cover all expected evidence inputs."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "finding-evidence-001",
+      "category": "evidence_gap",
+      "severity": "high",
+      "summary": "The preview package lacks at least one material evidence reference needed for reliable human review.",
+      "related_ref": "source:missing-evidence-003"
+    }
+  ],
+  "review_evidence": {
+    "review_required": true,
+    "review_status": "evidence_incomplete",
+    "review_owner": "team/governance-review",
+    "open_issues": [
+      "Attach the missing provenance reference before using this report for ordinary review."
+    ]
+  },
+  "artifact_provenance": {
+    "source_refs": [
+      "receipt:evidence-003"
+    ],
+    "generated_flags": {
+      "ai_assisted": true,
+      "fixture_backed": true,
+      "human_review_required": true
+    },
+    "metadata_completeness": "partial",
+    "watermark_enforcement": false,
+    "content_labeling_enforcement": false,
+    "legal_proof": false
+  },
+  "pre_v6_14_capability_foundation": {
+    "status_validate_policy": {
+      "present": true,
+      "contributes_to": [
+        "guardrail_mapping_summary",
+        "admissibility_summary"
+      ],
+      "artifact_refs": [
+        "status:evidence-003",
+        "validate-policy:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "audit": {
+      "present": true,
+      "contributes_to": [
+        "evidence_summary",
+        "risk_summary",
+        "receipt_refs"
+      ],
+      "evidence_refs": [
+        "audit:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "snapshot": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "transition_summary",
+        "deterministic_hash"
+      ],
+      "snapshot_refs": [
+        "snapshot:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "action_classify": {
+      "present": true,
+      "contributes_to": [
+        "action_summary",
+        "intent_summary",
+        "risk_summary"
+      ],
+      "artifact_refs": [
+        "classify:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "drift": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "lineage_summary"
+      ],
+      "drift_refs": [
+        "drift-status:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "assoc_correlate": {
+      "present": true,
+      "contributes_to": [
+        "lineage_summary",
+        "guardrail_mapping_summary"
+      ],
+      "correlation_refs": [
+        "assoc:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "risk": {
+      "present": true,
+      "contributes_to": [
+        "risk_summary",
+        "review_posture"
+      ],
+      "risk_refs": [
+        "risk:evidence-003"
+      ],
+      "contract_preserved": true
+    },
+    "license_edition_gate": {
+      "present": true,
+      "contributes_to": [
+        "non_enforcement_boundary"
+      ],
+      "artifact_refs": [
+        "license:evidence-003"
+      ],
+      "contract_preserved": true,
+      "entitlement_changed": false
+    },
+    "verification_chain": {
+      "present": true,
+      "contributes_to": [
+        "deterministic_hash",
+        "receipt_refs"
+      ],
+      "verifier_refs": [
+        "verify:evidence-003"
+      ],
+      "contract_preserved": true
+    }
+  },
+  "action_summary": "The artifact summarizes a bounded AI-assisted patch with incomplete evidence linkage.",
+  "intent_summary": "The change appears intended to improve evidence packaging, but the preview lacks enough supporting material.",
+  "authority_summary": "The preview remains recommendation-only and grants no approval, execution, merge, blocking, or deployment authority.",
+  "evidence_summary": "Evidence is incomplete because one provenance link and one supporting basis are missing.",
+  "admissibility_summary": "The package is not yet ready for ordinary review because the evidence basis is incomplete.",
+  "risk_summary": "High-severity evidence gaps reduce confidence in the bounded preview summary.",
+  "drift_summary": "No authority drift is claimed, but evidence incompleteness leaves readiness indeterminate for normal review.",
+  "guardrail_mapping_summary": "The artifact misses one declared provenance requirement and therefore needs more evidence.",
+  "transition_summary": "The preview cannot confirm that the bounded review path remains fully supported by evidence.",
+  "procedural_receipt_summary": "A receipt exists, but the receipt set is incomplete relative to the expected evidence package.",
+  "lineage_summary": "The lineage is partially visible but materially incomplete for normal review consumption.",
+  "review_posture": "insufficient_evidence",
+  "receipt_refs": [
+    "receipt:evidence-003"
+  ],
+  "deterministic_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "non_enforcement_boundary": {
+    "recommendation_only": true,
+    "non_executing": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "blocking_effect": false,
+    "deployment_authority": false,
+    "merge_authority": false,
+    "enforcement_action": "none",
+    "legal_compliance_claim": false,
+    "message": "This report does not approve, reject, block, permit, commit, merge, deploy, or execute any change."
+  }
+}
