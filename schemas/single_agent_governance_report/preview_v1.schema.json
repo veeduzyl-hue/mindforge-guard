@@ -1,0 +1,1114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_report/preview_v1.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Report Preview v1",
+  "description": "Preview-only additive schema for the internal single-agent governance report artifact. Review readiness only, not approval or enforcement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object_type",
+    "object_version",
+    "report_mode",
+    "generated_at",
+    "agent_identity",
+    "capability_boundary",
+    "authority_envelope",
+    "execution_path_snapshot",
+    "proposed_action",
+    "policy_evaluation_preview",
+    "findings",
+    "review_evidence",
+    "artifact_provenance",
+    "pre_v6_14_capability_foundation",
+    "action_summary",
+    "intent_summary",
+    "authority_summary",
+    "evidence_summary",
+    "admissibility_summary",
+    "risk_summary",
+    "drift_summary",
+    "guardrail_mapping_summary",
+    "transition_summary",
+    "procedural_receipt_summary",
+    "lineage_summary",
+    "review_posture",
+    "receipt_refs",
+    "deterministic_hash",
+    "non_enforcement_boundary"
+  ],
+  "properties": {
+    "object_type": {
+      "type": "string",
+      "const": "single_agent_governance_report_preview"
+    },
+    "object_version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "report_mode": {
+      "type": "string",
+      "const": "preview"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_identity": {
+      "$ref": "#/$defs/agentIdentity"
+    },
+    "capability_boundary": {
+      "$ref": "#/$defs/capabilityBoundary"
+    },
+    "authority_envelope": {
+      "$ref": "#/$defs/authorityEnvelope"
+    },
+    "execution_path_snapshot": {
+      "$ref": "#/$defs/executionPathSnapshot"
+    },
+    "proposed_action": {
+      "$ref": "#/$defs/proposedAction"
+    },
+    "policy_evaluation_preview": {
+      "$ref": "#/$defs/policyEvaluationPreview"
+    },
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "review_evidence": {
+      "$ref": "#/$defs/reviewEvidence"
+    },
+    "artifact_provenance": {
+      "$ref": "#/$defs/artifactProvenance"
+    },
+    "pre_v6_14_capability_foundation": {
+      "$ref": "#/$defs/preV614CapabilityFoundation"
+    },
+    "action_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "intent_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "authority_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "evidence_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "admissibility_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "risk_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "drift_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "guardrail_mapping_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "transition_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "procedural_receipt_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "lineage_summary": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "review_posture": {
+      "type": "string",
+      "enum": [
+        "ready_for_review",
+        "needs_human_review",
+        "insufficient_evidence",
+        "out_of_scope",
+        "unknown"
+      ]
+    },
+    "receipt_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "deterministic_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "non_enforcement_boundary": {
+      "$ref": "#/$defs/nonEnforcementBoundary"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "agentIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agent_id",
+        "agent_kind",
+        "agent_label",
+        "source_kind",
+        "single_agent"
+      ],
+      "properties": {
+        "agent_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "agent_kind": {
+          "type": "string",
+          "const": "single_agent"
+        },
+        "agent_label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "fixture",
+            "preview_input"
+          ]
+        },
+        "single_agent": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "capabilityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary_scope",
+        "absorbed_evidence_structure",
+        "single_agent_only",
+        "multi_agent_in_scope",
+        "github_action_implementation_in_scope",
+        "cli_behavior_change_in_scope",
+        "separate_product_claim"
+      ],
+      "properties": {
+        "boundary_scope": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "absorbed_evidence_structure": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "agent_identity",
+              "capability_boundary",
+              "authority_envelope",
+              "execution_path_snapshot",
+              "proposed_action",
+              "policy_evaluation_preview",
+              "findings",
+              "review_evidence",
+              "artifact_provenance"
+            ]
+          }
+        },
+        "single_agent_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "multi_agent_in_scope": {
+          "type": "boolean",
+          "const": false
+        },
+        "github_action_implementation_in_scope": {
+          "type": "boolean",
+          "const": false
+        },
+        "cli_behavior_change_in_scope": {
+          "type": "boolean",
+          "const": false
+        },
+        "separate_product_claim": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "authorityEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_scope",
+        "recommendation_only",
+        "approval_granted",
+        "execution_permission_granted",
+        "merge_authority",
+        "deployment_authority",
+        "blocking_effect"
+      ],
+      "properties": {
+        "authority_scope": {
+          "type": "string",
+          "const": "human_review_only"
+        },
+        "recommendation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "approval_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "execution_permission_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "merge_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "deployment_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "blocking_effect": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "executionPathSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_origin",
+        "execution_surface",
+        "runtime_execution_performed",
+        "workflow_execution_performed",
+        "github_action_wrapper_used",
+        "repo_ref",
+        "path_summary"
+      ],
+      "properties": {
+        "input_origin": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "execution_surface": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runtime_execution_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "workflow_execution_performed": {
+          "type": "boolean",
+          "const": false
+        },
+        "github_action_wrapper_used": {
+          "type": "boolean",
+          "const": false
+        },
+        "repo_ref": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "path_summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "proposedAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_kind",
+        "change_scope",
+        "in_scope",
+        "summary"
+      ],
+      "properties": {
+        "action_kind": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "change_scope": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "in_scope": {
+          "type": "boolean"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "policyCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "check_name",
+        "outcome",
+        "severity",
+        "summary"
+      ],
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "check_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "satisfied",
+            "attention_required",
+            "missing_evidence",
+            "out_of_scope",
+            "indeterminate"
+          ]
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "policyEvaluationPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluation_mode",
+        "severity_model",
+        "probability_scoring",
+        "legal_compliance_scoring",
+        "checks"
+      ],
+      "properties": {
+        "evaluation_mode": {
+          "type": "string",
+          "const": "deterministic_preview"
+        },
+        "severity_model": {
+          "type": "string",
+          "const": "severity_only"
+        },
+        "probability_scoring": {
+          "type": "boolean",
+          "const": false
+        },
+        "legal_compliance_scoring": {
+          "type": "boolean",
+          "const": false
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/policyCheck"
+          }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "category",
+        "severity",
+        "summary",
+        "related_ref"
+      ],
+      "properties": {
+        "finding_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "readiness_note",
+            "evidence_gap",
+            "ambiguity",
+            "drift_signal",
+            "guardrail_alignment",
+            "scope_boundary",
+            "provenance_note"
+          ]
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "related_ref": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "reviewEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_required",
+        "review_status",
+        "review_owner",
+        "open_issues"
+      ],
+      "properties": {
+        "review_required": {
+          "type": "boolean"
+        },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "reviewable",
+            "human_review_required",
+            "evidence_incomplete",
+            "out_of_scope",
+            "unknown"
+          ]
+        },
+        "review_owner": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "open_issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "generatedFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ai_assisted",
+        "fixture_backed",
+        "human_review_required"
+      ],
+      "properties": {
+        "ai_assisted": {
+          "type": "boolean"
+        },
+        "fixture_backed": {
+          "type": "boolean"
+        },
+        "human_review_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "artifactProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_refs",
+        "generated_flags",
+        "metadata_completeness",
+        "watermark_enforcement",
+        "content_labeling_enforcement",
+        "legal_proof"
+      ],
+      "properties": {
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "generated_flags": {
+          "$ref": "#/$defs/generatedFlags"
+        },
+        "metadata_completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "minimal"
+          ]
+        },
+        "watermark_enforcement": {
+          "type": "boolean",
+          "const": false
+        },
+        "content_labeling_enforcement": {
+          "type": "boolean",
+          "const": false
+        },
+        "legal_proof": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "reportSectionName": {
+      "type": "string",
+      "enum": [
+        "action_summary",
+        "intent_summary",
+        "authority_summary",
+        "evidence_summary",
+        "admissibility_summary",
+        "risk_summary",
+        "drift_summary",
+        "guardrail_mapping_summary",
+        "transition_summary",
+        "procedural_receipt_summary",
+        "lineage_summary",
+        "review_posture",
+        "receipt_refs",
+        "deterministic_hash",
+        "non_enforcement_boundary"
+      ]
+    },
+    "foundationEntryCore": {
+      "type": "object",
+      "required": [
+        "present",
+        "contributes_to",
+        "contract_preserved"
+      ],
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "contributes_to": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reportSectionName"
+          }
+        },
+        "contract_preserved": {
+          "type": "boolean",
+          "const": true
+        },
+        "not_applicable_reason": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "statusValidatePolicyFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "artifact_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "artifact_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "auditFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "evidence_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "snapshotFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "snapshot_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "snapshot_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "actionClassifyFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "artifact_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "artifact_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "driftFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "drift_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "drift_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "assocCorrelateFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "correlation_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "correlation_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "riskFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "risk_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "risk_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "licenseEditionGateFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "artifact_refs",
+            "contract_preserved",
+            "entitlement_changed"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "artifact_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "entitlement_changed": {
+              "type": "boolean",
+              "const": false
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "verificationChainFoundation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/foundationEntryCore"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "present",
+            "contributes_to",
+            "verifier_refs",
+            "contract_preserved"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "contributes_to": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/reportSectionName"
+              }
+            },
+            "verifier_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "contract_preserved": {
+              "type": "boolean",
+              "const": true
+            },
+            "not_applicable_reason": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "preV614CapabilityFoundation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status_validate_policy",
+        "audit",
+        "snapshot",
+        "action_classify",
+        "drift",
+        "assoc_correlate",
+        "risk",
+        "license_edition_gate",
+        "verification_chain"
+      ],
+      "properties": {
+        "status_validate_policy": {
+          "$ref": "#/$defs/statusValidatePolicyFoundation"
+        },
+        "audit": {
+          "$ref": "#/$defs/auditFoundation"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/snapshotFoundation"
+        },
+        "action_classify": {
+          "$ref": "#/$defs/actionClassifyFoundation"
+        },
+        "drift": {
+          "$ref": "#/$defs/driftFoundation"
+        },
+        "assoc_correlate": {
+          "$ref": "#/$defs/assocCorrelateFoundation"
+        },
+        "risk": {
+          "$ref": "#/$defs/riskFoundation"
+        },
+        "license_edition_gate": {
+          "$ref": "#/$defs/licenseEditionGateFoundation"
+        },
+        "verification_chain": {
+          "$ref": "#/$defs/verificationChainFoundation"
+        }
+      }
+    },
+    "nonEnforcementBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendation_only",
+        "non_executing",
+        "approval_granted",
+        "execution_permission_granted",
+        "blocking_effect",
+        "deployment_authority",
+        "merge_authority",
+        "enforcement_action",
+        "legal_compliance_claim",
+        "message"
+      ],
+      "properties": {
+        "recommendation_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "non_executing": {
+          "type": "boolean",
+          "const": true
+        },
+        "approval_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "execution_permission_granted": {
+          "type": "boolean",
+          "const": false
+        },
+        "blocking_effect": {
+          "type": "boolean",
+          "const": false
+        },
+        "deployment_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "merge_authority": {
+          "type": "boolean",
+          "const": false
+        },
+        "enforcement_action": {
+          "type": "string",
+          "const": "none"
+        },
+        "legal_compliance_claim": {
+          "type": "boolean",
+          "const": false
+        },
+        "message": {
+          "type": "string",
+          "const": "This report does not approve, reject, block, permit, commit, merge, deploy, or execute any change."
+        }
+      }
+    }
+  }
+}

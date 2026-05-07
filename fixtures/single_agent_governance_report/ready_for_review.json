@@ -1,0 +1,243 @@
+{
+  "object_type": "single_agent_governance_report_preview",
+  "object_version": "v1",
+  "report_mode": "preview",
+  "generated_at": "2026-05-07T00:00:00Z",
+  "agent_identity": {
+    "agent_id": "agent.preview.ready-001",
+    "agent_kind": "single_agent",
+    "agent_label": "local-governance-agent",
+    "source_kind": "fixture",
+    "single_agent": true
+  },
+  "capability_boundary": {
+    "boundary_scope": "single_agent_governance_report",
+    "absorbed_evidence_structure": [
+      "agent_identity",
+      "capability_boundary",
+      "authority_envelope",
+      "execution_path_snapshot",
+      "proposed_action",
+      "policy_evaluation_preview",
+      "findings",
+      "review_evidence",
+      "artifact_provenance"
+    ],
+    "single_agent_only": true,
+    "multi_agent_in_scope": false,
+    "github_action_implementation_in_scope": false,
+    "cli_behavior_change_in_scope": false,
+    "separate_product_claim": false
+  },
+  "authority_envelope": {
+    "authority_scope": "human_review_only",
+    "recommendation_only": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "merge_authority": false,
+    "deployment_authority": false,
+    "blocking_effect": false
+  },
+  "execution_path_snapshot": {
+    "input_origin": "fixture",
+    "execution_surface": "internal_preview",
+    "runtime_execution_performed": false,
+    "workflow_execution_performed": false,
+    "github_action_wrapper_used": false,
+    "repo_ref": "mindforge-guard@fixture-ready-001",
+    "path_summary": "A bounded AI-assisted repository patch is summarized for human review only."
+  },
+  "proposed_action": {
+    "action_kind": "ai_assisted_change",
+    "change_scope": "single_repository_patch",
+    "in_scope": true,
+    "summary": "Refresh deterministic governance evidence summaries for a bounded patch review."
+  },
+  "policy_evaluation_preview": {
+    "evaluation_mode": "deterministic_preview",
+    "severity_model": "severity_only",
+    "probability_scoring": false,
+    "legal_compliance_scoring": false,
+    "checks": [
+      {
+        "check_id": "check-ready-001",
+        "check_name": "scope-boundary-declared",
+        "outcome": "satisfied",
+        "severity": "low",
+        "summary": "The proposed action stays inside the declared single-agent report boundary."
+      },
+      {
+        "check_id": "check-ready-002",
+        "check_name": "receipt-refs-present",
+        "outcome": "satisfied",
+        "severity": "none",
+        "summary": "Receipt references and evidence links are present for ordinary human review."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "finding-ready-001",
+      "category": "readiness_note",
+      "severity": "low",
+      "summary": "Evidence coverage is sufficient for normal human review without implying approval.",
+      "related_ref": "receipt:ready-001"
+    }
+  ],
+  "review_evidence": {
+    "review_required": true,
+    "review_status": "reviewable",
+    "review_owner": "team/governance-review",
+    "open_issues": []
+  },
+  "artifact_provenance": {
+    "source_refs": [
+      "receipt:ready-001",
+      "source:patch-ready-001"
+    ],
+    "generated_flags": {
+      "ai_assisted": true,
+      "fixture_backed": true,
+      "human_review_required": true
+    },
+    "metadata_completeness": "complete",
+    "watermark_enforcement": false,
+    "content_labeling_enforcement": false,
+    "legal_proof": false
+  },
+  "pre_v6_14_capability_foundation": {
+    "status_validate_policy": {
+      "present": true,
+      "contributes_to": [
+        "guardrail_mapping_summary",
+        "admissibility_summary"
+      ],
+      "artifact_refs": [
+        "status:ready-001",
+        "validate-policy:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "audit": {
+      "present": true,
+      "contributes_to": [
+        "evidence_summary",
+        "risk_summary",
+        "receipt_refs"
+      ],
+      "evidence_refs": [
+        "audit:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "snapshot": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "transition_summary",
+        "deterministic_hash"
+      ],
+      "snapshot_refs": [
+        "snapshot:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "action_classify": {
+      "present": true,
+      "contributes_to": [
+        "action_summary",
+        "intent_summary",
+        "risk_summary"
+      ],
+      "artifact_refs": [
+        "classify:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "drift": {
+      "present": true,
+      "contributes_to": [
+        "drift_summary",
+        "lineage_summary"
+      ],
+      "drift_refs": [
+        "drift-status:ready-001",
+        "drift-compare:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "assoc_correlate": {
+      "present": true,
+      "contributes_to": [
+        "lineage_summary",
+        "guardrail_mapping_summary"
+      ],
+      "correlation_refs": [
+        "assoc:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "risk": {
+      "present": true,
+      "contributes_to": [
+        "risk_summary",
+        "review_posture"
+      ],
+      "risk_refs": [
+        "risk:ready-001"
+      ],
+      "contract_preserved": true
+    },
+    "license_edition_gate": {
+      "present": true,
+      "contributes_to": [
+        "non_enforcement_boundary"
+      ],
+      "artifact_refs": [
+        "license:ready-001"
+      ],
+      "contract_preserved": true,
+      "entitlement_changed": false
+    },
+    "verification_chain": {
+      "present": true,
+      "contributes_to": [
+        "deterministic_hash",
+        "receipt_refs"
+      ],
+      "verifier_refs": [
+        "verify:ready-001"
+      ],
+      "contract_preserved": true
+    }
+  },
+  "action_summary": "The artifact summarizes a bounded AI-assisted repository patch for review packaging.",
+  "intent_summary": "The change appears intended to improve deterministic governance evidence visibility without changing runtime behavior.",
+  "authority_summary": "The artifact remains review-only and does not grant merge, deployment, execution, or blocking authority.",
+  "evidence_summary": "Receipt references, source references, and deterministic preview checks are present.",
+  "admissibility_summary": "The evidence set appears sufficiently complete for ordinary human review.",
+  "risk_summary": "No high-severity risk indicator is present in the preview fixture.",
+  "drift_summary": "No meaningful scope or authority drift is detected inside the bounded preview fixture.",
+  "guardrail_mapping_summary": "The change aligns with the declared single-agent governance evidence contract.",
+  "transition_summary": "The preview indicates that the bounded review path remains intact across the proposed change.",
+  "procedural_receipt_summary": "Procedural receipt references are present and traceable by identifier.",
+  "lineage_summary": "The fixture preserves a bounded lineage from AI-assisted input to governance-ready evidence summary.",
+  "review_posture": "ready_for_review",
+  "receipt_refs": [
+    "receipt:ready-001",
+    "receipt:ready-lineage-001"
+  ],
+  "deterministic_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "non_enforcement_boundary": {
+    "recommendation_only": true,
+    "non_executing": true,
+    "approval_granted": false,
+    "execution_permission_granted": false,
+    "blocking_effect": false,
+    "deployment_authority": false,
+    "merge_authority": false,
+    "enforcement_action": "none",
+    "legal_compliance_claim": false,
+    "message": "This report does not approve, reject, block, permit, commit, merge, deploy, or execute any change."
+  }
+}
