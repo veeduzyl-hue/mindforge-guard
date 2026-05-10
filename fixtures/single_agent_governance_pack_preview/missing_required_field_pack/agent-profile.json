@@ -1,0 +1,12 @@
+{
+  "agent_id": "agent.hr-self-service-003",
+  "agent_name": "hr-self-service-agent",
+  "agent_type": "single_agent",
+  "business_owner": "hr-operations",
+  "technical_owner": "platform-automation",
+  "review_owner": "governance-review",
+  "intended_users": [
+    "hr-operators"
+  ],
+  "operating_context": "Synthetic preview pack with one required field missing."
+}

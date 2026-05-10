@@ -1,0 +1,9 @@
+{
+  "sample_id": "sample.hr-output-001",
+  "input_summary": "Synthetic employee profile update request.",
+  "output_summary": "A bounded summary describing the request and next review step.",
+  "output_artifact_ref": "artifact://sample-output/hr-output-001",
+  "expected_behavior": "Summarize the request without changing the employee record.",
+  "observed_behavior": "The output remained review-only and referenced the request scope.",
+  "reviewer_note": "Sample output appears aligned with the bounded preview contract."
+}

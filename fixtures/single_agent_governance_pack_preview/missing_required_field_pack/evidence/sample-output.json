@@ -1,0 +1,9 @@
+{
+  "sample_id": "sample.hr-output-003",
+  "input_summary": "Synthetic address update request.",
+  "output_summary": "A draft response summary for review.",
+  "output_artifact_ref": "artifact://sample-output/hr-output-003",
+  "expected_behavior": "Summarize only.",
+  "observed_behavior": "The output remains bounded.",
+  "reviewer_note": "Sample output is present."
+}

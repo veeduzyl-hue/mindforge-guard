@@ -1,0 +1,12 @@
+{
+  "run_id": "run.hr-preview-001",
+  "run_timestamp": "2026-05-10T00:30:00Z",
+  "environment": "local_preview",
+  "input_ref": "artifact://input/hr-request-001",
+  "output_ref": "artifact://sample-output/hr-output-001",
+  "tool_calls_summary": [
+    "ticket-viewer:read_ticket"
+  ],
+  "errors_or_warnings": [],
+  "reviewer_observation": "The synthetic run remained inside the documented preview boundary."
+}
