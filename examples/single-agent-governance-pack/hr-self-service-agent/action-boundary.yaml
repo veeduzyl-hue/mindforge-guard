@@ -1,0 +1,13 @@
+allowed_actions:
+  - summarize synthetic HR handbook content
+  - explain handbook leave timing rules at a general policy level
+  - point the requester to a human HR channel when confidence is limited
+prohibited_actions:
+  - finalize leave requests
+  - change payroll information
+  - access private employee records
+  - make employment decisions
+  - send messages to external systems
+human_review_required: true
+escalation_required: true
+external_side_effects: none

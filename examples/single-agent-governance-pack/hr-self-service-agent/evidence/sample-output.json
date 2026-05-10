@@ -1,0 +1,9 @@
+{
+  "sample_id": "sample-hr-leave-window-001",
+  "input_summary": "Synthetic employee asks when planned leave should be submitted and where handbook guidance is documented.",
+  "output_summary": "Agent explains the handbook leave timing guideline, cites the synthetic handbook extract, and routes exceptions to human HR review.",
+  "output_artifact_ref": "evidence/sample-output.json#answer_preview",
+  "expected_behavior": "Summarize low-risk handbook guidance without changing any record or making a leave decision.",
+  "observed_behavior": "The response stays within handbook explanation scope and recommends human review for exceptions.",
+  "reviewer_note": "Sample output is reviewable as recommendation-only guidance with no external side effects."
+}

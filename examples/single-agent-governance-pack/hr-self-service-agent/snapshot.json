@@ -1,0 +1,12 @@
+{
+  "snapshot_id": "snapshot-hr-pack-001",
+  "version": "v1",
+  "commit_sha": "7f84db3",
+  "environment": "local_preview",
+  "generated_at": "2026-05-11T09:20:00Z",
+  "artifact_hashes": [
+    "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  ],
+  "comparison_baseline": null
+}

@@ -1,0 +1,10 @@
+{
+  "pack_id": "hr-self-service-agent-pack",
+  "pack_version": "v1",
+  "pack_type": "single_agent_governance_pack_preview",
+  "created_at": "2026-05-11T09:00:00Z",
+  "updated_at": "2026-05-11T09:00:00Z",
+  "owner": "technical_owner_people_platform",
+  "source_repo": "synthetic/hr-self-service-agent-example",
+  "report_target": "single_agent_governance_report_preview_v1"
+}
