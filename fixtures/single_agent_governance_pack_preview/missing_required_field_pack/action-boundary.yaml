@@ -1,0 +1,11 @@
+{
+  "allowed_actions": [
+    "summarize_request"
+  ],
+  "prohibited_actions": [
+    "modify_hr_record"
+  ],
+  "human_review_required": true,
+  "escalation_required": true,
+  "external_side_effects": "none"
+}

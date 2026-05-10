@@ -1,0 +1,9 @@
+{
+  "pack_id": "pack.missing-field-001",
+  "pack_version": "v1",
+  "pack_type": "single_agent_governance_pack_preview",
+  "created_at": "2026-05-10T02:00:00Z",
+  "updated_at": "2026-05-10T02:00:00Z",
+  "owner": "team/hr-governance",
+  "source_repo": "mindforge-guard@fixture-missing-field-001"
+}

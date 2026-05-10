@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_pack_preview/v1/tools.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Pack Preview Tools",
+  "description": "Preview-only tools schema candidate for the single-agent governance evidence pack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tools"
+  ],
+  "properties": {
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tool_id",
+          "tool_name",
+          "tool_type",
+          "permitted_operations",
+          "prohibited_operations",
+          "requires_human_approval",
+          "side_effect_level"
+        ],
+        "properties": {
+          "tool_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tool_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tool_type": {
+            "type": "string",
+            "enum": [
+              "api",
+              "internal_service",
+              "knowledge_lookup",
+              "ticketing"
+            ]
+          },
+          "permitted_operations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "prohibited_operations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "requires_human_approval": {
+            "type": "boolean"
+          },
+          "side_effect_level": {
+            "type": "string",
+            "enum": [
+              "none",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "data_sources": [
+    {
+      "data_source_id": "ds.hr-requests",
+      "data_source_name": "HR Request Queue",
+      "data_category": "hr_request",
+      "access_mode": "read_only",
+      "sensitivity_level": "moderate",
+      "retention_note": "Synthetic preview data only.",
+      "usage_purpose": "Provide request context."
+    }
+  ]
+}

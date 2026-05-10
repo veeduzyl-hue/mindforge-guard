@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_pack_preview/v1/sample-output.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Pack Preview Sample Output",
+  "description": "Preview-only sample output schema candidate for the single-agent governance evidence pack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sample_id",
+    "input_summary",
+    "output_summary",
+    "output_artifact_ref",
+    "expected_behavior",
+    "observed_behavior",
+    "reviewer_note"
+  ],
+  "properties": {
+    "sample_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_artifact_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_behavior": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_behavior": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

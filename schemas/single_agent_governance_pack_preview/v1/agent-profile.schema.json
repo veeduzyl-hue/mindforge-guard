@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_pack_preview/v1/agent-profile.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Pack Preview Agent Profile",
+  "description": "Preview-only agent profile schema candidate for the single-agent governance evidence pack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agent_id",
+    "agent_name",
+    "agent_type",
+    "business_owner",
+    "technical_owner",
+    "review_owner",
+    "intended_users",
+    "operating_context"
+  ],
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_type": {
+      "type": "string",
+      "enum": [
+        "single_agent"
+      ]
+    },
+    "business_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "technical_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intended_users": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "operating_context": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

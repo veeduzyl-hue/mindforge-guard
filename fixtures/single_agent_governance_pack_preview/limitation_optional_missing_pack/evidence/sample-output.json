@@ -1,0 +1,9 @@
+{
+  "sample_id": "sample.hr-output-004",
+  "input_summary": "Synthetic benefits question.",
+  "output_summary": "A bounded review summary for human follow-up.",
+  "output_artifact_ref": "artifact://sample-output/hr-output-004",
+  "expected_behavior": "Summarize only.",
+  "observed_behavior": "The output remains bounded.",
+  "reviewer_note": "The pack remains valid even with recommended files omitted."
+}

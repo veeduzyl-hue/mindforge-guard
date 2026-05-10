@@ -1,0 +1,9 @@
+{
+  "sample_id": "sample.hr-output-002",
+  "input_summary": "Synthetic leave-balance question.",
+  "output_summary": "A draft response summary for review.",
+  "output_artifact_ref": "artifact://sample-output/hr-output-002",
+  "expected_behavior": "Summarize only.",
+  "observed_behavior": "The output remains bounded.",
+  "reviewer_note": "Sample output is present."
+}

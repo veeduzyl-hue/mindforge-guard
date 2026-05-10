@@ -1,0 +1,17 @@
+{
+  "tools": [
+    {
+      "tool_id": "tool.ticket-viewer",
+      "tool_name": "ticket-viewer",
+      "tool_type": "ticketing",
+      "permitted_operations": [
+        "read_ticket"
+      ],
+      "prohibited_operations": [
+        "resolve_ticket"
+      ],
+      "requires_human_approval": true,
+      "side_effect_level": "none"
+    }
+  ]
+}

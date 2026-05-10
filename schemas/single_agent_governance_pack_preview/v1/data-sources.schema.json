@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_pack_preview/v1/data-sources.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Pack Preview Data Sources",
+  "description": "Preview-only data sources schema candidate for the single-agent governance evidence pack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "data_sources"
+  ],
+  "properties": {
+    "data_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data_source_id",
+          "data_source_name",
+          "data_category",
+          "access_mode",
+          "sensitivity_level",
+          "retention_note",
+          "usage_purpose"
+        ],
+        "properties": {
+          "data_source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "data_source_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "data_category": {
+            "type": "string",
+            "enum": [
+              "hr_request",
+              "knowledge_base",
+              "ticket_metadata",
+              "test_fixture"
+            ]
+          },
+          "access_mode": {
+            "type": "string",
+            "enum": [
+              "read_only",
+              "export",
+              "manual_upload"
+            ]
+          },
+          "sensitivity_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "moderate",
+              "high"
+            ]
+          },
+          "retention_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "usage_purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

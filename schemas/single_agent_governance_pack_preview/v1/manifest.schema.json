@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/single_agent_governance_pack_preview/v1/manifest.schema.json",
+  "title": "MindForge Guard v7.0 Single-Agent Governance Pack Preview Manifest",
+  "description": "Preview-only pack manifest schema candidate for the single-agent governance evidence pack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pack_id",
+    "pack_version",
+    "pack_type",
+    "created_at",
+    "updated_at",
+    "owner",
+    "source_repo",
+    "report_target"
+  ],
+  "properties": {
+    "pack_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pack_version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "pack_type": {
+      "type": "string",
+      "const": "single_agent_governance_pack_preview"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "report_target": {
+      "type": "string",
+      "const": "single_agent_governance_report_preview_v1"
+    }
+  }
+}
