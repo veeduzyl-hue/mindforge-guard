@@ -1,0 +1,12 @@
+{
+  "agent_id": "limitation-agent",
+  "agent_name": "Limitation Agent",
+  "agent_type": "single_agent",
+  "business_owner": "business_owner_hr_ops",
+  "technical_owner": "technical_owner_people_platform",
+  "review_owner": "governance_reviewer_ai_risk",
+  "intended_users": [
+    "hr_ops_reviewers"
+  ],
+  "operating_context": "Synthetic pack missing recommended files only."
+}

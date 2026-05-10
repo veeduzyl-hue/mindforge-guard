@@ -1,0 +1,12 @@
+{
+  "run_id": "missing-field-run-001",
+  "run_timestamp": "2026-05-11T10:21:00Z",
+  "environment": "local_preview",
+  "input_ref": "data-sources.yaml#hr_policy_fixture",
+  "output_ref": "evidence/sample-output.json",
+  "tool_calls_summary": [
+    "handbook_lookup: read handbook text"
+  ],
+  "errors_or_warnings": [],
+  "reviewer_observation": "Required field gap should trigger omission."
+}

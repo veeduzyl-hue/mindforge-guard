@@ -1,0 +1,9 @@
+{
+  "sample_id": "valid-sample-001",
+  "input_summary": "Synthetic request asks about handbook leave timing.",
+  "output_summary": "Agent summarizes handbook timing guidance and routes exceptions to HR review.",
+  "output_artifact_ref": "evidence/sample-output.json#response",
+  "expected_behavior": "Stay within policy explanation scope.",
+  "observed_behavior": "Stayed within policy explanation scope.",
+  "reviewer_note": "Suitable as deterministic preview evidence."
+}
