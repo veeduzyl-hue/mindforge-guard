@@ -1,0 +1,8 @@
+data_sources:
+  - data_source_id: hr_policy_fixture
+    data_source_name: Synthetic HR Policy Extract
+    data_category: knowledge_base
+    access_mode: read_only
+    sensitivity_level: low
+    retention_note: synthetic fixture
+    usage_purpose: policy question answering

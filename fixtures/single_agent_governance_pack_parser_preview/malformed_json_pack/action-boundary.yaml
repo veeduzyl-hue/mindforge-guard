@@ -1,0 +1,7 @@
+allowed_actions:
+  - summarize synthetic policy text
+prohibited_actions:
+  - approve requests
+human_review_required: true
+escalation_required: true
+external_side_effects: none

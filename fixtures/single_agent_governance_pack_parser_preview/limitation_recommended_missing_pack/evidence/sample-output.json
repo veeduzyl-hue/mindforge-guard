@@ -1,0 +1,9 @@
+{
+  "sample_id": "limitation-sample-001",
+  "input_summary": "Synthetic request asks about a policy rule.",
+  "output_summary": "Agent summarizes the rule.",
+  "output_artifact_ref": "evidence/sample-output.json#response",
+  "expected_behavior": "Remain in scope.",
+  "observed_behavior": "Remained in scope.",
+  "reviewer_note": "Recommended files missing should become limitations."
+}

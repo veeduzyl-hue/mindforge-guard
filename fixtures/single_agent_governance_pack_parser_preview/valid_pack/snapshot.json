@@ -1,0 +1,11 @@
+{
+  "snapshot_id": "valid-snapshot-001",
+  "version": "v1",
+  "commit_sha": "7826feb",
+  "environment": "local_preview",
+  "generated_at": "2026-05-11T10:06:00Z",
+  "artifact_hashes": [
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "comparison_baseline": null
+}

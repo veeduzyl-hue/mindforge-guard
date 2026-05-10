@@ -1,0 +1,9 @@
+allowed_actions:
+  - summarize synthetic policy text
+  - route exceptions to a human reviewer
+prohibited_actions:
+  - approve leave
+  - change payroll
+human_review_required: true
+escalation_required: true
+external_side_effects: none

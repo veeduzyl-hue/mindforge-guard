@@ -1,0 +1,11 @@
+{
+  "agent_id": "missing-field-agent",
+  "agent_name": "Missing Field Agent",
+  "agent_type": "single_agent",
+  "technical_owner": "technical_owner_people_platform",
+  "review_owner": "governance_reviewer_ai_risk",
+  "intended_users": [
+    "hr_ops_reviewers"
+  ],
+  "operating_context": "Synthetic pack missing one required field."
+}

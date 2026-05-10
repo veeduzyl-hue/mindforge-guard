@@ -1,0 +1,10 @@
+tools:
+  - tool_id: handbook_lookup
+    tool_name: Handbook Lookup
+    tool_type: knowledge_lookup
+    permitted_operations:
+      - read handbook text
+    prohibited_operations:
+      - write handbook text
+    requires_human_approval: false
+    side_effect_level: none

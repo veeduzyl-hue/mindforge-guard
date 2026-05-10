@@ -1,0 +1,12 @@
+{
+  "agent_id": "parser-preview-agent",
+  "agent_name": "Parser Preview Agent",
+  "agent_type": "single_agent",
+  "business_owner": "business_owner_hr_ops",
+  "technical_owner": "technical_owner_people_platform",
+  "review_owner": "governance_reviewer_ai_risk",
+  "intended_users": [
+    "hr_ops_reviewers"
+  ],
+  "operating_context": "Synthetic preview agent for deterministic pack parser validation."
+}

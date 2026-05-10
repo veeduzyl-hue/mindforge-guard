@@ -1,0 +1,11 @@
+{
+  "snapshot_id": "missing-field-snapshot-001",
+  "version": "v1",
+  "commit_sha": "7826feb",
+  "environment": "local_preview",
+  "generated_at": "2026-05-11T10:22:00Z",
+  "artifact_hashes": [
+    "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  ],
+  "comparison_baseline": null
+}
