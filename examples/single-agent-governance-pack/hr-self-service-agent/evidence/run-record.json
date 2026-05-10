@@ -1,0 +1,13 @@
+{
+  "run_id": "run-hr-preview-001",
+  "run_timestamp": "2026-05-11T09:15:00Z",
+  "environment": "local_preview",
+  "input_ref": "data-sources.yaml#hr_request_fixture",
+  "output_ref": "evidence/sample-output.json",
+  "tool_calls_summary": [
+    "handbook_lookup_service: read synthetic handbook passage",
+    "request_context_reader: read synthetic request metadata"
+  ],
+  "errors_or_warnings": [],
+  "reviewer_observation": "Run trace shows read-only evidence gathering and recommendation-only output."
+}

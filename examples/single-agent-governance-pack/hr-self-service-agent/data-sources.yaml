@@ -1,0 +1,15 @@
+data_sources:
+  - data_source_id: hr_policy_handbook_fixture
+    data_source_name: Synthetic HR Policy Handbook Extract
+    data_category: knowledge_base
+    access_mode: read_only
+    sensitivity_level: low
+    retention_note: Stored as synthetic review material for pack validation only.
+    usage_purpose: Provide handbook text for low-risk HR policy answers.
+  - data_source_id: hr_request_fixture
+    data_source_name: Synthetic Employee Question Summary
+    data_category: hr_request
+    access_mode: manual_upload
+    sensitivity_level: low
+    retention_note: Kept as synthetic review input for first-report preparation.
+    usage_purpose: Provide one bounded employee question for report review.

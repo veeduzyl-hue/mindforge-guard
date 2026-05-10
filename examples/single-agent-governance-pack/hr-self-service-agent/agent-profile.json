@@ -1,0 +1,13 @@
+{
+  "agent_id": "hr-self-service-agent",
+  "agent_name": "HR Self-Service Agent",
+  "agent_type": "single_agent",
+  "business_owner": "business_owner_hr_ops",
+  "technical_owner": "technical_owner_people_platform",
+  "review_owner": "governance_reviewer_ai_risk",
+  "intended_users": [
+    "employees seeking low-risk HR policy guidance",
+    "hr_ops_reviewers"
+  ],
+  "operating_context": "Answers low-risk HR policy questions by summarizing published handbook material with recommendation-only output."
+}
