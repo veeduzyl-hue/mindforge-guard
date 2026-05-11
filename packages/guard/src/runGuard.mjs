@@ -17,6 +17,7 @@ import { handleAdmissibilitySubcommand } from "./cli/admissibility.mjs";
 import { handleAuthoritySubcommand } from "./cli/authority.mjs";
 import { handleGuardrailSubcommand } from "./cli/guardrail.mjs";
 import { handleGroundingSubcommand } from "./cli/grounding.mjs";
+import { handlePackSubcommand } from "./cli/pack.mjs";
 import { handleSingleAgentGovernanceReportSubcommand } from "./cli/single_agent_governance_report.mjs";
 import { handleTransitionSubcommand } from "./cli/transition.mjs";
 import {
@@ -526,6 +527,9 @@ export async function runGuard({ argv }) {
   }
   if (argv && argv[0] === "grounding") {
     return handleGroundingSubcommand(argv.slice(1));
+  }
+  if (argv && argv[0] === "pack") {
+    return handlePackSubcommand(argv.slice(1));
   }
   if (argv && argv[0] === "report") {
     return handleSingleAgentGovernanceReportSubcommand(argv.slice(1));
