@@ -105,10 +105,37 @@ New users can start with:
 - [First 10 Minutes With Guard](./docs/first-10-minutes.md)
 - [Safety Boundary](./docs/trust/safety-boundary.md)
 - [Choose the Right Guard Edition](./docs/product/current/edition-value-map.md)
+- [v7.0 First Report Candidate](./docs/product/current/v7_0_first_report.md)
 - [Current Product Demos](./docs/demos/current/README.md)
 - [Trust FAQ](./docs/product/current/trust-faq.md)
 
 ---
+
+## v7.0 Candidate Preview Path
+
+Current commercial release baseline remains `v6.13.1` unless separately approved.
+
+`v7.0` has passed internal E2E acceptance and commercial release gate review.
+This README section is a candidate entry point, not a public launch.
+
+The `v7.0` preview report path is:
+
+- Evidence Pack
+- Pack Parser Preview
+- CLI Pack Validate Preview
+- Report Single-Agent Preview
+- Human Review Reading View
+
+User-facing preview commands:
+
+```bash
+guard pack validate --pack <path> --preview --json
+guard report single-agent --pack <path> --preview --json
+```
+
+Use the synthetic HR self-service example Evidence Pack at `examples/single-agent-governance-pack/hr-self-service-agent/` to understand the preview path and the resulting evidence-backed report.
+
+For the buyer-readable candidate walkthrough, see [v7.0 First Report Candidate](./docs/product/current/v7_0_first_report.md).
 
 ## Quick start
 
