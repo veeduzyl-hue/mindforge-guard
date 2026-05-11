@@ -18,7 +18,7 @@ import { handleAuthoritySubcommand } from "./cli/authority.mjs";
 import { handleGuardrailSubcommand } from "./cli/guardrail.mjs";
 import { handleGroundingSubcommand } from "./cli/grounding.mjs";
 import { handlePackSubcommand } from "./cli/pack.mjs";
-import { handleSingleAgentGovernanceReportSubcommand } from "./cli/single_agent_governance_report.mjs";
+import { handleReportSubcommand } from "./cli/report.mjs";
 import { handleTransitionSubcommand } from "./cli/transition.mjs";
 import {
   readLicense,
@@ -532,7 +532,7 @@ export async function runGuard({ argv }) {
     return handlePackSubcommand(argv.slice(1));
   }
   if (argv && argv[0] === "report") {
-    return handleSingleAgentGovernanceReportSubcommand(argv.slice(1));
+    return handleReportSubcommand(argv.slice(1));
   }
   if (argv && argv[0] === "transition") {
     return handleTransitionSubcommand(argv.slice(1));
