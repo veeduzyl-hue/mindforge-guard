@@ -73,6 +73,39 @@ This layer helps reviewers understand what happened, what evidence exists, and w
 
 This layer helps reviewers inspect risk signals, drift signals, evidence maturity signals, and missing evidence that still needs human follow-up.
 
+## Report Experience By Edition
+
+Across all editions, this report path remains recommendation-only, non-executing, non-control-plane, human-review-oriented, and does not approve, block, deploy, certify, or control execution.
+
+### Community
+
+- current-state governance report preview for a single reviewable pack/run
+- Evidence Pack
+- Authority / Permission Boundary
+- Execution / Behavior Evidence
+- Missing Evidence / Limitations
+- Human Review Next Step
+- It does not promise timeline, compare, or correlate views.
+
+### Pro
+
+- everything in Community
+- trend / timeline-oriented reading where released commands support it
+- It does not promise deep correlation by default.
+
+### Pro+
+
+- everything in Pro
+- compare / correlate / deeper signals where released commands support them
+- It remains a human-review reading surface, not an approval, blocking, enforcement, or deploy go/no-go output.
+
+### Enterprise
+
+- same runtime entitlement as Pro+ in the current commercial boundary
+- procurement / organizational adoption / governance packet framing around the same report path
+- no extra runtime authority
+- not a control plane
+
 ## What Users Should Expect From v7.0
 
 `v7.0` introduces a preview report path that can:
