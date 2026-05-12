@@ -1,8 +1,8 @@
 {
   "name": "@veeduzyl/mindforge-guard",
-  "version": "6.13.1",
+  "version": "7.0.0",
   "description": "MindForge Guard - AI coding governance layer (CLI)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": false,
   "type": "module",
   "bin": {
