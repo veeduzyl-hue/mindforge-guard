@@ -10,6 +10,15 @@ MindForge Guard is a deterministic governance evidence layer for single-agent AI
 npm install -g @veeduzyl/mindforge-guard@7.0.1
 ```
 
+## Verify The CLI
+
+```bash
+guard --version
+guard --help
+```
+
+Confirm the packaged CLI entrypoint is available before validating the Evidence Pack.
+
 ## Validate The Evidence Pack
 
 Use the sample single-agent Evidence Pack for a first local walkthrough:

@@ -12,6 +12,11 @@ MindForge Guard helps teams make AI-assisted work reviewable before it becomes t
 npm install -g @veeduzyl/mindforge-guard@7.0.1
 ```
 
+```bash
+guard --version
+guard --help
+```
+
 ## Generate Your First Governance Report
 
 Use the sample single-agent Evidence Pack to validate inputs and generate a deterministic report locally:

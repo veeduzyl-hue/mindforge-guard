@@ -13,9 +13,9 @@ const workflowDocs = [
     href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md`,
   },
   {
-    title: "Download to first report UX",
-    body: "Review the path from first entry point to local evidence review without turning version numbers or one sample workflow into the main story.",
-    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md`,
+    title: "First governance report guide",
+    body: "Use the current public guide for install, first-run validation, report generation, and human review reading flow.",
+    href: `${repoDocsHref}/blob/main/docs/product/current/first-governance-report.md`,
   },
   {
     title: "What Guard does not do",

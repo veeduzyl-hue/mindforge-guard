@@ -30,8 +30,8 @@ const trustDemoHelperCards = [
         href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/first-governance-report.md",
       },
       {
-        label: "Download to first report UX",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md",
+        label: "Product boundary",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/README.md#product-boundary",
       },
     ],
   },

@@ -8,6 +8,8 @@ const REQUIRED_ROOT_README_PHRASES = [
   "> Not an approval system. Not a blocker. Not a control plane.",
   "## Install",
   "npm install -g @veeduzyl/mindforge-guard@7.0.1",
+  "guard --version",
+  "guard --help",
   "authority boundaries",
   "execution evidence",
   "missing evidence",
@@ -16,6 +18,10 @@ const REQUIRED_ROOT_README_PHRASES = [
 
 const REQUIRED_PUBLIC_GUIDE_PHRASES = [
   "MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows.",
+  "## Verify The CLI",
+  "guard --version",
+  "guard --help",
+  "Confirm the packaged CLI entrypoint is available before validating the Evidence Pack.",
   "guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
   "guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
   "Guard produces review evidence. The final human review decision remains outside Guard.",
@@ -38,6 +44,8 @@ const FORBIDDEN_PUBLIC_SURFACE_PHRASES = [
   "Not a public launch",
   "current commercial baseline remains v6.13.1",
   "current commercial release baseline remains",
+  "v7_0_download_to_first_report_ux.md",
+  "v7_0_license_hub_copy_candidate.md",
 ];
 
 const ALLOWED_CHANGED_PATHS = new Set([
@@ -201,6 +209,7 @@ function main() {
   const licenseHubDocs = readText(path.join(repoRoot, "apps/license-hub/app/docs/page.tsx"));
 
   assertContainsAll(rootReadme, REQUIRED_ROOT_README_PHRASES, "README.md");
+  assertContainsAll(packageReadme, ["guard --version", "guard --help"], "packages/guard/README.md");
   assertContainsAll(firstGuide, REQUIRED_PUBLIC_GUIDE_PHRASES, "first-governance-report.md");
   assertContainsAll(supersededGuide, REQUIRED_SUPERSEDED_POINTER_PHRASES, "v7_0_first_report.md");
   assertContainsAll(
@@ -216,6 +225,16 @@ function main() {
   expect(
     licenseHubDocs.includes("docs/product/current/first-governance-report.md"),
     "License Hub docs must link to the current first governance report guide",
+  );
+  expect(
+    !licenseHubHome.includes("v7_0_download_to_first_report_ux.md") &&
+      !licenseHubDocs.includes("v7_0_download_to_first_report_ux.md"),
+    "License Hub public surfaces must not link to v7_0_download_to_first_report_ux.md",
+  );
+  expect(
+    !licenseHubHome.includes("v7_0_license_hub_copy_candidate.md") &&
+      !licenseHubDocs.includes("v7_0_license_hub_copy_candidate.md"),
+    "License Hub public surfaces must not link to v7_0_license_hub_copy_candidate.md",
   );
 
   assertForbiddenClaimsAbsent(
