@@ -14,6 +14,36 @@ const REQUIRED_ROOT_README_PHRASES = [
   "execution evidence",
   "missing evidence",
   "risk/drift signals",
+  "## Editions",
+  "MindForge Guard editions differ by governance evidence depth, not runtime authority.",
+  "Community | See current governance evidence for one local single-agent workflow",
+  "Pro | Track governance signals over time for AI-assisted work",
+  "Pro+ | Compare evidence states and uncover deeper governance signals",
+  "Enterprise | Standardize procurement, rollout, and review packets around the same bounded runtime posture",
+  "Commercial entitlement aligned with Pro+. No hosted control plane. No extra runtime authority.",
+  "Editions do not add approval authority.",
+  "Editions do not add blocking authority.",
+  "## Demo Paths",
+  "Use the current demos to understand how Guard's evidence layer appears in different review situations.",
+  "Current product demos",
+  "Recommended demo order:",
+  "Demos are explanatory paths. They do not approve, block, deploy, certify, or control execution.",
+  "## Common CLI Surface",
+  "guard status",
+  "guard validate-policy",
+  "guard audit . --staged",
+  "guard snapshot .",
+  "guard action classify --text \"write file README.md\"",
+  "guard drift status --format json",
+  "guard drift timeline",
+  "guard drift compare",
+  "guard assoc correlate",
+  "guard license verify --file downloaded-license.json",
+  "guard license install --file downloaded-license.json",
+  "guard license status",
+  "guard license show",
+  "guard license remove",
+  "These commands remain local CLI surfaces. Guard produces review evidence and does not approve, block, deploy, certify, or control execution.",
 ];
 
 const REQUIRED_PUBLIC_GUIDE_PHRASES = [
@@ -169,14 +199,27 @@ function assertForbiddenClaimsAbsent(text) {
 }
 
 function assertNoApprovalOrBlockingClaims(text) {
-  expect(!/\bapproval granted\b/i.test(text), "public surface must not claim approval granted");
-  expect(!/\bapproves changes\b/i.test(text), "public surface must not claim approves changes");
-  expect(!/\bblocking enforcement\b/i.test(text), "public surface must not claim blocking enforcement");
-  expect(!/\bblocks unsafe changes\b/i.test(text), "public surface must not claim blocks unsafe changes");
-  expect(!/\bsafe[- ]to[- ]deploy\b/i.test(text), "public surface must not claim safe to deploy");
-  expect(!/\blegal compliance guarantee(d)?\b/i.test(text), "public surface must not claim legal compliance guarantee");
-  expect(!/\bcompliance certification\b/i.test(text), "public surface must not claim compliance certification");
-  expect(!/\bmaturity certification\b/i.test(text), "public surface must not claim maturity certification");
+  const checks = [
+    { claim: "approval granted", message: "public surface must not claim approval granted" },
+    { claim: "approves changes", message: "public surface must not claim approves changes" },
+    { claim: "blocking enforcement", message: "public surface must not claim blocking enforcement" },
+    { claim: "blocks unsafe changes", message: "public surface must not claim blocks unsafe changes" },
+    { claim: "safe to deploy", message: "public surface must not claim safe to deploy" },
+    { claim: "legal compliance guarantee", message: "public surface must not claim legal compliance guarantee" },
+    { claim: "legal compliance guaranteed", message: "public surface must not claim legal compliance guarantee" },
+    { claim: "compliance certification", message: "public surface must not claim compliance certification" },
+    { claim: "maturity certification", message: "public surface must not claim maturity certification" },
+  ];
+
+  for (const { claim, message } of checks) {
+    const escaped = claim.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[- ]");
+    const positivePattern = new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, "i");
+    const negatedPattern = new RegExp(`(^|[^a-z])(no|not|does not|do not)\\s+([a-z]+\\s+){0,6}${escaped}([^a-z]|$)`, "i");
+
+    if (positivePattern.test(text) && !negatedPattern.test(text)) {
+      fail(message);
+    }
+  }
 }
 
 function assertAllowedChangedPaths(repoRoot) {
