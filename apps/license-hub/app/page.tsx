@@ -51,6 +51,21 @@ const trustDemoHelperCards = [
   },
 ] as const;
 
+const v7FirstReportLinks = [
+  {
+    label: "v7.0 First Report Candidate doc",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
+  },
+  {
+    label: "HR example Evidence Pack",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent",
+  },
+  {
+    label: "GitHub Release v7.0.0",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0",
+  },
+] as const;
+
 export default function HomePage() {
   const editions = getPricingEditions();
   const config = getPaddleClientBootConfig();
@@ -141,6 +156,27 @@ export default function HomePage() {
             cancelUrl={config.cancelUrl}
             editions={editions}
           />
+        </section>
+
+        <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+          <div style={{ display: "grid", gap: 6 }}>
+            <h2 style={{ margin: 0 }}>Generate your first governance report</h2>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              v7.0.0 is published. Install <code>@veeduzyl/mindforge-guard@7.0.0</code>, use the HR self-service
+              example Evidence Pack, run <code>pack validate</code>, then run <code>report single-agent</code>.
+            </p>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              Read authority, behavior evidence, and risk/drift signals for human review. Guard remains
+              recommendation-only, non-executing, and non-control-plane.
+            </p>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {v7FirstReportLinks.map((link) => (
+              <a key={link.label} href={link.href} style={cardButtonStyle}>
+                {link.label}
+              </a>
+            ))}
+          </div>
         </section>
 
         <section style={{ ...panelStyle, display: "grid", gap: 14 }}>

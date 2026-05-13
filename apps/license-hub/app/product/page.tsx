@@ -34,6 +34,13 @@ const trustDemoPackDocs = [
   },
 ] as const;
 
+const v7ReportSteps = [
+  "Install @veeduzyl/mindforge-guard@7.0.0",
+  "Use the HR self-service example Evidence Pack",
+  "Run pack validate and report single-agent",
+  "Read authority, behavior evidence, and risk/drift signals",
+] as const;
+
 export default function ProductPage() {
   return (
     <SiteChrome
@@ -80,6 +87,29 @@ export default function ProductPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+        <div style={{ display: "grid", gap: 8 }}>
+          <h2 style={{ margin: 0 }}>From Evidence Pack to Governance Report</h2>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            v7.0.0 is published with a First Governance Report in 10 Minutes path for local, deterministic review.
+            The report experience by edition remains recommendation-only, non-executing, non-control-plane, and
+            human-review-oriented.
+          </p>
+        </div>
+        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+          {v7ReportSteps.map((step) => (
+            <div key={step} style={{ padding: 14, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
+              <strong>{step}</strong>
+            </div>
+          ))}
+        </div>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          Community previews current-state reports; Pro adds timeline-oriented reading where released commands support it;
+          Pro+ adds compare, correlate, and deeper signals where released commands support them; Enterprise keeps the same
+          runtime entitlement as Pro+ with no extra runtime authority.
+        </p>
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
