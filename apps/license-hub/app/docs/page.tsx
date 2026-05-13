@@ -1,6 +1,29 @@
 import { mainSiteHref, SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
 
 const repoDocsHref = "https://github.com/veeduzyl-hue/mindforge-guard";
+const v7FirstReportDocs = [
+  {
+    title: "First Governance Report workflow",
+    body: "Install v7.0.0, use the HR self-service Evidence Pack, run pack validate, then run report single-agent.",
+    href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md`,
+  },
+  {
+    title: "Download to first report UX",
+    body: "Review the path from License Hub or mindforge.run to a first local governance report.",
+    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md`,
+  },
+  {
+    title: "Report Experience by Edition",
+    body: "Community, Pro, Pro+, and Enterprise report reading boundaries without extra runtime authority.",
+    href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md#report-experience-by-edition`,
+  },
+  {
+    title: "What Guard does not do",
+    body: "Recommendation-only, non-executing, non-control-plane, and human-review-oriented boundaries.",
+    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md#suggested-module-what-guard-does-not-do`,
+  },
+] as const;
+
 const trustDemoPackDocs = [
   {
     title: "First 10 Minutes With Guard",
@@ -85,6 +108,27 @@ export default function DocsPage() {
               Use FAQ for buyer questions, then use License Hub after purchase to view licenses and download signed JSON.
             </p>
           </article>
+        </div>
+      </section>
+
+      <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+        <div style={{ display: "grid", gap: 6 }}>
+          <h2 style={{ margin: 0 }}>v7.0.0 First Governance Report</h2>
+          <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
+            Start from the published package <code>@veeduzyl/mindforge-guard@7.0.0</code>, validate an Evidence Pack,
+            and read the report as a human-review-oriented artifact.
+          </p>
+        </div>
+        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+          {v7FirstReportDocs.map((doc) => (
+            <article key={doc.title} style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
+              <strong>{doc.title}</strong>
+              <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{doc.body}</p>
+              <a href={doc.href} style={{ ...cardButtonStyle, marginTop: "auto" }}>
+                Open doc
+              </a>
+            </article>
+          ))}
         </div>
       </section>
 
