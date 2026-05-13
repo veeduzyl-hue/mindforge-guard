@@ -12,22 +12,36 @@ import { PricingClient } from "./pricing/PricingClient";
 
 const trustDemoHelperCards = [
   {
-    title: "Start with a safe first run",
-    body: "Verify what Guard helps your team inspect before you choose a paid license.",
+    title: "Understand the evidence layer",
+    body: "See how Guard turns AI-assisted work into reviewable governance evidence before it becomes trusted.",
     links: [
       {
-        label: "First 10 Minutes",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/first-10-minutes.md",
+        label: "Single-agent positioning brief",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md",
       },
     ],
   },
   {
-    title: "Understand the boundary",
-    body: "Review what Guard does and does not do before it enters higher-risk delivery paths.",
+    title: "Review the first workflow",
+    body: "Follow the first-report path for a sample single-agent action without turning one synthetic sample into the public hero path.",
     links: [
       {
-        label: "Safety Boundary",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/trust/safety-boundary.md",
+        label: "First report workflow",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
+      },
+      {
+        label: "Download to first report UX",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md",
+      },
+    ],
+  },
+  {
+    title: "Choose review depth",
+    body: "Compare editions by governance outcome depth while preserving the same bounded runtime posture.",
+    links: [
+      {
+        label: "Choose the Right Edition",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
       },
       {
         label: "Trust FAQ",
@@ -35,38 +49,20 @@ const trustDemoHelperCards = [
       },
     ],
   },
-  {
-    title: "Choose and compare with confidence",
-    body: "Use the current edition guide and demos before you upgrade or buy for a team.",
-    links: [
-      {
-        label: "Choose the Right Edition",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
-      },
-      {
-        label: "Current Product Demos",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/demos/current/README.md",
-      },
-    ],
-  },
 ] as const;
 
-const v7FirstReportLinks = [
+const firstWorkflowLinks = [
   {
-    label: "v7.0 First Report Candidate doc",
+    label: "First report workflow",
     href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
   },
   {
-    label: "HR example Evidence Pack",
+    label: "Synthetic sample evidence bundle",
     href: "https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent",
   },
   {
-    label: "GitHub Release v7.0.1",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1",
-  },
-  {
-    label: "Historical GitHub Release v7.0.0",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0",
+    label: "Technical install and docs",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md",
   },
 ] as const;
 
@@ -164,23 +160,19 @@ export default function HomePage() {
 
         <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
           <div style={{ display: "grid", gap: 6 }}>
-            <h2 style={{ margin: 0 }}>Generate your first governance report</h2>
+            <h2 style={{ margin: 0 }}>Generate a governance report for a single-agent workflow</h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
-              Install <code>@veeduzyl/mindforge-guard@7.0.1</code>, use the HR self-service example Evidence Pack,
-              run <code>pack validate</code>, then run <code>report single-agent</code>.
+              Your license unlocks report and analytics depth, while Guard remains local-first, non-executing, and human-review-oriented.
             </p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Historical context: v7.0.0 is published as a prior release, including
-              <code> @veeduzyl/mindforge-guard@7.0.0</code>; use v7.0.1 for current installs.
+              Review your first single-agent action with evidence. Start with a sample agent action. Guard validates the evidence bundle, generates a governance report, and shows reviewers the authority boundary, execution evidence, missing evidence, and risk/drift signals.
             </p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Read authority, behavior evidence, and risk/drift signals for human review. Guard remains
-              recommendation-only, non-executing, and non-control-plane.
+              An Evidence Pack is the review bundle behind an AI-assisted action: task context, allowed scope, action trace, tool/data references, outputs, missing evidence, and reviewer notes.
             </p>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            {v7FirstReportLinks.map((link) => (
+            {firstWorkflowLinks.map((link) => (
               <a key={link.label} href={link.href} style={cardButtonStyle}>
                 {link.label}
               </a>
@@ -207,7 +199,7 @@ export default function HomePage() {
           <div style={{ display: "grid", gap: 6 }}>
             <h2 style={{ margin: 0 }}>Before you choose a license</h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              Review the current trust, setup, and demo docs before you upgrade.
+              Review the current trust, setup, and workflow docs before you upgrade.
             </p>
           </div>
           <div className="licenseHubHelperGrid">
@@ -237,6 +229,16 @@ export default function HomePage() {
               </article>
             ))}
           </div>
+        </section>
+
+        <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
+          <h2 style={{ margin: 0 }}>Secondary technical install</h2>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            The recommended install target for local validation is <code>@veeduzyl/mindforge-guard@7.0.1</code>. Keep <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public commercial headline.
+          </p>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            Guard remains recommendation-only, non-executing, non-control-plane, deterministic, and no extra runtime authority is added for Enterprise.
+          </p>
         </section>
 
         <section id="quick-help" style={{ ...panelStyle, display: "grid", gap: 16 }} aria-labelledby="faq-heading">

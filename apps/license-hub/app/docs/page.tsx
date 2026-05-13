@@ -1,30 +1,30 @@
 import { mainSiteHref, SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
 
 const repoDocsHref = "https://github.com/veeduzyl-hue/mindforge-guard";
-const v7FirstReportDocs = [
+const workflowDocs = [
   {
-    title: "First Governance Report workflow",
-    body: "Install v7.0.1, use the HR self-service Evidence Pack, run pack validate, then run report single-agent.",
+    title: "Single-agent workflow guide",
+    body: "Move from a sample agent action to a governance report that surfaces authority boundary, execution evidence, missing evidence, and risk/drift signals.",
     href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md`,
   },
   {
+    title: "Single-agent positioning brief",
+    body: "Read the commercial boundary freeze for the deterministic governance evidence layer story.",
+    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md`,
+  },
+  {
     title: "Download to first report UX",
-    body: "Review the path from License Hub or mindforge.run to a first local governance report.",
+    body: "Review the path from public entry point to local evidence review without turning version numbers or HR into the hero.",
     href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md`,
   },
   {
-    title: "Report Experience by Edition",
-    body: "Community, Pro, Pro+, and Enterprise report reading boundaries without extra runtime authority.",
-    href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md#report-experience-by-edition`,
-  },
-  {
     title: "What Guard does not do",
-    body: "Recommendation-only, non-executing, non-control-plane, and human-review-oriented boundaries.",
-    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md#suggested-module-what-guard-does-not-do`,
+    body: "See the recommendation-only, non-executing, non-control-plane boundary in buyer-readable language.",
+    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md`,
   },
 ] as const;
 
-const trustDemoPackDocs = [
+const trustDocs = [
   {
     title: "First 10 Minutes With Guard",
     body: "Start with the current first-run path before you choose a paid license.",
@@ -52,8 +52,8 @@ const trustDemoPackDocs = [
   },
 ] as const;
 
-const trustDemoCoreDocs = trustDemoPackDocs.slice(0, 3);
-const trustDemoSupportingDocs = trustDemoPackDocs.slice(3);
+const trustDocsPrimary = trustDocs.slice(0, 3);
+const trustDocsSecondary = trustDocs.slice(3);
 
 export default function DocsPage() {
   const cardButtonStyle = {
@@ -72,22 +72,16 @@ export default function DocsPage() {
     <SiteChrome
       eyebrow="Docs"
       title="MindForge Guard docs"
-      lede="Product docs explain MindForge Guard. License Hub docs explain purchase, signed license delivery, and account access."
+      lede="Use these docs to understand the deterministic governance evidence layer, the first single-agent workflow, and the commercial boundaries that keep Guard recommendation-only and human-review-oriented."
       showHeaderNote={false}
     >
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <h2 style={{ margin: 0 }}>Documentation paths</h2>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
-            <strong>Launch status</strong>
-            <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              License Hub is live. For current product and documentation context, use the repository docs and the main site.
-            </p>
-          </article>
-          <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
             <strong>Product site</strong>
             <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              Use mindforge.run for the main Guard story, positioning, and buyer-facing product explanation.
+              Use mindforge.run for the primary commercial story: Make AI-assisted work reviewable before it becomes trusted.
             </p>
             <a href={mainSiteHref} style={secondaryButtonStyle}>
               mindforge.run
@@ -96,16 +90,16 @@ export default function DocsPage() {
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
             <strong>Repository docs</strong>
             <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              Use the public repository for edition boundaries, license install guidance, and verification materials.
+              Use the public repository for workflow guides, install notes, commercial boundaries, and verification materials.
             </p>
             <a href={repoDocsHref} style={primaryButtonStyle}>
               Repo docs
             </a>
           </article>
           <article style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
-            <strong>FAQ and License Hub</strong>
+            <strong>License Hub</strong>
             <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-              Use FAQ for buyer questions, then use License Hub after purchase to view licenses and download signed JSON.
+              Use License Hub after purchase to view licenses, delivery visibility, and account surfaces without changing Guard runtime posture.
             </p>
           </article>
         </div>
@@ -113,18 +107,16 @@ export default function DocsPage() {
 
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <div style={{ display: "grid", gap: 6 }}>
-          <h2 style={{ margin: 0 }}>v7.0.1 First Governance Report</h2>
+          <h2 style={{ margin: 0 }}>Single-agent governance report docs</h2>
           <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-            Start from the published package <code>@veeduzyl/mindforge-guard@7.0.1</code>, validate an Evidence Pack,
-            and read the report as a human-review-oriented artifact.
+            An Evidence Pack is the review bundle behind an AI-assisted action: task context, allowed scope, action trace, tool/data references, outputs, missing evidence, and reviewer notes.
           </p>
           <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-            v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint. Historical
-            context: v7.0.0 First Governance Report materials and GitHub Release v7.0.0 remain available for release history.
+            These docs explain how Guard turns that evidence bundle into a governance report so reviewers can inspect authority boundary, execution evidence, missing evidence, and risk/drift signals.
           </p>
         </div>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-          {v7FirstReportDocs.map((doc) => (
+          {workflowDocs.map((doc) => (
             <article key={doc.title} style={{ display: "grid", gap: 8, padding: 16, border: "1px solid #d8ccae", borderRadius: 12 }}>
               <strong>{doc.title}</strong>
               <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>{doc.body}</p>
@@ -136,16 +128,26 @@ export default function DocsPage() {
         </div>
       </section>
 
+      <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
+        <h2 style={{ margin: 0 }}>Secondary technical install</h2>
+        <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
+          The recommended install target is <code>@veeduzyl/mindforge-guard@7.0.1</code>. Use <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public hero story.
+        </p>
+        <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
+          Historical GitHub Release references belong in release-history or technical docs, not as public commercial headline subjects.
+        </p>
+      </section>
+
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <div style={{ display: "grid", gap: 6 }}>
-          <h2 style={{ margin: 0 }}>Trust and demo pack</h2>
+          <h2 style={{ margin: 0 }}>Trust and workflow pack</h2>
           <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-            This is the canonical trust and demo entry for License Hub visitors evaluating Guard before they choose a license.
+            This is the canonical trust and workflow entry for License Hub visitors evaluating Guard before they choose a license.
           </p>
         </div>
         <div className="licenseHubTrustPack">
           <div className="licenseHubTrustPackCore">
-            {trustDemoCoreDocs.map((doc) => (
+            {trustDocsPrimary.map((doc) => (
               <article
                 key={doc.title}
                 className="licenseHubTrustCard licenseHubTrustCardTall"
@@ -168,7 +170,7 @@ export default function DocsPage() {
             ))}
           </div>
           <div className="licenseHubTrustPackSupporting">
-            {trustDemoSupportingDocs.map((doc) => (
+            {trustDocsSecondary.map((doc) => (
               <article
                 key={doc.title}
                 className="licenseHubTrustCard licenseHubTrustCardShort"
