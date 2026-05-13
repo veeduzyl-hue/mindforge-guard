@@ -4,10 +4,8 @@
 
 `mindforge.run` is externally hosted and Lovable-managed. This file is an implementation pack for the Lovable-hosted site, not a production deployment.
 
-- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
-- npm package: `@veeduzyl/mindforge-guard@7.0.1`
-- GitHub Release: `v7.0.1`
-- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
+- The public story is single-agent governance evidence, not version-led packaging.
+- The recommended install target for secondary technical docs remains `@veeduzyl/mindforge-guard@7.0.1`.
 - No repository production site file is changed by this pack.
 - No License Hub, pricing, entitlement, runtime authority, GitHub Action, or Marketplace change is made by this pack.
 
@@ -18,15 +16,19 @@ Use this pack to update the public website copy in a separate Lovable workflow.
 Copy this prompt into Lovable:
 
 ```text
-Update the existing mindforge.run homepage for MindForge Guard v7.0.1.
+Update the existing mindforge.run homepage for MindForge Guard.
 
 Keep the existing brand structure, visual rhythm, navigation, and commercial tone where possible. Avoid page bloat: add only compact modules or tighten existing sections. Do not create a dense technical documentation page.
 
-Add visible v7.0.1 recommended-install status, including the package name @veeduzyl/mindforge-guard@7.0.1 and GitHub Release v7.0.1. Add a First Governance Report CTA. Add a concise Evidence Pack to Governance Report explanation. Add a compact Report Experience by Edition section. Add clear boundary language.
+Make the hero story: "Make AI-assisted work reviewable before it becomes trusted."
+Use this subhead: "MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows. It helps teams inspect authority, evidence, state, and decision boundaries before AI-assisted work is accepted into business or engineering processes."
+Add a short boundary line: "Not an approval system. Not a blocker. Not a control plane."
 
-Use short buyer-readable copy, compact cards, and CTA blocks. Preserve the existing License Hub CTA destination already configured in the site. Add links to npm, GitHub Release v7.0.1, the v7.0 First Report doc, and the HR self-service example Evidence Pack.
+Explain the Evidence Pack as the review bundle behind an AI-assisted action. Explain the governance report as the evidence-bound review artifact. Add a first-workflow module that reviews a sample single-agent action with evidence. Include use cases for AI coding agents, support agents, operations agents, and internal workflow agents.
 
-Do not claim approval, blocking, compliance certification, maturity certification, legal compliance, or runtime control-plane authority. Do not imply pricing or entitlement changes. Do not launch or describe a GitHub Action or Marketplace listing as available.
+Keep version, npm package, and GitHub Release references in a secondary technical install/docs module. Use @veeduzyl/mindforge-guard@7.0.1 only there. If you mention a sample, describe it as a synthetic sample evidence bundle for local validation, not as the public first-report hero path.
+
+Do not claim approval, blocking, safe-to-deploy, compliance certification, legal compliance guarantee, maturity certification, or runtime control-plane authority. Do not imply pricing or entitlement changes. Enterprise must keep the same bounded runtime posture with no extra runtime authority.
 ```
 
 ## Suggested Page Modules
@@ -34,13 +36,13 @@ Do not claim approval, blocking, compliance certification, maturity certificatio
 Use these modules only where they fit the current page without overfilling it:
 
 1. Hero
-2. Why v7.0.0 matters
-3. First Governance Report in 10 Minutes
-4. From Evidence Pack to Governance Report
-5. Report Experience by Edition
-6. Boundary / What Guard does not do
-7. CTA to npm package
-8. CTA to GitHub Release
+2. Why reviewable evidence matters
+3. Use cases
+4. Review your first single-agent action with evidence
+5. From Evidence Pack to governance report
+6. Editions by customer outcome
+7. Secondary technical install
+8. Boundary / What Guard does not do
 9. CTA to License Hub
 
 ## Exact Copy Blocks
@@ -49,93 +51,116 @@ Use these modules only where they fit the current page without overfilling it:
 
 Headline:
 
-> Generate your first AI governance report from a local Evidence Pack.
+> Make AI-assisted work reviewable before it becomes trusted.
 
 Body:
 
-> MindForge Guard v7.0.0 is published. It turns bounded single-agent evidence into a deterministic governance report for human review.
+> MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows. It helps teams inspect authority, evidence, state, and decision boundaries before AI-assisted work is accepted into business or engineering processes.
+
+Boundary line:
+
+> Not an approval system. Not a blocker. Not a control plane.
 
 CTA labels:
 
-- `Install Guard v7.0.1`
-- `Generate a First Governance Report`
+- `Review a first workflow`
+- `Compare edition depth`
 - `Open License Hub`
 
-Proof line:
-
-> Published as `@veeduzyl/mindforge-guard@7.0.1` with GitHub Release `v7.0.1`.
-
-### Why v7.0.0 Matters
+### Why Reviewable Evidence Matters
 
 Title:
 
-> v7.0.0 makes the first governance report concrete.
+> Review AI-assisted work before it becomes trusted
 
 Body:
 
-> Start from a local Evidence Pack, validate it, generate a single-agent report, and review authority, behavior evidence, and risk/drift signals.
+> Teams need a bounded way to inspect authority boundary, execution evidence, missing evidence, and risk/drift signals before AI-assisted work enters business or engineering processes.
 
 Card copy:
 
-- `Evidence in`: Start with a bounded HR self-service example Evidence Pack.
-- `Report out`: Generate a deterministic report for human review.
+- `Evidence in`: Start with an evidence bundle behind an AI-assisted action.
+- `Report out`: Generate a governance report for human review.
 - `Decision outside Guard`: Use the report to decide the next human review step in your own process.
 
-### First Governance Report in 10 Minutes
+### Use Cases
 
 Title:
 
-> First Governance Report in 10 Minutes
+> One bounded story across common single-agent workflows
+
+Cards:
+
+- `AI coding agents`: Review evidence behind AI-generated code changes before merge or release decisions.
+- `Support agents`: Inspect action trace, allowed scope, and missing evidence before service actions are trusted.
+- `Operations agents`: Review execution evidence and risk/drift signals before operational follow-through enters a human process.
+- `Internal workflow agents`: Keep workflow actions reviewable without adding a control plane.
+
+### Review Your First Single-Agent Action With Evidence
+
+Title:
+
+> Review your first single-agent action with evidence
 
 Body:
 
-> Install Guard, use the HR self-service example, run `pack validate`, then run `report single-agent`.
+> Start with a sample agent action. Guard validates the evidence bundle, generates a governance report, and shows reviewers the authority boundary, execution evidence, missing evidence, and risk/drift signals.
 
-Command block:
+Supporting note:
 
-```bash
-npm install -g @veeduzyl/mindforge-guard@7.0.1
-guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
-guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
-```
-
-CTA:
-
-> Open the v7.0 First Report doc
+> If a sample is shown, describe it as a synthetic sample evidence bundle for local validation.
 
 ### From Evidence Pack to Governance Report
 
 Title:
 
-> From Evidence Pack to Governance Report
+> From Evidence Pack to governance report
 
 Body:
 
-> The Evidence Pack gives Guard the bounded task, action, data, and tool context. The report gives reviewers a readable view of authority, execution evidence, and risk signals.
+> An Evidence Pack is the review bundle behind an AI-assisted action: task context, allowed scope, action trace, tool/data references, outputs, missing evidence, and reviewer notes.
 
-Steps:
+Supporting copy:
 
-1. Open the HR self-service example Evidence Pack.
-2. Validate the pack locally.
-3. Generate the single-agent governance report.
-4. Read the three report layers.
+> The governance report is the evidence-bound review artifact generated from that bundle.
 
-### Report Experience by Edition
+### Editions by Customer Outcome
 
 Title:
 
-> Report Experience by Edition
+> Editions by customer outcome
 
 Body:
 
-> Editions shape report reading depth, not runtime authority.
+> Editions shape how much governance evidence teams can read and compare over time, not runtime authority.
 
 Edition cards:
 
-- Community: current-state governance report preview.
-- Pro: timeline / trend-oriented reading where released commands support it.
-- Pro+: compare / correlate / deeper signals where released commands support them.
-- Enterprise: same runtime entitlement as Pro+, with procurement and organizational adoption framing, and no extra runtime authority.
+- Community: See the current governance evidence for one agent workflow.
+- Pro: Track governance signals over time.
+- Pro+: Compare evidence states and uncover deeper signals.
+- Enterprise: Standardize adoption, review packets, and procurement around the same bounded runtime posture. No extra runtime authority.
+
+### Secondary Technical Install
+
+Title:
+
+> Technical install and release references
+
+Body:
+
+> Keep install and release references in a secondary docs-oriented area. The recommended install target is `@veeduzyl/mindforge-guard@7.0.1`.
+
+Command block:
+
+```bash
+npm install -g @veeduzyl/mindforge-guard@7.0.1
+```
+
+Release links:
+
+- npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.1`
+- GitHub Release v7.0.1 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1`
 
 ### Boundary / What Guard Does Not Do
 
@@ -151,43 +176,13 @@ Boundary bullets:
 
 - no approval system
 - no blocking system
-- no merge-safety promise
-- no deployment-safety promise
+- no safe-to-deploy claim
 - no legal compliance guarantee
 - no compliance certification
 - no maturity certification
-- No GitHub Action launched
-- No Marketplace available
 - no pricing change
 - no entitlement change
-
-### CTA to npm Package
-
-Title:
-
-> Install the published package
-
-Body:
-
-> Use the published npm package to start the first report workflow locally.
-
-CTA:
-
-> Install `@veeduzyl/mindforge-guard@7.0.1`
-
-### CTA to GitHub Release
-
-Title:
-
-> Read the v7.0.1 release
-
-Body:
-
-> Review the published release before you run the first governance report workflow.
-
-CTA:
-
-> Open GitHub Release `v7.0.1`
+- no extra runtime authority for Enterprise
 
 ### CTA to License Hub
 
@@ -207,11 +202,10 @@ CTA:
 
 - npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.1`
 - GitHub Release v7.0.1 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1`
-- Historical npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.0`
-- Historical GitHub Release v7.0.0 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0`
 - License Hub URL: preserve the existing production `Open License Hub` URL already configured in Lovable; do not replace it with a guessed domain.
-- v7.0 First Report doc URL: `https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md`
-- HR example Evidence Pack URL: `https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent`
+- single-agent positioning brief URL: `https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md`
+- first report workflow URL: `https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md`
+- synthetic sample evidence bundle URL: `https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent`
 
 ## Design Constraints
 
@@ -221,24 +215,22 @@ CTA:
 - Use compact cards / CTA blocks.
 - Preserve current homepage commercial tone.
 - Avoid legal or compliance overclaiming.
-- Keep the First Governance Report path visible without turning the homepage into a docs page.
+- Keep the first workflow visible without turning the homepage into a docs page.
 - Keep the existing License Hub CTA behavior.
 
 ## Acceptance Checklist
 
-- v7.0.0 published status is visible.
-- install CTA is visible.
-- first report path is visible.
-- edition experience is visible.
-- boundary is visible.
-- no approval, blocking, merge-safety, or deployment-safety claim appears.
-- no compliance certification claim appears.
-- no pricing or entitlement change is implied.
-- License Hub link still works.
-- GitHub Release link works.
-- npm package link works.
-- v7.0 First Report doc link works.
-- HR example Evidence Pack link works.
+- single-agent governance evidence is the primary public story
+- AI-assisted work and single-agent AI workflows are visible
+- Evidence Pack is explained as an evidence bundle or review bundle
+- the first workflow path is visible
+- use cases are visible
+- edition experience is visible
+- boundary is visible
+- no approval, blocking, safe-to-deploy, or compliance certification claim appears
+- no pricing or entitlement change is implied
+- License Hub link still works
+- technical install references are secondary
 
 ## Boundary
 
@@ -255,13 +247,10 @@ This implementation pack preserves:
 - no extra runtime authority for Enterprise
 - no approval system
 - no blocking system
-- no merge-safety promise
-- no deployment-safety promise
+- no safe-to-deploy claim
 - no legal compliance guarantee
 - no compliance certification
 - no maturity certification
-- No GitHub Action launched
-- No Marketplace available
 - no pricing change
 - no entitlement change
 

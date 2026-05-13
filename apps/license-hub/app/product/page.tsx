@@ -1,32 +1,15 @@
 import Link from "next/link";
 
-import {
-  adoptionReasons,
-  boundarySummary,
-  demoCards,
-  primaryCtas,
-  productPositioning,
-  releaseAnnouncement,
-  whyItMatters,
-} from "../launchCopy";
-import { SiteChrome, panelStyle, primaryButtonStyle, secondaryButtonStyle, mutedTextStyle } from "../siteChrome";
+import { SiteChrome, mutedTextStyle, panelStyle, primaryButtonStyle, secondaryButtonStyle } from "../siteChrome";
 
-const trustDemoPackDocs = [
+const trustDocs = [
   {
-    title: "First 10 Minutes With Guard",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/first-10-minutes.md",
+    title: "Single-agent positioning brief",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md",
   },
   {
-    title: "Safety Boundary",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/trust/safety-boundary.md",
-  },
-  {
-    title: "Choose the Right Guard Edition",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/edition-value-map.md",
-  },
-  {
-    title: "Current Product Demos",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/demos/current/README.md",
+    title: "First report workflow",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
   },
   {
     title: "Trust FAQ",
@@ -34,34 +17,75 @@ const trustDemoPackDocs = [
   },
 ] as const;
 
-const v7ReportSteps = [
-  "Install @veeduzyl/mindforge-guard@7.0.1",
-  "Use the HR self-service example Evidence Pack",
-  "Run pack validate and report single-agent",
-  "Read authority, behavior evidence, and risk/drift signals",
+const useCases = [
+  {
+    title: "AI coding agents",
+    body: "Review evidence behind AI-generated code changes before merge or release decisions.",
+  },
+  {
+    title: "Support agents",
+    body: "Inspect authority scope, action trace, and missing evidence before service actions are trusted.",
+  },
+  {
+    title: "Operations agents",
+    body: "Review execution evidence and risk/drift signals before operational follow-through enters a human process.",
+  },
+  {
+    title: "Internal workflow agents",
+    body: "Keep internal approvals, handoffs, and workflow actions reviewable without turning Guard into a control plane.",
+  },
+] as const;
+
+const reviewSteps = [
+  "Start with a sample agent action.",
+  "Validate the evidence bundle locally.",
+  "Generate a governance report for reviewer reading.",
+  "Inspect the authority boundary, execution evidence, missing evidence, and risk/drift signals.",
+] as const;
+
+const editionCards = [
+  {
+    title: "Community",
+    body: "See the current governance evidence for one agent workflow.",
+  },
+  {
+    title: "Pro",
+    body: "Track governance signals over time.",
+  },
+  {
+    title: "Pro+",
+    body: "Compare evidence states and uncover deeper signals.",
+  },
+  {
+    title: "Enterprise",
+    body: "Standardize adoption, review packets, and procurement around the same bounded runtime posture. No extra runtime authority.",
+  },
 ] as const;
 
 export default function ProductPage() {
   return (
     <SiteChrome
       eyebrow="Product"
-      title="MindForge Guard"
-      lede={productPositioning.body}
+      title="Make AI-assisted work reviewable before it becomes trusted."
+      lede="MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows. It helps teams inspect authority, evidence, state, and decision boundaries before AI-assisted work is accepted into business or engineering processes."
       showHeaderNote={false}
     >
       <section style={{ ...panelStyle, display: "grid", gap: 16 }}>
         <div style={{ display: "grid", gap: 8 }}>
-          <h2 style={{ margin: 0 }}>{productPositioning.headline}</h2>
+          <h2 style={{ margin: 0 }}>Single-agent governance evidence for human review</h2>
           <p style={{ ...mutedTextStyle, margin: 0 }}>
-            {releaseAnnouncement.subtitle}
+            Not an approval system. Not a blocker. Not a control plane.
+          </p>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            Guard remains recommendation-only, non-executing, deterministic, local-first where applicable, and human-review-oriented.
           </p>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           <Link href="/#pricing" style={primaryButtonStyle}>
-            {primaryCtas.buy}
+            Choose edition
           </Link>
-          <Link href="#demos" style={secondaryButtonStyle}>
-            {primaryCtas.demos}
+          <Link href="/docs" style={secondaryButtonStyle}>
+            Read docs
           </Link>
           <Link href="/faq" style={secondaryButtonStyle}>
             FAQ
@@ -69,8 +93,8 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
-        {whyItMatters.map((item) => (
+      <section style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        {useCases.map((item) => (
           <article key={item.title} style={{ ...panelStyle, display: "grid", gap: 8 }}>
             <h2 style={{ margin: 0, fontSize: 22 }}>{item.title}</h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>{item.body}</p>
@@ -79,46 +103,55 @@ export default function ProductPage() {
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
-        <h2 style={{ margin: 0 }}>Adoption value</h2>
-        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-          {adoptionReasons.map((reason) => (
-            <div key={reason} style={{ padding: 14, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
-              <strong>{reason}</strong>
-            </div>
-          ))}
+        <div style={{ display: "grid", gap: 8 }}>
+          <h2 style={{ margin: 0 }}>From Evidence Pack to governance report</h2>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            An Evidence Pack is the review bundle behind an AI-assisted action: task context, allowed scope, action trace, tool/data references, outputs, missing evidence, and reviewer notes.
+          </p>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            Guard turns that evidence bundle into a governance report so reviewers can inspect authority boundary, execution evidence, missing evidence, and risk/drift signals before AI-assisted work is trusted.
+          </p>
         </div>
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <div style={{ display: "grid", gap: 8 }}>
-          <h2 style={{ margin: 0 }}>From Evidence Pack to Governance Report</h2>
+          <h2 style={{ margin: 0 }}>Review your first single-agent action with evidence</h2>
           <p style={{ ...mutedTextStyle, margin: 0 }}>
-            v7.0.1 is published and recommended for the First Governance Report in 10 Minutes path because it restores
-            the packaged CLI entrypoint. The report experience by edition remains recommendation-only, non-executing,
-            non-control-plane, and human-review-oriented.
+            Start with a sample agent action. Guard validates the evidence bundle, generates a governance report, and shows reviewers the authority boundary, execution evidence, missing evidence, and risk/drift signals.
           </p>
         </div>
         <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-          {v7ReportSteps.map((step) => (
+          {reviewSteps.map((step) => (
             <div key={step} style={{ padding: 14, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae" }}>
               <strong>{step}</strong>
             </div>
           ))}
         </div>
         <p style={{ ...mutedTextStyle, margin: 0 }}>
-          Community previews current-state reports; Pro adds timeline-oriented reading where released commands support it;
-          Pro+ adds compare, correlate, and deeper signals where released commands support them; Enterprise keeps the same
-          runtime entitlement as Pro+ with no extra runtime authority.
+          A synthetic sample evidence bundle for local validation can help teams see the workflow without narrowing the product story to one sample workflow.
         </p>
       </section>
 
+      <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+        <h2 style={{ margin: 0 }}>Editions by customer outcome</h2>
+        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+          {editionCards.map((item) => (
+            <article key={item.title} style={{ padding: 14, borderRadius: 12, background: "#fffaf0", border: "1px solid #d8ccae", display: "grid", gap: 8 }}>
+              <strong>{item.title}</strong>
+              <p style={{ ...mutedTextStyle, margin: 0 }}>{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
-        <h2 style={{ margin: 0 }}>Start with trust and demo docs</h2>
+        <h2 style={{ margin: 0 }}>Trust and workflow docs</h2>
         <p style={{ ...mutedTextStyle, margin: 0 }}>
-          Understand the current boundary, compare editions, and run the current demos before you upgrade.
+          Use these docs to compare editions, explain the bounded posture, and move from evidence bundle to review bundle without authority expansion.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          {trustDemoPackDocs.map((doc) => (
+          {trustDocs.map((doc) => (
             <a key={doc.title} href={doc.href} style={secondaryButtonStyle}>
               {doc.title}
             </a>
@@ -126,24 +159,24 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section id="demos" style={{ ...panelStyle, display: "grid", gap: 14 }}>
-        <h2 style={{ margin: 0 }}>Evaluation demos</h2>
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
-          {demoCards.map((demo) => (
-            <article key={demo.eyebrow} style={{ display: "grid", gap: 10, padding: 16, borderRadius: 12, background: "#fffdf8", border: "1px solid #d8ccae" }}>
-              <strong>{demo.title}</strong>
-              <p style={{ ...mutedTextStyle, margin: 0 }}>{demo.body}</p>
-              <a href={demo.href} style={secondaryButtonStyle}>
-                {demo.cta}
-              </a>
-            </article>
-          ))}
-        </div>
+      <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
+        <h2 style={{ margin: 0 }}>Secondary technical install</h2>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          When you are ready to run Guard locally, install the current recommended v7.0.1 package: <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code>.
+        </p>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          Then follow the first report workflow in the docs to review a sample single-agent action with evidence.
+        </p>
       </section>
 
       <section style={{ ...panelStyle, display: "grid", gap: 10 }}>
         <h2 style={{ margin: 0 }}>Boundary</h2>
-        <p style={{ ...mutedTextStyle, margin: 0 }}>{boundarySummary}</p>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          Guard stays recommendation-only, additive-only, non-executing, default-off where applicable, non-control-plane, deterministic, local-first where applicable, and human-review-oriented.
+        </p>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          No approval system. No blocking system. No safe-to-deploy claim. No legal compliance guarantee. No compliance certification. No maturity certification.
+        </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           <Link href="/legal" style={secondaryButtonStyle}>
             Legal

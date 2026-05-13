@@ -4,108 +4,114 @@
 
 This is a copy candidate for a future `mindforge.run` commercial surface. It is not a production page deployment.
 
-- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
-- npm package: `@veeduzyl/mindforge-guard@7.0.1`
-- GitHub Release: `v7.0.1`
-- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
+- The public hero story is single-agent governance evidence, not version-led packaging.
+- The recommended install target for technical docs remains `@veeduzyl/mindforge-guard@7.0.1`.
 - No change to pricing or entitlement in this copy candidate.
 - No `mindforge.run` production file is changed by this candidate.
 
-## Suggested Module: Hero / CTA Language For v7.0.0
+## Suggested Module: Hero / CTA Language
 
 Candidate headline:
 
-> Generate your first AI governance report from a local Evidence Pack.
+> Make AI-assisted work reviewable before it becomes trusted.
 
 Candidate subcopy:
 
-> MindForge Guard v7.0.0 turns bounded single-agent evidence into a deterministic governance report for human review. It helps teams inspect authority, execution evidence, and risk signals without turning Guard into an execution system or control plane.
+> MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows. It helps teams inspect authority, evidence, state, and decision boundaries before AI-assisted work is accepted into business or engineering processes.
+
+Candidate boundary line:
+
+> Not an approval system. Not a blocker. Not a control plane.
 
 Candidate CTA labels:
 
-- `Install Guard v7.0.1`
-- `Generate a first report`
-- `Read the GitHub Release`
+- `Review a first workflow`
+- `Compare edition depth`
+- `Open License Hub`
 
-Candidate proof line:
-
-> Published as `@veeduzyl/mindforge-guard@7.0.1` with GitHub Release `v7.0.1`.
-
-## Suggested Module: From Evidence Pack To Governance Report
+## Suggested Module: Explain the Evidence Pack
 
 Candidate section title:
 
-> From Evidence Pack to Governance Report
+> From Evidence Pack to governance report
 
 Candidate copy:
 
-> Start with a local Evidence Pack. Validate that the pack is readable, then generate a single-agent governance report in preview mode. The report is deterministic and designed for human review, not automated approval or execution control.
+> An Evidence Pack is the review bundle behind an AI-assisted action: task context, allowed scope, action trace, tool/data references, outputs, missing evidence, and reviewer notes.
 
-Suggested steps:
+Suggested helper copy:
 
-1. Install the published package.
-2. Open the HR self-service example Evidence Pack.
-3. Run `guard pack validate --pack <path> --preview --json`.
-4. Run `guard report single-agent --pack <path> --preview --json`.
-5. Read the report through the three review layers.
+> Guard turns that evidence bundle into a governance report so reviewers can inspect authority boundary, execution evidence, missing evidence, and risk/drift signals before AI-assisted work is trusted.
 
-## Suggested Module: First Governance Report In 10 Minutes
+## Suggested Module: Review Your First Single-Agent Action With Evidence
 
 Candidate section title:
 
-> First Governance Report in 10 Minutes
+> Review your first single-agent action with evidence
 
 Candidate copy:
 
-> The fastest first run uses the included HR self-service example Evidence Pack. It gives new users a complete local path from install to report reading without changing their runtime, CI, pricing, or entitlement setup.
+> Start with a sample agent action. Guard validates the evidence bundle, generates a governance report, and shows reviewers the authority boundary, execution evidence, missing evidence, and risk/drift signals.
+
+Suggested note:
+
+> If a sample is shown, describe it as a synthetic sample evidence bundle for local validation. Do not make one sample workflow the public first-report hero path.
+
+## Suggested Module: Use Cases
+
+Use cases to surface:
+
+- AI coding agents
+- Support agents
+- Operations agents
+- Internal workflow agents
+
+AI coding copy:
+
+> Review evidence behind AI-generated code changes before merge or release decisions.
+
+## Suggested Module: Edition Outcomes
+
+Candidate copy:
+
+> Editions change how much governance evidence teams can read over time, not runtime authority.
+
+Edition mapping:
+
+- Community: See the current governance evidence for one agent workflow.
+- Pro: Track governance signals over time.
+- Pro+: Compare evidence states and uncover deeper signals.
+- Enterprise: Standardize adoption, review packets, and procurement around the same bounded runtime posture. No extra runtime authority.
+
+## Suggested Module: Secondary Technical Install
+
+Candidate copy:
+
+> Keep npm package and GitHub Release references in a secondary install/docs module. The recommended install target remains `@veeduzyl/mindforge-guard@7.0.1`.
 
 Suggested command block:
 
 ```bash
 npm install -g @veeduzyl/mindforge-guard@7.0.1
-guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
-guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 ```
 
-Suggested report reading copy:
-
-> Read the report in three layers: Authority / Permission Boundary, Execution / Behavior Evidence, and Risk / Drift / Maturity Signals.
-
-## Suggested Module: Report Experience By Edition
+## Suggested Module: Boundary
 
 Candidate copy:
 
-> Guard editions shape the report reading experience, not runtime authority.
-
-Edition mapping:
-
-- Community: current-state governance report preview for a single Evidence Pack.
-- Pro: timeline / trend-oriented report reading where released commands support it.
-- Pro+: compare / correlate / deeper signals where released commands support them.
-- Enterprise: same runtime entitlement as Pro+, procurement / organizational adoption framing, no extra runtime authority.
-
-Suggested Enterprise note:
-
-> Enterprise is for procurement, support, and organizational adoption framing around the same released runtime entitlement as Pro+. It is not a control plane and does not add execution authority.
-
-## Suggested Module: Boundary: Not Approval, Not Blocking, Not Compliance Certification
-
-Candidate copy:
-
-> MindForge Guard v7.0.0 is recommendation-only, non-executing, non-control-plane, deterministic, local-first where applicable, and human-review-oriented. Reports help reviewers decide their next action outside Guard.
+> MindForge Guard is recommendation-only, non-executing, non-control-plane, deterministic, local-first where applicable, and human-review-oriented. Reports help reviewers decide their next action outside Guard.
 
 Candidate boundary bullets:
 
 - Not an approval system.
-- Not a blocker.
-- Not a deployment gate.
-- Not a legal compliance guarantee.
-- Not a maturity certification.
-- No GitHub Action is launched in this candidate.
-- No Marketplace listing is provided in this candidate.
+- Not a blocking system.
+- No safe-to-deploy claim.
+- No legal compliance guarantee.
+- No compliance certification.
+- No maturity certification.
+- No extra runtime authority for Enterprise.
 - No pricing change.
 - No entitlement change.
-- No extra runtime authority for Enterprise.
 
 ## Implementation Boundary
 
