@@ -5,7 +5,7 @@ const workflowDocs = [
   {
     title: "Single-agent workflow guide",
     body: "Move from a sample agent action to a governance report that surfaces authority boundary, execution evidence, missing evidence, and risk/drift signals.",
-    href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md`,
+    href: `${repoDocsHref}/blob/main/docs/product/current/first-governance-report.md`,
   },
   {
     title: "Single-agent positioning brief",
@@ -13,14 +13,14 @@ const workflowDocs = [
     href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_1_single_agent_governance_positioning.md`,
   },
   {
-    title: "Download to first report UX",
-    body: "Review the path from first entry point to local evidence review without turning version numbers or one sample workflow into the main story.",
-    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md`,
+    title: "First governance report guide",
+    body: "Use the current public guide for install, first-run validation, report generation, and human review reading flow.",
+    href: `${repoDocsHref}/blob/main/docs/product/current/first-governance-report.md`,
   },
   {
     title: "What Guard does not do",
     body: "See the recommendation-only, non-executing, non-control-plane boundary in buyer-readable language.",
-    href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md`,
+    href: `${repoDocsHref}/blob/main/README.md#product-boundary`,
   },
 ] as const;
 

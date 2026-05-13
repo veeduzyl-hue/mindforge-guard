@@ -1,113 +1,58 @@
 # MindForge Guard
 
-MindForge Guard is a deterministic governance CLI for bounded, auditable artifact production.
+**Deterministic governance evidence layer for single-agent AI workflows.**
 
-## Released Baseline
+MindForge Guard helps teams make AI-assisted work reviewable before it becomes trusted. It turns Evidence Packs into deterministic governance reports so human reviewers can inspect authority boundaries, execution evidence, missing evidence, and risk/drift signals.
 
-The current package release is `v7.0.1`.
+> Not an approval system. Not a blocker. Not a control plane.
 
-It remains:
-
-- supporting-artifact-only
-- recommendation-only
-- non-authoritative
-- additive-only
-- non-executing
-- default-off
-- non-control-plane
-- human-review-oriented
-
-## Official Install Path
-
-Install the public CLI package with npm:
+## Install
 
 ```bash
-npm install -g @veeduzyl/mindforge-guard
+npm install -g @veeduzyl/mindforge-guard@7.0.1
 ```
-
-## Fallback Install Path
-
-If npm registry install is unavailable, install the shipped package tarball directly:
-
-```bash
-npm install -g ./veeduzyl-mindforge-guard-7.0.1.tgz
-```
-
-## First Commands After Install
-
-Run these commands after install to confirm the CLI is present and working:
 
 ```bash
 guard --version
 guard --help
-guard status
-guard validate-policy
-guard drift status --format json
 ```
 
-Run these inside a repository when you want working-tree governance output:
+## First Governance Report
+
+Use the sample single-agent Evidence Pack to generate a deterministic governance report locally:
 
 ```bash
-guard audit . --staged
-guard snapshot .
-guard action classify --text "write file README.md"
+guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
+guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 ```
 
-Paid analytics commands:
+Read the report through:
 
-```bash
-guard drift timeline
-guard drift compare
-guard assoc correlate
-```
+- authority boundaries
+- execution evidence
+- missing evidence
+- risk/drift signals
 
-## Edition Boundary
+Guard remains recommendation-only, additive-only, non-executing, default-off where applicable, non-control-plane, deterministic, local-first where applicable, and human-review-oriented.
 
-| Edition | Formal command promise |
-|---|---|
-| Community | Core governance CLI + `drift status` + license lifecycle commands |
-| Pro | Community + `drift timeline` |
-| Pro+ | Pro + `drift compare` + `assoc correlate` |
-| Enterprise | Same current CLI entitlement as Pro+; no extra runtime authority or extra commands promised in this release |
+Guard does not approve, block, deploy, certify, or control execution.
 
-See:
+## License Hub
 
-- [EDITIONS.md](./EDITIONS.md)
-- [License Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/LICENSE.md)
-- [Verification Guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/VERIFY.md)
-- [Product Baseline](../../docs/product/current-product-baseline.md)
-- [Release Checklist](../../docs/release/release-readiness-checklist.md)
+Use License Hub to buy a commercial edition, sign in with your purchase email, download the signed license JSON, and keep local CLI license usage aligned with the same bounded runtime posture.
 
-## License Activation UX
-
-Guard installs the local license file to:
-
-- Windows: `C:\Users\<user>\.guard\license.json`
-- macOS/Linux: `~/.guard/license.json`
-
-Recommended flow:
+Typical local license flow:
 
 ```bash
 guard license verify --file downloaded-license.json
 guard license install --file downloaded-license.json
 guard license status
-guard status
 ```
 
-Get the signed license JSON from License Hub:
+## Links
 
-- customer portal download
-- resend email from License Hub
-
-Helpful surfaces:
-
-- `guard license status` shows current state, install path, edition, and next step
-- `guard license show` returns the structured local inspection result
-- `guard status` includes the repo policy, drift summary, and local license guidance
-
-## Help
-
-- `guard --help` lists the formal CLI surface
-- `guard license show` prints structured local license inspection
-- [MindForge Guard homepage](https://mindforge.run)
-- [Issue tracker](https://github.com/veeduzyl-hue/mindforge-guard/issues)
+- [First governance report guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/first-governance-report.md)
+- [License guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/LICENSE.md)
+- [Verification guide](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/VERIFY.md)
+- [npm package](https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.1)
+- [GitHub release v7.0.1](https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1)

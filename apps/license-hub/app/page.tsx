@@ -27,11 +27,11 @@ const trustDemoHelperCards = [
     links: [
       {
         label: "First report workflow",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/first-governance-report.md",
       },
       {
-        label: "Download to first report UX",
-        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md",
+        label: "Product boundary",
+        href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/README.md#product-boundary",
       },
     ],
   },
@@ -54,7 +54,7 @@ const trustDemoHelperCards = [
 const firstWorkflowLinks = [
   {
     label: "First report workflow",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/first-governance-report.md",
   },
   {
     label: "Synthetic sample evidence bundle",
@@ -62,7 +62,7 @@ const firstWorkflowLinks = [
   },
   {
     label: "Technical install and docs",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/commercial/v7_0_license_hub_copy_candidate.md",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/README.md",
   },
 ] as const;
 

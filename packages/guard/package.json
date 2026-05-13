@@ -1,7 +1,7 @@
 {
   "name": "@veeduzyl/mindforge-guard",
   "version": "7.0.1",
-  "description": "MindForge Guard - AI coding governance layer (CLI)",
+  "description": "Deterministic governance evidence layer for single-agent AI workflows (CLI)",
   "license": "Apache-2.0",
   "private": false,
   "type": "module",
