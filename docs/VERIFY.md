@@ -1,15 +1,15 @@
 # VERIFY.md - Release Verification Matrix
 
 **Purpose**: Document the current verification surface for `mindforge-guard`.  
-**Last Updated**: 2026-04-30  
-**Released Baseline**: `v6.13.1`  
-**Next Recommended Maintenance Release**: `v6.13.2`
+**Last Updated**: 2026-05-14  
+**Released Baseline**: `v7.0.1`  
+**Next Recommended Maintenance Release**: `v7.0.2`
 
 ---
 
 ## 1. Released Baseline Verification
 
-The current published install package is `v6.13.1`.
+The current published install package is `v7.0.1`.
 
 It continues the released verification line built on:
 
@@ -108,7 +108,7 @@ That is valid smoke evidence only. It is not a broader claim of arbitrary-change
 
 ## 7. v6.14 Preview Verification
 
-`v6.14` remains preview / next-line verification only. It is not the current commercial release baseline. The current commercial release baseline remains `v6.13.1`.
+`v6.14` remains preview / next-line verification only. It is not the current public install package baseline. The current public install package baseline remains `v7.0.1`.
 
 The `v6.14` authority preview line remains:
 
@@ -129,7 +129,7 @@ For this preview line, `outside_scope` remains a decision result only.
 
 ## 8. v6.15 Preview Verification
 
-`v6.15` remains preview / next-line verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+`v6.15` remains preview / next-line verification only. It does not change the current public install package baseline, which remains `v7.0.1`.
 
 The `v6.15` authority explain preview line remains:
 
@@ -163,7 +163,7 @@ This preview line preserves:
 
 ## 9. v6.16 Preview Verification
 
-`v6.16` remains preview / next-line verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+`v6.16` remains preview / next-line verification only. It does not change the current public install package baseline, which remains `v7.0.1`.
 
 The `v6.16` grounding / provenance preview line remains:
 
@@ -195,7 +195,7 @@ This preview line preserves:
 
 ## 10. v6.17 Final Acceptance Verification
 
-`v6.17` remains internal final-acceptance verification only. It does not change the current commercial release baseline, which remains `v6.13.1`.
+`v6.17` remains internal final-acceptance verification only. It does not change the current public install package baseline, which remains `v7.0.1`.
 
 Internal final acceptance verification:
 
@@ -205,7 +205,7 @@ node scripts/verify_v6_17_admissibility_explain_final_acceptance.mjs
 
 ## 11. v6.18 Preview Verification
 
-`v6.18` remains internal preview-only verification. It does not change the current commercial release baseline, which remains `v6.13.1`.
+`v6.18` remains internal preview-only verification. It does not change the current public install package baseline, which remains `v7.0.1`.
 
 Internal preview verification:
 
@@ -245,7 +245,25 @@ This verification confirms:
 - the commercial boundary still states that Guard does not approve, block, deploy, certify, or control execution
 - Enterprise copy preserves `No extra runtime authority`
 
-## 13. See Also
+## 13. v7.0.1 Public Surface Consistency Verification
+
+`v7.0.1` public surface consistency remains a bounded docs, metadata, link, and copy cleanup only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, or CLI semantics.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_0_1_public_surface_consistency.mjs
+```
+
+This verification confirms:
+
+- README, npm package README, and public guide surfaces align on the v7.0.1 single-agent governance evidence story
+- the current public first-report guide is `docs/product/current/first-governance-report.md`
+- the superseded `v7_0_first_report.md` page no longer presents candidate or not-public-launch language
+- License Hub public docs links point to the current first-report guide
+- deny exit code `25` remains unchanged
+
+## 14. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
