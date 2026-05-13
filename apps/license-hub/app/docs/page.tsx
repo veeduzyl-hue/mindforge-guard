@@ -131,7 +131,7 @@ export default function DocsPage() {
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
         <h2 style={{ margin: 0 }}>Secondary technical install</h2>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-          The recommended install target is <code>@veeduzyl/mindforge-guard@7.0.1</code>. Use <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public hero story.
+          The recommended install target is v7.0.1 via <code>@veeduzyl/mindforge-guard@7.0.1</code>. Use <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public hero story.
         </p>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
           Historical GitHub Release references belong in release-history or technical docs, not as public commercial headline subjects.
