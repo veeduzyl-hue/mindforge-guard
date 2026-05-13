@@ -23,7 +23,7 @@ const trustDemoHelperCards = [
   },
   {
     title: "Review the first workflow",
-    body: "Follow the first-report path for a sample single-agent action without turning one synthetic sample into the public hero path.",
+    body: "Follow the first-report path for a sample single-agent action without narrowing the story to one synthetic sample.",
     links: [
       {
         label: "First report workflow",
@@ -234,10 +234,10 @@ export default function HomePage() {
         <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
           <h2 style={{ margin: 0 }}>Secondary technical install</h2>
           <p style={{ ...mutedTextStyle, margin: 0 }}>
-            The recommended install target for local validation is v7.0.1 via <code>@veeduzyl/mindforge-guard@7.0.1</code>. Keep <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public commercial headline.
+            For local validation, install the current recommended v7.0.1 package: <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code>.
           </p>
           <p style={{ ...mutedTextStyle, margin: 0 }}>
-            Guard remains recommendation-only, non-executing, non-control-plane, deterministic, and no extra runtime authority is added for Enterprise.
+            Then follow the first report workflow in the docs. Guard remains recommendation-only, non-executing, non-control-plane, deterministic, and no extra runtime authority is added for Enterprise.
           </p>
         </section>
 

@@ -129,7 +129,7 @@ export default function ProductPage() {
           ))}
         </div>
         <p style={{ ...mutedTextStyle, margin: 0 }}>
-          A synthetic sample evidence bundle for local validation can help teams see the workflow without making one sample workflow the public hero story.
+          A synthetic sample evidence bundle for local validation can help teams see the workflow without narrowing the product story to one sample workflow.
         </p>
       </section>
 
@@ -159,11 +159,13 @@ export default function ProductPage() {
         </div>
       </section>
 
-        <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
+      <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
         <h2 style={{ margin: 0 }}>Secondary technical install</h2>
         <p style={{ ...mutedTextStyle, margin: 0 }}>
-          The recommended install target for local validation is v7.0.1 via <code>@veeduzyl/mindforge-guard@7.0.1</code>.
-          Use <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in technical setup docs, not as the public hero story.
+          When you are ready to run Guard locally, install the current recommended v7.0.1 package: <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code>.
+        </p>
+        <p style={{ ...mutedTextStyle, margin: 0 }}>
+          Then follow the first report workflow in the docs to review a sample single-agent action with evidence.
         </p>
       </section>
 

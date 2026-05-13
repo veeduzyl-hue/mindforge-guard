@@ -16,6 +16,9 @@ const PUBLIC_SURFACES = [
 const ALLOWED_CHANGED_PATHS = new Set([
   ...PUBLIC_SURFACES,
   "scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs",
+  "scripts/verify_v7_0_1_public_install_references.mjs",
+  "scripts/verify_v7_0_license_hub_copy_implementation.mjs",
+  "scripts/verify_v7_0_mindforge_run_implementation_pack.mjs",
 ]);
 
 const REQUIRED_GLOBAL_PHRASES = [
@@ -59,6 +62,15 @@ const REQUIRED_PRODUCT_PHRASES = [
 const REQUIRED_DOCS_PHRASES = [
   "Single-agent governance report docs",
   "Secondary technical install",
+];
+
+const USER_FACING_INTERNAL_PHRASES = [
+  "public commercial headline",
+  "install/docs surfaces",
+  "copy candidate",
+  "implementation pack",
+  "verifier",
+  "pr",
 ];
 
 const BOUNDARY_PHRASES = [
@@ -299,6 +311,17 @@ function assertHeroNotVersionLed(surfaceText, label) {
   expect(!surfaceText.includes("GitHub Release"), `${label} must not use GitHub Release as hero copy`);
 }
 
+function assertNoInternalPhrases(surfaceText, label) {
+  const lower = surfaceText.toLowerCase();
+  for (const phrase of USER_FACING_INTERNAL_PHRASES) {
+    if (phrase.toLowerCase() === "pr") {
+      expect(!/\bPR\b/.test(surfaceText), `${label} must not expose internal phrase: ${phrase}`);
+      continue;
+    }
+    expect(!lower.includes(phrase.toLowerCase()), `${label} must not expose internal phrase: ${phrase}`);
+  }
+}
+
 function assertDenyExitCodeStillPresent(repoRoot) {
   const permitGatePath = path.join(repoRoot, "packages/guard/src/runtime/governance/permit/permitGate.mjs");
   expect(fs.existsSync(permitGatePath), "permitGate.mjs must still exist");
@@ -347,6 +370,9 @@ function main() {
 
   assertHeroNotVersionLed(homeText, "License Hub home");
   assertHeroNotVersionLed(productText, "License Hub product");
+  assertNoInternalPhrases(homeText, "License Hub home");
+  assertNoInternalPhrases(productText, "License Hub product");
+  assertNoInternalPhrases(docsText, "License Hub docs");
 
   expect(
     combinedText.includes("synthetic sample evidence bundle for local validation"),

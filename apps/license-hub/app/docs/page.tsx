@@ -14,7 +14,7 @@ const workflowDocs = [
   },
   {
     title: "Download to first report UX",
-    body: "Review the path from public entry point to local evidence review without turning version numbers or HR into the hero.",
+    body: "Review the path from first entry point to local evidence review without turning version numbers or one sample workflow into the main story.",
     href: `${repoDocsHref}/blob/main/docs/commercial/v7_0_download_to_first_report_ux.md`,
   },
   {
@@ -131,10 +131,10 @@ export default function DocsPage() {
       <section style={{ ...panelStyle, display: "grid", gap: 12 }}>
         <h2 style={{ margin: 0 }}>Secondary technical install</h2>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-          The recommended install target is v7.0.1 via <code>@veeduzyl/mindforge-guard@7.0.1</code>. Use <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code> in install/docs surfaces rather than the public hero story.
+          For local validation, install the current recommended v7.0.1 package: <code>npm install -g @veeduzyl/mindforge-guard@7.0.1</code>.
         </p>
         <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-          Historical GitHub Release references belong in release-history or technical docs, not as public commercial headline subjects.
+          Then use the workflow guides on this page to generate your first governance report.
         </p>
       </section>
 
