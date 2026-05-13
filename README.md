@@ -73,7 +73,7 @@ Recommended demo order:
 3. Use the edition guide to decide whether Community, Pro, Pro+, or Enterprise fits the review depth you need.
 
 Important:
-Demos are explanatory paths. They do not turn Guard into an approval system, blocker, deployment gate, compliance certification system, or runtime control plane.
+Demos are explanatory paths. They do not approve, block, deploy, certify, or control execution.
 
 ## Common CLI Surface
 
@@ -87,6 +87,26 @@ guard snapshot .
 guard action classify --text "write file README.md"
 guard drift status --format json
 ```
+
+Paid analytics commands where licensed and released:
+
+```bash
+guard drift timeline
+guard drift compare
+guard assoc correlate
+```
+
+License lifecycle commands:
+
+```bash
+guard license verify --file downloaded-license.json
+guard license install --file downloaded-license.json
+guard license status
+guard license show
+guard license remove
+```
+
+These commands remain local CLI surfaces. Guard produces review evidence and does not approve, block, deploy, certify, or control execution.
 
 ## License Hub
 
