@@ -35,7 +35,7 @@ const trustDemoPackDocs = [
 ] as const;
 
 const v7ReportSteps = [
-  "Install @veeduzyl/mindforge-guard@7.0.0",
+  "Install @veeduzyl/mindforge-guard@7.0.1",
   "Use the HR self-service example Evidence Pack",
   "Run pack validate and report single-agent",
   "Read authority, behavior evidence, and risk/drift signals",
@@ -93,9 +93,9 @@ export default function ProductPage() {
         <div style={{ display: "grid", gap: 8 }}>
           <h2 style={{ margin: 0 }}>From Evidence Pack to Governance Report</h2>
           <p style={{ ...mutedTextStyle, margin: 0 }}>
-            v7.0.0 is published with a First Governance Report in 10 Minutes path for local, deterministic review.
-            The report experience by edition remains recommendation-only, non-executing, non-control-plane, and
-            human-review-oriented.
+            v7.0.1 is published and recommended for the First Governance Report in 10 Minutes path because it restores
+            the packaged CLI entrypoint. The report experience by edition remains recommendation-only, non-executing,
+            non-control-plane, and human-review-oriented.
           </p>
         </div>
         <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
