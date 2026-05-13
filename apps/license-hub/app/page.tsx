@@ -61,7 +61,11 @@ const v7FirstReportLinks = [
     href: "https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent",
   },
   {
-    label: "GitHub Release v7.0.0",
+    label: "GitHub Release v7.0.1",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1",
+  },
+  {
+    label: "Historical GitHub Release v7.0.0",
     href: "https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0",
   },
 ] as const;
@@ -162,8 +166,13 @@ export default function HomePage() {
           <div style={{ display: "grid", gap: 6 }}>
             <h2 style={{ margin: 0 }}>Generate your first governance report</h2>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
-              v7.0.0 is published. Install <code>@veeduzyl/mindforge-guard@7.0.0</code>, use the HR self-service
-              example Evidence Pack, run <code>pack validate</code>, then run <code>report single-agent</code>.
+              v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
+              Install <code>@veeduzyl/mindforge-guard@7.0.1</code>, use the HR self-service example Evidence Pack,
+              run <code>pack validate</code>, then run <code>report single-agent</code>.
+            </p>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              Historical context: v7.0.0 is published as a prior release, including
+              <code> @veeduzyl/mindforge-guard@7.0.0</code>; use v7.0.1 for current installs.
             </p>
             <p style={{ ...mutedTextStyle, margin: 0 }}>
               Read authority, behavior evidence, and risk/drift signals for human review. Guard remains

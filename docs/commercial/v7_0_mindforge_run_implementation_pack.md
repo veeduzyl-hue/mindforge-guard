@@ -1,12 +1,13 @@
-# v7.0.0 mindforge.run Implementation Pack
+# v7.0.1 mindforge.run Implementation Pack
 
 ## Purpose
 
 `mindforge.run` is externally hosted and Lovable-managed. This file is an implementation pack for the Lovable-hosted site, not a production deployment.
 
-- v7.0.0 is published.
-- npm package: `@veeduzyl/mindforge-guard@7.0.0`
-- GitHub Release: `v7.0.0`
+- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
+- npm package: `@veeduzyl/mindforge-guard@7.0.1`
+- GitHub Release: `v7.0.1`
+- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
 - No repository production site file is changed by this pack.
 - No License Hub, pricing, entitlement, runtime authority, GitHub Action, or Marketplace change is made by this pack.
 
@@ -17,13 +18,13 @@ Use this pack to update the public website copy in a separate Lovable workflow.
 Copy this prompt into Lovable:
 
 ```text
-Update the existing mindforge.run homepage for MindForge Guard v7.0.0.
+Update the existing mindforge.run homepage for MindForge Guard v7.0.1.
 
 Keep the existing brand structure, visual rhythm, navigation, and commercial tone where possible. Avoid page bloat: add only compact modules or tighten existing sections. Do not create a dense technical documentation page.
 
-Add visible v7.0.0 published status, including the package name @veeduzyl/mindforge-guard@7.0.0 and GitHub Release v7.0.0. Add a First Governance Report CTA. Add a concise Evidence Pack to Governance Report explanation. Add a compact Report Experience by Edition section. Add clear boundary language.
+Add visible v7.0.1 recommended-install status, including the package name @veeduzyl/mindforge-guard@7.0.1 and GitHub Release v7.0.1. Add a First Governance Report CTA. Add a concise Evidence Pack to Governance Report explanation. Add a compact Report Experience by Edition section. Add clear boundary language.
 
-Use short buyer-readable copy, compact cards, and CTA blocks. Preserve the existing License Hub CTA destination already configured in the site. Add links to npm, GitHub Release v7.0.0, the v7.0 First Report doc, and the HR self-service example Evidence Pack.
+Use short buyer-readable copy, compact cards, and CTA blocks. Preserve the existing License Hub CTA destination already configured in the site. Add links to npm, GitHub Release v7.0.1, the v7.0 First Report doc, and the HR self-service example Evidence Pack.
 
 Do not claim approval, blocking, compliance certification, maturity certification, legal compliance, or runtime control-plane authority. Do not imply pricing or entitlement changes. Do not launch or describe a GitHub Action or Marketplace listing as available.
 ```
@@ -56,13 +57,13 @@ Body:
 
 CTA labels:
 
-- `Install Guard v7.0.0`
+- `Install Guard v7.0.1`
 - `Generate a First Governance Report`
 - `Open License Hub`
 
 Proof line:
 
-> Published as `@veeduzyl/mindforge-guard@7.0.0` with GitHub Release `v7.0.0`.
+> Published as `@veeduzyl/mindforge-guard@7.0.1` with GitHub Release `v7.0.1`.
 
 ### Why v7.0.0 Matters
 
@@ -93,7 +94,7 @@ Body:
 Command block:
 
 ```bash
-npm install -g @veeduzyl/mindforge-guard@7.0.0
+npm install -g @veeduzyl/mindforge-guard@7.0.1
 guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 ```
@@ -172,13 +173,13 @@ Body:
 
 CTA:
 
-> Install `@veeduzyl/mindforge-guard@7.0.0`
+> Install `@veeduzyl/mindforge-guard@7.0.1`
 
 ### CTA to GitHub Release
 
 Title:
 
-> Read the v7.0.0 release
+> Read the v7.0.1 release
 
 Body:
 
@@ -186,7 +187,7 @@ Body:
 
 CTA:
 
-> Open GitHub Release `v7.0.0`
+> Open GitHub Release `v7.0.1`
 
 ### CTA to License Hub
 
@@ -204,8 +205,10 @@ CTA:
 
 ## Links To Use
 
-- npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.0`
-- GitHub Release v7.0.0 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0`
+- npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.1`
+- GitHub Release v7.0.1 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.1`
+- Historical npm package URL: `https://www.npmjs.com/package/@veeduzyl/mindforge-guard/v/7.0.0`
+- Historical GitHub Release v7.0.0 URL: `https://github.com/veeduzyl-hue/mindforge-guard/releases/tag/v7.0.0`
 - License Hub URL: preserve the existing production `Open License Hub` URL already configured in Lovable; do not replace it with a guessed domain.
 - v7.0 First Report doc URL: `https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md`
 - HR example Evidence Pack URL: `https://github.com/veeduzyl-hue/mindforge-guard/tree/main/examples/single-agent-governance-pack/hr-self-service-agent`
@@ -278,4 +281,3 @@ This pack does not authorize changes to:
 - GitHub Action
 - Marketplace
 - repository production website files
-

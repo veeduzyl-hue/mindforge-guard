@@ -1,12 +1,13 @@
-# v7.0.0 mindforge.run Copy Candidate
+# v7.0.1 mindforge.run Copy Candidate
 
 ## Candidate Status
 
 This is a copy candidate for a future `mindforge.run` commercial surface. It is not a production page deployment.
 
-- v7.0.0 is published.
-- npm package: `@veeduzyl/mindforge-guard@7.0.0`
-- GitHub Release: `v7.0.0`
+- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
+- npm package: `@veeduzyl/mindforge-guard@7.0.1`
+- GitHub Release: `v7.0.1`
+- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
 - No change to pricing or entitlement in this copy candidate.
 - No `mindforge.run` production file is changed by this candidate.
 
@@ -22,13 +23,13 @@ Candidate subcopy:
 
 Candidate CTA labels:
 
-- `Install Guard v7.0.0`
+- `Install Guard v7.0.1`
 - `Generate a first report`
 - `Read the GitHub Release`
 
 Candidate proof line:
 
-> Published as `@veeduzyl/mindforge-guard@7.0.0` with GitHub Release `v7.0.0`.
+> Published as `@veeduzyl/mindforge-guard@7.0.1` with GitHub Release `v7.0.1`.
 
 ## Suggested Module: From Evidence Pack To Governance Report
 
@@ -61,7 +62,7 @@ Candidate copy:
 Suggested command block:
 
 ```bash
-npm install -g @veeduzyl/mindforge-guard@7.0.0
+npm install -g @veeduzyl/mindforge-guard@7.0.1
 guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 ```

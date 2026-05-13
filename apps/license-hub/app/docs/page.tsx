@@ -4,7 +4,7 @@ const repoDocsHref = "https://github.com/veeduzyl-hue/mindforge-guard";
 const v7FirstReportDocs = [
   {
     title: "First Governance Report workflow",
-    body: "Install v7.0.0, use the HR self-service Evidence Pack, run pack validate, then run report single-agent.",
+    body: "Install v7.0.1, use the HR self-service Evidence Pack, run pack validate, then run report single-agent.",
     href: `${repoDocsHref}/blob/main/docs/product/current/v7_0_first_report.md`,
   },
   {
@@ -113,10 +113,14 @@ export default function DocsPage() {
 
       <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
         <div style={{ display: "grid", gap: 6 }}>
-          <h2 style={{ margin: 0 }}>v7.0.0 First Governance Report</h2>
+          <h2 style={{ margin: 0 }}>v7.0.1 First Governance Report</h2>
           <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
-            Start from the published package <code>@veeduzyl/mindforge-guard@7.0.0</code>, validate an Evidence Pack,
+            Start from the published package <code>@veeduzyl/mindforge-guard@7.0.1</code>, validate an Evidence Pack,
             and read the report as a human-review-oriented artifact.
+          </p>
+          <p style={{ margin: 0, color: "#5b5444", lineHeight: 1.6 }}>
+            v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint. Historical
+            context: v7.0.0 First Governance Report materials and GitHub Release v7.0.0 remain available for release history.
           </p>
         </div>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>

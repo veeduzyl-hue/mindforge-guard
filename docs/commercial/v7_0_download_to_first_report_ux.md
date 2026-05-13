@@ -1,12 +1,13 @@
-# v7.0.0 Download To First Report UX
+# v7.0.1 Download To First Report UX
 
 ## Candidate Status
 
-This is a commercial UX plan for the v7.0.0 first report path. It is not a production implementation.
+This is a commercial UX plan for the v7.0.1 first report path. It is not a production implementation.
 
-- v7.0.0 is published.
-- npm package: `@veeduzyl/mindforge-guard@7.0.0`
-- GitHub Release: `v7.0.0`
+- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
+- npm package: `@veeduzyl/mindforge-guard@7.0.1`
+- GitHub Release: `v7.0.1`
+- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
 - No change to pricing or entitlement in this copy candidate.
 - No License Hub production page is changed.
 - No `mindforge.run` production page is changed.
@@ -24,12 +25,12 @@ User arrives from:
 - `mindforge.run`
 - License Hub
 
-The entry point should make clear that v7.0.0 is already published and that the next step is a local First Governance Report workflow.
+The entry point should make clear that v7.0.1 is the recommended install target and that the next step is a local First Governance Report workflow.
 
 ## Download To First Report Flow
 
 1. User arrives from `mindforge.run` or License Hub.
-2. User installs package: `npm install -g @veeduzyl/mindforge-guard@7.0.0`.
+2. User installs package: `npm install -g @veeduzyl/mindforge-guard@7.0.1`.
 3. User verifies CLI availability with a local CLI check.
 4. User downloads or installs a license if applicable to the paid edition.
 5. User opens the example Evidence Pack:

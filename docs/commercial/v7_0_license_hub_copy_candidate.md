@@ -1,16 +1,17 @@
-# v7.0.0 License Hub Copy Candidate
+# v7.0.1 License Hub Copy Candidate
 
 ## Candidate Status
 
 This is a copy candidate for a future License Hub module. It is not a production page change.
 
-- v7.0.0 is published.
-- npm package: `@veeduzyl/mindforge-guard@7.0.0`
-- GitHub Release: `v7.0.0`
+- v7.0.1 is the recommended install target because it restores the packaged CLI entrypoint.
+- npm package: `@veeduzyl/mindforge-guard@7.0.1`
+- GitHub Release: `v7.0.1`
+- Historical context: v7.0.0 is published as a prior release, including `@veeduzyl/mindforge-guard@7.0.0` and GitHub Release: `v7.0.0`.
 - No change to pricing or entitlement in this copy candidate.
 - No License Hub TSX page is changed by this candidate.
 
-The copy below translates the released v7.0.0 First Governance Report path into buyer onboarding language while preserving Guard's recommendation-only, non-executing, non-control-plane posture.
+The copy below translates the released v7.0.1 First Governance Report path into buyer onboarding language while preserving Guard's recommendation-only, non-executing, non-control-plane posture.
 
 ## Suggested Module: After Purchase: Generate Your First Governance Report
 
@@ -18,7 +19,7 @@ After purchase, start by generating your first local governance report from an e
 
 Suggested copy:
 
-> Your license gives you access to the Guard edition you purchased. Start by installing the published v7.0.0 package, activating your license if you purchased a paid edition, and generating a deterministic single-agent governance report from the HR self-service example Evidence Pack.
+> Your license gives you access to the Guard edition you purchased. Start by installing the published v7.0.1 package, activating your license if you purchased a paid edition, and generating a deterministic single-agent governance report from the HR self-service example Evidence Pack.
 
 Suggested CTA label:
 
@@ -30,9 +31,11 @@ Suggested helper copy:
 
 ## Suggested Module: Start With The v7.0.0 First Report Workflow
 
+Current install target for this workflow is v7.0.1.
+
 First Governance Report workflow:
 
-1. Install Guard from npm: `@veeduzyl/mindforge-guard@7.0.0`.
+1. Install Guard from npm: `@veeduzyl/mindforge-guard@7.0.1`.
 2. Activate a license if using a paid edition.
 3. Open the example Evidence Pack.
 4. Run `guard pack validate --pack <path> --preview --json`.
@@ -42,7 +45,7 @@ First Governance Report workflow:
 
 Suggested copy:
 
-> The v7.0.0 first report workflow turns a local Evidence Pack into a deterministic governance report. It is designed for human reviewers who need a bounded view of authority, behavior evidence, and risk signals before deciding what to do next in their own process.
+> The v7.0.1 first report workflow turns a local Evidence Pack into a deterministic governance report. It is designed for human reviewers who need a bounded view of authority, behavior evidence, and risk signals before deciding what to do next in their own process.
 
 ## Suggested Module: Use The HR Self-Service Example Evidence Pack
 
@@ -100,7 +103,7 @@ Suggested copy:
 
 Suggested copy:
 
-> Guard is a deterministic governance layer for evidence-backed review. It is not an approval system, not a blocker, not a deployment gate, not a legal compliance guarantee, and not a maturity certification. v7.0.0 does not launch a GitHub Action, does not provide a Marketplace listing, and does not change pricing or entitlement.
+> Guard is a deterministic governance layer for evidence-backed review. It is not an approval system, not a blocker, not a deployment gate, not a legal compliance guarantee, and not a maturity certification. v7.0.1 does not launch a GitHub Action, does not provide a Marketplace listing, and does not change pricing or entitlement.
 
 Boundary terms to preserve:
 
