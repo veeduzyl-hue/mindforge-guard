@@ -4,7 +4,7 @@ MindForge Guard is a deterministic governance CLI for bounded, auditable artifac
 
 ## Released Baseline
 
-The current package release is `v7.0.0`.
+The current package release is `v7.0.1`.
 
 It remains:
 
@@ -30,7 +30,7 @@ npm install -g @veeduzyl/mindforge-guard
 If npm registry install is unavailable, install the shipped package tarball directly:
 
 ```bash
-npm install -g ./veeduzyl-mindforge-guard-7.0.0.tgz
+npm install -g ./veeduzyl-mindforge-guard-7.0.1.tgz
 ```
 
 ## First Commands After Install
