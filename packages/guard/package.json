@@ -6,7 +6,7 @@
   "private": false,
   "type": "module",
   "bin": {
-    "guard": "./bin/guard.mjs"
+    "guard": "bin/guard.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -42,6 +42,16 @@ That left the published npm `guard` shim resolving to the packaged bin file whil
 - dry-run completed without publishing a package
 - no `.tgz` artifact was retained in the repository working tree
 
+## npm Publish Dry-run Manifest Normalization
+
+- npm `11.6.2` previously normalized `bin.guard` from `./bin/guard.mjs` to `bin/guard.mjs` during publish preparation
+- source package manifest now uses `bin.guard: "bin/guard.mjs"` so the source manifest matches the prepared publish manifest
+- npm publish dry-run no longer reports the `bin[guard]` invalid-and-removed normalization warning
+- `bin.guard` remains present in the package manifest
+- no package published
+- no tag created
+- no GitHub Release published
+
 ## Verification
 
 - `node scripts/verify_v7_0_1_cli_entrypoint_hotfix.mjs`

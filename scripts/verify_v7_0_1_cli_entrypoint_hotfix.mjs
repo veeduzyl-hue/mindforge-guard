@@ -180,6 +180,8 @@ function assertAllowedChangedPaths(changedPaths) {
 
 function assertCliEntrypoint(repoRoot) {
   const entrypointPath = path.join(repoRoot, "packages/guard/bin/guard.mjs");
+  expect(fs.existsSync(entrypointPath), "packages/guard/bin/guard.mjs must exist");
+
   const text = readText(entrypointPath);
 
   expect(text.includes('import { runGuard } from "../src/runGuard.mjs";'), "guard.mjs must import runGuard");
@@ -201,7 +203,13 @@ function assertPackageManifest(repoRoot) {
 
   expect(manifest.version === "7.0.1", "packages/guard/package.json version must be exactly 7.0.1");
   expect(manifest.license === "Apache-2.0", "packages/guard/package.json license must remain Apache-2.0");
-  expect(manifest?.bin?.guard === "./bin/guard.mjs", "packages/guard/package.json bin.guard must remain ./bin/guard.mjs");
+  expect(manifest.name === "@veeduzyl/mindforge-guard", "packages/guard/package.json name must remain @veeduzyl/mindforge-guard");
+  expect(manifest?.bin?.guard === "bin/guard.mjs", 'packages/guard/package.json bin.guard must be exactly "bin/guard.mjs"');
+  expect(manifest?.bin?.guard !== "./bin/guard.mjs", 'packages/guard/package.json bin.guard must not be "./bin/guard.mjs"');
+  expect(
+    JSON.stringify(manifest.files) === JSON.stringify(["bin/", "src/", "README.md", "EDITIONS.md", "LICENSE"]),
+    "packages/guard/package.json files whitelist must remain unchanged"
+  );
 }
 
 function assertPackageReadme(repoRoot) {
