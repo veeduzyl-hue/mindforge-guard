@@ -69,6 +69,43 @@ const firstWorkflowLinks = [
 export default function HomePage() {
   const editions = getPricingEditions();
   const config = getPaddleClientBootConfig();
+  const afterPurchaseFlow = [
+    {
+      title: "1. Sign in with your purchase email",
+      body: "Use the same purchase email to sign in to License Hub after checkout.",
+    },
+    {
+      title: "2. Download your signed license JSON",
+      body: "Download the signed license JSON delivered through License Hub.",
+    },
+    {
+      title: "3. Install Guard",
+      command: "npm install -g @veeduzyl/mindforge-guard@7.0.1",
+    },
+    {
+      title: "4. Verify and install the license",
+      command: [
+        "guard license verify --file downloaded-license.json",
+        "guard license install --file downloaded-license.json",
+        "guard license status",
+      ].join("\n"),
+    },
+    {
+      title: "5. Generate your first governance report",
+      command: [
+        "guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
+        "guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
+      ].join("\n"),
+    },
+    {
+      title: "6. Read the report",
+      body: "authority boundary, execution evidence, missing evidence, risk/drift signals",
+    },
+    {
+      title: "7. Make the next human review decision outside Guard",
+      body: "Guard produces review evidence so the final human review decision stays outside Guard.",
+    },
+  ] as const;
   const purchaseFlow = [
     {
       title: "Choose an edition",
@@ -156,6 +193,54 @@ export default function HomePage() {
             cancelUrl={config.cancelUrl}
             editions={editions}
           />
+        </section>
+
+        <section style={{ ...panelStyle, display: "grid", gap: 14 }}>
+          <div style={{ display: "grid", gap: 6 }}>
+            <h2 style={{ margin: 0 }}>After purchase: generate your first governance report</h2>
+            <p style={{ ...mutedTextStyle, margin: 0 }}>
+              Use the same purchase email to sign in, download your signed license, install Guard locally, and generate a deterministic governance report for human review.
+            </p>
+          </div>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+            {afterPurchaseFlow.map((step) => (
+              <article
+                key={step.title}
+                style={{
+                  padding: 16,
+                  borderRadius: 12,
+                  background: "#fffaf0",
+                  border: "1px solid #d8ccae",
+                  display: "grid",
+                  gap: 8,
+                }}
+              >
+                <strong>{step.title}</strong>
+                {"body" in step ? (
+                  <p style={{ ...mutedTextStyle, margin: 0 }}>{step.body}</p>
+                ) : (
+                  <pre
+                    style={{
+                      margin: 0,
+                      padding: 12,
+                      borderRadius: 10,
+                      border: "1px solid #e3d7b9",
+                      background: "#fffdf8",
+                      whiteSpace: "pre-wrap",
+                      overflowX: "auto",
+                      fontSize: 13,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <code>{step.command}</code>
+                  </pre>
+                )}
+              </article>
+            ))}
+          </div>
+          <p style={{ ...mutedTextStyle, margin: 0 }}>
+            Guard produces review evidence. It does not approve, block, deploy, certify, or control execution.
+          </p>
         </section>
 
         <section style={{ ...panelStyle, display: "grid", gap: 14 }}>

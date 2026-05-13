@@ -227,7 +227,25 @@ This preview line preserves:
 - no exit `25`
 - no current commercial entitlement change
 
-## 12. See Also
+## 12. v7.0.1 License Hub After-Purchase Onboarding Verification
+
+`v7.0.1` License Hub onboarding remains a bounded commercial copy update only. It does not change runtime behavior, pricing values, checkout behavior, entitlement, or CLI semantics.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs
+```
+
+This verification confirms:
+
+- after-purchase onboarding copy is present on License Hub home and docs surfaces
+- first-run local install and license commands are present
+- report-reading guidance includes authority boundary, execution evidence, missing evidence, and risk/drift signals
+- the commercial boundary still states that Guard does not approve, block, deploy, certify, or control execution
+- Enterprise copy preserves `No extra runtime authority`
+
+## 13. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
