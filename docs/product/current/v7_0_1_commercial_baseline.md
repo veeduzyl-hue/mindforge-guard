@@ -24,6 +24,10 @@ For a manually triggered GitHub Actions walkthrough that uploads the same first-
 
 - [GitHub Action: First Governance Report](./github-action-first-report.md)
 
+For closeout notes and future GitHub Marketplace Action planning, see:
+
+- [GitHub Marketplace Action Feasibility](./marketplace-action-feasibility.md)
+
 ## Editions
 
 Current buyer-facing editions are:
