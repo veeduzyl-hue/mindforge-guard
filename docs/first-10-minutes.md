@@ -5,7 +5,7 @@ This guide is the canonical 10-minute getting-started path for the current stabl
 ## Minute 0-2: Install Guard
 
 ```bash
-npm install -g @veeduzyl/mindforge-guard
+npm install -g @veeduzyl/mindforge-guard@7.0.1
 ```
 
 Guard stays local-first. It helps you inspect change and governance state, but it does not take over execution.
