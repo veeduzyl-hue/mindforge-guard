@@ -20,6 +20,10 @@ Start with the current public first-report guide:
 
 Use that path to install Guard, validate the sample Evidence Pack, and generate a deterministic governance report locally.
 
+For a manually triggered GitHub Actions walkthrough that uploads the same first-report outputs as review artifacts, see:
+
+- [GitHub Action: First Governance Report](./github-action-first-report.md)
+
 ## Editions
 
 Current buyer-facing editions are:

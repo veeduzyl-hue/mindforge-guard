@@ -280,7 +280,21 @@ This verification confirms:
 - historical `v6.13` baseline guidance remains available as a superseded pointer instead of the current baseline page
 - Enterprise keeps the same bounded runtime posture with No extra runtime authority
 
-## 15. See Also
+## 15. v7.0.1 GitHub Action First Report Verification
+
+`v7.0.1` GitHub Action first-report readiness remains a bounded GitHub Action demo, docs, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_0_1_github_action_first_report.mjs
+```
+
+This verifier checks that the GitHub Action is manually triggered, installs `@veeduzyl/mindforge-guard@7.0.1`, runs the first-report commands, uploads deterministic review artifacts, and does not present itself as an approval, blocking, deployment, or compliance workflow.
+
+It confirms the workflow produces review artifacts only and does not approve, block, deploy, certify, or control execution.
+
+## 16. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)

@@ -1,0 +1,50 @@
+name: MindForge Guard First Governance Report
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  first-governance-report:
+    name: Generate first governance report artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install MindForge Guard
+        run: npm install -g @veeduzyl/mindforge-guard@7.0.1
+
+      - name: Verify Guard CLI
+        run: |
+          guard --version
+          guard --help
+
+      - name: Validate sample Evidence Pack
+        run: |
+          guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json > guard-pack-validate.json
+
+      - name: Generate single-agent governance report
+        run: |
+          guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json > guard-single-agent-report.json
+
+      - name: Upload governance review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindforge-guard-first-governance-report
+          path: |
+            guard-pack-validate.json
+            guard-single-agent-report.json
+          if-no-files-found: error
