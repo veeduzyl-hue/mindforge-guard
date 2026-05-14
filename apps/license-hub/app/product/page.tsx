@@ -9,7 +9,7 @@ const trustDocs = [
   },
   {
     title: "First report workflow",
-    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/v7_0_first_report.md",
+    href: "https://github.com/veeduzyl-hue/mindforge-guard/blob/main/docs/product/current/first-governance-report.md",
   },
   {
     title: "Trust FAQ",
