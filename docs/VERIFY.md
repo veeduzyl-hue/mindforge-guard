@@ -263,7 +263,24 @@ This verification confirms:
 - License Hub public docs links point to the current first-report guide
 - deny exit code `25` remains unchanged
 
-## 14. See Also
+## 14. v7.0.1 Current Docs Baseline Verification
+
+`v7.0.1` current docs baseline verification remains a bounded docs, verifier, and link hygiene update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, or CLI semantics.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_0_1_current_docs_baseline.mjs
+```
+
+This verification confirms:
+
+- current buyer-facing docs state that `v7.0.1` is the current public commercial baseline
+- current edition and trust docs align with the single-agent governance evidence story
+- historical `v6.13` baseline guidance remains available as a superseded pointer instead of the current baseline page
+- Enterprise keeps the same bounded runtime posture with No extra runtime authority
+
+## 15. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)

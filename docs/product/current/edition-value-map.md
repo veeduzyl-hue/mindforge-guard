@@ -2,64 +2,88 @@
 
 ## Purpose
 
-This page explains the current editions in buyer-value terms first, then maps those outcomes back to the released command boundary.
+This page explains the current v7.0.1 editions in buyer-value terms, then maps those outcomes back to the released command boundary.
 
-- `v6.13` is the current commercial baseline
-- `v6.14+` items remain additive future roadmap areas unless separately implemented and released
+- v7.0.1 is the current public commercial baseline
+- MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows
+- Editions change governance evidence depth, not runtime authority
+- Editions do not add approval authority, blocking authority, deployment authority, or runtime control-plane authority
 
 ## The Buyer Story In One Line
 
-Guard lets teams start with visible local governance, then upgrade only when they need more historical or comparative analytics depth.
+Guard helps teams make single-agent AI-assisted work reviewable before it becomes trusted, then upgrade only when they need deeper evidence over time, comparison, correlation, or organizational rollout support.
 
 ## Community
 
 Buyer value:
 
-- start with a real local governance workflow instead of a trial shell
-- inspect current repo status, policy state, audit output, and current drift signals
-- classify AI-assisted actions into deterministic artifacts before downstream review pressure builds
+- see current governance evidence for one local single-agent workflow
+- inspect current status, policy state, audit output, current drift status, action classification, and license lifecycle commands
+- start with local CLI evaluation without hosted execution authority
+
+Released command boundary:
+
+- `guard status`
+- `guard validate-policy`
+- `guard audit . --staged`
+- `guard snapshot .`
+- `guard action classify --text "<text>"`
+- `guard drift status`
+- `guard license verify --file <file>`
+- `guard license install --file <file>`
+- `guard license status`
+- `guard license show`
+- `guard license remove`
 
 ## Pro
 
 Buyer value:
 
-- move from current-state visibility to time-based drift visibility
-- review whether drift is rising, cooling, or stabilizing over time
-- support leads who need more than a single-point governance snapshot
+- track governance signals over time for AI-assisted work
+- move from one-time evidence snapshot to timeline-oriented review where released commands support it
+
+Released command boundary:
+
+- everything in Community
+- `guard drift timeline` where licensed and released
 
 ## Pro+
 
 Buyer value:
 
-- compare states instead of inspecting only one state at a time
-- correlate deeper signals across governance-oriented analytics
-- give advanced users a stronger basis for upgrade justification, review preparation, and change comparison
+- compare evidence states and uncover deeper governance signals
+- support teams that need compare-oriented or correlation-oriented review before trust
+
+Released command boundary:
+
+- everything in Pro
+- `guard drift compare` where licensed and released
+- `guard assoc correlate` where licensed and released
 
 ## Enterprise
 
 Buyer value:
 
-- standardize procurement, purchasing, and organizational adoption around the same released CLI boundary
-- keep commercial packaging and support flows formal without promising extra runtime authority
-- align with enterprise buying processes while preserving local-first CLI use
+- standardize procurement, rollout, and review packets around the same bounded runtime posture
+- support organizational adoption without adding runtime authority
 
-Current release boundary:
+Released commercial boundary:
 
-- Enterprise currently preserves the same CLI entitlement as Pro+ in the current stable release
-- Enterprise does not add extra runtime authority in the current release
+- commercial entitlement aligned with Pro+
+- no hosted control plane
+- No extra runtime authority
+- no approval system
+- no blocking system
+- no deployment-control authority
 
-## Why Buyers Upgrade
+## Boundary
 
-| Edition | What it is for |
-|---|---|
-| Community | Current-state visibility and first-run local governance workflows |
-| Pro | Time-based drift visibility |
-| Pro+ | Deeper comparison and correlation analytics |
-| Enterprise | Procurement and organizational adoption around the same current CLI boundary |
+Guard produces review evidence. It does not approve, block, deploy, certify, or control execution.
 
 ## Related References
 
+- [v7.0.1 Commercial Baseline](./v7_0_1_commercial_baseline.md)
+- [First Governance Report](./first-governance-report.md)
+- [Trust FAQ](./trust-faq.md)
 - [First 10 Minutes With Guard](../../first-10-minutes.md)
 - [Guard Editions And Command Map](../../EDITIONS.md)
-- [Trust FAQ](./trust-faq.md)
-- [License Activation](../../license-activation.md)

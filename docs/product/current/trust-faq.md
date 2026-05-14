@@ -2,10 +2,13 @@
 
 ## What is this FAQ for?
 
-This FAQ answers common trust and positioning questions for the current stable commercial baseline.
+This FAQ answers common trust and positioning questions for the current v7.0.1 commercial baseline.
 
-- `v6.13` is the current commercial baseline
-- `v6.14+` roadmap areas stay future-scoped unless separately implemented and released
+- v7.0.1 is the current public commercial baseline
+- paid licensing remains signed local license JSON
+- License Hub supports purchase, account, and license delivery
+- Guard remains non-executing, recommendation-only, non-control-plane, and local-first where applicable
+- Enterprise does not add extra runtime authority
 
 ## Does Guard take over execution?
 
@@ -15,7 +18,7 @@ It can inspect, classify, validate, summarize, and expose edition-gated analytic
 
 ## Is Guard a control plane or dashboard product?
 
-No. The current baseline is a local-first CLI plus bounded commercial support surfaces around licensing and account visibility.
+No. The current baseline is a deterministic governance evidence layer for single-agent AI workflows, with a local-first CLI plus bounded commercial support surfaces around licensing and account visibility.
 
 Guard is not positioned as a control plane, orchestrator, or dashboard-first runtime.
 
@@ -30,6 +33,8 @@ The current activation path is still local:
 - `guard license status`
 
 That makes the commercial boundary visible without changing the runtime trust model.
+
+License Hub supports purchase, account access, and signed license delivery, but it does not move execution authority into a hosted runtime.
 
 ## What can Community users do today?
 
@@ -66,7 +71,7 @@ This is the current top analytics tier for deeper comparison and correlation wor
 
 Enterprise is the formal commercial packaging and procurement tier in the current release.
 
-In the current stable release, Enterprise keeps the same current CLI entitlement as Pro+ and does not add extra runtime authority.
+In the current release, Enterprise keeps the same current CLI entitlement as Pro+ and does not add extra runtime authority.
 
 ## What happens if a paid command is unavailable?
 
@@ -83,18 +88,11 @@ No. Online or account-connected surfaces are additive support surfaces.
 
 The current authoritative runtime path remains local install plus local license verification and installation when paid analytics are needed.
 
-## Are future governance features already part of the current release?
+## Are roadmap notes the same as current availability?
 
-No. The following remain future/additive roadmap areas unless separately implemented and released:
+No. Roadmap notes, planning references, and internal acceptance records are not current availability claims by themselves.
 
-- Authority / Intent Boundary
-- Admissibility
-- Commit Gate Dry-run
-- Multi-Agent Handoff
-- Graph-aware Governance
-- Enterprise Runtime Governance
-
-They should not be read as current availability claims.
+The current buyer-facing baseline is the released `v7.0.1` package plus the current docs, editions, License Hub, and first governance report path documented from this FAQ.
 
 ## How should a buyer verify the product safely?
 
@@ -108,7 +106,9 @@ Use the current local-first path:
 
 ## Related References
 
+- [v7.0.1 Commercial Baseline](./v7_0_1_commercial_baseline.md)
 - [Safety Boundary](../../trust/safety-boundary.md)
 - [First 10 Minutes With Guard](../../first-10-minutes.md)
 - [Edition Value Map](./edition-value-map.md)
+- [First Governance Report](./first-governance-report.md)
 - [Editions And Command Map](../../EDITIONS.md)

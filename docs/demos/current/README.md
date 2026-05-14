@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This folder is the demo index for the current stable commercial baseline.
+This folder is the demo index for the current v7.0.1 public commercial baseline.
 
 - Demo A: Community baseline
 - Demo B: Pro drift visibility
@@ -33,5 +33,6 @@ Shows how Pro+ adds compare and correlation on top of the Pro timeline surface.
 ## Supporting References
 
 - [First 10 Minutes With Guard](../../first-10-minutes.md)
+- [v7.0.1 Commercial Baseline](../../product/current/v7_0_1_commercial_baseline.md)
 - [Guard Editions And Command Map](../../EDITIONS.md)
 - [Edition Value Map](../../product/current/edition-value-map.md)
