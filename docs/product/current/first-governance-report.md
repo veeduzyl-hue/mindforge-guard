@@ -2,8 +2,6 @@
 
 MindForge Guard is a deterministic governance evidence layer for single-agent AI workflows. Use this guide to move from a local Evidence Pack to a deterministic governance report that helps human reviewers inspect authority boundaries, execution evidence, missing evidence, and risk/drift signals.
 
-This guide supports the current buyer-facing baseline documented in [v7.0.1 Commercial Baseline](./v7_0_1_commercial_baseline.md).
-
 > Not an approval system. Not a blocker. Not a control plane.
 
 ## Install

@@ -1,11 +1,11 @@
 # First 10 Minutes With Guard
 
-This guide is the canonical 10-minute getting-started path for the current v7.0.1 public commercial baseline. It walks from install to a first successful Guard experience using only implemented commands.
+This guide is the canonical 10-minute getting-started path for the current stable release. It walks from install to a first successful Guard experience using only implemented commands.
 
 ## Minute 0-2: Install Guard
 
 ```bash
-npm install -g @veeduzyl/mindforge-guard@7.0.1
+npm install -g @veeduzyl/mindforge-guard
 ```
 
 Guard stays local-first. It helps you inspect change and governance state, but it does not take over execution.
@@ -118,7 +118,7 @@ Edition summary:
 
 - `pro` unlocks `guard drift timeline`
 - `pro_plus` unlocks `guard drift compare` and `guard assoc correlate`
-- `enterprise` currently matches Pro+ CLI entitlement in this release, with No extra runtime authority
+- `enterprise` currently matches Pro+ CLI entitlement in this release
 
 From here, the usual next step is either:
 
@@ -130,7 +130,6 @@ If you want example walkthroughs for each edition tier after this first-run path
 ## Related Docs
 
 - [Quickstart](./quickstart.md)
-- [v7.0.1 Commercial Baseline](./product/current/v7_0_1_commercial_baseline.md)
 - [License Activation](./license-activation.md)
 - [Editions And Command Map](./EDITIONS.md)
 - [Trust FAQ](./product/current/trust-faq.md)
