@@ -4,6 +4,8 @@
 
 MindForge Guard helps teams make AI-assisted work reviewable before it becomes trusted. It turns Evidence Packs into deterministic governance reports so human reviewers can inspect authority boundaries, execution evidence, missing evidence, and risk/drift signals.
 
+v7.0.1 is the current public commercial baseline.
+
 > Not an approval system. Not a blocker. Not a control plane.
 
 ## Install
@@ -55,6 +57,7 @@ Edition boundaries:
 
 See:
 
+- [Current commercial baseline](./docs/product/current/v7_0_1_commercial_baseline.md)
 - [Choose the right Guard edition](./docs/product/current/edition-value-map.md)
 - [License guide](./docs/LICENSE.md)
 
@@ -137,7 +140,7 @@ MindForge Guard does not become:
 
 - an approval system
 - a blocking system
-- a deployment gate
+- a deployment-control authority
 - a runtime control plane
 
 MindForge Guard does not approve, block, deploy, certify, or control execution.
@@ -145,6 +148,7 @@ MindForge Guard does not approve, block, deploy, certify, or control execution.
 ## Guides
 
 - [First governance report](./docs/product/current/first-governance-report.md)
+- [Current commercial baseline](./docs/product/current/v7_0_1_commercial_baseline.md)
 - [Choose the right Guard edition](./docs/product/current/edition-value-map.md)
 - [Trust FAQ](./docs/product/current/trust-faq.md)
 - [First 10 minutes with Guard](./docs/first-10-minutes.md)

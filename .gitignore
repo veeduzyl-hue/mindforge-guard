@@ -8,6 +8,8 @@ node_modules/
 .mindforge/
 
 # License hub / Next / Prisma local artifacts
+.vercel/
+apps/license-hub/.vercel/
 apps/license-hub/.next/
 apps/license-hub/.env.local
 apps/license-hub/.env
