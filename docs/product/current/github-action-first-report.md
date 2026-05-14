@@ -74,6 +74,6 @@ It is useful for evaluation, onboarding, internal demonstration, and first-revie
 
 ## When Not To Use This
 
-Do not use this workflow as a required check, merge gate, deployment control, certification substitute, or runtime enforcement path.
+Do not use this workflow to require repository changes, control merges, control deployments, substitute for certification, or enforce runtime behavior.
 
 Future teams may adapt the pattern for broader CI reporting, but that should remain separate from Guard's runtime authority boundary unless a later release explicitly changes the contract.
