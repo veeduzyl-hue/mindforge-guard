@@ -9,20 +9,44 @@ const TARGETS = {
   verify: "docs/VERIFY.md",
 };
 
-const REQUIRED_PHRASES = [
+const WORKFLOW_REQUIRED_PHRASES = [
   "workflow_dispatch",
   "@veeduzyl/mindforge-guard@7.0.1",
   "guard --version",
   "guard --help",
-  "guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
-  "guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json",
+  "guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json > guard-pack-validate.json",
+  "guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json > guard-single-agent-report.json",
   "guard-pack-validate.json",
   "guard-single-agent-report.json",
-  "upload-artifact",
+  "actions/upload-artifact@v4",
+];
+
+const DOC_REQUIRED_PHRASES = [
   "manually triggered",
   "non-blocking",
   "review artifact",
+  "The report is a review artifact. Final review decisions happen outside Guard.",
   "does not approve, block, deploy, certify, or control execution",
+];
+
+const README_REQUIRED_PHRASES = [
+  "## GitHub Action Demo",
+  "docs/product/current/github-action-first-report.md",
+];
+
+const WORKFLOW_FORBIDDEN_PATTERNS = [
+  /^\s*push\s*:/m,
+  /^\s*pull_request\s*:/m,
+  /^\s*pull_request_target\s*:/m,
+  /^\s*environment\s*:/m,
+  /deploy/i,
+  /publish/i,
+  /release/i,
+  /approval/i,
+  /gate/i,
+  /required check/i,
+  /required status check/i,
+  /merge gate/i,
 ];
 
 const POSITIVE_CLAIMS = [
@@ -31,7 +55,15 @@ const POSITIVE_CLAIMS = [
   "approval gate",
   "approval system",
   "blocking system",
+  "runtime control plane",
+  "control plane",
   "runtime enforcement",
+  "blocker",
+  "blocks",
+  "approves",
+  "certifies",
+  "deployment control",
+  "deployment-control authority",
   "compliance certification",
   "legal compliance guarantee",
   "maturity certification",
@@ -58,14 +90,24 @@ function assertContainsAll(text, phrases, label) {
   }
 }
 
+function assertMatchesNone(text, patterns, label) {
+  for (const pattern of patterns) {
+    expect(!pattern.test(text), `${label} must not include pattern: ${pattern}`);
+  }
+}
+
 function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[-\\s]+");
 }
 
 function isNegatedNearby(text, index) {
-  const windowStart = Math.max(0, index - 90);
+  const windowStart = Math.max(0, index - 240);
   const prefix = text.slice(windowStart, index).toLowerCase();
-  return /\b(no|not|does not|do not|doesn't|is not|are not|never|without)\b[\s\S]{0,80}$/.test(prefix);
+  return (
+    /\b(no|not|does not|do not|doesn't|is not|are not|never|without)\b[\s\S]{0,80}$/.test(prefix) ||
+    /\b(does not become|do not become)\b[\s\S]{0,200}$/.test(prefix) ||
+    /\bnon[-\s]*$/.test(prefix)
+  );
 }
 
 function assertNoPositiveBoundaryClaims(text, label) {
@@ -108,21 +150,20 @@ function main() {
 
   assertWorkflowDispatchOnly(workflowText);
   assertArtifactsUploaded(workflowText);
-  assertContainsAll(combinedText, REQUIRED_PHRASES, "v7.0.1 GitHub Action first report surface");
+  assertContainsAll(workflowText, WORKFLOW_REQUIRED_PHRASES, "GitHub Action workflow");
+  assertContainsAll(guideText, DOC_REQUIRED_PHRASES, "GitHub Action guide");
+  assertContainsAll(readmeText, README_REQUIRED_PHRASES, "README.md");
+  assertMatchesNone(workflowText, WORKFLOW_FORBIDDEN_PATTERNS, "GitHub Action workflow");
 
   expect(
-    readmeText.includes("## GitHub Action Demo") &&
-      readmeText.includes("docs/product/current/github-action-first-report.md"),
-    "README.md must include the GitHub Action demo entry and guide link",
+    workflowText.includes("name: MindForge Guard First Governance Report") ||
+      workflowText.includes("name: MindForge Guard First Governance Report Demo"),
+    "workflow name must clearly identify the first governance report demo",
   );
   expect(
     verifyText.includes("## 15. v7.0.1 GitHub Action First Report Verification") &&
       verifyText.includes("node scripts/verify_v7_0_1_github_action_first_report.mjs"),
     "docs/VERIFY.md must include the v7.0.1 GitHub Action first report verification command",
-  );
-  expect(
-    guideText.includes("The report is a review artifact. Final review decisions happen outside Guard."),
-    "GitHub Action guide must state that final review decisions happen outside Guard",
   );
 
   assertNoPositiveBoundaryClaims(combinedText, "v7.0.1 GitHub Action first report surface");
