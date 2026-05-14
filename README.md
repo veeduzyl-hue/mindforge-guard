@@ -37,6 +37,14 @@ Human reviewers use the report to inspect:
 
 Guard produces review evidence. The final human review decision remains outside Guard.
 
+## GitHub Action Demo
+
+Run the first governance report in GitHub Actions as a manually triggered, non-blocking review artifact workflow.
+
+See: [GitHub Action: First Governance Report](./docs/product/current/github-action-first-report.md)
+
+The workflow does not approve, block, deploy, certify, or control execution.
+
 ## Editions
 
 MindForge Guard editions differ by governance evidence depth, not runtime authority.
