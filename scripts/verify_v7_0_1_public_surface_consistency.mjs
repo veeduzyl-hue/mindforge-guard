@@ -82,10 +82,12 @@ const ALLOWED_CHANGED_PATHS = new Set([
   "README.md",
   "packages/guard/package.json",
   "packages/guard/README.md",
+  "docs/first-10-minutes.md",
   "docs/product/current/first-governance-report.md",
   "docs/product/current/v7_0_first_report.md",
   "apps/license-hub/app/page.tsx",
   "apps/license-hub/app/docs/page.tsx",
+  "apps/license-hub/app/product/page.tsx",
   "scripts/verify_v7_0_1_public_surface_consistency.mjs",
   "docs/VERIFY.md",
 ]);
@@ -250,13 +252,14 @@ function main() {
   const supersededGuide = readText(path.join(repoRoot, "docs/product/current/v7_0_first_report.md"));
   const licenseHubHome = readText(path.join(repoRoot, "apps/license-hub/app/page.tsx"));
   const licenseHubDocs = readText(path.join(repoRoot, "apps/license-hub/app/docs/page.tsx"));
+  const licenseHubProduct = readText(path.join(repoRoot, "apps/license-hub/app/product/page.tsx"));
 
   assertContainsAll(rootReadme, REQUIRED_ROOT_README_PHRASES, "README.md");
   assertContainsAll(packageReadme, ["guard --version", "guard --help"], "packages/guard/README.md");
   assertContainsAll(firstGuide, REQUIRED_PUBLIC_GUIDE_PHRASES, "first-governance-report.md");
   assertContainsAll(supersededGuide, REQUIRED_SUPERSEDED_POINTER_PHRASES, "v7_0_first_report.md");
   assertContainsAll(
-    `${rootReadme}\n${packageJson}\n${packageReadme}\n${licenseHubHome}\n${licenseHubDocs}`,
+    `${rootReadme}\n${packageJson}\n${packageReadme}\n${licenseHubHome}\n${licenseHubDocs}\n${licenseHubProduct}`,
     REQUIRED_LINK_PHRASES,
     "public surfaces",
   );
@@ -270,21 +273,31 @@ function main() {
     "License Hub docs must link to the current first governance report guide",
   );
   expect(
+    licenseHubProduct.includes("docs/product/current/first-governance-report.md"),
+    "License Hub product page must link to the current first governance report guide",
+  );
+  expect(
+    !licenseHubProduct.includes("docs/product/current/v7_0_first_report.md"),
+    "License Hub product page must not link to the superseded v7_0_first_report.md guide",
+  );
+  expect(
     !licenseHubHome.includes("v7_0_download_to_first_report_ux.md") &&
-      !licenseHubDocs.includes("v7_0_download_to_first_report_ux.md"),
+      !licenseHubDocs.includes("v7_0_download_to_first_report_ux.md") &&
+      !licenseHubProduct.includes("v7_0_download_to_first_report_ux.md"),
     "License Hub public surfaces must not link to v7_0_download_to_first_report_ux.md",
   );
   expect(
     !licenseHubHome.includes("v7_0_license_hub_copy_candidate.md") &&
-      !licenseHubDocs.includes("v7_0_license_hub_copy_candidate.md"),
+      !licenseHubDocs.includes("v7_0_license_hub_copy_candidate.md") &&
+      !licenseHubProduct.includes("v7_0_license_hub_copy_candidate.md"),
     "License Hub public surfaces must not link to v7_0_license_hub_copy_candidate.md",
   );
 
   assertForbiddenClaimsAbsent(
-    `${rootReadme}\n${packageReadme}\n${firstGuide}\n${supersededGuide}\n${licenseHubHome}\n${licenseHubDocs}`,
+    `${rootReadme}\n${packageReadme}\n${firstGuide}\n${supersededGuide}\n${licenseHubHome}\n${licenseHubDocs}\n${licenseHubProduct}`,
   );
   assertNoApprovalOrBlockingClaims(
-    `${rootReadme}\n${packageReadme}\n${firstGuide}\n${supersededGuide}\n${licenseHubHome}\n${licenseHubDocs}`,
+    `${rootReadme}\n${packageReadme}\n${firstGuide}\n${supersededGuide}\n${licenseHubHome}\n${licenseHubDocs}\n${licenseHubProduct}`,
   );
   assertDenyExitCodeStillPresent(repoRoot);
 
