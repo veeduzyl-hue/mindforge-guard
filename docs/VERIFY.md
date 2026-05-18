@@ -308,7 +308,23 @@ This verifier checks that the Bring Your Own Workflow guide, Evidence Pack templ
 
 It confirms the adoption-readiness surface produces review artifacts only and does not approve, block, deploy, certify, guarantee legal compliance, or control execution.
 
-## 17. See Also
+## 17. v7.1 Report Handoff / Renderer Plan Verification
+
+`v7.1` report handoff refinement remains a bounded docs, examples, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_1_report_handoff_renderer_plan.mjs
+```
+
+This verifier checks that the Markdown renderer plan, report examples index, and handoff checklist preserve the JSON report as the deterministic source artifact.
+
+It does not present Markdown output as approval, blocking, deployment, certification, or legal compliance behavior.
+
+It is not runtime control-plane behavior.
+
+## 18. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
