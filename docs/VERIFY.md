@@ -324,7 +324,23 @@ It does not present Markdown output as approval, blocking, deployment, certifica
 
 It is not runtime control-plane behavior.
 
-## 18. See Also
+## 18. v7.1 Design Partner Trial Kit Verification
+
+`v7.1` design partner trial kit remains a bounded docs, examples, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_1_design_partner_trial_kit.mjs
+```
+
+This verifier checks that the trial kit, workflow selection scorecard, adoption feedback form, and design partner trial example preserve Guard as a review-evidence layer.
+
+It does not present trial output as approval, blocking, deployment, certification, or legal compliance behavior.
+
+It is not runtime control-plane behavior.
+
+## 19. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
