@@ -1,0 +1,74 @@
+name: MindForge Guard Bring Your Own Governance Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      pack_path:
+        description: "Path to the Evidence Pack folder in this repository"
+        required: true
+        default: "examples/single-agent-governance-pack/hr-self-service-agent"
+      guard_version:
+        description: "MindForge Guard npm package version"
+        required: true
+        default: "7.0.1"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  governance-report:
+    name: Generate governance review artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install MindForge Guard
+        run: npm install -g @veeduzyl/mindforge-guard@${{ inputs.guard_version }}
+
+      - name: Verify Guard CLI
+        run: |
+          guard --version
+          guard --help
+
+      - name: Prepare artifact directory
+        run: mkdir -p guard-artifacts
+
+      - name: Validate Evidence Pack
+        run: |
+          guard pack validate --pack "${{ inputs.pack_path }}" --preview --json > guard-artifacts/guard-pack-validate.json
+
+      - name: Generate single-agent governance report
+        run: |
+          guard report single-agent --pack "${{ inputs.pack_path }}" --preview --json > guard-artifacts/guard-single-agent-report.json
+
+      - name: Add review README
+        run: |
+          cat > guard-artifacts/README.md <<'EOF'
+          # MindForge Guard Review Artifacts
+
+          This artifact bundle contains deterministic governance review outputs for human inspection.
+
+          Files:
+          - guard-pack-validate.json
+          - guard-single-agent-report.json
+
+          MindForge Guard produces review artifacts for human inspection only.
+          EOF
+
+      - name: Upload governance review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindforge-guard-governance-review-artifacts
+          path: guard-artifacts/
+          if-no-files-found: error
