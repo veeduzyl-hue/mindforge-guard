@@ -50,6 +50,9 @@ Start here:
 - [Markdown report renderer plan](./docs/product/current/markdown-report-renderer-plan.md)
 - [Report handoff checklist](./docs/product/current/report-handoff-checklist.md)
 - [Report examples](./examples/reports/README.md)
+- [Design Partner Trial Kit](./docs/product/current/design-partner-trial-kit.md)
+- [Workflow Selection Scorecard](./docs/product/current/workflow-selection-scorecard.md)
+- [Adoption Feedback Form](./docs/product/current/adoption-feedback-form.md)
 
 This path helps external users create review evidence for AI coding PR, support agent, ops agent, and internal workflow agent use cases. It does not approve, block, deploy, certify, or control execution.
 
