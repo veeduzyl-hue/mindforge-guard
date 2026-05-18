@@ -53,6 +53,8 @@ Start here:
 - [Design Partner Trial Kit](./docs/product/current/design-partner-trial-kit.md)
 - [Workflow Selection Scorecard](./docs/product/current/workflow-selection-scorecard.md)
 - [Adoption Feedback Form](./docs/product/current/adoption-feedback-form.md)
+- [v7.1 adoption readiness closeout](./docs/product/current/v7_1_adoption_readiness_closeout.md)
+- [Trial launch pack](./docs/product/current/trial-launch-pack.md)
 
 This path helps external users create review evidence for AI coding PR, support agent, ops agent, and internal workflow agent use cases. It does not approve, block, deploy, certify, or control execution.
 

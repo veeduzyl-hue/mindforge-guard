@@ -340,7 +340,23 @@ It does not present trial output as approval, blocking, deployment, certificatio
 
 It is not runtime control-plane behavior.
 
-## 19. See Also
+## 19. v7.1 Adoption Readiness Closeout Verification
+
+`v7.1` adoption readiness closeout remains a bounded docs, examples, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_1_adoption_readiness_closeout.mjs
+```
+
+This verifier checks that the closeout guide and trial launch pack connect the BYO workflow path, Evidence Pack templates, GitHub Action adoption path, report handoff path, security review packet, design partner trial kit, workflow scorecard, and adoption feedback form.
+
+It does not present Guard as approval, blocking, deployment, certification, or legal compliance behavior.
+
+It is not runtime control-plane behavior.
+
+## 20. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
