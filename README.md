@@ -37,6 +37,19 @@ Human reviewers use the report to inspect:
 
 Guard produces review evidence. The final human review decision remains outside Guard.
 
+## Bring Your Own Workflow
+
+After the sample report works, convert one of your own AI-assisted workflows into an Evidence Pack and generate a reusable report packet.
+
+Start here:
+
+- [Bring your own workflow](./docs/product/current/bring-your-own-workflow.md)
+- [Evidence Pack templates](./examples/evidence-pack-templates/README.md)
+- [Copy-paste GitHub Action workflow](./examples/github-actions/bring-your-own-governance-report.yml)
+- [Security Review Packet v1](./docs/product/current/security-review-packet-v1.md)
+
+This path helps external users create review evidence for AI coding PR, support agent, ops agent, and internal workflow agent use cases. It does not approve, block, deploy, certify, or control execution.
+
 ## GitHub Action Demo
 
 Run the first governance report in GitHub Actions as a manually triggered, non-blocking review artifact workflow.
@@ -156,6 +169,7 @@ MindForge Guard does not approve, block, deploy, certify, or control execution.
 ## Guides
 
 - [First governance report](./docs/product/current/first-governance-report.md)
+- [Bring your own workflow](./docs/product/current/bring-your-own-workflow.md)
 - [Current commercial baseline](./docs/product/current/v7_0_1_commercial_baseline.md)
 - [Choose the right Guard edition](./docs/product/current/edition-value-map.md)
 - [Trust FAQ](./docs/product/current/trust-faq.md)

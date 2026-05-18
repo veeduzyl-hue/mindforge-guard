@@ -1,7 +1,7 @@
 # VERIFY.md - Release Verification Matrix
 
 **Purpose**: Document the current verification surface for `mindforge-guard`.  
-**Last Updated**: 2026-05-14  
+**Last Updated**: 2026-05-18  
 **Released Baseline**: `v7.0.1`  
 **Next Recommended Maintenance Release**: `v7.0.2`
 
@@ -294,7 +294,21 @@ This verifier checks that the GitHub Action is manually triggered, installs `@ve
 
 It confirms the workflow produces review artifacts only and does not approve, block, deploy, certify, or control execution.
 
-## 16. See Also
+## 16. v7.1 Adoption Readiness Docs Verification
+
+`v7.1` adoption readiness remains a bounded docs, examples, templates, report-handoff, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
+
+Required targeted verification:
+
+```bash
+node scripts/verify_v7_1_adoption_readiness_docs.mjs
+```
+
+This verifier checks that the Bring Your Own Workflow guide, Evidence Pack templates, human-readable report sample, external copy-paste GitHub Action workflow, design partner walkthrough, and Security Review Packet v1 are present and preserve the bounded runtime posture.
+
+It confirms the adoption-readiness surface produces review artifacts only and does not approve, block, deploy, certify, guarantee legal compliance, or control execution.
+
+## 17. See Also
 
 - [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
 - [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
