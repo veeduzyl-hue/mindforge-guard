@@ -47,6 +47,9 @@ Start here:
 - [Evidence Pack templates](./examples/evidence-pack-templates/README.md)
 - [Copy-paste GitHub Action workflow](./examples/github-actions/bring-your-own-governance-report.yml)
 - [Security Review Packet v1](./docs/product/current/security-review-packet-v1.md)
+- [Markdown report renderer plan](./docs/product/current/markdown-report-renderer-plan.md)
+- [Report handoff checklist](./docs/product/current/report-handoff-checklist.md)
+- [Report examples](./examples/reports/README.md)
 
 This path helps external users create review evidence for AI coding PR, support agent, ops agent, and internal workflow agent use cases. It does not approve, block, deploy, certify, or control execution.
 
