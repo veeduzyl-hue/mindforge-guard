@@ -21,6 +21,7 @@ const RENDERER_PLAN_REQUIRED_PHRASES = [
   "does not change Evidence Pack schema",
   "does not add runtime authority",
   "future additive renderer",
+  "separate additive PR with separate verification and acceptance",
   "must not:",
   "approve, block, deploy, certify, guarantee legal compliance, or control execution",
 ];

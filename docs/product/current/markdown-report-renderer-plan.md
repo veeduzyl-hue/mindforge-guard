@@ -57,6 +57,8 @@ A future additive renderer may:
 - include missing evidence sections;
 - generate a reviewer handoff checklist.
 
+Any renderer implementation should land in a separate additive PR with separate verification and acceptance.
+
 ## What A Renderer Must Not Do
 
 A renderer must not:
