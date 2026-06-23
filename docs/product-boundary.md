@@ -5,7 +5,7 @@
 This document establishes the Guard-first architecture baseline for Outcome Foundation work.
 
 It defines what MindForge Guard is, what major modules exist around it, and where governance conclusions are allowed to be computed.
-It does not change the current `v7.1` commercial boundary, pricing, release notes, or public commercial materials.
+It does not change the current `v7.0.1` commercial boundary, pricing, release notes, or public commercial materials.
 
 ## Product Positioning
 
@@ -58,7 +58,7 @@ The near-term roadmap is:
 `Evidence Contract -> Outcome Foundation -> Studio Prototype -> Harness Alignment -> SDK Alpha`
 
 This sequence is an engineering and productization track.
-It is not a replacement for the current `v7.1` commercial packaging.
+It is not a replacement for the current `v7.0.1` commercial packaging.
 
 ## Module Boundaries
 

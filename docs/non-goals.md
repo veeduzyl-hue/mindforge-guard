@@ -4,7 +4,7 @@
 
 This document lists what Outcome Foundation work is explicitly not trying to build.
 
-It preserves the Guard-first boundary and avoids platform drift while the current `v7.1` commercial boundary remains untouched.
+It preserves the Guard-first boundary and avoids platform drift while the current `v7.0.1` commercial boundary remains untouched.
 
 ## Explicit Non-Goals
 
@@ -35,13 +35,13 @@ The current track does not aim to build:
 
 The following are out of scope for this track:
 
-- touching the current `v7.1` commercial boundary
+- touching the current `v7.0.1` commercial boundary
 - renaming current commercial release materials
 - overwriting current commercial release materials
 - repositioning current pricing, release notes, or public commercial packaging
 
 New Outcome Foundation work is an engineering and productization track.
-It is not a replacement for `v7.1` commercial packaging.
+It is not a replacement for `v7.0.1` commercial packaging.
 
 ## Governance Boundary Protection
 
