@@ -1,0 +1,316 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "epk_ai_pr_missing_tests_001",
+  "pack_type": "ai_software_change",
+  "created_at": "2026-06-23T20:05:00Z",
+  "producer": {
+    "producer_id": "prod_ci_pr_002",
+    "producer_name": "Synthetic CI Evidence Export",
+    "producer_version": "0.5.0-fixture",
+    "producer_type": "ci",
+    "profile": "ci-pr",
+    "generated_by": "synthetic-ci-exporter"
+  },
+  "workflow": {
+    "workflow_id": "wf_ai_pr_missing_tests_001",
+    "workflow_name": "controller update without executed tests",
+    "workflow_type": "pull_request",
+    "repository": {
+      "provider": "github",
+      "repo_name": "mindforge-labs/synthetic-app-service",
+      "remote_url": "https://github.com/mindforge-labs/synthetic-app-service.git",
+      "default_branch": "main",
+      "branch": "feature/order-status-normalization",
+      "base_ref": "main",
+      "head_ref": "feature/order-status-normalization",
+      "commit_sha": "2222222222222222222222222222222222222222",
+      "pr_number": "1847"
+    },
+    "environment": "ci"
+  },
+  "authority": {
+    "requested_by": "developer.synthetic",
+    "owner": "team.synthetic-app",
+    "reviewers": [
+      "reviewer.api-owner"
+    ],
+    "authorization_status": "declared",
+    "authorization_evidence": [
+      "art_auth_pr_note"
+    ],
+    "allowed_actions": [
+      "update application controller",
+      "update request mapping",
+      "run repository build"
+    ],
+    "prohibited_actions": [
+      "change deployment environment",
+      "modify production secrets",
+      "change database schema"
+    ],
+    "time_window": {
+      "start_at": "2026-06-23T19:30:00Z",
+      "end_at": "2026-06-23T21:30:00Z"
+    }
+  },
+  "runtime": {
+    "runtime_id": "rt_ci_agent_002",
+    "runtime_type": "ci",
+    "runtime_name": "synthetic-ci-agent",
+    "runtime_version": "2026.06",
+    "model": {
+      "model_name": "synthetic-code-assistant",
+      "provider": "synthetic-local",
+      "model_version": "1.2"
+    },
+    "tools": [
+      {
+        "tool_name": "workspace-filesystem",
+        "tool_type": "filesystem",
+        "version": "1.0",
+        "operation_scope": [
+          "read",
+          "write"
+        ]
+      },
+      {
+        "tool_name": "git-cli",
+        "tool_type": "git",
+        "version": "2.45",
+        "operation_scope": [
+          "diff",
+          "status"
+        ]
+      },
+      {
+        "tool_name": "node-build-runner",
+        "tool_type": "test_runner",
+        "version": "20.0",
+        "operation_scope": [
+          "build"
+        ]
+      }
+    ],
+    "execution_mode": "ci_review_assist"
+  },
+  "intent": {
+    "intent_id": "intent_ai_pr_missing_tests_001",
+    "user_goal": "adjust request validation flow in the order controller",
+    "agent_task": "modify controller logic and update request mapping",
+    "expected_outcome": "application code change with build evidence and explicit missing test evidence",
+    "declared_constraints": [
+      "limit changes to controller and route mapping",
+      "no dependency updates",
+      "no database changes"
+    ],
+    "success_criteria": [
+      "code compiles",
+      "controller path updated",
+      "missing test evidence remains visible"
+    ]
+  },
+  "scope": {
+    "in_scope": [
+      "src/controllers/orderController.ts",
+      "src/routes/orderRoutes.ts"
+    ],
+    "out_of_scope": [
+      "test harness changes",
+      "deployment manifests",
+      "database migrations"
+    ],
+    "touched_resources": [
+      "src/controllers/orderController.ts",
+      "src/routes/orderRoutes.ts"
+    ],
+    "changed_files": [
+      "src/controllers/orderController.ts",
+      "src/routes/orderRoutes.ts"
+    ],
+    "data_sensitivity": "medium"
+  },
+  "actions": [
+    {
+      "action_id": "act_ai_pr_missing_tests_001",
+      "timestamp": "2026-06-23T20:05:10Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "read_file",
+      "target": {
+        "resource": "src/controllers/orderController.ts",
+        "path": "src/controllers/orderController.ts",
+        "ref": "HEAD"
+      },
+      "command": null,
+      "inputs": {
+        "reason": "inspect existing controller flow"
+      },
+      "outputs": {
+        "lines_read": 124
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_missing_tests_fs_001"
+    },
+    {
+      "action_id": "act_ai_pr_missing_tests_002",
+      "timestamp": "2026-06-23T20:06:12Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "modify_code",
+      "target": {
+        "resource": "src/controllers/orderController.ts",
+        "path": "src/controllers/orderController.ts",
+        "ref": "workspace"
+      },
+      "command": null,
+      "inputs": {
+        "change_summary": "normalize empty status filter before controller dispatch"
+      },
+      "outputs": {
+        "lines_changed": 11
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_missing_tests_fs_002"
+    },
+    {
+      "action_id": "act_ai_pr_missing_tests_003",
+      "timestamp": "2026-06-23T20:07:08Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "test_execution",
+      "target": {
+        "resource": "repository-build",
+        "path": null,
+        "ref": "workspace"
+      },
+      "command": "npm run build",
+      "inputs": {
+        "reason": "validate compile after controller edit"
+      },
+      "outputs": {
+        "result": "build passed"
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_missing_tests_build_001"
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_001",
+      "timestamp": "2026-06-23T20:05:09Z",
+      "tool_name": "workspace-filesystem",
+      "tool_type": "filesystem",
+      "input_summary": "read controller and route files",
+      "output_summary": "returned controller and route mapping sources",
+      "exit_code": 0,
+      "duration_ms": 16,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_controller_diff"
+      ]
+    },
+    {
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_002",
+      "timestamp": "2026-06-23T20:06:10Z",
+      "tool_name": "workspace-filesystem",
+      "tool_type": "filesystem",
+      "input_summary": "write controller and route mapping changes",
+      "output_summary": "updated application source files",
+      "exit_code": 0,
+      "duration_ms": 28,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_controller_diff"
+      ]
+    },
+    {
+      "tool_call_id": "tc_ai_pr_missing_tests_build_001",
+      "timestamp": "2026-06-23T20:07:07Z",
+      "tool_name": "node-build-runner",
+      "tool_type": "test_runner",
+      "input_summary": "run repository build only",
+      "output_summary": "build passed; no unit test command executed",
+      "exit_code": 0,
+      "duration_ms": 3455,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_build_log"
+      ]
+    }
+  ],
+  "blocked_actions": [],
+  "artifacts": [
+    {
+      "artifact_id": "art_auth_pr_note",
+      "path": "artifacts/authority/pr-note.md",
+      "artifact_type": "authorization",
+      "sha256": "1212121212121212121212121212121212121212121212121212121212121212",
+      "size_bytes": 504,
+      "content_type": "text/markdown",
+      "description": "synthetic declared pull request scope note"
+    },
+    {
+      "artifact_id": "art_controller_diff",
+      "path": "artifacts/diff/order-controller.patch",
+      "artifact_type": "diff",
+      "sha256": "3434343434343434343434343434343434343434343434343434343434343434",
+      "size_bytes": 2366,
+      "content_type": "text/x-diff",
+      "description": "synthetic controller diff"
+    },
+    {
+      "artifact_id": "art_build_log",
+      "path": "artifacts/logs/build.log",
+      "artifact_type": "build_output",
+      "sha256": "5656565656565656565656565656565656565656565656565656565656565656",
+      "size_bytes": 2140,
+      "content_type": "text/plain",
+      "description": "synthetic repository build log"
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "ver_ai_pr_missing_tests_001",
+      "verification_type": "unit_test",
+      "status": "not_run",
+      "command": null,
+      "artifact_refs": [],
+      "coverage_note": "no unit test evidence was exported for this pull request"
+    },
+    {
+      "verification_id": "ver_ai_pr_missing_tests_002",
+      "verification_type": "build",
+      "status": "passed",
+      "command": "npm run build",
+      "artifact_refs": [
+        "art_build_log"
+      ],
+      "coverage_note": "build executed in CI after controller change"
+    }
+  ],
+  "risk_signals": [],
+  "provenance": {
+    "source_pack_hash": "2345234523452345234523452345234523452345234523452345234523452345",
+    "generated_at": "2026-06-23T20:07:30Z",
+    "generated_by": "guard-fixture-generator",
+    "deterministic": true,
+    "redaction_applied": false
+  },
+  "manifest": {
+    "files": [
+      {
+        "path": "evidence-pack.json",
+        "sha256": "7878787878787878787878787878787878787878787878787878787878787878",
+        "size_bytes": 8741
+      },
+      {
+        "path": "artifacts/diff/order-controller.patch",
+        "sha256": "3434343434343434343434343434343434343434343434343434343434343434",
+        "size_bytes": 2366
+      },
+      {
+        "path": "artifacts/logs/build.log",
+        "sha256": "5656565656565656565656565656565656565656565656565656565656565656",
+        "size_bytes": 2140
+      }
+    ],
+    "completeness": "partial"
+  }
+}

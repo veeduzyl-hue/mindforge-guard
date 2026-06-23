@@ -1,0 +1,348 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "epk_ai_pr_low_risk_complete_001",
+  "pack_type": "ai_software_change",
+  "created_at": "2026-06-23T19:45:00Z",
+  "producer": {
+    "producer_id": "prod_guard_harness_ci_pr_001",
+    "producer_name": "Guard Evidence Harness",
+    "producer_version": "0.5.0-fixture",
+    "producer_type": "guard_harness",
+    "profile": "ci-pr",
+    "generated_by": "guard-evidence-harness"
+  },
+  "workflow": {
+    "workflow_id": "wf_ai_pr_low_risk_complete_001",
+    "workflow_name": "small utility fix pull request",
+    "workflow_type": "pull_request",
+    "repository": {
+      "provider": "github",
+      "repo_name": "mindforge-labs/synthetic-utils-service",
+      "remote_url": "https://github.com/mindforge-labs/synthetic-utils-service.git",
+      "default_branch": "main",
+      "branch": "feature/slugify-trim-fix",
+      "base_ref": "main",
+      "head_ref": "feature/slugify-trim-fix",
+      "commit_sha": "1111111111111111111111111111111111111111",
+      "pr_number": "1842"
+    },
+    "environment": "ci"
+  },
+  "authority": {
+    "requested_by": "developer.synthetic",
+    "owner": "team.synthetic-platform",
+    "reviewers": [
+      "reviewer.codeowner",
+      "reviewer.qa"
+    ],
+    "authorization_status": "provided",
+    "authorization_evidence": [
+      "art_auth_pr_ticket",
+      "art_auth_review_scope"
+    ],
+    "allowed_actions": [
+      "read repository files",
+      "update utility source file",
+      "update unit tests",
+      "run unit tests",
+      "run build"
+    ],
+    "prohibited_actions": [
+      "modify deployment configuration",
+      "access production systems",
+      "write outside repository scope"
+    ],
+    "time_window": {
+      "start_at": "2026-06-23T19:00:00Z",
+      "end_at": "2026-06-23T21:00:00Z"
+    }
+  },
+  "runtime": {
+    "runtime_id": "rt_ci_agent_001",
+    "runtime_type": "ci",
+    "runtime_name": "synthetic-ci-agent",
+    "runtime_version": "2026.06",
+    "model": {
+      "model_name": "synthetic-code-assistant",
+      "provider": "synthetic-local",
+      "model_version": "1.2"
+    },
+    "tools": [
+      {
+        "tool_name": "workspace-filesystem",
+        "tool_type": "filesystem",
+        "version": "1.0",
+        "operation_scope": [
+          "read",
+          "write"
+        ]
+      },
+      {
+        "tool_name": "git-cli",
+        "tool_type": "git",
+        "version": "2.45",
+        "operation_scope": [
+          "diff",
+          "status"
+        ]
+      },
+      {
+        "tool_name": "node-test-runner",
+        "tool_type": "test_runner",
+        "version": "20.0",
+        "operation_scope": [
+          "unit_test",
+          "build"
+        ]
+      }
+    ],
+    "execution_mode": "ci_review_assist"
+  },
+  "intent": {
+    "intent_id": "intent_ai_pr_low_risk_complete_001",
+    "user_goal": "fix a small slug utility edge case",
+    "agent_task": "update the utility function and matching unit tests",
+    "expected_outcome": "a minimal pull request with passing tests and build",
+    "declared_constraints": [
+      "limit change to utility and tests",
+      "no deployment changes",
+      "no dependency updates"
+    ],
+    "success_criteria": [
+      "utility behavior matches expected output",
+      "unit tests pass",
+      "build passes"
+    ]
+  },
+  "scope": {
+    "in_scope": [
+      "src/utils/slugify.ts",
+      "tests/utils/slugify.test.ts"
+    ],
+    "out_of_scope": [
+      "deployment configuration",
+      "database migrations",
+      "package dependency changes"
+    ],
+    "touched_resources": [
+      "src/utils/slugify.ts",
+      "tests/utils/slugify.test.ts"
+    ],
+    "changed_files": [
+      "src/utils/slugify.ts",
+      "tests/utils/slugify.test.ts"
+    ],
+    "data_sensitivity": "low"
+  },
+  "actions": [
+    {
+      "action_id": "act_ai_pr_low_risk_complete_001",
+      "timestamp": "2026-06-23T19:45:10Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "read_file",
+      "target": {
+        "resource": "src/utils/slugify.ts",
+        "path": "src/utils/slugify.ts",
+        "ref": "HEAD"
+      },
+      "command": null,
+      "inputs": {
+        "reason": "inspect existing utility behavior"
+      },
+      "outputs": {
+        "lines_read": 38
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_low_risk_complete_fs_001"
+    },
+    {
+      "action_id": "act_ai_pr_low_risk_complete_002",
+      "timestamp": "2026-06-23T19:46:00Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "modify_code",
+      "target": {
+        "resource": "src/utils/slugify.ts",
+        "path": "src/utils/slugify.ts",
+        "ref": "workspace"
+      },
+      "command": null,
+      "inputs": {
+        "change_summary": "trim duplicate separators before final output"
+      },
+      "outputs": {
+        "lines_changed": 6
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_low_risk_complete_fs_002"
+    },
+    {
+      "action_id": "act_ai_pr_low_risk_complete_003",
+      "timestamp": "2026-06-23T19:46:40Z",
+      "actor": "synthetic-ci-agent",
+      "action_type": "test_execution",
+      "target": {
+        "resource": "tests/utils/slugify.test.ts",
+        "path": "tests/utils/slugify.test.ts",
+        "ref": "workspace"
+      },
+      "command": "npm test -- slugify",
+      "inputs": {
+        "test_focus": "slugify utility"
+      },
+      "outputs": {
+        "result": "4 tests passed"
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_ai_pr_low_risk_complete_test_001"
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_001",
+      "timestamp": "2026-06-23T19:45:09Z",
+      "tool_name": "workspace-filesystem",
+      "tool_type": "filesystem",
+      "input_summary": "read src/utils/slugify.ts",
+      "output_summary": "returned file contents for utility inspection",
+      "exit_code": 0,
+      "duration_ms": 12,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_pr_diff",
+        "art_manifest"
+      ]
+    },
+    {
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_002",
+      "timestamp": "2026-06-23T19:45:58Z",
+      "tool_name": "workspace-filesystem",
+      "tool_type": "filesystem",
+      "input_summary": "write src/utils/slugify.ts and tests/utils/slugify.test.ts",
+      "output_summary": "updated source and test files in workspace",
+      "exit_code": 0,
+      "duration_ms": 34,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_pr_diff"
+      ]
+    },
+    {
+      "tool_call_id": "tc_ai_pr_low_risk_complete_test_001",
+      "timestamp": "2026-06-23T19:46:39Z",
+      "tool_name": "node-test-runner",
+      "tool_type": "test_runner",
+      "input_summary": "run focused unit tests and build validation",
+      "output_summary": "unit tests passed and build completed successfully",
+      "exit_code": 0,
+      "duration_ms": 2814,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_unit_test_log",
+        "art_build_log"
+      ]
+    }
+  ],
+  "blocked_actions": [],
+  "artifacts": [
+    {
+      "artifact_id": "art_auth_pr_ticket",
+      "path": "artifacts/authority/pr-1842-ticket.json",
+      "artifact_type": "authorization",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "size_bytes": 812,
+      "content_type": "application/json",
+      "description": "synthetic pull request authorization ticket"
+    },
+    {
+      "artifact_id": "art_auth_review_scope",
+      "path": "artifacts/authority/review-scope.md",
+      "artifact_type": "authorization",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "size_bytes": 624,
+      "content_type": "text/markdown",
+      "description": "synthetic review scope note"
+    },
+    {
+      "artifact_id": "art_pr_diff",
+      "path": "artifacts/diff/pr-1842.patch",
+      "artifact_type": "diff",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "size_bytes": 1943,
+      "content_type": "text/x-diff",
+      "description": "synthetic pull request diff"
+    },
+    {
+      "artifact_id": "art_unit_test_log",
+      "path": "artifacts/logs/unit-test.log",
+      "artifact_type": "test_result",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "size_bytes": 2048,
+      "content_type": "text/plain",
+      "description": "synthetic unit test execution log"
+    },
+    {
+      "artifact_id": "art_build_log",
+      "path": "artifacts/logs/build.log",
+      "artifact_type": "build_output",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "size_bytes": 1764,
+      "content_type": "text/plain",
+      "description": "synthetic build output log"
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "ver_ai_pr_low_risk_complete_001",
+      "verification_type": "unit_test",
+      "status": "passed",
+      "command": "npm test -- slugify",
+      "artifact_refs": [
+        "art_unit_test_log"
+      ],
+      "coverage_note": "utility-specific tests executed for changed function"
+    },
+    {
+      "verification_id": "ver_ai_pr_low_risk_complete_002",
+      "verification_type": "build",
+      "status": "passed",
+      "command": "npm run build",
+      "artifact_refs": [
+        "art_build_log"
+      ],
+      "coverage_note": "repository build completed in CI"
+    }
+  ],
+  "risk_signals": [],
+  "provenance": {
+    "source_pack_hash": "1234123412341234123412341234123412341234123412341234123412341234",
+    "generated_at": "2026-06-23T19:47:15Z",
+    "generated_by": "guard-fixture-generator",
+    "deterministic": true,
+    "redaction_applied": false
+  },
+  "manifest": {
+    "files": [
+      {
+        "path": "evidence-pack.json",
+        "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+        "size_bytes": 9342
+      },
+      {
+        "path": "artifacts/diff/pr-1842.patch",
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size_bytes": 1943
+      },
+      {
+        "path": "artifacts/logs/unit-test.log",
+        "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "size_bytes": 2048
+      },
+      {
+        "path": "artifacts/logs/build.log",
+        "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "size_bytes": 1764
+      }
+    ],
+    "completeness": "complete"
+  }
+}
