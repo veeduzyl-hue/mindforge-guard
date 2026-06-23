@@ -24,7 +24,7 @@ Evidence Pack remains the only factual input for governance conclusions.
 - architecture and documentation center on Guard first
 - surrounding modules are described as producers or consumers around Guard Core
 - future Outcome Foundation work stays focused on evidence contract, report foundation, and bounded consumer surfaces
-- current `v7.1` commercial boundary remains intact
+- current `v7.0.1` commercial boundary remains intact
 - the repository avoids drift into a general agent platform posture
 
 ## Alternatives Considered
