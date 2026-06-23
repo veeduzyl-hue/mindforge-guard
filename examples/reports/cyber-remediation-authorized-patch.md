@@ -1,0 +1,139 @@
+# Governance Report: authorized synthetic patch for local vulnerable helper
+
+## Executive Summary
+
+This Markdown report presents the canonical Guard Core output for pack `epk_cyber_remediation_authorized_patch_001` and report `governance-report:epk_cyber_remediation_authorized_patch_001:1.0.0`.
+
+The current verdict is `require_review` with evidence completeness `complete`, 0 missing evidence item(s), and 1 human review requirement(s).
+
+- Top reason codes: `SECURITY_REVIEW_REQUIRED`
+- Workflow: authorized synthetic patch for local vulnerable helper (`security_patch`)
+- Authority status: `provided`
+- Scope signal: 2 changed file(s)
+
+## Verdict
+
+| Field | Value |
+| --- | --- |
+| Verdict | `require_review` |
+| Explanation | Later governance flow may call for security-oriented review. |
+| Confidence | `medium` |
+| Reason codes | `SECURITY_REVIEW_REQUIRED` |
+
+## Workflow
+
+| Field | Value |
+| --- | --- |
+| Report ID | `governance-report:epk_cyber_remediation_authorized_patch_001:1.0.0` |
+| Pack ID | `epk_cyber_remediation_authorized_patch_001` |
+| Report schema version | `1.0.0` |
+| Source schema version | `1.0.0` |
+| Workflow name | authorized synthetic patch for local vulnerable helper |
+| Workflow type | `security_patch` |
+| Pack type | `cyber_remediation` |
+| Environment | `local` |
+| Repository | synthetic-local-security-fixture; branch local-remediation; commit 0000000000000000000000000000000000000000 |
+
+## Authority
+
+| Field | Value |
+| --- | --- |
+| Authorization status | `provided` |
+| Requested by | security.synthetic |
+| Owner | team.synthetic-security |
+| Reviewers | `reviewer.security-owner`, `reviewer.app-owner` |
+| Time window start | 2026-06-23T20:30:00Z |
+| Time window end | 2026-06-23T22:30:00Z |
+| Reason codes | None recorded. |
+
+## Scope
+
+| Field | Value |
+| --- | --- |
+| Changed file count | 2 |
+| Touched resource count | 2 |
+| In-scope count | 2 |
+| Out-of-scope count | 4 |
+| Data sensitivity | low |
+| Reason codes | None recorded. |
+
+## Evidence Coverage
+
+| Field | Value |
+| --- | --- |
+| Completeness | `complete` |
+| Manifest completeness | `complete` |
+| Artifact count | 5 |
+| Action count | 3 |
+| Tool call count | 4 |
+| Verification count | 2 |
+| Blocked action count | 0 |
+| Missing evidence count | 0 |
+| Reason codes | None recorded. |
+
+## Risk Summary
+
+| Field | Value |
+| --- | --- |
+| Max severity | `high` |
+| Risk count | 1 |
+| Risk categories | `human_review` |
+| Reason codes | `SECURITY_REVIEW_REQUIRED` |
+
+## Blocked Actions
+
+No blocked actions recorded.
+
+## Verification
+
+| Field | Value |
+| --- | --- |
+| Total count | 2 |
+| Passed count | 2 |
+| Failed count | 0 |
+| Not-run count | 0 |
+| Inconclusive count | 0 |
+| Reason codes | None recorded. |
+
+## Missing Evidence
+
+No missing evidence recorded.
+
+## Human Review Required
+
+- `review:security` for `security`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow.
+
+## Next Actions
+
+- `next:review:review:security` (`request_review`); owner: `security`; priority: `medium`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow.
+
+## Evidence References
+
+| Reference | Source | Description | Path |
+| --- | --- | --- | --- |
+| `pack:epk_cyber_remediation_authorized_patch_001` | `pack` | submitted evidence pack | evidence-pack.json |
+| `art_patch_ticket` | `artifact` | synthetic local patch authorization ticket | artifacts/authority/security-patch-ticket.json |
+| `art_patch_scope` | `artifact` | synthetic local patch scope note | artifacts/authority/security-patch-scope.md |
+| `art_patch_diff` | `artifact` | synthetic local security remediation diff | artifacts/diff/security-patch.patch |
+| `art_unit_test_log` | `artifact` | synthetic focused unit test log | artifacts/logs/unit-test.log |
+| `art_static_analysis_log` | `artifact` | synthetic local static analysis log | artifacts/logs/static-analysis.log |
+| `act_cyber_patch_001` | `action` | read_file | src/security/syntheticTokenHelper.ts |
+| `act_cyber_patch_002` | `action` | modify_code | src/security/syntheticTokenHelper.ts |
+| `act_cyber_patch_003` | `action` | test_execution | tests/security/syntheticTokenHelper.test.ts |
+| `tc_cyber_patch_001` | `tool_call` | returned local source and test contents | Not recorded. |
+| `tc_cyber_patch_002` | `tool_call` | updated local synthetic helper and unit test files | Not recorded. |
+| `tc_cyber_patch_003` | `tool_call` | focused unit tests passed | Not recorded. |
+| `tc_cyber_patch_004` | `tool_call` | no local synthetic issues reported for changed file | Not recorded. |
+| `ver_cyber_patch_001` | `verification` | focused unit tests passed for the synthetic helper patch | Not recorded. |
+| `ver_cyber_patch_002` | `verification` | local static analysis passed for the changed synthetic file | Not recorded. |
+
+## Provenance
+
+| Field | Value |
+| --- | --- |
+| Generated by | `guard-core-report-service` |
+| Generator version | `1.0.0` |
+| Deterministic | Yes |
+| Source pack hash | `5678567856785678567856785678567856785678567856785678567856785678` |
+| Reason code version | `1.0.0` |
+| Generated at | `2026-06-23T20:53:15Z` |
