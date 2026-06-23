@@ -33,6 +33,8 @@ That means:
 - runtime-specific variance belongs under `extensions`, not in arbitrary top-level fields
 - Guard Core remains the only governance source of truth
 
+When a canonical field exists, producers should use that canonical field rather than moving core governance context into `extensions`.
+
 ## 4. Non-Executing Boundary
 
 Evidence Schema v1 is a contract, not an execution surface.
@@ -69,7 +71,7 @@ Schema v1 requires these top-level fields:
 | `pack_type` | classify the review scenario |
 | `created_at` | record pack creation time |
 | `producer` | identify the Evidence Producer |
-| `workflow` | define the workflow context |
+| `workflow` | define the workflow context, including canonical repository and ref metadata under `workflow.repository` |
 | `authority` | capture declared authority and approval context |
 | `runtime` | describe the execution environment |
 | `intent` | describe expected user and agent objective |
@@ -104,7 +106,9 @@ Key semantic rules:
 - `schema_version` is fixed to `1.0.0` in Schema v1.
 - `pack_type` is restricted to Guard-approved scenario categories.
 - `producer` identifies who packaged the evidence, not who owns governance authority.
+- `workflow.repository` is the canonical location for repository, branch, ref, commit, and pull-request context when that context is known.
 - `authority` records declared or provided authorization context, but does not grant authority.
+- `authority.time_window` uses `start_at` and `end_at` when a bounded time window is provided.
 - `runtime` records where the workflow ran, but does not authorize runtime behavior.
 - `actions`, `tool_calls`, and `blocked_actions` capture workflow facts and outcomes as submitted evidence.
 - `artifacts` and `manifest` make evidence references inspectable and completeness visible.
@@ -144,6 +148,7 @@ Extension rules are strict:
 - future runtime-specific fields must be placed under `extensions`
 - `extensions` should use namespaced keys where practical
 - producers should not introduce arbitrary new top-level keys
+- producers should not place core software-change governance fields in `extensions` when a canonical field such as `workflow.repository` already exists
 
 This keeps the contract inspectable and reduces drift across runtimes.
 
