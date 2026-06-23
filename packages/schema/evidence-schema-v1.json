@@ -1,0 +1,1067 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mindforge://schemas/evidence/evidence-schema-v1.json",
+  "title": "Guard Evidence Schema v1",
+  "description": "Canonical MindForge Guard contract for Guard-compatible Evidence Packs. This schema defines what Guard can inspect as factual input without computing governance verdicts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "pack_type",
+    "created_at",
+    "producer",
+    "workflow",
+    "authority",
+    "runtime",
+    "intent",
+    "scope",
+    "actions",
+    "tool_calls",
+    "blocked_actions",
+    "artifacts",
+    "verification",
+    "risk_signals",
+    "provenance",
+    "manifest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Canonical schema version for this Guard-owned Evidence Pack contract."
+    },
+    "pack_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "pack_type": {
+      "type": "string",
+      "enum": [
+        "ai_software_change",
+        "cyber_remediation",
+        "generic_agent_workflow"
+      ]
+    },
+    "created_at": {
+      "$ref": "#/$defs/dateTimeString"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "workflow": {
+      "$ref": "#/$defs/workflow"
+    },
+    "authority": {
+      "$ref": "#/$defs/authority"
+    },
+    "runtime": {
+      "$ref": "#/$defs/runtime"
+    },
+    "intent": {
+      "$ref": "#/$defs/intent"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "plan": {
+      "$ref": "#/$defs/plan"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/toolCall"
+      }
+    },
+    "blocked_actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/blockedAction"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/verification"
+      }
+    },
+    "policy_observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/policyObservation"
+      }
+    },
+    "human_review": {
+      "$ref": "#/$defs/humanReview"
+    },
+    "risk_signals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/riskSignal"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "manifest": {
+      "$ref": "#/$defs/manifest"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Reserved container for future runtime-specific fields. Runtime-specific expansion must stay inside this object rather than introducing arbitrary top-level keys.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dateTimeString": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sha256Hex": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "artifactRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "genericValue": {
+      "description": "Uninterpreted captured value. Guard can inspect presence and structure later but the schema does not compute meaning here.",
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "generatedBy": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "component"
+          ],
+          "properties": {
+            "component": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "version": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "surface": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "repositoryRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repo_name"
+          ],
+          "properties": {
+            "repo_name": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "remote_url": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "default_branch": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "commit_sha": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          }
+        }
+      ]
+    },
+    "targetRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource"
+          ],
+          "properties": {
+            "resource": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "path": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "ref": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_id",
+        "producer_name",
+        "producer_version",
+        "producer_type",
+        "profile",
+        "generated_by"
+      ],
+      "properties": {
+        "producer_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "producer_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "producer_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "producer_type": {
+          "type": "string",
+          "enum": [
+            "guard_harness",
+            "ci",
+            "ide",
+            "agent_runtime",
+            "manual_import"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "enum": [
+            "local-dev",
+            "ci-pr",
+            "release-prep",
+            "audit-review"
+          ]
+        },
+        "generated_by": {
+          "$ref": "#/$defs/generatedBy"
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow_id",
+        "workflow_name",
+        "workflow_type",
+        "repository",
+        "environment"
+      ],
+      "properties": {
+        "workflow_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "workflow_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "workflow_type": {
+          "type": "string",
+          "enum": [
+            "pull_request",
+            "release",
+            "dependency_upgrade",
+            "infra_change",
+            "security_patch",
+            "data_operation",
+            "generic"
+          ]
+        },
+        "repository": {
+          "$ref": "#/$defs/repositoryRef"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "local",
+            "ci",
+            "staging",
+            "production",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_by",
+        "owner",
+        "reviewers",
+        "authorization_status",
+        "authorization_evidence",
+        "allowed_actions",
+        "prohibited_actions",
+        "time_window"
+      ],
+      "properties": {
+        "requested_by": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reviewers": {
+          "$ref": "#/$defs/stringList"
+        },
+        "authorization_status": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "provided",
+            "missing",
+            "out_of_scope",
+            "not_required"
+          ]
+        },
+        "authorization_evidence": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "allowed_actions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "prohibited_actions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "time_window": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start_at": {
+              "$ref": "#/$defs/dateTimeString"
+            },
+            "end_at": {
+              "$ref": "#/$defs/dateTimeString"
+            }
+          }
+        }
+      }
+    },
+    "runtimeTool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_name",
+        "tool_type"
+      ],
+      "properties": {
+        "tool_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tool_type": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "operation_scope": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "runtimeModel": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model_name"
+          ],
+          "properties": {
+            "model_name": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "provider": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "model_version": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        }
+      ]
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_id",
+        "runtime_type",
+        "runtime_name",
+        "runtime_version",
+        "model",
+        "tools",
+        "execution_mode"
+      ],
+      "properties": {
+        "runtime_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runtime_type": {
+          "type": "string",
+          "enum": [
+            "harness",
+            "ci",
+            "ide_agent",
+            "agent_runtime",
+            "manual",
+            "unknown"
+          ]
+        },
+        "runtime_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runtime_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "model": {
+          "$ref": "#/$defs/runtimeModel"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/runtimeTool"
+          }
+        },
+        "execution_mode": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intent_id",
+        "user_goal",
+        "agent_task",
+        "expected_outcome",
+        "declared_constraints",
+        "success_criteria"
+      ],
+      "properties": {
+        "intent_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "user_goal": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "agent_task": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "expected_outcome": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "declared_constraints": {
+          "$ref": "#/$defs/stringList"
+        },
+        "success_criteria": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "in_scope",
+        "out_of_scope",
+        "touched_resources",
+        "changed_files",
+        "data_sensitivity"
+      ],
+      "properties": {
+        "in_scope": {
+          "$ref": "#/$defs/stringList"
+        },
+        "out_of_scope": {
+          "$ref": "#/$defs/stringList"
+        },
+        "touched_resources": {
+          "$ref": "#/$defs/stringList"
+        },
+        "changed_files": {
+          "$ref": "#/$defs/stringList"
+        },
+        "data_sensitivity": {
+          "type": "string",
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "planStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "description",
+        "status"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "in_progress",
+            "completed",
+            "blocked",
+            "skipped"
+          ]
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "steps"
+      ],
+      "properties": {
+        "plan_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "summary": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/planStep"
+          }
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "timestamp",
+        "actor",
+        "action_type",
+        "target",
+        "command",
+        "inputs",
+        "outputs",
+        "status",
+        "related_tool_call_id"
+      ],
+      "properties": {
+        "action_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/dateTimeString"
+        },
+        "actor": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "action_type": {
+          "type": "string",
+          "enum": [
+            "read_file",
+            "write_file",
+            "run_command",
+            "call_tool",
+            "modify_code",
+            "install_dependency",
+            "network_access",
+            "git_operation",
+            "test_execution",
+            "release_operation",
+            "other"
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/targetRef"
+        },
+        "command": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "inputs": {
+          "$ref": "#/$defs/genericValue"
+        },
+        "outputs": {
+          "$ref": "#/$defs/genericValue"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "succeeded",
+            "failed",
+            "blocked",
+            "skipped"
+          ]
+        },
+        "related_tool_call_id": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "toolCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_call_id",
+        "timestamp",
+        "tool_name",
+        "tool_type",
+        "input_summary",
+        "output_summary",
+        "exit_code",
+        "duration_ms",
+        "sensitive_input_detected",
+        "artifact_refs"
+      ],
+      "properties": {
+        "tool_call_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/dateTimeString"
+        },
+        "tool_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tool_type": {
+          "type": "string",
+          "enum": [
+            "shell",
+            "filesystem",
+            "git",
+            "scanner",
+            "test_runner",
+            "model",
+            "custom"
+          ]
+        },
+        "input_summary": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "output_summary": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "duration_ms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sensitive_input_detected": {
+          "type": "boolean"
+        },
+        "artifact_refs": {
+          "$ref": "#/$defs/artifactRefList"
+        }
+      }
+    },
+    "blockedAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocked_action_id",
+        "timestamp",
+        "attempted_action",
+        "reason_code",
+        "policy_ref",
+        "severity",
+        "human_review_required"
+      ],
+      "properties": {
+        "blocked_action_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/dateTimeString"
+        },
+        "attempted_action": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reason_code": {
+          "type": "string",
+          "enum": [
+            "PROTECTED_PATH",
+            "DESTRUCTIVE_COMMAND",
+            "SECRET_ACCESS",
+            "NETWORK_NOT_ALLOWED",
+            "OUT_OF_SCOPE",
+            "MISSING_AUTHORITY",
+            "POLICY_DENIED",
+            "UNKNOWN"
+          ]
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "human_review_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "path",
+        "artifact_type",
+        "sha256",
+        "size_bytes",
+        "content_type",
+        "description"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "artifact_type": {
+          "type": "string",
+          "enum": [
+            "source_file",
+            "diff",
+            "log",
+            "test_result",
+            "scan_result",
+            "build_output",
+            "screenshot",
+            "policy",
+            "authorization",
+            "report",
+            "other"
+          ]
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256Hex"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content_type": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_id",
+        "verification_type",
+        "status",
+        "command",
+        "artifact_refs",
+        "coverage_note"
+      ],
+      "properties": {
+        "verification_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "verification_type": {
+          "type": "string",
+          "enum": [
+            "unit_test",
+            "integration_test",
+            "static_analysis",
+            "security_scan",
+            "manual_review",
+            "build",
+            "rollback_check"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "not_run",
+            "inconclusive"
+          ]
+        },
+        "command": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "artifact_refs": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "coverage_note": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "policyObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "policy_ref",
+        "status",
+        "summary"
+      ],
+      "properties": {
+        "observation_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "declared",
+            "missing",
+            "not_applicable"
+          ]
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefList"
+        }
+      }
+    },
+    "humanReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewers"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "completed",
+            "not_required"
+          ]
+        },
+        "reviewers": {
+          "$ref": "#/$defs/stringList"
+        },
+        "decision_note": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "follow_up_actions": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "riskSignal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signal_id",
+        "category",
+        "severity",
+        "message",
+        "evidence_refs",
+        "recommended_action"
+      ],
+      "properties": {
+        "signal_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "authority",
+            "scope",
+            "data",
+            "security",
+            "release",
+            "dependency",
+            "rollback",
+            "evidence_integrity"
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefList"
+        },
+        "recommended_action": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_pack_hash",
+        "generated_at",
+        "generated_by",
+        "deterministic",
+        "redaction_applied"
+      ],
+      "properties": {
+        "source_pack_hash": {
+          "$ref": "#/$defs/sha256Hex"
+        },
+        "generated_at": {
+          "$ref": "#/$defs/dateTimeString"
+        },
+        "generated_by": {
+          "$ref": "#/$defs/generatedBy"
+        },
+        "deterministic": {
+          "type": "boolean"
+        },
+        "redaction_applied": {
+          "type": "boolean"
+        }
+      }
+    },
+    "manifestFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256Hex"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "completeness"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/manifestFile"
+          }
+        },
+        "completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "incomplete",
+            "unknown"
+          ]
+        }
+      }
+    }
+  }
+}
