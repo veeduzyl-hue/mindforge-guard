@@ -1,0 +1,224 @@
+{
+  "index_schema_version": "1.0.0",
+  "report_id": "governance-report:epk_cyber_remediation_authorized_patch_001:1.0.0",
+  "source_pack_id": "epk_cyber_remediation_authorized_patch_001",
+  "generated_at": "2026-06-23T20:53:15Z",
+  "entries": [
+    {
+      "entry_id": "entry:pack:epk_cyber_remediation_authorized_patch_001",
+      "ref_id": "pack:epk_cyber_remediation_authorized_patch_001",
+      "source": "pack",
+      "path": "evidence-pack.json",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "submitted evidence pack"
+    },
+    {
+      "entry_id": "entry:art_patch_ticket",
+      "ref_id": "art_patch_ticket",
+      "source": "artifact",
+      "path": "artifacts/authority/security-patch-ticket.json",
+      "artifact_id": "art_patch_ticket",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic local patch authorization ticket"
+    },
+    {
+      "entry_id": "entry:art_patch_scope",
+      "ref_id": "art_patch_scope",
+      "source": "artifact",
+      "path": "artifacts/authority/security-patch-scope.md",
+      "artifact_id": "art_patch_scope",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic local patch scope note"
+    },
+    {
+      "entry_id": "entry:art_patch_diff",
+      "ref_id": "art_patch_diff",
+      "source": "artifact",
+      "path": "artifacts/diff/security-patch.patch",
+      "artifact_id": "art_patch_diff",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic local security remediation diff"
+    },
+    {
+      "entry_id": "entry:art_unit_test_log",
+      "ref_id": "art_unit_test_log",
+      "source": "artifact",
+      "path": "artifacts/logs/unit-test.log",
+      "artifact_id": "art_unit_test_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic focused unit test log"
+    },
+    {
+      "entry_id": "entry:art_static_analysis_log",
+      "ref_id": "art_static_analysis_log",
+      "source": "artifact",
+      "path": "artifacts/logs/static-analysis.log",
+      "artifact_id": "art_static_analysis_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic local static analysis log"
+    },
+    {
+      "entry_id": "entry:act_cyber_patch_001",
+      "ref_id": "act_cyber_patch_001",
+      "source": "action",
+      "path": "src/security/syntheticTokenHelper.ts",
+      "action_id": "act_cyber_patch_001",
+      "tool_call_id": "tc_cyber_patch_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "read_file"
+    },
+    {
+      "entry_id": "entry:act_cyber_patch_002",
+      "ref_id": "act_cyber_patch_002",
+      "source": "action",
+      "path": "src/security/syntheticTokenHelper.ts",
+      "action_id": "act_cyber_patch_002",
+      "tool_call_id": "tc_cyber_patch_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "modify_code"
+    },
+    {
+      "entry_id": "entry:act_cyber_patch_003",
+      "ref_id": "act_cyber_patch_003",
+      "source": "action",
+      "path": "tests/security/syntheticTokenHelper.test.ts",
+      "action_id": "act_cyber_patch_003",
+      "tool_call_id": "tc_cyber_patch_003",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "test_execution"
+    },
+    {
+      "entry_id": "entry:tc_cyber_patch_001",
+      "ref_id": "tc_cyber_patch_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_cyber_patch_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "returned local source and test contents"
+    },
+    {
+      "entry_id": "entry:tc_cyber_patch_002",
+      "ref_id": "tc_cyber_patch_002",
+      "source": "tool_call",
+      "tool_call_id": "tc_cyber_patch_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "updated local synthetic helper and unit test files"
+    },
+    {
+      "entry_id": "entry:tc_cyber_patch_003",
+      "ref_id": "tc_cyber_patch_003",
+      "source": "tool_call",
+      "tool_call_id": "tc_cyber_patch_003",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "focused unit tests passed"
+    },
+    {
+      "entry_id": "entry:tc_cyber_patch_004",
+      "ref_id": "tc_cyber_patch_004",
+      "source": "tool_call",
+      "tool_call_id": "tc_cyber_patch_004",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "no local synthetic issues reported for changed file"
+    },
+    {
+      "entry_id": "entry:ver_cyber_patch_001",
+      "ref_id": "ver_cyber_patch_001",
+      "source": "verification",
+      "verification_id": "ver_cyber_patch_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "focused unit tests passed for the synthetic helper patch"
+    },
+    {
+      "entry_id": "entry:ver_cyber_patch_002",
+      "ref_id": "ver_cyber_patch_002",
+      "source": "verification",
+      "verification_id": "ver_cyber_patch_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "local static analysis passed for the changed synthetic file"
+    },
+    {
+      "entry_id": "derived:human_review:review:security",
+      "reason_codes": [
+        "SECURITY_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:security"
+      ],
+      "description": "Security review is needed for the cyber-oriented workflow."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:security",
+      "reason_codes": [
+        "SECURITY_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:security"
+      ],
+      "description": "Security review is needed for the cyber-oriented workflow."
+    },
+    {
+      "entry_id": "derived:verdict",
+      "reason_codes": [
+        "SECURITY_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "verdict"
+      ],
+      "description": "Later governance flow may call for security-oriented review."
+    },
+    {
+      "entry_id": "derived:risk_summary",
+      "reason_codes": [
+        "SECURITY_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "risk_summary"
+      ],
+      "description": "Risk summary for report governance-report:epk_cyber_remediation_authorized_patch_001:1.0.0"
+    }
+  ]
+}
