@@ -1,0 +1,189 @@
+{
+  "index_schema_version": "1.0.0",
+  "report_id": "governance-report:epk_ai_pr_low_risk_complete_001:1.0.0",
+  "source_pack_id": "epk_ai_pr_low_risk_complete_001",
+  "generated_at": "2026-06-23T19:47:15Z",
+  "entries": [
+    {
+      "entry_id": "entry:pack:epk_ai_pr_low_risk_complete_001",
+      "ref_id": "pack:epk_ai_pr_low_risk_complete_001",
+      "source": "pack",
+      "path": "evidence-pack.json",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "submitted evidence pack"
+    },
+    {
+      "entry_id": "entry:art_auth_pr_ticket",
+      "ref_id": "art_auth_pr_ticket",
+      "source": "artifact",
+      "path": "artifacts/authority/pr-1842-ticket.json",
+      "artifact_id": "art_auth_pr_ticket",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic pull request authorization ticket"
+    },
+    {
+      "entry_id": "entry:art_auth_review_scope",
+      "ref_id": "art_auth_review_scope",
+      "source": "artifact",
+      "path": "artifacts/authority/review-scope.md",
+      "artifact_id": "art_auth_review_scope",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic review scope note"
+    },
+    {
+      "entry_id": "entry:art_pr_diff",
+      "ref_id": "art_pr_diff",
+      "source": "artifact",
+      "path": "artifacts/diff/pr-1842.patch",
+      "artifact_id": "art_pr_diff",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic pull request diff"
+    },
+    {
+      "entry_id": "entry:art_unit_test_log",
+      "ref_id": "art_unit_test_log",
+      "source": "artifact",
+      "path": "artifacts/logs/unit-test.log",
+      "artifact_id": "art_unit_test_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic unit test execution log"
+    },
+    {
+      "entry_id": "entry:art_build_log",
+      "ref_id": "art_build_log",
+      "source": "artifact",
+      "path": "artifacts/logs/build.log",
+      "artifact_id": "art_build_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic build output log"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_low_risk_complete_001",
+      "ref_id": "act_ai_pr_low_risk_complete_001",
+      "source": "action",
+      "path": "src/utils/slugify.ts",
+      "action_id": "act_ai_pr_low_risk_complete_001",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "read_file"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_low_risk_complete_002",
+      "ref_id": "act_ai_pr_low_risk_complete_002",
+      "source": "action",
+      "path": "src/utils/slugify.ts",
+      "action_id": "act_ai_pr_low_risk_complete_002",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "modify_code"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_low_risk_complete_003",
+      "ref_id": "act_ai_pr_low_risk_complete_003",
+      "source": "action",
+      "path": "tests/utils/slugify.test.ts",
+      "action_id": "act_ai_pr_low_risk_complete_003",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_test_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "test_execution"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_low_risk_complete_fs_001",
+      "ref_id": "tc_ai_pr_low_risk_complete_fs_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "returned file contents for utility inspection"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_low_risk_complete_fs_002",
+      "ref_id": "tc_ai_pr_low_risk_complete_fs_002",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_fs_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "updated source and test files in workspace"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_low_risk_complete_test_001",
+      "ref_id": "tc_ai_pr_low_risk_complete_test_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_low_risk_complete_test_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "unit tests passed and build completed successfully"
+    },
+    {
+      "entry_id": "entry:ver_ai_pr_low_risk_complete_001",
+      "ref_id": "ver_ai_pr_low_risk_complete_001",
+      "source": "verification",
+      "verification_id": "ver_ai_pr_low_risk_complete_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "utility-specific tests executed for changed function"
+    },
+    {
+      "entry_id": "entry:ver_ai_pr_low_risk_complete_002",
+      "ref_id": "ver_ai_pr_low_risk_complete_002",
+      "source": "verification",
+      "verification_id": "ver_ai_pr_low_risk_complete_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "repository build completed in CI"
+    },
+    {
+      "entry_id": "derived:verdict",
+      "reason_codes": [],
+      "used_by": [
+        "verdict"
+      ],
+      "description": "Authority, scope, verification, and manifest evidence are structurally sufficient."
+    },
+    {
+      "entry_id": "derived:risk_summary",
+      "reason_codes": [],
+      "used_by": [
+        "risk_summary"
+      ],
+      "description": "Risk summary for report governance-report:epk_ai_pr_low_risk_complete_001:1.0.0"
+    }
+  ]
+}

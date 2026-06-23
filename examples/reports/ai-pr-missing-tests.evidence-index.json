@@ -1,0 +1,247 @@
+{
+  "index_schema_version": "1.0.0",
+  "report_id": "governance-report:epk_ai_pr_missing_tests_001:1.0.0",
+  "source_pack_id": "epk_ai_pr_missing_tests_001",
+  "generated_at": "2026-06-23T20:07:30Z",
+  "entries": [
+    {
+      "entry_id": "entry:pack:epk_ai_pr_missing_tests_001",
+      "ref_id": "pack:epk_ai_pr_missing_tests_001",
+      "source": "pack",
+      "path": "evidence-pack.json",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "submitted evidence pack"
+    },
+    {
+      "entry_id": "entry:art_auth_pr_note",
+      "ref_id": "art_auth_pr_note",
+      "source": "artifact",
+      "path": "artifacts/authority/pr-note.md",
+      "artifact_id": "art_auth_pr_note",
+      "reason_codes": [
+        "DECLARED_AUTHORITY_ONLY"
+      ],
+      "used_by": [
+        "evidence_refs",
+        "missing_evidence:missing:declared_authority_only"
+      ],
+      "description": "synthetic declared pull request scope note"
+    },
+    {
+      "entry_id": "entry:art_controller_diff",
+      "ref_id": "art_controller_diff",
+      "source": "artifact",
+      "path": "artifacts/diff/order-controller.patch",
+      "artifact_id": "art_controller_diff",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic controller diff"
+    },
+    {
+      "entry_id": "entry:art_build_log",
+      "ref_id": "art_build_log",
+      "source": "artifact",
+      "path": "artifacts/logs/build.log",
+      "artifact_id": "art_build_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic repository build log"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_missing_tests_001",
+      "ref_id": "act_ai_pr_missing_tests_001",
+      "source": "action",
+      "path": "src/controllers/orderController.ts",
+      "action_id": "act_ai_pr_missing_tests_001",
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "read_file"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_missing_tests_002",
+      "ref_id": "act_ai_pr_missing_tests_002",
+      "source": "action",
+      "path": "src/controllers/orderController.ts",
+      "action_id": "act_ai_pr_missing_tests_002",
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "modify_code"
+    },
+    {
+      "entry_id": "entry:act_ai_pr_missing_tests_003",
+      "ref_id": "act_ai_pr_missing_tests_003",
+      "source": "action",
+      "action_id": "act_ai_pr_missing_tests_003",
+      "tool_call_id": "tc_ai_pr_missing_tests_build_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "test_execution"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_missing_tests_fs_001",
+      "ref_id": "tc_ai_pr_missing_tests_fs_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "returned controller and route mapping sources"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_missing_tests_fs_002",
+      "ref_id": "tc_ai_pr_missing_tests_fs_002",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_missing_tests_fs_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "updated application source files"
+    },
+    {
+      "entry_id": "entry:tc_ai_pr_missing_tests_build_001",
+      "ref_id": "tc_ai_pr_missing_tests_build_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_ai_pr_missing_tests_build_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "build passed; no unit test command executed"
+    },
+    {
+      "entry_id": "entry:ver_ai_pr_missing_tests_001",
+      "ref_id": "ver_ai_pr_missing_tests_001",
+      "source": "verification",
+      "verification_id": "ver_ai_pr_missing_tests_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "no unit test evidence was exported for this pull request"
+    },
+    {
+      "entry_id": "entry:ver_ai_pr_missing_tests_002",
+      "ref_id": "ver_ai_pr_missing_tests_002",
+      "source": "verification",
+      "verification_id": "ver_ai_pr_missing_tests_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "build executed in CI after controller change"
+    },
+    {
+      "entry_id": "derived:missing_evidence:missing:tests_not_run",
+      "reason_codes": [
+        "TESTS_NOT_RUN"
+      ],
+      "used_by": [
+        "missing_evidence:missing:tests_not_run"
+      ],
+      "description": "Evidence indicates test activity did not occur."
+    },
+    {
+      "entry_id": "derived:missing_evidence:missing:manifest_incomplete",
+      "reason_codes": [
+        "MANIFEST_INCOMPLETE"
+      ],
+      "used_by": [
+        "missing_evidence:missing:manifest_incomplete"
+      ],
+      "description": "Manifest completeness indicates omitted or partial evidence inventory."
+    },
+    {
+      "entry_id": "derived:human_review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:next_action:next:authority",
+      "reason_codes": [
+        "DECLARED_AUTHORITY_ONLY"
+      ],
+      "used_by": [
+        "next_action:next:authority"
+      ],
+      "description": "Clarify or strengthen the authority material for this workflow."
+    },
+    {
+      "entry_id": "derived:next_action:next:verification",
+      "reason_codes": [
+        "TESTS_NOT_RUN"
+      ],
+      "used_by": [
+        "next_action:next:verification"
+      ],
+      "description": "Strengthen verification evidence for the recorded change."
+    },
+    {
+      "entry_id": "derived:next_action:next:provenance",
+      "reason_codes": [
+        "MANIFEST_INCOMPLETE"
+      ],
+      "used_by": [
+        "next_action:next:provenance"
+      ],
+      "description": "Align the manifest, artifact, and provenance material with the report input."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:verdict",
+      "reason_codes": [
+        "TESTS_NOT_RUN",
+        "INSUFFICIENT_VERIFICATION",
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "verdict"
+      ],
+      "description": "Evidence indicates test activity did not occur. Verification material is present but not strong enough for the recorded workflow. Later governance flow may call for human review."
+    },
+    {
+      "entry_id": "derived:risk_summary",
+      "reason_codes": [
+        "DECLARED_AUTHORITY_ONLY",
+        "TESTS_NOT_RUN",
+        "INSUFFICIENT_VERIFICATION",
+        "MANIFEST_INCOMPLETE",
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "risk_summary"
+      ],
+      "description": "Risk summary for report governance-report:epk_ai_pr_missing_tests_001:1.0.0"
+    }
+  ]
+}

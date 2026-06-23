@@ -1,0 +1,247 @@
+{
+  "index_schema_version": "1.0.0",
+  "report_id": "governance-report:epk_dependency_upgrade_breaking_change_001:1.0.0",
+  "source_pack_id": "epk_dependency_upgrade_breaking_change_001",
+  "generated_at": "2026-06-23T20:23:05Z",
+  "entries": [
+    {
+      "entry_id": "entry:pack:epk_dependency_upgrade_breaking_change_001",
+      "ref_id": "pack:epk_dependency_upgrade_breaking_change_001",
+      "source": "pack",
+      "path": "evidence-pack.json",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "submitted evidence pack"
+    },
+    {
+      "entry_id": "entry:art_upgrade_ticket",
+      "ref_id": "art_upgrade_ticket",
+      "source": "artifact",
+      "path": "artifacts/authority/upgrade-ticket.json",
+      "artifact_id": "art_upgrade_ticket",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic dependency upgrade ticket"
+    },
+    {
+      "entry_id": "entry:art_dependency_diff",
+      "ref_id": "art_dependency_diff",
+      "source": "artifact",
+      "path": "artifacts/diff/dependency-upgrade.patch",
+      "artifact_id": "art_dependency_diff",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic dependency and router diff"
+    },
+    {
+      "entry_id": "entry:art_upgrade_notes",
+      "ref_id": "art_upgrade_notes",
+      "source": "artifact",
+      "path": "artifacts/notes/upgrade-notes.md",
+      "artifact_id": "art_upgrade_notes",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic breaking migration note for reviewers"
+    },
+    {
+      "entry_id": "entry:art_build_log",
+      "ref_id": "art_build_log",
+      "source": "artifact",
+      "path": "artifacts/logs/build.log",
+      "artifact_id": "art_build_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic build log after dependency upgrade"
+    },
+    {
+      "entry_id": "entry:act_dependency_upgrade_001",
+      "ref_id": "act_dependency_upgrade_001",
+      "source": "action",
+      "path": "package.json",
+      "action_id": "act_dependency_upgrade_001",
+      "tool_call_id": "tc_dependency_upgrade_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "install_dependency"
+    },
+    {
+      "entry_id": "entry:act_dependency_upgrade_002",
+      "ref_id": "act_dependency_upgrade_002",
+      "source": "action",
+      "path": "src/router/index.ts",
+      "action_id": "act_dependency_upgrade_002",
+      "tool_call_id": "tc_dependency_upgrade_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "modify_code"
+    },
+    {
+      "entry_id": "entry:act_dependency_upgrade_003",
+      "ref_id": "act_dependency_upgrade_003",
+      "source": "action",
+      "action_id": "act_dependency_upgrade_003",
+      "tool_call_id": "tc_dependency_upgrade_003",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "test_execution"
+    },
+    {
+      "entry_id": "entry:tc_dependency_upgrade_001",
+      "ref_id": "tc_dependency_upgrade_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_dependency_upgrade_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "package files updated with new dependency version"
+    },
+    {
+      "entry_id": "entry:tc_dependency_upgrade_002",
+      "ref_id": "tc_dependency_upgrade_002",
+      "source": "tool_call",
+      "tool_call_id": "tc_dependency_upgrade_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "router source updated for new package API"
+    },
+    {
+      "entry_id": "entry:tc_dependency_upgrade_003",
+      "ref_id": "tc_dependency_upgrade_003",
+      "source": "tool_call",
+      "tool_call_id": "tc_dependency_upgrade_003",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "build passed; integration behavior remains unverified"
+    },
+    {
+      "entry_id": "entry:ver_dependency_upgrade_001",
+      "ref_id": "ver_dependency_upgrade_001",
+      "source": "verification",
+      "verification_id": "ver_dependency_upgrade_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "build completed after dependency upgrade"
+    },
+    {
+      "entry_id": "entry:ver_dependency_upgrade_002",
+      "ref_id": "ver_dependency_upgrade_002",
+      "source": "verification",
+      "verification_id": "ver_dependency_upgrade_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "integration navigation flow was not exercised in this fixture"
+    },
+    {
+      "entry_id": "derived:missing_evidence:missing:breaking_change_unverified",
+      "reason_codes": [
+        "BREAKING_CHANGE_UNVERIFIED"
+      ],
+      "used_by": [
+        "missing_evidence:missing:breaking_change_unverified"
+      ],
+      "description": "Evidence suggests possible breaking change impact without strong verification."
+    },
+    {
+      "entry_id": "derived:human_review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:human_review:review:owner",
+      "reason_codes": [
+        "OWNER_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:owner"
+      ],
+      "description": "Owner review is needed for the dependency-oriented workflow."
+    },
+    {
+      "entry_id": "derived:next_action:next:verification",
+      "reason_codes": [
+        "BREAKING_CHANGE_UNVERIFIED"
+      ],
+      "used_by": [
+        "next_action:next:verification"
+      ],
+      "description": "Strengthen verification evidence for the recorded change."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:owner",
+      "reason_codes": [
+        "OWNER_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:owner"
+      ],
+      "description": "Owner review is needed for the dependency-oriented workflow."
+    },
+    {
+      "entry_id": "derived:verdict",
+      "reason_codes": [
+        "INSUFFICIENT_VERIFICATION",
+        "HUMAN_REVIEW_REQUIRED",
+        "OWNER_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "verdict"
+      ],
+      "description": "Verification material is present but not strong enough for the recorded workflow. Later governance flow may call for human review. Later governance flow may call for owner review."
+    },
+    {
+      "entry_id": "derived:risk_summary",
+      "reason_codes": [
+        "DEPENDENCY_CHANGE_DETECTED",
+        "LOCKFILE_CHANGED",
+        "BREAKING_CHANGE_UNVERIFIED",
+        "INSUFFICIENT_VERIFICATION",
+        "HUMAN_REVIEW_REQUIRED",
+        "OWNER_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "risk_summary"
+      ],
+      "description": "Risk summary for report governance-report:epk_dependency_upgrade_breaking_change_001:1.0.0"
+    }
+  ]
+}

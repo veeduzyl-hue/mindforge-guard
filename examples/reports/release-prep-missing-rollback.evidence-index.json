@@ -1,0 +1,242 @@
+{
+  "index_schema_version": "1.0.0",
+  "report_id": "governance-report:epk_release_prep_missing_rollback_001:1.0.0",
+  "source_pack_id": "epk_release_prep_missing_rollback_001",
+  "generated_at": "2026-06-23T20:37:10Z",
+  "entries": [
+    {
+      "entry_id": "entry:pack:epk_release_prep_missing_rollback_001",
+      "ref_id": "pack:epk_release_prep_missing_rollback_001",
+      "source": "pack",
+      "path": "evidence-pack.json",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "submitted evidence pack"
+    },
+    {
+      "entry_id": "entry:art_release_ticket",
+      "ref_id": "art_release_ticket",
+      "source": "artifact",
+      "path": "artifacts/authority/release-ticket.json",
+      "artifact_id": "art_release_ticket",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic release preparation authorization ticket"
+    },
+    {
+      "entry_id": "entry:art_release_diff",
+      "ref_id": "art_release_diff",
+      "source": "artifact",
+      "path": "artifacts/diff/release-prep.patch",
+      "artifact_id": "art_release_diff",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic release preparation diff"
+    },
+    {
+      "entry_id": "entry:art_build_log",
+      "ref_id": "art_build_log",
+      "source": "artifact",
+      "path": "artifacts/logs/release-build.log",
+      "artifact_id": "art_build_log",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic release build log"
+    },
+    {
+      "entry_id": "entry:art_release_bundle",
+      "ref_id": "art_release_bundle",
+      "source": "artifact",
+      "path": "artifacts/build/release-bundle.tgz",
+      "artifact_id": "art_release_bundle",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "synthetic release bundle candidate"
+    },
+    {
+      "entry_id": "entry:act_release_prep_001",
+      "ref_id": "act_release_prep_001",
+      "source": "action",
+      "path": "CHANGELOG.md",
+      "action_id": "act_release_prep_001",
+      "tool_call_id": "tc_release_prep_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "modify_code"
+    },
+    {
+      "entry_id": "entry:act_release_prep_002",
+      "ref_id": "act_release_prep_002",
+      "source": "action",
+      "path": "dist/release-bundle.tgz",
+      "action_id": "act_release_prep_002",
+      "tool_call_id": "tc_release_prep_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "release_operation"
+    },
+    {
+      "entry_id": "entry:tc_release_prep_001",
+      "ref_id": "tc_release_prep_001",
+      "source": "tool_call",
+      "tool_call_id": "tc_release_prep_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "updated changelog and release metadata files"
+    },
+    {
+      "entry_id": "entry:tc_release_prep_002",
+      "ref_id": "tc_release_prep_002",
+      "source": "tool_call",
+      "tool_call_id": "tc_release_prep_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "release bundle built for staging review"
+    },
+    {
+      "entry_id": "entry:ver_release_prep_001",
+      "ref_id": "ver_release_prep_001",
+      "source": "verification",
+      "verification_id": "ver_release_prep_001",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "staging release bundle built successfully"
+    },
+    {
+      "entry_id": "entry:ver_release_prep_002",
+      "ref_id": "ver_release_prep_002",
+      "source": "verification",
+      "verification_id": "ver_release_prep_002",
+      "reason_codes": [],
+      "used_by": [
+        "evidence_refs"
+      ],
+      "description": "rollback validation evidence was not captured for this release preparation flow"
+    },
+    {
+      "entry_id": "derived:missing_evidence:missing:rollback_missing",
+      "reason_codes": [
+        "ROLLBACK_MISSING"
+      ],
+      "used_by": [
+        "missing_evidence:missing:rollback_missing"
+      ],
+      "description": "Rollback evidence is absent for a release-oriented workflow."
+    },
+    {
+      "entry_id": "derived:missing_evidence:missing:manifest_incomplete",
+      "reason_codes": [
+        "MANIFEST_INCOMPLETE"
+      ],
+      "used_by": [
+        "missing_evidence:missing:manifest_incomplete"
+      ],
+      "description": "Manifest completeness indicates omitted or partial evidence inventory."
+    },
+    {
+      "entry_id": "derived:human_review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:human_review:review:release",
+      "reason_codes": [
+        "RELEASE_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "human_review:review:release"
+      ],
+      "description": "Release review is needed before relying on this release summary."
+    },
+    {
+      "entry_id": "derived:next_action:next:rollback",
+      "reason_codes": [
+        "ROLLBACK_MISSING"
+      ],
+      "used_by": [
+        "next_action:next:rollback"
+      ],
+      "description": "Provide rollback evidence for the release-oriented workflow."
+    },
+    {
+      "entry_id": "derived:next_action:next:provenance",
+      "reason_codes": [
+        "MANIFEST_INCOMPLETE"
+      ],
+      "used_by": [
+        "next_action:next:provenance"
+      ],
+      "description": "Align the manifest, artifact, and provenance material with the report input."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:generic",
+      "reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:generic"
+      ],
+      "description": "A human review step is needed before relying on this governance report."
+    },
+    {
+      "entry_id": "derived:next_action:next:review:review:release",
+      "reason_codes": [
+        "RELEASE_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "next_action:next:review:review:release"
+      ],
+      "description": "Release review is needed before relying on this release summary."
+    },
+    {
+      "entry_id": "derived:verdict",
+      "reason_codes": [
+        "ROLLBACK_MISSING",
+        "HUMAN_REVIEW_REQUIRED",
+        "RELEASE_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "verdict"
+      ],
+      "description": "Rollback evidence is absent for a release-oriented workflow. Later governance flow may call for human review. Later governance flow may call for release review."
+    },
+    {
+      "entry_id": "derived:risk_summary",
+      "reason_codes": [
+        "ROLLBACK_MISSING",
+        "MANIFEST_INCOMPLETE",
+        "HUMAN_REVIEW_REQUIRED",
+        "RELEASE_REVIEW_REQUIRED"
+      ],
+      "used_by": [
+        "risk_summary"
+      ],
+      "description": "Risk summary for report governance-report:epk_release_prep_missing_rollback_001:1.0.0"
+    }
+  ]
+}
