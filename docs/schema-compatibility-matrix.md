@@ -38,7 +38,7 @@ The table below describes the expected direction of mapping from likely Harness-
 | `pack_type` | workflow classification metadata | partial | May require Guard-side mapping into canonical enum values. |
 | `created_at` | export timestamp | available | Typically available from producer timestamps. |
 | `producer` | harness identity metadata | available | Producer identity is expected from Harness. |
-| `workflow` | repo, run, and workflow context | partial | Likely present in part, but canonical environment and workflow typing may need mapping. |
+| `workflow` | repo, run, branch, ref, and workflow context | partial | Guard-side shaping may still be needed to populate canonical `workflow.repository` fields such as provider, branch, base_ref, head_ref, commit_sha, and pr_number. |
 | `authority` | declared permissions, allowed actions, reviewer notes | partial | Often partially declared, but not guaranteed to be fully evidenced. |
 | `runtime` | runtime metadata, model/runtime info, available tools | available | Expected from Harness execution context. |
 | `intent` | task prompt, user goal, agent task summary | partial | Usually present, but may need canonical shaping. |
@@ -54,7 +54,7 @@ The table below describes the expected direction of mapping from likely Harness-
 | `risk_signals` | Guard-side evidence interpretation | guard-only | Harness should not compute Guard risk signals as governance output. |
 | `provenance` | export metadata, redaction markers, deterministic export details | partial | Some provenance may exist, but canonical fields may need Guard-side wrapping. |
 | `manifest` | file list, export contents, completeness view | partial | File inventory is likely available; completeness classification may need Guard-side normalization. |
-| `extensions` | runtime-specific fields outside canonical surface | future | Reserved for future bounded expansion. |
+| `extensions` | runtime-specific fields outside canonical surface | future | Reserved for future bounded expansion and not the canonical location for repository metadata when `workflow.repository` applies. |
 
 ## 5. Fields Likely Already Available From Harness
 
@@ -91,6 +91,7 @@ The following fields are likely to be incomplete, absent, or only declared in ma
 
 This is acceptable for a compatibility-direction document.
 It means raw Harness output may still require Guard-side packaging or normalization before it satisfies the canonical contract.
+That includes shaping producer metadata into canonical `workflow.repository` fields and preserving `authority.time_window` with `start_at` / `end_at`.
 
 ## 7. Fields That Must Remain Guard-Side Only
 
@@ -116,6 +117,8 @@ Migration from Harness `v0.5.x` toward Schema v1 should follow these principles:
 - avoid moving governance logic into Harness
 - keep top-level Guard contract ownership inside MindForge Guard
 - use `extensions` for runtime-specific producer fields that do not belong in the canonical top level
+
+Canonical repository metadata for software-change governance should map to `workflow.repository`, not to `extensions`.
 
 This document does not implement migration logic.
 

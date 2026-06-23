@@ -198,25 +198,41 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "repo_name"
-          ],
           "properties": {
+            "provider": {
+              "type": "string",
+              "enum": [
+                "github",
+                "gitlab",
+                "bitbucket",
+                "local",
+                "unknown"
+              ]
+            },
             "repo_name": {
               "$ref": "#/$defs/nonEmptyString"
             },
             "remote_url": {
-              "$ref": "#/$defs/nullableString"
+              "$ref": "#/$defs/nonEmptyString"
             },
             "default_branch": {
-              "$ref": "#/$defs/nullableString"
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "branch": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "base_ref": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "head_ref": {
+              "$ref": "#/$defs/nonEmptyString"
             },
             "commit_sha": {
-              "type": [
-                "string",
-                "null"
-              ],
+              "type": "string",
               "pattern": "^[0-9a-f]{40}$"
+            },
+            "pr_number": {
+              "$ref": "#/$defs/nonEmptyString"
             }
           }
         }
