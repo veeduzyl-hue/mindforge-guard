@@ -1,0 +1,300 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "epk_release_prep_missing_rollback_001",
+  "pack_type": "ai_software_change",
+  "created_at": "2026-06-23T20:35:00Z",
+  "producer": {
+    "producer_id": "prod_ci_release_001",
+    "producer_name": "Synthetic Release Evidence Export",
+    "producer_version": "0.5.0-fixture",
+    "producer_type": "ci",
+    "profile": "release-prep",
+    "generated_by": "synthetic-release-exporter"
+  },
+  "workflow": {
+    "workflow_id": "wf_release_prep_missing_rollback_001",
+    "workflow_name": "release preparation without rollback evidence",
+    "workflow_type": "release",
+    "repository": {
+      "provider": "github",
+      "repo_name": "mindforge-labs/synthetic-release-service",
+      "remote_url": "https://github.com/mindforge-labs/synthetic-release-service.git",
+      "default_branch": "main",
+      "branch": "release/2026.06.23-rc1",
+      "base_ref": "main",
+      "head_ref": "release/2026.06.23-rc1",
+      "commit_sha": "4444444444444444444444444444444444444444"
+    },
+    "environment": "staging"
+  },
+  "authority": {
+    "requested_by": "release.synthetic",
+    "owner": "team.synthetic-release",
+    "reviewers": [
+      "reviewer.release-manager",
+      "reviewer.platform"
+    ],
+    "authorization_status": "provided",
+    "authorization_evidence": [
+      "art_release_ticket"
+    ],
+    "allowed_actions": [
+      "prepare release notes",
+      "run build",
+      "package staging artifact"
+    ],
+    "prohibited_actions": [
+      "perform production deploy",
+      "rotate production secrets",
+      "execute rollback in production"
+    ],
+    "time_window": {
+      "start_at": "2026-06-23T20:00:00Z",
+      "end_at": "2026-06-23T22:30:00Z"
+    }
+  },
+  "runtime": {
+    "runtime_id": "rt_release_prep_001",
+    "runtime_type": "ci",
+    "runtime_name": "synthetic-release-agent",
+    "runtime_version": "2026.06",
+    "model": {
+      "model_name": "synthetic-release-assistant",
+      "provider": "synthetic-local",
+      "model_version": "1.0"
+    },
+    "tools": [
+      {
+        "tool_name": "workspace-filesystem",
+        "tool_type": "filesystem",
+        "version": "1.0",
+        "operation_scope": [
+          "read",
+          "write"
+        ]
+      },
+      {
+        "tool_name": "release-build-runner",
+        "tool_type": "test_runner",
+        "version": "20.0",
+        "operation_scope": [
+          "build"
+        ]
+      },
+      {
+        "tool_name": "git-cli",
+        "tool_type": "git",
+        "version": "2.45",
+        "operation_scope": [
+          "tag_preview",
+          "diff"
+        ]
+      }
+    ],
+    "execution_mode": "release_prep_review"
+  },
+  "intent": {
+    "intent_id": "intent_release_prep_missing_rollback_001",
+    "user_goal": "prepare the next release candidate for staging review",
+    "agent_task": "assemble release preparation evidence and validate build output",
+    "expected_outcome": "release preparation evidence with explicit missing rollback check",
+    "declared_constraints": [
+      "staging only",
+      "no production deployment",
+      "no release publication"
+    ],
+    "success_criteria": [
+      "build artifact is produced",
+      "release notes are updated",
+      "missing rollback evidence remains visible"
+    ]
+  },
+  "scope": {
+    "in_scope": [
+      "CHANGELOG.md",
+      "package.json",
+      "dist/release-bundle.tgz"
+    ],
+    "out_of_scope": [
+      "production deployment",
+      "rollback execution",
+      "customer data access"
+    ],
+    "touched_resources": [
+      "CHANGELOG.md",
+      "package.json",
+      "dist/release-bundle.tgz"
+    ],
+    "changed_files": [
+      "CHANGELOG.md",
+      "package.json"
+    ],
+    "data_sensitivity": "low"
+  },
+  "actions": [
+    {
+      "action_id": "act_release_prep_001",
+      "timestamp": "2026-06-23T20:35:15Z",
+      "actor": "synthetic-release-agent",
+      "action_type": "modify_code",
+      "target": {
+        "resource": "CHANGELOG.md",
+        "path": "CHANGELOG.md",
+        "ref": "workspace"
+      },
+      "command": null,
+      "inputs": {
+        "change_summary": "append release notes candidate section"
+      },
+      "outputs": {
+        "lines_changed": 22
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_release_prep_001"
+    },
+    {
+      "action_id": "act_release_prep_002",
+      "timestamp": "2026-06-23T20:36:22Z",
+      "actor": "synthetic-release-agent",
+      "action_type": "release_operation",
+      "target": {
+        "resource": "dist/release-bundle.tgz",
+        "path": "dist/release-bundle.tgz",
+        "ref": "workspace"
+      },
+      "command": "npm pack",
+      "inputs": {
+        "reason": "build release bundle candidate"
+      },
+      "outputs": {
+        "artifact": "dist/release-bundle.tgz"
+      },
+      "status": "succeeded",
+      "related_tool_call_id": "tc_release_prep_002"
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "tc_release_prep_001",
+      "timestamp": "2026-06-23T20:35:14Z",
+      "tool_name": "workspace-filesystem",
+      "tool_type": "filesystem",
+      "input_summary": "write release notes and version prep metadata",
+      "output_summary": "updated changelog and release metadata files",
+      "exit_code": 0,
+      "duration_ms": 31,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_release_diff"
+      ]
+    },
+    {
+      "tool_call_id": "tc_release_prep_002",
+      "timestamp": "2026-06-23T20:36:20Z",
+      "tool_name": "release-build-runner",
+      "tool_type": "test_runner",
+      "input_summary": "run packaging build for release candidate",
+      "output_summary": "release bundle built for staging review",
+      "exit_code": 0,
+      "duration_ms": 5221,
+      "sensitive_input_detected": false,
+      "artifact_refs": [
+        "art_build_log",
+        "art_release_bundle"
+      ]
+    }
+  ],
+  "blocked_actions": [],
+  "artifacts": [
+    {
+      "artifact_id": "art_release_ticket",
+      "path": "artifacts/authority/release-ticket.json",
+      "artifact_type": "authorization",
+      "sha256": "ababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcd",
+      "size_bytes": 808,
+      "content_type": "application/json",
+      "description": "synthetic release preparation authorization ticket"
+    },
+    {
+      "artifact_id": "art_release_diff",
+      "path": "artifacts/diff/release-prep.patch",
+      "artifact_type": "diff",
+      "sha256": "cdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdabab",
+      "size_bytes": 2870,
+      "content_type": "text/x-diff",
+      "description": "synthetic release preparation diff"
+    },
+    {
+      "artifact_id": "art_build_log",
+      "path": "artifacts/logs/release-build.log",
+      "artifact_type": "build_output",
+      "sha256": "efef1212efef1212efef1212efef1212efef1212efef1212efef1212efef1212",
+      "size_bytes": 3140,
+      "content_type": "text/plain",
+      "description": "synthetic release build log"
+    },
+    {
+      "artifact_id": "art_release_bundle",
+      "path": "artifacts/build/release-bundle.tgz",
+      "artifact_type": "build_output",
+      "sha256": "7878efef7878efef7878efef7878efef7878efef7878efef7878efef7878efef",
+      "size_bytes": 18432,
+      "content_type": "application/gzip",
+      "description": "synthetic release bundle candidate"
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "ver_release_prep_001",
+      "verification_type": "build",
+      "status": "passed",
+      "command": "npm pack",
+      "artifact_refs": [
+        "art_build_log",
+        "art_release_bundle"
+      ],
+      "coverage_note": "staging release bundle built successfully"
+    },
+    {
+      "verification_id": "ver_release_prep_002",
+      "verification_type": "rollback_check",
+      "status": "not_run",
+      "command": null,
+      "artifact_refs": [],
+      "coverage_note": "rollback validation evidence was not captured for this release preparation flow"
+    }
+  ],
+  "risk_signals": [],
+  "provenance": {
+    "source_pack_hash": "4567456745674567456745674567456745674567456745674567456745674567",
+    "generated_at": "2026-06-23T20:37:10Z",
+    "generated_by": "guard-fixture-generator",
+    "deterministic": true,
+    "redaction_applied": false
+  },
+  "manifest": {
+    "files": [
+      {
+        "path": "evidence-pack.json",
+        "sha256": "9090909090909090909090909090909090909090909090909090909090909090",
+        "size_bytes": 8770
+      },
+      {
+        "path": "artifacts/diff/release-prep.patch",
+        "sha256": "cdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdababcdcdabab",
+        "size_bytes": 2870
+      },
+      {
+        "path": "artifacts/logs/release-build.log",
+        "sha256": "efef1212efef1212efef1212efef1212efef1212efef1212efef1212efef1212",
+        "size_bytes": 3140
+      },
+      {
+        "path": "artifacts/build/release-bundle.tgz",
+        "sha256": "7878efef7878efef7878efef7878efef7878efef7878efef7878efef7878efef",
+        "size_bytes": 18432
+      }
+    ],
+    "completeness": "partial"
+  }
+}
