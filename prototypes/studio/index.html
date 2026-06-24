@@ -316,6 +316,23 @@
         margin-top: 10px;
       }
 
+      .html-preview-shell {
+        display: grid;
+        gap: 12px;
+      }
+
+      .preview-frame {
+        width: 100%;
+        min-height: 320px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fffdf8;
+      }
+
+      .preview-frame[hidden] {
+        display: none;
+      }
+
       .footer-note {
         margin-top: 18px;
         color: var(--muted);
@@ -507,21 +524,29 @@
           <div class="split" style="margin-top: 14px;">
             <div>
               <h3>Markdown Preview</h3>
-              <pre id="markdown-preview"># Governance Report: small utility fix pull request
-
-## Executive Summary
-The current verdict is `allow` with evidence completeness `complete` and 0 missing evidence item(s).</pre>
+              <pre id="markdown-preview">No generated outputs loaded. Run the local Studio workflow first.</pre>
             </div>
             <div>
-              <h3>HTML Preview Status</h3>
-              <div class="placeholder">
-                <div>
-                  <strong id="html-preview-title">Local HTML output is available for the selected sample.</strong>
-                  <p id="html-preview-copy">
-                    Use Download HTML to save the already-loaded sample report string. Browser-side
-                    file input and paste wiring do not compute a report in place.
-                  </p>
+              <h3>HTML Preview Sandbox</h3>
+              <div class="html-preview-shell">
+                <div class="placeholder" id="html-preview-placeholder">
+                  <div>
+                    <strong id="html-preview-title">No workflow-produced HTML output loaded.</strong>
+                    <p id="html-preview-copy">
+                      This local-only sandbox stays empty until the Studio workflow injects
+                      renderer-produced HTML output.
+                    </p>
+                  </div>
                 </div>
+                <iframe
+                  id="html-preview-frame"
+                  class="preview-frame"
+                  title="Workflow-produced HTML preview"
+                  sandbox=""
+                  referrerpolicy="no-referrer"
+                  csp="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none';"
+                  hidden
+                ></iframe>
               </div>
             </div>
           </div>
@@ -530,14 +555,7 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
         <article class="panel span-8">
           <span class="eyebrow">Evidence Index Preview</span>
           <h2>Traceability Export</h2>
-          <pre id="index-preview">{
-  "index_schema_version": "1.0.0",
-  "report_id": "governance-report:epk_ai_pr_low_risk_complete_001:1.0.0",
-  "source_pack_id": "epk_ai_pr_low_risk_complete_001",
-  "entries": [
-    { "entry_id": "entry:pack:epk_ai_pr_low_risk_complete_001" }
-  ]
-}</pre>
+          <pre id="index-preview">No generated outputs loaded. Run the local Studio workflow first.</pre>
         </article>
 
         <article class="panel span-4">
@@ -666,6 +684,8 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
       const reviewCount = document.getElementById("review-count");
       const reviewList = document.getElementById("review-list");
       const markdownPreview = document.getElementById("markdown-preview");
+      const htmlPreviewPlaceholder = document.getElementById("html-preview-placeholder");
+      const htmlPreviewFrame = document.getElementById("html-preview-frame");
       const htmlPreviewTitle = document.getElementById("html-preview-title");
       const htmlPreviewCopy = document.getElementById("html-preview-copy");
       const indexPreview = document.getElementById("index-preview");
@@ -707,10 +727,22 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
       function showNoGeneratedOutputsState() {
         const message = "No generated outputs loaded. Run the local Studio workflow first.";
         markdownPreview.textContent = message;
-        htmlPreviewTitle.textContent = "No generated HTML report loaded.";
+        htmlPreviewPlaceholder.hidden = false;
+        htmlPreviewFrame.hidden = true;
+        htmlPreviewFrame.removeAttribute("srcdoc");
+        htmlPreviewTitle.textContent = "No workflow-produced HTML output loaded.";
         htmlPreviewCopy.textContent =
-          "Sample mode and browser-side import do not fabricate report artifacts. Load outputs produced by the local Studio workflow to enable downloads.";
+          "This local-only sandbox stays empty until the Studio workflow injects renderer-produced HTML output.";
         indexPreview.textContent = message;
+      }
+
+      function showWorkflowProducedHtmlPreview(html) {
+        htmlPreviewTitle.textContent = "Workflow-produced HTML loaded into local sandbox.";
+        htmlPreviewCopy.textContent =
+          "The iframe previews renderer-produced HTML only. Scripts, forms, same-origin access, and popups are not allowed.";
+        htmlPreviewPlaceholder.hidden = true;
+        htmlPreviewFrame.hidden = false;
+        htmlPreviewFrame.srcdoc = html;
       }
 
       function setStudioGeneratedOutputs(outputs = {}) {
@@ -730,13 +762,14 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
         };
 
         markdownPreview.textContent = markdown || "No Markdown report loaded.";
-        htmlPreviewTitle.textContent = html
-          ? "Workflow-produced HTML report loaded."
-          : "No generated HTML report loaded.";
-        htmlPreviewCopy.textContent = html
-          ? "Downloads now use outputs produced by the local Studio workflow / Guard Core / renderers."
-          : "No generated outputs loaded. Run the local Studio workflow first.";
         indexPreview.textContent = evidenceIndexJson || "No Evidence Index JSON loaded.";
+        if (html) {
+          showWorkflowProducedHtmlPreview(html);
+        } else {
+          showNoGeneratedOutputsState();
+          markdownPreview.textContent = markdown || "No Markdown report loaded.";
+          indexPreview.textContent = evidenceIndexJson || "No Evidence Index JSON loaded.";
+        }
 
         const hasAllOutputs = Boolean(markdown && html && evidenceIndexJson);
         setDownloadState(
