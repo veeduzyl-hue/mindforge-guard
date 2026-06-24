@@ -9,6 +9,9 @@ export const STUDIO_SAMPLES = {
   "release-prep-missing-rollback": "fixtures/release-prep-missing-rollback/evidence-pack.json",
 };
 
+export const STUDIO_LOCAL_IMPORT_NOTE =
+  "Studio accepts local Evidence Pack JSON input only. It does not send packs over the network, inspect artifact contents, or run pack actions.";
+
 function fail(message) {
   throw new Error(message);
 }
@@ -143,6 +146,7 @@ function buildValidationSummary(validation) {
 }
 
 function buildStudioResult({
+  sourceMode,
   sampleName,
   relativePath,
   parseResult,
@@ -155,7 +159,7 @@ function buildStudioResult({
   return {
     studio_surface_version: "studio-prototype-v1",
     source: {
-      mode: "sample",
+      mode: sourceMode,
       sample_name: sampleName,
       input_path: relativePath,
     },
@@ -195,6 +199,7 @@ function buildStudioResult({
       html_ready: typeof html === "string",
       evidence_index_ready: evidenceIndex !== null,
     },
+    local_boundary_note: STUDIO_LOCAL_IMPORT_NOTE,
   };
 }
 
@@ -208,6 +213,7 @@ export async function runStudioInput(input, options = {}) {
     const parseResult = dependencies.parseEvidencePack(input);
     if (!parseResult.ok) {
       return buildStudioResult({
+        sourceMode: options.sourceMode ?? "import",
         sampleName: options.sampleName ?? null,
         relativePath: options.relativePath ?? null,
         parseResult,
@@ -222,6 +228,7 @@ export async function runStudioInput(input, options = {}) {
     const validation = dependencies.validateEvidencePack(parseResult.pack);
     if (!validation.ok) {
       return buildStudioResult({
+        sourceMode: options.sourceMode ?? "import",
         sampleName: options.sampleName ?? null,
         relativePath: options.relativePath ?? null,
         parseResult,
@@ -236,6 +243,7 @@ export async function runStudioInput(input, options = {}) {
     const reportResult = dependencies.generateGovernanceReport(input);
     if (!reportResult.ok) {
       return buildStudioResult({
+        sourceMode: options.sourceMode ?? "import",
         sampleName: options.sampleName ?? null,
         relativePath: options.relativePath ?? null,
         parseResult,
@@ -252,6 +260,7 @@ export async function runStudioInput(input, options = {}) {
     const evidenceIndex = dependencies.generateEvidenceIndex(reportResult.report);
 
     return buildStudioResult({
+      sourceMode: options.sourceMode ?? "import",
       sampleName: options.sampleName ?? null,
       relativePath: options.relativePath ?? null,
       parseResult,
@@ -266,6 +275,15 @@ export async function runStudioInput(input, options = {}) {
   }
 }
 
+export async function runImportedPack(input, options = {}) {
+  return runStudioInput(input, {
+    ...options,
+    sampleName: null,
+    relativePath: options.relativePath ?? null,
+    sourceMode: "import",
+  });
+}
+
 export async function runStudioSample(sampleName) {
   const relativePath = STUDIO_SAMPLES[sampleName];
   if (!relativePath) {
@@ -278,7 +296,25 @@ export async function runStudioSample(sampleName) {
   const samplePath = path.join(repoRoot, relativePath);
   const input = fs.readFileSync(samplePath, "utf8");
 
-  return runStudioInput(input, { sampleName, relativePath });
+  return runStudioInput(input, { sampleName, relativePath, sourceMode: "sample" });
+}
+
+export function exportMarkdownReportOutput(studioResult) {
+  return typeof studioResult?.markdown_preview === "string"
+    ? studioResult.markdown_preview
+    : null;
+}
+
+export function exportHtmlReportOutput(studioResult) {
+  return typeof studioResult?.html_preview === "string"
+    ? studioResult.html_preview
+    : null;
+}
+
+export function exportEvidenceIndexJson(studioResult) {
+  return studioResult?.evidence_index
+    ? JSON.stringify(studioResult.evidence_index, null, 2)
+    : null;
 }
 
 async function main() {

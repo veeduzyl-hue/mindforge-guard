@@ -272,7 +272,7 @@
       <section class="hero">
         <div class="hero-copy">
           <span class="eyebrow">Local-First Review Workspace</span>
-          <h1>Studio Prototype Skeleton</h1>
+          <h1>Studio Import / Export Prototype</h1>
           <p>
             This prototype shows the first bounded consumer surface for Evidence Packs,
             Governance Reports, Markdown / HTML renders, and Evidence Index exports.
@@ -283,10 +283,11 @@
           </p>
           <div class="hero-actions">
             <button class="primary" type="button" id="run-sample">Run Sample</button>
-            <button type="button" disabled>Import Pack</button>
+            <button type="button" disabled>Import Evidence Pack</button>
             <button type="button" disabled>Validate</button>
             <button type="button" disabled>Generate Report</button>
-            <button type="button" disabled>Render Markdown / HTML</button>
+            <button type="button" disabled>Export Markdown</button>
+            <button type="button" disabled>Export HTML</button>
             <button type="button" disabled>Export Evidence Index</button>
           </div>
           <p class="caption">
@@ -297,6 +298,24 @@
       </section>
 
       <section class="grid">
+        <article class="panel span-4">
+          <span class="eyebrow">Import Evidence Pack</span>
+          <h2>Local Input Only</h2>
+          <div class="placeholder" style="min-height: 220px; margin-top: 14px;">
+            <div>
+              <strong>Select or paste local pack JSON.</strong>
+              The browser prototype shows the import step conceptually only.
+              A reviewer can choose a local file or paste pack JSON for the Node workflow helper.
+              Studio does not send packs over a network, does not persist them outside the local workspace,
+              and does not inspect artifact file contents.
+            </div>
+          </div>
+          <p class="caption">
+            Intended thin entrypoint: pass a JSON string or parsed pack object into
+            <code>runImportedPack(...)</code>.
+          </p>
+        </article>
+
         <article class="panel span-4">
           <span class="eyebrow">Sample Selector</span>
           <h2>Review Inputs</h2>
@@ -315,6 +334,17 @@
             </div>
             <span class="pill good">Local fixture only</span>
           </div>
+        </article>
+
+        <article class="panel span-4">
+          <span class="eyebrow">Local Boundary</span>
+          <h2>Downstream Consumer Only</h2>
+          <ul class="list" style="margin-top: 14px;">
+            <li>Studio calls Guard Core and renderer functions only.</li>
+            <li>Studio does not compute verdicts, risk, coverage, or reason codes.</li>
+            <li>Studio does not run pack actions or inspect artifact file contents.</li>
+            <li>Studio keeps import and export local to the reviewer workspace.</li>
+          </ul>
         </article>
 
         <article class="panel span-4">
@@ -413,15 +443,16 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
 
         <article class="panel span-4">
           <span class="eyebrow">Export Actions</span>
-          <h2>Placeholder Controls</h2>
+          <h2>Local Export Affordances</h2>
           <div class="toolbar" style="margin-top: 14px;">
-            <button type="button" disabled>Save Markdown</button>
-            <button type="button" disabled>Save HTML</button>
-            <button type="button" disabled>Save Evidence Index</button>
+            <button type="button" disabled>Export Markdown</button>
+            <button type="button" disabled>Export HTML</button>
+            <button type="button" disabled>Export Evidence Index</button>
           </div>
           <p class="footer-note">
-            Export actions remain local-first placeholders in this prototype. They do not write
-            artifacts, trigger external tools, or run Evidence Pack content.
+            Export actions stay intentionally thin in this prototype. The workflow module can return
+            local strings for Markdown, HTML, and Evidence Index JSON without writing files, adding
+            browser downloads, or triggering external tools.
           </p>
         </article>
       </section>

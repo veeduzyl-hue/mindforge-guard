@@ -37,6 +37,13 @@ Studio consumes existing Guard-owned functions only:
 - `renderMarkdownReport`
 - `renderHtmlReport`
 
+The current prototype workflow also exposes thin local-only affordances around those functions:
+
+- `runImportedPack`
+- `exportMarkdownReportOutput`
+- `exportHtmlReportOutput`
+- `exportEvidenceIndexJson`
+
 Studio does not independently compute governance logic.
 
 ## Local-First Workspace Boundary
@@ -46,6 +53,7 @@ The prototype is intentionally local-first.
 It is a review workspace for:
 
 - Evidence Pack status
+- local pack import affordances
 - validation results
 - governance report output
 - Markdown preview
@@ -63,6 +71,14 @@ It does not:
 - approve actions
 - deploy
 - rollback
+
+Import and export remain local-first:
+
+- Studio does not send packs over a network.
+- Studio does not persist packs outside the local workspace.
+- Studio does not execute pack actions during import.
+- Studio does not inspect artifact files referenced by a pack.
+- Studio only calls Guard Core and renderer functions to produce downstream outputs.
 
 ## Output Relationships
 
@@ -101,9 +117,10 @@ This prototype does not introduce:
 
 ## Current Limits
 
-- The UI is a static prototype skeleton.
-- Import and export controls are placeholders.
+- The UI is a static prototype surface.
+- Import controls remain conceptual in the browser.
+- Export controls remain local-only affordances and string helpers.
 - HTML preview embedding is deferred.
-- Sample orchestration is local and fixture-based.
+- Sample orchestration remains local and fixture-based.
 
 These limits are intentional for the first bounded Studio step.
