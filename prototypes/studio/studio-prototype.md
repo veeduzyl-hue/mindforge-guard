@@ -1,10 +1,10 @@
-# Studio Import / Export Prototype
+# Studio Local Browser Wiring
 
-This directory holds the first local-first Studio prototype with bounded import / export affordances for MindForge Guard.
+This directory holds the local-first Studio prototype with bounded browser-side file and download wiring for MindForge Guard.
 
 ## What It Includes
 
-- `index.html`: a static review surface that shows the intended import, validate, generate, and export panels.
+- `index.html`: a static review surface with local file selection, paste JSON input, local status, and local download controls.
 - `studioWorkflow.mjs`: a thin Node-side orchestration layer that loads a local sample pack or accepts imported JSON input and calls Guard-owned functions only.
 
 ## How To Use It
@@ -71,16 +71,40 @@ It does not:
 
 Import and export remain local-first:
 
-- Studio does not send packs over a network.
-- Studio does not persist packs outside the local workspace.
+- Browser file input stays inside the current browser session.
+- Paste JSON stays inside the current browser session.
+- Studio does not send pack input off-device.
+- Studio does not keep pack input in hosted persistence.
 - Studio does not inspect artifact files referenced by a pack.
 - Studio does not run commands declared inside a pack.
+- Browser sample mode does not fabricate Markdown reports, HTML reports, or Evidence Index JSON.
+- Studio browser downloads remain disabled until workflow-produced outputs are loaded.
+- Studio browser downloads are created only from Markdown, HTML, and Evidence Index strings already produced by the local Studio workflow / Guard Core / renderers.
 - Studio only returns downstream Markdown, HTML, and Evidence Index outputs that originate from Guard-owned functions.
+
+That means the browser page can:
+
+- read a chosen local JSON file with browser file APIs
+- keep pasted JSON in local in-memory state
+- update UI status
+- save workflow-produced output strings as local files after they are loaded
+
+The browser page does not:
+
+- compute verdicts
+- compute reason codes
+- compute risk
+- compute coverage
+- parse or validate packs on its own
+- inspect artifact paths
+- generate governance reports or Evidence Index JSON in browser-side JavaScript
+- create a second report model
 
 ## Current Prototype Limits
 
-- The browser UI is intentionally static.
-- Import controls are conceptual only.
-- Export controls are local string-returning affordances only.
+- Browser-side file selection is local-only UX wiring.
+- Paste JSON is local-only UX wiring.
+- Imported pack handoff remains a faithful local prototype step until a local runtime bridges the page to `runImportedPack(...)`.
+- Browser sample mode only shows local metadata and does not preload downloadable artifacts.
+- Browser downloads are limited to workflow-produced strings that are already loaded into the page.
 - HTML preview embedding is deferred to a later bounded PR.
-- Browser-side file selection and browser downloads are deferred to a later bounded PR.
