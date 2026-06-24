@@ -84,6 +84,8 @@ Import and export remain local-first:
 - Studio does not inspect artifact files referenced by a pack.
 - Studio only calls Guard Core and renderer functions to produce downstream outputs.
 - Browser sample mode does not fabricate Markdown reports, HTML reports, or Evidence Index JSON.
+- Browser HTML preview is a sandboxed iframe that consumes workflow-produced renderer output only.
+- The iframe does not allow scripts, forms, same-origin access, or popups.
 - Browser downloads stay disabled until workflow-produced outputs are present.
 - Browser downloads create local files only from Markdown, HTML, and Evidence Index strings already produced by the local Studio workflow / Guard Core / renderers.
 
@@ -128,9 +130,9 @@ This prototype does not introduce:
 - Browser file selection is local-only wiring.
 - Paste JSON is local-only wiring.
 - Browser sample mode only displays bounded local metadata and does not preload downloadable artifacts.
+- Browser HTML preview is a local sandbox for already-produced renderer output only.
 - Browser downloads are local file creation for workflow-produced strings only.
 - Imported pack handoff still stops at the local UX boundary inside the browser page.
-- HTML preview embedding is deferred.
 - Sample orchestration remains local and fixture-based.
 
 These limits are intentional for the first bounded Studio step.
