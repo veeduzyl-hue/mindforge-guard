@@ -54,6 +54,8 @@ It is a review workspace for:
 
 - Evidence Pack status
 - local pack import affordances
+- browser file selection
+- paste JSON input
 - validation results
 - governance report output
 - Markdown preview
@@ -74,11 +76,16 @@ It does not:
 
 Import and export remain local-first:
 
-- Studio does not send packs over a network.
-- Studio does not persist packs outside the local workspace.
-- Studio does not execute pack actions during import.
+- Browser file input stays inside the current browser session.
+- Paste JSON stays inside the current browser session.
+- Studio does not send pack input off-device.
+- Studio does not keep pack input in hosted persistence.
+- Studio does not run pack actions during import.
 - Studio does not inspect artifact files referenced by a pack.
 - Studio only calls Guard Core and renderer functions to produce downstream outputs.
+- Browser sample mode does not fabricate Markdown reports, HTML reports, or Evidence Index JSON.
+- Browser downloads stay disabled until workflow-produced outputs are present.
+- Browser downloads create local files only from Markdown, HTML, and Evidence Index strings already produced by the local Studio workflow / Guard Core / renderers.
 
 ## Output Relationships
 
@@ -118,8 +125,11 @@ This prototype does not introduce:
 ## Current Limits
 
 - The UI is a static prototype surface.
-- Import controls remain conceptual in the browser.
-- Export controls remain local-only affordances and string helpers.
+- Browser file selection is local-only wiring.
+- Paste JSON is local-only wiring.
+- Browser sample mode only displays bounded local metadata and does not preload downloadable artifacts.
+- Browser downloads are local file creation for workflow-produced strings only.
+- Imported pack handoff still stops at the local UX boundary inside the browser page.
 - HTML preview embedding is deferred.
 - Sample orchestration remains local and fixture-based.
 

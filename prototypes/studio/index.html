@@ -16,6 +16,7 @@
         --accent-soft: #ead6bb;
         --good: #2f6b41;
         --warn: #9a6b17;
+        --soft: #efe5d4;
       }
 
       * {
@@ -34,7 +35,7 @@
       }
 
       main {
-        width: min(1220px, calc(100% - 32px));
+        width: min(1240px, calc(100% - 32px));
         margin: 0 auto;
         padding: 28px 0 56px;
       }
@@ -73,7 +74,7 @@
 
       h1 {
         font-size: clamp(2rem, 4vw, 3.4rem);
-        max-width: 12ch;
+        max-width: 13ch;
       }
 
       p {
@@ -81,7 +82,7 @@
       }
 
       .hero-copy {
-        max-width: 760px;
+        max-width: 800px;
         position: relative;
         z-index: 1;
       }
@@ -102,7 +103,7 @@
       }
 
       button,
-      .ghost-link {
+      input[type="file"]::file-selector-button {
         appearance: none;
         border: 1px solid var(--line);
         border-radius: 999px;
@@ -202,7 +203,8 @@
       }
 
       .list,
-      pre {
+      pre,
+      textarea {
         margin: 0;
       }
 
@@ -214,13 +216,77 @@
         margin-top: 8px;
       }
 
-      pre {
-        overflow: auto;
+      pre,
+      textarea {
         border-radius: 16px;
         padding: 16px;
+        font: 0.84rem/1.55 "Courier New", Courier, monospace;
+      }
+
+      pre {
+        overflow: auto;
         background: #1e1a17;
         color: #f7efe1;
-        font: 0.84rem/1.55 "Courier New", Courier, monospace;
+      }
+
+      textarea,
+      input[type="file"] {
+        width: 100%;
+      }
+
+      textarea {
+        min-height: 180px;
+        resize: vertical;
+        border: 1px solid var(--line);
+        background: #fffdf8;
+        color: var(--ink);
+      }
+
+      input[type="file"] {
+        padding: 10px 12px;
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        background: #fffdf8;
+        color: var(--ink);
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .field label,
+      .status-list dt {
+        font: 700 0.85rem/1.2 "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      .field-note {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .status-list {
+        display: grid;
+        gap: 12px;
+        margin: 16px 0 0;
+      }
+
+      .status-list div {
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel-strong);
+      }
+
+      .status-list dd {
+        margin: 6px 0 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 0.98rem;
       }
 
       .split {
@@ -244,6 +310,10 @@
         display: block;
         margin-bottom: 8px;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .placeholder p + p {
+        margin-top: 10px;
       }
 
       .footer-note {
@@ -272,47 +342,54 @@
       <section class="hero">
         <div class="hero-copy">
           <span class="eyebrow">Local-First Review Workspace</span>
-          <h1>Studio Import / Export Prototype</h1>
+          <h1>Studio Local Browser Wiring</h1>
           <p>
-            This prototype shows the first bounded consumer surface for Evidence Packs,
-            Governance Reports, Markdown / HTML renders, and Evidence Index exports.
+            This prototype wires local browser-side file selection, paste JSON input, and
+            download controls into the existing Studio review surface without moving governance
+            logic into the browser.
           </p>
           <p>
-            It is downstream-only: Studio consumes Guard Core outputs and does not compute
-            verdicts, risk, coverage, or reason codes on its own.
+            Guard Core remains the governance source of truth. The browser UI only captures local
+            input, updates local status, and saves already-loaded output strings when they are
+            present.
           </p>
           <div class="hero-actions">
             <button class="primary" type="button" id="run-sample">Run Sample</button>
-            <button type="button" disabled>Import Evidence Pack</button>
-            <button type="button" disabled>Validate</button>
-            <button type="button" disabled>Generate Report</button>
-            <button type="button" disabled>Export Markdown</button>
-            <button type="button" disabled>Export HTML</button>
-            <button type="button" disabled>Export Evidence Index</button>
+            <button type="button" id="run-imported-pack">Run Imported Pack</button>
+            <button type="button" data-download="markdown">Download Markdown</button>
+            <button type="button" data-download="html">Download HTML</button>
+            <button type="button" data-download="index">Download Evidence Index</button>
           </div>
           <p class="caption">
-            The interactive shell here is static by design. The actual orchestration lives in
-            <code>prototypes/studio/studioWorkflow.mjs</code>.
+            The browser prototype keeps all input in memory only. Actual report generation is
+            delegated to <code>runImportedPack(...)</code> and Guard Core in the local Studio
+            runtime.
           </p>
         </div>
       </section>
 
       <section class="grid">
-        <article class="panel span-4">
+        <article class="panel span-5">
           <span class="eyebrow">Import Evidence Pack</span>
-          <h2>Local Input Only</h2>
-          <div class="placeholder" style="min-height: 220px; margin-top: 14px;">
-            <div>
-              <strong>Select or paste local pack JSON.</strong>
-              The browser prototype shows the import step conceptually only.
-              A reviewer can choose a local file or paste pack JSON for the Node workflow helper.
-              Studio does not send packs over a network, does not persist them outside the local workspace,
-              and does not inspect artifact file contents.
-            </div>
+          <h2>Choose A Local File Or Paste JSON</h2>
+          <div class="field">
+            <label for="pack-file">Local JSON file</label>
+            <input id="pack-file" type="file" accept=".json,application/json" />
           </div>
-          <p class="caption">
-            Intended thin entrypoint: pass a JSON string or parsed pack object into
-            <code>runImportedPack(...)</code>.
+          <div class="field">
+            <label for="pack-json">Paste JSON</label>
+            <textarea
+              id="pack-json"
+              placeholder="{&#10;  &quot;schema_version&quot;: &quot;1.0.0&quot;,&#10;  &quot;pack_id&quot;: &quot;epk_example_001&quot;&#10;}"
+            ></textarea>
+          </div>
+          <div class="toolbar" style="margin-top: 14px;">
+            <button type="button" id="clear-import">Clear Local Input</button>
+            <button class="primary" type="button" id="run-imported-pack-panel">Run Imported Pack</button>
+          </div>
+          <p class="field-note">
+            Files stay on this device. No network processing, no off-device persistence, and pack
+            actions are not run in the browser.
           </p>
         </article>
 
@@ -330,21 +407,31 @@
           <div class="status">
             <div class="metric">
               <span>Mode</span>
-              <strong>Sample</strong>
+              <strong id="active-mode">Sample</strong>
             </div>
-            <span class="pill good">Local fixture only</span>
+            <span class="pill good" id="mode-pill">Local sample output</span>
           </div>
         </article>
 
-        <article class="panel span-4">
-          <span class="eyebrow">Local Boundary</span>
-          <h2>Downstream Consumer Only</h2>
-          <ul class="list" style="margin-top: 14px;">
-            <li>Studio calls Guard Core and renderer functions only.</li>
-            <li>Studio does not compute verdicts, risk, coverage, or reason codes.</li>
-            <li>Studio does not run pack actions or inspect artifact file contents.</li>
-            <li>Studio keeps import and export local to the reviewer workspace.</li>
-          </ul>
+        <article class="panel span-3">
+          <span class="eyebrow">Local Status</span>
+          <h2>Browser Session State</h2>
+          <dl class="status-list">
+            <div>
+              <dt>Selected file</dt>
+              <dd id="selected-file-name">No file selected.</dd>
+            </div>
+            <div>
+              <dt>Input mode</dt>
+              <dd id="input-mode">sample</dd>
+            </div>
+            <div>
+              <dt>Local note</dt>
+              <dd id="local-note">
+                Governance result comes from Guard Core, not Studio UI.
+              </dd>
+            </div>
+          </dl>
         </article>
 
         <article class="panel span-4">
@@ -371,6 +458,17 @@
             </div>
             <span class="pill" id="validation-pill">0 structural errors</span>
           </div>
+        </article>
+
+        <article class="panel span-4">
+          <span class="eyebrow">Boundary Note</span>
+          <h2>Downstream Consumer Only</h2>
+          <ul class="list" style="margin-top: 14px;">
+            <li>Guard Core remains the only source of verdicts, reason codes, risk, and coverage.</li>
+            <li>The browser UI does not parse, validate, or inspect artifacts on its own.</li>
+            <li>No off-device transfer, no hosted persistence, and no pack actions are run.</li>
+            <li>Downloads are created from output strings that are already loaded into the page.</li>
+          </ul>
         </article>
 
         <article class="panel span-3">
@@ -415,13 +513,14 @@
 The current verdict is `allow` with evidence completeness `complete` and 0 missing evidence item(s).</pre>
             </div>
             <div>
-              <h3>HTML Preview Placeholder</h3>
+              <h3>HTML Preview Status</h3>
               <div class="placeholder">
                 <div>
-                  <strong>Renderer output stays downstream-only.</strong>
-                  The workflow module returns the full HTML string from Guard's HTML renderer.
-                  A future PR can place that output inside a sandboxed local preview without adding
-                  network behavior or a second governance engine.
+                  <strong id="html-preview-title">Local HTML output is available for the selected sample.</strong>
+                  <p id="html-preview-copy">
+                    Use Download HTML to save the already-loaded sample report string. Browser-side
+                    file input and paste wiring do not compute a report in place.
+                  </p>
                 </div>
               </div>
             </div>
@@ -442,17 +541,16 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
         </article>
 
         <article class="panel span-4">
-          <span class="eyebrow">Export Actions</span>
-          <h2>Local Export Affordances</h2>
+          <span class="eyebrow">Download Outputs</span>
+          <h2>Local File Creation</h2>
           <div class="toolbar" style="margin-top: 14px;">
-            <button type="button" disabled>Export Markdown</button>
-            <button type="button" disabled>Export HTML</button>
-            <button type="button" disabled>Export Evidence Index</button>
+            <button type="button" data-download="markdown">Download Markdown</button>
+            <button type="button" data-download="html">Download HTML</button>
+            <button type="button" data-download="index">Download Evidence Index</button>
           </div>
-          <p class="footer-note">
-            Export actions stay intentionally thin in this prototype. The workflow module can return
-            local strings for Markdown, HTML, and Evidence Index JSON without writing files, adding
-            browser downloads, or triggering external tools.
+          <p class="footer-note" id="download-note">
+            Download buttons save the current local output strings when they are present. Imported
+            pack input alone does not create browser-side governance output.
           </p>
         </article>
       </section>
@@ -461,11 +559,13 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
     <script>
       const samples = {
         "ai-pr-low-risk-complete": {
+          slug: "ai-pr-low-risk-complete",
           caption: "Selected sample: ai-pr-low-risk-complete from the local fixture set.",
           packId: "epk_ai_pr_low_risk_complete_001",
           packPath: "fixtures/ai-pr-low-risk-complete/evidence-pack.json",
           parseStatus: "ok",
           schema: "schema 1.0.0",
+          schemaKind: "good",
           validationHeadline: "Valid pack",
           validationCopy: "Warnings and structural errors are surfaced from Guard Core only.",
           warnings: "0",
@@ -475,15 +575,15 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
           reasons: ["No reason codes for the current sample."],
           missingEvidence: ["No missing evidence recorded."],
           reviews: ["No additional human review requirement recorded."],
-          markdown: "# Governance Report: small utility fix pull request\n\n## Executive Summary\nThe current verdict is `allow` with evidence completeness `complete` and 0 missing evidence item(s).",
-          indexPreview: '{\n  "index_schema_version": "1.0.0",\n  "report_id": "governance-report:epk_ai_pr_low_risk_complete_001:1.0.0",\n  "source_pack_id": "epk_ai_pr_low_risk_complete_001",\n  "entries": [\n    { "entry_id": "entry:pack:epk_ai_pr_low_risk_complete_001" }\n  ]\n}'
         },
         "ai-pr-missing-tests": {
+          slug: "ai-pr-missing-tests",
           caption: "Selected sample: ai-pr-missing-tests from the local fixture set.",
           packId: "epk_ai_pr_missing_tests_001",
           packPath: "fixtures/ai-pr-missing-tests/evidence-pack.json",
           parseStatus: "ok",
           schema: "schema 1.0.0",
+          schemaKind: "warn",
           validationHeadline: "Valid pack with warnings",
           validationCopy: "Validation succeeds, then Studio consumes Guard Core warnings and report outputs.",
           warnings: "2",
@@ -493,23 +593,23 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
           reasons: [
             "INSUFFICIENT_VERIFICATION",
             "TESTS_NOT_RUN",
-            "HUMAN_REVIEW_REQUIRED"
+            "HUMAN_REVIEW_REQUIRED",
           ],
           missingEvidence: [
-            "Provide evidence that tests were run for the changed behavior."
+            "Provide evidence that tests were run for the changed behavior.",
           ],
           reviews: [
-            "A reviewer should confirm whether the PR can proceed without test evidence."
+            "A reviewer should confirm whether the PR can proceed without test evidence.",
           ],
-          markdown: "# Governance Report: controller update without test run evidence\n\n## Verdict\nThe current verdict is `require_review` with missing test evidence.",
-          indexPreview: '{\n  "index_schema_version": "1.0.0",\n  "report_id": "governance-report:epk_ai_pr_missing_tests_001:1.0.0",\n  "source_pack_id": "epk_ai_pr_missing_tests_001",\n  "entries": [\n    { "entry_id": "derived:verdict" },\n    { "entry_id": "derived:next_action:next:verification" }\n  ]\n}'
         },
         "release-prep-missing-rollback": {
+          slug: "release-prep-missing-rollback",
           caption: "Selected sample: release-prep-missing-rollback from the local fixture set.",
           packId: "epk_release_prep_missing_rollback_001",
           packPath: "fixtures/release-prep-missing-rollback/evidence-pack.json",
           parseStatus: "ok",
           schema: "schema 1.0.0",
+          schemaKind: "warn",
           validationHeadline: "Valid pack with warnings",
           validationCopy: "Studio reflects a release-oriented report without inventing rollback logic.",
           warnings: "1",
@@ -519,20 +619,36 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
           reasons: [
             "ROLLBACK_MISSING",
             "HUMAN_REVIEW_REQUIRED",
-            "RELEASE_REVIEW_REQUIRED"
+            "RELEASE_REVIEW_REQUIRED",
           ],
           missingEvidence: [
-            "Provide a passed rollback check for the release workflow."
+            "Provide a passed rollback check for the release workflow.",
           ],
           reviews: [
-            "Release review is required before relying on the report."
+            "Release review is required before relying on the report.",
           ],
-          markdown: "# Governance Report: release preparation without rollback proof\n\n## Verdict\nThe current verdict is `require_review` because rollback evidence is absent.",
-          indexPreview: '{\n  "index_schema_version": "1.0.0",\n  "report_id": "governance-report:epk_release_prep_missing_rollback_001:1.0.0",\n  "source_pack_id": "epk_release_prep_missing_rollback_001",\n  "entries": [\n    { "entry_id": "derived:verdict" },\n    { "entry_id": "derived:next_action:next:rollback" }\n  ]\n}'
-        }
+        },
+      };
+
+      const state = {
+        currentSample: "ai-pr-low-risk-complete",
+        selectedFileName: "No file selected.",
+        inputMode: "sample",
+        importedText: "",
+        currentOutputs: {
+          markdown: "",
+          html: "",
+          evidenceIndexJson: "",
+          slug: "studio-output",
+        },
       };
 
       const sampleCaption = document.getElementById("sample-caption");
+      const activeMode = document.getElementById("active-mode");
+      const modePill = document.getElementById("mode-pill");
+      const selectedFileName = document.getElementById("selected-file-name");
+      const inputMode = document.getElementById("input-mode");
+      const localNote = document.getElementById("local-note");
       const packId = document.getElementById("pack-id");
       const packPath = document.getElementById("pack-path");
       const parseStatus = document.getElementById("parse-status");
@@ -550,7 +666,12 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
       const reviewCount = document.getElementById("review-count");
       const reviewList = document.getElementById("review-list");
       const markdownPreview = document.getElementById("markdown-preview");
+      const htmlPreviewTitle = document.getElementById("html-preview-title");
+      const htmlPreviewCopy = document.getElementById("html-preview-copy");
       const indexPreview = document.getElementById("index-preview");
+      const downloadNote = document.getElementById("download-note");
+      const fileInput = document.getElementById("pack-file");
+      const jsonTextarea = document.getElementById("pack-json");
 
       function renderList(target, items) {
         target.innerHTML = "";
@@ -561,15 +682,110 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
         });
       }
 
+      function setButtonSelection(sampleName) {
+        document.querySelectorAll("[data-sample]").forEach((button) => {
+          button.classList.toggle("primary", button.dataset.sample === sampleName);
+        });
+      }
+
+      function setDownloadState(enabled, note) {
+        document.querySelectorAll("[data-download]").forEach((button) => {
+          button.disabled = !enabled;
+        });
+        downloadNote.textContent = note;
+      }
+
+      function clearGeneratedOutputs(slug = "studio-output") {
+        state.currentOutputs = {
+          markdown: "",
+          html: "",
+          evidenceIndexJson: "",
+          slug,
+        };
+      }
+
+      function showNoGeneratedOutputsState() {
+        const message = "No generated outputs loaded. Run the local Studio workflow first.";
+        markdownPreview.textContent = message;
+        htmlPreviewTitle.textContent = "No generated HTML report loaded.";
+        htmlPreviewCopy.textContent =
+          "Sample mode and browser-side import do not fabricate report artifacts. Load outputs produced by the local Studio workflow to enable downloads.";
+        indexPreview.textContent = message;
+      }
+
+      function setStudioGeneratedOutputs(outputs = {}) {
+        const markdown = typeof outputs.markdown === "string" ? outputs.markdown : "";
+        const html = typeof outputs.html === "string" ? outputs.html : "";
+        const evidenceIndexJson =
+          typeof outputs.evidenceIndexJson === "string" ? outputs.evidenceIndexJson : "";
+        const slug = typeof outputs.slug === "string" && outputs.slug.trim()
+          ? outputs.slug.trim()
+          : state.currentSample;
+
+        state.currentOutputs = {
+          markdown,
+          html,
+          evidenceIndexJson,
+          slug,
+        };
+
+        markdownPreview.textContent = markdown || "No Markdown report loaded.";
+        htmlPreviewTitle.textContent = html
+          ? "Workflow-produced HTML report loaded."
+          : "No generated HTML report loaded.";
+        htmlPreviewCopy.textContent = html
+          ? "Downloads now use outputs produced by the local Studio workflow / Guard Core / renderers."
+          : "No generated outputs loaded. Run the local Studio workflow first.";
+        indexPreview.textContent = evidenceIndexJson || "No Evidence Index JSON loaded.";
+
+        const hasAllOutputs = Boolean(markdown && html && evidenceIndexJson);
+        setDownloadState(
+          hasAllOutputs,
+          hasAllOutputs
+            ? "Download buttons save workflow-produced Markdown, HTML, and Evidence Index outputs only."
+            : "No generated outputs loaded. Run the local Studio workflow first.",
+        );
+      }
+
+      window.setStudioGeneratedOutputs = setStudioGeneratedOutputs;
+
+      function downloadTextFile(fileName, content, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function currentBoundaryNote() {
+        return "Files stay in this browser session. No network processing, no off-device persistence, and pack actions are not run.";
+      }
+
       function applySample(sampleName) {
         const sample = samples[sampleName];
         if (!sample) return;
 
+        state.currentSample = sampleName;
+        clearGeneratedOutputs(sample.slug);
+        state.inputMode = "sample";
+        state.selectedFileName = "No file selected.";
+
         sampleCaption.innerHTML = `Selected sample: <code>${sampleName}</code> from the local fixture set.`;
+        activeMode.textContent = "Sample";
+        modePill.textContent = "Local sample output";
+        modePill.className = "pill good";
+        selectedFileName.textContent = state.selectedFileName;
+        inputMode.textContent = "sample";
+        localNote.textContent = "Governance result comes from Guard Core, not Studio UI.";
         packId.textContent = sample.packId;
         packPath.textContent = sample.packPath;
         parseStatus.textContent = sample.parseStatus;
         schemaPill.textContent = sample.schema;
+        schemaPill.className = sample.schemaKind === "warn" ? "pill warn" : "pill good";
         validationHeadline.textContent = sample.validationHeadline;
         validationCopy.textContent = sample.validationCopy;
         warningCount.textContent = sample.warnings;
@@ -579,24 +795,166 @@ The current verdict is `allow` with evidence completeness `complete` and 0 missi
         reasonCount.textContent = `${sample.reasons.length} recorded`;
         missingCount.textContent = `${sample.missingEvidence.length} item${sample.missingEvidence.length === 1 ? "" : "s"}`;
         reviewCount.textContent = `${sample.reviews.length} requirement${sample.reviews.length === 1 ? "" : "s"}`;
-        markdownPreview.textContent = sample.markdown;
-        indexPreview.textContent = sample.indexPreview;
+        showNoGeneratedOutputsState();
         renderList(reasonList, sample.reasons);
         renderList(missingList, sample.missingEvidence);
         renderList(reviewList, sample.reviews);
+        setDownloadState(
+          false,
+          "No generated outputs loaded. Run the local Studio workflow first.",
+        );
+        setButtonSelection(sampleName);
+      }
 
+      function updateImportedBuffer(text, mode, fileName) {
+        state.importedText = text;
+        state.inputMode = mode;
+        state.selectedFileName = fileName ?? "Pasted JSON only.";
+
+        activeMode.textContent = "Import";
+        modePill.textContent = "Local input captured";
+        modePill.className = "pill warn";
+        selectedFileName.textContent = state.selectedFileName;
+        inputMode.textContent = mode;
+        localNote.textContent = currentBoundaryNote();
+      }
+
+      function showPendingImportedState() {
+        clearGeneratedOutputs(state.currentSample);
+        const inputLabel = state.inputMode === "file"
+          ? state.selectedFileName
+          : state.inputMode === "paste"
+            ? "Pasted JSON input"
+            : "Local JSON input";
+
+        sampleCaption.innerHTML = "Imported local JSON is waiting for local runtime handoff.";
+        packId.textContent = "Local imported pack";
+        packPath.textContent = inputLabel;
+        parseStatus.textContent = "pending";
+        schemaPill.textContent = "awaiting Guard Core";
+        schemaPill.className = "pill warn";
+        validationHeadline.textContent = "Awaiting local runtime";
+        validationCopy.textContent = "The browser prototype captured local JSON text only. Parser and validator logic stay in Guard Core.";
+        warningCount.textContent = "-";
+        validationPill.textContent = "No browser-side validation";
+        verdictValue.textContent = "not produced";
+        verdictExplanation.textContent = "Governance result comes from Guard Core, not Studio UI.";
+        reasonCount.textContent = "pending";
+        missingCount.textContent = "pending";
+        reviewCount.textContent = "pending";
+        renderList(reasonList, ["Reason codes are not computed in browser-side JavaScript."]);
+        renderList(missingList, ["Missing evidence is not computed until local runtime handoff occurs."]);
+        renderList(reviewList, ["Human review requirements are not produced until Guard Core runs."]);
+        markdownPreview.textContent =
+          "Local JSON captured.\n\nNo generated outputs loaded. Run the local Studio workflow first.";
+        htmlPreviewTitle.textContent = "No browser-side HTML report is produced from imported input.";
+        htmlPreviewCopy.textContent =
+          "This browser session stores selected file text or pasted JSON in memory only. Guard Core remains responsible for report generation.";
+        indexPreview.textContent = "No generated outputs loaded. Run the local Studio workflow first.";
+        setDownloadState(
+          false,
+          "No generated outputs loaded. Run the local Studio workflow first.",
+        );
         document.querySelectorAll("[data-sample]").forEach((button) => {
-          button.classList.toggle("primary", button.dataset.sample === sampleName);
+          button.classList.remove("primary");
         });
       }
 
+      function readLocalFile(file) {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          const text = typeof reader.result === "string" ? reader.result : "";
+          updateImportedBuffer(text, "file", file.name);
+        });
+        reader.readAsText(file);
+      }
+
+      function runImportedPackPrototype() {
+        if (!state.importedText.trim()) {
+          localNote.textContent =
+            "Add local JSON text before running imported handoff. Governance result still comes from Guard Core, not Studio UI.";
+          return;
+        }
+
+        showPendingImportedState();
+      }
+
+      function clearImportedInput() {
+        fileInput.value = "";
+        jsonTextarea.value = "";
+        state.importedText = "";
+        applySample(state.currentSample);
+      }
+
+      function downloadCurrentOutput(kind) {
+        const slug = state.currentOutputs.slug ?? "studio-output";
+        if (kind === "markdown" && state.currentOutputs.markdown) {
+          downloadTextFile(`${slug}-report.md`, state.currentOutputs.markdown, "text/markdown;charset=utf-8");
+          return;
+        }
+
+        if (kind === "html" && state.currentOutputs.html) {
+          downloadTextFile(`${slug}-report.html`, state.currentOutputs.html, "text/html;charset=utf-8");
+          return;
+        }
+
+        if (kind === "index" && state.currentOutputs.evidenceIndexJson) {
+          downloadTextFile(
+            `${slug}-evidence-index.json`,
+            state.currentOutputs.evidenceIndexJson,
+            "application/json;charset=utf-8",
+          );
+          return;
+        }
+
+        localNote.textContent =
+          "No generated outputs loaded. Run the local Studio workflow first.";
+      }
+
       document.getElementById("run-sample").addEventListener("click", () => {
-        applySample("ai-pr-low-risk-complete");
+        applySample(state.currentSample);
+      });
+
+      document.getElementById("run-imported-pack").addEventListener("click", runImportedPackPrototype);
+      document.getElementById("run-imported-pack-panel").addEventListener("click", runImportedPackPrototype);
+      document.getElementById("clear-import").addEventListener("click", clearImportedInput);
+
+      fileInput.addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) {
+          return;
+        }
+
+        readLocalFile(file);
+      });
+
+      jsonTextarea.addEventListener("input", (event) => {
+        const text = event.target.value;
+        if (text.trim().length === 0) {
+          if (state.inputMode === "paste") {
+            state.inputMode = "sample";
+            selectedFileName.textContent = state.selectedFileName;
+            inputMode.textContent = "sample";
+            localNote.textContent = "Governance result comes from Guard Core, not Studio UI.";
+          }
+          state.importedText = "";
+          return;
+        }
+
+        updateImportedBuffer(text, "paste", "Pasted JSON only.");
       });
 
       document.querySelectorAll("[data-sample]").forEach((button) => {
         button.addEventListener("click", () => applySample(button.dataset.sample));
       });
+
+      document.querySelectorAll("[data-download]").forEach((button) => {
+        button.addEventListener("click", () => downloadCurrentOutput(button.dataset.download));
+      });
+
+      // Browser-side logic is intentionally limited to local file reading, in-memory text state,
+      // local status updates, and Blob downloads for workflow-produced strings that are already loaded.
+      applySample("ai-pr-low-risk-complete");
     </script>
   </body>
 </html>
