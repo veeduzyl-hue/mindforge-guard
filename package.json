@@ -23,6 +23,7 @@
       "verify:license-hub-phase3": "node scripts/verify_license_hub_phase3_admin_boundary.mjs",
       "verify:license-hub-phase2": "node scripts/verify_license_hub_phase2_boundary.mjs",
       "verify:license-hub-skeleton": "node scripts/verify_license_hub_skeleton_phase1.mjs",
+      "verify:outcome-foundation:negative": "node scripts/verify_outcome_foundation_negative_contract.mjs",
       "verify": "npm run verify:core && npm run verify:v612"
     }
   }
