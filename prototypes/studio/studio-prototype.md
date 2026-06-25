@@ -1,10 +1,10 @@
 # Studio Local Browser Wiring
 
-This directory holds the local-first Studio prototype with bounded browser-side file, download, and HTML preview sandbox wiring for MindForge Guard.
+This directory holds the local-first Studio prototype with bounded browser-side file, download, HTML preview sandbox wiring, and an Evidence Index Explorer display surface for MindForge Guard.
 
 ## What It Includes
 
-- `index.html`: a static review surface with local file selection, paste JSON input, local status, local download controls, and a sandboxed HTML preview area.
+- `index.html`: a static review surface with local file selection, paste JSON input, local status, local download controls, a sandboxed HTML preview area, and an Evidence Index Explorer panel for already-produced entries.
 - `studioWorkflow.mjs`: a thin Node-side orchestration layer that loads a local sample pack or accepts imported JSON input and calls Guard-owned functions only.
 
 ## How To Use It
@@ -83,6 +83,10 @@ Import and export remain local-first:
 - Studio browser downloads remain disabled until workflow-produced outputs are loaded.
 - Studio browser downloads are created only from Markdown, HTML, and Evidence Index strings already produced by the local Studio workflow / Guard Core / renderers.
 - Studio only returns downstream Markdown, HTML, and Evidence Index outputs that originate from Guard-owned functions.
+- Evidence Index Explorer reads only the injected `evidenceIndexJson` string from `setStudioGeneratedOutputs({ markdown, html, evidenceIndexJson, slug })`.
+- Evidence Index Explorer applies source, reason code text, used_by text, and ref_id/path/description search filters only against the already-loaded JSON object in memory.
+- Evidence Index Explorer does not inspect Evidence Packs, artifact files, or local disk paths.
+- Evidence Index Explorer does not compute reason codes, verdicts, risk, coverage, or reports.
 
 That means the browser page can:
 
@@ -99,6 +103,7 @@ The browser page does not:
 - compute coverage
 - parse or validate packs on its own
 - inspect artifact paths
+- inspect artifact file contents or resolve file paths from disk for the explorer
 - generate governance reports or Evidence Index JSON in browser-side JavaScript
 - render or author governance HTML in browser-side JavaScript
 - create a second report model
@@ -111,3 +116,4 @@ The browser page does not:
 - Browser sample mode only shows local metadata and does not preload downloadable artifacts.
 - Browser downloads are limited to workflow-produced strings that are already loaded into the page.
 - HTML preview remains a local sandbox for already-produced renderer output only.
+- Evidence Index Explorer is a downstream display surface for already-produced entries only; local filters do not change or recompute the index.
