@@ -3,6 +3,7 @@
 ## Purpose
 
 Studio is the first local-first review workspace prototype for Outcome Foundation consumer surfaces.
+Studio remains downstream-only.
 
 Its job is to help a reviewer move through a bounded sequence:
 
@@ -158,3 +159,27 @@ This prototype does not introduce:
 - Generated-output payload creation remains stdout-first and does not commit generated artifacts by default.
 
 These limits are intentional for the first bounded Studio step.
+
+## Smoke Verification
+
+Run the local smoke verifier:
+
+```powershell
+node prototypes/studio/verifyStudioPrototype.mjs
+```
+
+It checks:
+
+- the existing Studio sample workflow still produces real local outputs
+- the generated-output payload helper still emits a non-empty `window.setStudioGeneratedOutputs(...)` payload
+- the static browser prototype source still avoids forbidden governance, network, and unsafe iframe permission patterns
+- the Studio prototype directory does not contain committed generated report, Evidence Index, or payload artifacts
+- the Studio docs still state the local-first, downstream-only boundary
+
+It does not check:
+
+- full browser interaction behavior
+- Guard Core outcome correctness beyond the existing workflow/output surface
+- replacement for the repository outcome verification scripts
+
+The smoke verifier does not replace Guard Core outcome verifiers, and it does not write generated artifacts.
