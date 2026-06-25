@@ -44,12 +44,16 @@ The current prototype workflow also exposes thin local-only affordances around t
 - `exportMarkdownReportOutput`
 - `exportHtmlReportOutput`
 - `exportEvidenceIndexJson`
+- `createGeneratedOutputPayload.mjs` for local browser injection payload creation from real workflow outputs
 
 Studio does not independently compute governance logic.
 
 The browser explorer surface is display-only. It reads an already-produced `evidenceIndexJson`
 string through `setStudioGeneratedOutputs({ markdown, html, evidenceIndexJson, slug })` and
 renders local filters over that in-memory JSON only.
+The payload helper is also local-only: it runs the existing Studio workflow for a sample and
+prints a `window.setStudioGeneratedOutputs({ markdown, html, evidenceIndexJson, slug })` payload
+to stdout without changing browser-side governance boundaries.
 
 ## Local-First Workspace Boundary
 
@@ -98,6 +102,9 @@ Import and export remain local-first:
 - Evidence Index Explorer does not resolve paths from disk.
 - Evidence Index Explorer does not compute reason codes, verdicts, risk, coverage, or reports.
 - Evidence Index Explorer filters are local display filters only.
+- Generated-output payload creation is local-only and non-executing.
+- Generated payloads are not source-of-truth artifacts; Guard Core reports, renderer outputs, and Evidence Index outputs remain the source outputs.
+- Generated payload files should not be committed unless a separate fixture-oriented PR intentionally scopes them.
 
 ## Output Relationships
 
@@ -119,6 +126,7 @@ The first prototype is a static skeleton plus a thin Node-side workflow module:
 
 - `prototypes/studio/index.html`
 - `prototypes/studio/studioWorkflow.mjs`
+- `prototypes/studio/createGeneratedOutputPayload.mjs`
 - `prototypes/studio/studio-prototype.md`
 
 This shape was chosen because it preserves a bounded consumer surface without introducing a second app workspace, new dependency wiring, or lockfile churn.
@@ -147,5 +155,6 @@ This prototype does not introduce:
 - Imported pack handoff still stops at the local UX boundary inside the browser page.
 - Sample orchestration remains local and fixture-based.
 - Evidence Index Explorer remains local-first and downstream-only.
+- Generated-output payload creation remains stdout-first and does not commit generated artifacts by default.
 
 These limits are intentional for the first bounded Studio step.
