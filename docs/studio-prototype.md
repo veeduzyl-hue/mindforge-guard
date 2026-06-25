@@ -11,6 +11,7 @@ Its job is to help a reviewer move through a bounded sequence:
 3. Generate the canonical `GovernanceReportModel`
 4. View downstream Markdown and HTML render outputs
 5. Export a downstream Evidence Index
+6. Review already-produced Evidence Index entries in a local explorer panel
 
 Studio is not a second governance engine.
 
@@ -45,6 +46,10 @@ The current prototype workflow also exposes thin local-only affordances around t
 - `exportEvidenceIndexJson`
 
 Studio does not independently compute governance logic.
+
+The browser explorer surface is display-only. It reads an already-produced `evidenceIndexJson`
+string through `setStudioGeneratedOutputs({ markdown, html, evidenceIndexJson, slug })` and
+renders local filters over that in-memory JSON only.
 
 ## Local-First Workspace Boundary
 
@@ -88,6 +93,11 @@ Import and export remain local-first:
 - The iframe does not allow scripts, forms, same-origin access, or popups.
 - Browser downloads stay disabled until workflow-produced outputs are present.
 - Browser downloads create local files only from Markdown, HTML, and Evidence Index strings already produced by the local Studio workflow / Guard Core / renderers.
+- Evidence Index Explorer displays already-produced Evidence Index entries only.
+- Evidence Index Explorer does not inspect Evidence Packs or artifact files.
+- Evidence Index Explorer does not resolve paths from disk.
+- Evidence Index Explorer does not compute reason codes, verdicts, risk, coverage, or reports.
+- Evidence Index Explorer filters are local display filters only.
 
 ## Output Relationships
 
@@ -100,6 +110,8 @@ Studio works with bounded, existing artifacts:
 - Evidence Index: downstream traceability only
 
 That means Studio can display and export these outputs, but it must not replace their source logic.
+That includes the explorer panel, which remains a downstream consumer of the already-produced
+Evidence Index JSON contract rather than a generator or validator of new governance meaning.
 
 ## Prototype Shape
 
@@ -134,5 +146,6 @@ This prototype does not introduce:
 - Browser downloads are local file creation for workflow-produced strings only.
 - Imported pack handoff still stops at the local UX boundary inside the browser page.
 - Sample orchestration remains local and fixture-based.
+- Evidence Index Explorer remains local-first and downstream-only.
 
 These limits are intentional for the first bounded Studio step.

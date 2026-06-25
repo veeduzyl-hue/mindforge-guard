@@ -103,6 +103,8 @@
       }
 
       button,
+      input,
+      select,
       input[type="file"]::file-selector-button {
         appearance: none;
         border: 1px solid var(--line);
@@ -230,7 +232,9 @@
       }
 
       textarea,
-      input[type="file"] {
+      input[type="file"],
+      input,
+      select {
         width: 100%;
       }
 
@@ -248,6 +252,18 @@
         border-radius: 16px;
         background: #fffdf8;
         color: var(--ink);
+      }
+
+      input,
+      select {
+        border-radius: 16px;
+        background: #fffdf8;
+        color: var(--ink);
+        font: 0.95rem/1.4 "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      select {
+        cursor: pointer;
       }
 
       .field {
@@ -268,6 +284,10 @@
         margin-top: 10px;
         color: var(--muted);
         font-size: 0.95rem;
+      }
+
+      .field-inline {
+        margin-top: 0;
       }
 
       .status-list {
@@ -333,6 +353,133 @@
         display: none;
       }
 
+      .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .summary-card,
+      .entry-card {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel-strong);
+      }
+
+      .summary-card strong {
+        display: block;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.4rem;
+      }
+
+      .summary-card span,
+      .entry-meta dd,
+      .entry-body,
+      .entry-empty {
+        color: var(--muted);
+      }
+
+      .entry-toolbar,
+      .entry-badges,
+      .entry-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .entry-toolbar {
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+      }
+
+      .entry-list {
+        margin-top: 14px;
+      }
+
+      .entry-card {
+        display: grid;
+        gap: 12px;
+      }
+
+      .entry-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .entry-head h3 {
+        margin-bottom: 4px;
+        font-size: 1.05rem;
+      }
+
+      .entry-head p {
+        color: var(--muted);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 0.92rem;
+      }
+
+      .entry-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 14px;
+        margin: 0;
+      }
+
+      .entry-meta div {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: #fffdf8;
+        border: 1px solid rgba(217, 202, 177, 0.8);
+      }
+
+      .entry-meta dt {
+        margin: 0;
+        font: 700 0.76rem/1.2 "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      .entry-meta dd {
+        margin: 7px 0 0;
+        font: 0.94rem/1.45 "Courier New", Courier, monospace;
+        word-break: break-word;
+      }
+
+      .entry-body {
+        padding-top: 2px;
+      }
+
+      .entry-empty,
+      .entry-error {
+        margin-top: 14px;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px dashed var(--line);
+        background: #fffdf8;
+      }
+
+      .entry-error {
+        border-style: solid;
+        color: #7c2d12;
+        background: #fef2f2;
+      }
+
+      .mono {
+        font-family: "Courier New", Courier, monospace;
+      }
+
       .footer-note {
         margin-top: 18px;
         color: var(--muted);
@@ -340,6 +487,12 @@
 
       @media (max-width: 980px) {
         .split {
+          grid-template-columns: 1fr;
+        }
+
+        .filters-grid,
+        .summary-strip,
+        .entry-meta {
           grid-template-columns: 1fr;
         }
 
@@ -553,6 +706,73 @@
         </article>
 
         <article class="panel span-8">
+          <span class="eyebrow">Evidence Index Explorer</span>
+          <h2>Display-Only Entry Browser</h2>
+          <p class="field-note field-inline">
+            This panel reads only the already-loaded Evidence Index JSON string and applies local
+            display filters in memory.
+          </p>
+          <div class="filters-grid">
+            <div class="field">
+              <label for="index-source-filter">Filter by source</label>
+              <select id="index-source-filter">
+                <option value="">All sources</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="index-search-filter">Search ref_id / path / description</label>
+              <input
+                id="index-search-filter"
+                type="search"
+                placeholder="Search local entry text"
+              />
+            </div>
+            <div class="field">
+              <label for="index-reason-filter">Filter by reason code text</label>
+              <input
+                id="index-reason-filter"
+                type="search"
+                placeholder="Example: TESTS_NOT_RUN"
+              />
+            </div>
+            <div class="field">
+              <label for="index-used-by-filter">Filter by used_by text</label>
+              <input
+                id="index-used-by-filter"
+                type="search"
+                placeholder="Example: verdict"
+              />
+            </div>
+          </div>
+          <div class="entry-toolbar">
+            <div class="entry-badges">
+              <span class="pill" id="index-filter-pill">Local filters only</span>
+              <span class="pill" id="index-status-pill">No Evidence Index loaded</span>
+            </div>
+            <button type="button" id="clear-index-filters">Clear Filters</button>
+          </div>
+          <div class="summary-strip">
+            <div class="summary-card">
+              <strong id="index-total-count">0</strong>
+              <span>Total entries</span>
+            </div>
+            <div class="summary-card">
+              <strong id="index-visible-count">0</strong>
+              <span>Visible entries</span>
+            </div>
+            <div class="summary-card">
+              <strong id="index-source-count">0</strong>
+              <span>Distinct sources</span>
+            </div>
+          </div>
+          <div class="entry-empty" id="index-explorer-empty">
+            No workflow-produced Evidence Index loaded.
+          </div>
+          <div class="entry-error" id="index-explorer-error" hidden></div>
+          <div class="entry-list" id="index-entry-list" hidden></div>
+        </article>
+
+        <article class="panel span-4">
           <span class="eyebrow">Evidence Index Preview</span>
           <h2>Traceability Export</h2>
           <pre id="index-preview">No generated outputs loaded. Run the local Studio workflow first.</pre>
@@ -689,6 +909,19 @@
       const htmlPreviewTitle = document.getElementById("html-preview-title");
       const htmlPreviewCopy = document.getElementById("html-preview-copy");
       const indexPreview = document.getElementById("index-preview");
+      const indexSourceFilter = document.getElementById("index-source-filter");
+      const indexReasonFilter = document.getElementById("index-reason-filter");
+      const indexUsedByFilter = document.getElementById("index-used-by-filter");
+      const indexSearchFilter = document.getElementById("index-search-filter");
+      const clearIndexFiltersButton = document.getElementById("clear-index-filters");
+      const indexFilterPill = document.getElementById("index-filter-pill");
+      const indexStatusPill = document.getElementById("index-status-pill");
+      const indexTotalCount = document.getElementById("index-total-count");
+      const indexVisibleCount = document.getElementById("index-visible-count");
+      const indexSourceCount = document.getElementById("index-source-count");
+      const indexExplorerEmpty = document.getElementById("index-explorer-empty");
+      const indexExplorerError = document.getElementById("index-explorer-error");
+      const indexEntryList = document.getElementById("index-entry-list");
       const downloadNote = document.getElementById("download-note");
       const fileInput = document.getElementById("pack-file");
       const jsonTextarea = document.getElementById("pack-json");
@@ -715,6 +948,243 @@
         downloadNote.textContent = note;
       }
 
+      function toArray(value) {
+        return Array.isArray(value) ? value : [];
+      }
+
+      function resetIndexFilterInputs() {
+        indexSourceFilter.value = "";
+        indexReasonFilter.value = "";
+        indexUsedByFilter.value = "";
+        indexSearchFilter.value = "";
+      }
+
+      function updateIndexSourceOptions(entries) {
+        const previousValue = indexSourceFilter.value;
+        const sources = [...new Set(
+          entries
+            .map((entry) => entry.source)
+            .filter((value) => typeof value === "string" && value.trim())
+        )].sort((left, right) => left.localeCompare(right));
+
+        indexSourceFilter.innerHTML = '<option value="">All sources</option>';
+        sources.forEach((source) => {
+          const option = document.createElement("option");
+          option.value = source;
+          option.textContent = source;
+          indexSourceFilter.appendChild(option);
+        });
+        indexSourceFilter.value = sources.includes(previousValue) ? previousValue : "";
+      }
+
+      function entryIncludesText(value, query) {
+        return String(value || "").toLowerCase().includes(query);
+      }
+
+      function matchesIndexFilters(entry) {
+        const sourceValue = indexSourceFilter.value.trim();
+        const reasonQuery = indexReasonFilter.value.trim().toLowerCase();
+        const usedByQuery = indexUsedByFilter.value.trim().toLowerCase();
+        const searchQuery = indexSearchFilter.value.trim().toLowerCase();
+        const reasonText = toArray(entry.reason_codes).join(" ").toLowerCase();
+        const usedByText = toArray(entry.used_by).join(" ").toLowerCase();
+
+        if (sourceValue && entry.source !== sourceValue) {
+          return false;
+        }
+
+        if (reasonQuery && !reasonText.includes(reasonQuery)) {
+          return false;
+        }
+
+        if (usedByQuery && !usedByText.includes(usedByQuery)) {
+          return false;
+        }
+
+        if (
+          searchQuery &&
+          !entryIncludesText(entry.ref_id, searchQuery) &&
+          !entryIncludesText(entry.path, searchQuery) &&
+          !entryIncludesText(entry.description, searchQuery)
+        ) {
+          return false;
+        }
+
+        return true;
+      }
+
+      function appendEntryMeta(target, label, value) {
+        const wrapper = document.createElement("div");
+        const dt = document.createElement("dt");
+        const dd = document.createElement("dd");
+        dt.textContent = label;
+        dd.textContent = value;
+        wrapper.appendChild(dt);
+        wrapper.appendChild(dd);
+        target.appendChild(wrapper);
+      }
+
+      function renderIndexEntryCard(entry) {
+        const card = document.createElement("article");
+        card.className = "entry-card";
+
+        const head = document.createElement("div");
+        head.className = "entry-head";
+
+        const titleWrap = document.createElement("div");
+        const title = document.createElement("h3");
+        title.className = "mono";
+        title.textContent = entry.entry_id || "entry-without-id";
+        const subtitle = document.createElement("p");
+        subtitle.textContent = entry.source || "source not recorded";
+        titleWrap.appendChild(title);
+        titleWrap.appendChild(subtitle);
+
+        const badgeGroup = document.createElement("div");
+        badgeGroup.className = "entry-badges";
+        const sourceBadge = document.createElement("span");
+        sourceBadge.className = "pill";
+        sourceBadge.textContent = entry.source || "unknown source";
+        badgeGroup.appendChild(sourceBadge);
+
+        head.appendChild(titleWrap);
+        head.appendChild(badgeGroup);
+        card.appendChild(head);
+
+        const meta = document.createElement("dl");
+        meta.className = "entry-meta";
+        appendEntryMeta(meta, "entry_id", entry.entry_id || "not recorded");
+        if (entry.ref_id) appendEntryMeta(meta, "ref_id", entry.ref_id);
+        appendEntryMeta(meta, "source", entry.source || "not recorded");
+        if (entry.path) appendEntryMeta(meta, "path", entry.path);
+        if (entry.artifact_id) appendEntryMeta(meta, "artifact_id", entry.artifact_id);
+        if (entry.action_id) appendEntryMeta(meta, "action_id", entry.action_id);
+        if (entry.tool_call_id) appendEntryMeta(meta, "tool_call_id", entry.tool_call_id);
+        if (entry.verification_id) appendEntryMeta(meta, "verification_id", entry.verification_id);
+        if (entry.blocked_action_id) appendEntryMeta(meta, "blocked_action_id", entry.blocked_action_id);
+        appendEntryMeta(meta, "reason_codes", toArray(entry.reason_codes).join(", ") || "none");
+        appendEntryMeta(meta, "used_by", toArray(entry.used_by).join(", ") || "none");
+        card.appendChild(meta);
+
+        const body = document.createElement("div");
+        body.className = "entry-body";
+        body.textContent = entry.description || "No description recorded.";
+        card.appendChild(body);
+
+        return card;
+      }
+
+      function showEvidenceIndexExplorerStatus({
+        statusText,
+        statusClass,
+        emptyMessage,
+        errorMessage = "",
+        totalCount = 0,
+        visibleCount = 0,
+        sourceCount = 0,
+      }) {
+        indexStatusPill.textContent = statusText;
+        indexStatusPill.className = statusClass;
+        indexExplorerEmpty.textContent = emptyMessage;
+        indexExplorerEmpty.hidden = Boolean(errorMessage);
+        indexExplorerError.hidden = !errorMessage;
+        indexExplorerError.textContent = errorMessage;
+        indexEntryList.hidden = true;
+        indexEntryList.innerHTML = "";
+        indexTotalCount.textContent = String(totalCount);
+        indexVisibleCount.textContent = String(visibleCount);
+        indexSourceCount.textContent = String(sourceCount);
+      }
+
+      function renderEvidenceIndexExplorer(evidenceIndexJson) {
+        if (!evidenceIndexJson.trim()) {
+          updateIndexSourceOptions([]);
+          resetIndexFilterInputs();
+          indexFilterPill.textContent = "Local filters only";
+          showEvidenceIndexExplorerStatus({
+            statusText: "No Evidence Index loaded",
+            statusClass: "pill",
+            emptyMessage: "No workflow-produced Evidence Index loaded.",
+          });
+          return;
+        }
+
+        let parsedIndex;
+        try {
+          parsedIndex = JSON.parse(evidenceIndexJson);
+        } catch (error) {
+          updateIndexSourceOptions([]);
+          indexFilterPill.textContent = "Local filters only";
+          showEvidenceIndexExplorerStatus({
+            statusText: "Display error",
+            statusClass: "pill warn",
+            emptyMessage: "",
+            errorMessage: `Local display error: ${error.message}`,
+          });
+          return;
+        }
+
+        const entries = toArray(parsedIndex?.entries)
+          .filter((entry) => typeof entry === "object" && entry !== null);
+        updateIndexSourceOptions(entries);
+
+        const filteredEntries = entries.filter(matchesIndexFilters);
+        const activeFilterCount = [
+          indexSourceFilter.value.trim(),
+          indexReasonFilter.value.trim(),
+          indexUsedByFilter.value.trim(),
+          indexSearchFilter.value.trim(),
+        ].filter(Boolean).length;
+        const distinctSourceCount = new Set(
+          entries
+            .map((entry) => entry.source)
+            .filter((value) => typeof value === "string" && value.trim())
+        ).size;
+
+        indexFilterPill.textContent = activeFilterCount
+          ? `${activeFilterCount} local filter${activeFilterCount === 1 ? "" : "s"} active`
+          : "Local filters only";
+
+        if (entries.length === 0) {
+          showEvidenceIndexExplorerStatus({
+            statusText: "Loaded with 0 entries",
+            statusClass: "pill",
+            emptyMessage: "No evidence index entries recorded.",
+            totalCount: 0,
+            visibleCount: 0,
+            sourceCount: 0,
+          });
+          return;
+        }
+
+        if (filteredEntries.length === 0) {
+          showEvidenceIndexExplorerStatus({
+            statusText: "Workflow-produced Evidence Index loaded",
+            statusClass: "pill good",
+            emptyMessage: "No entries match the current local filters.",
+            totalCount: entries.length,
+            visibleCount: 0,
+            sourceCount: distinctSourceCount,
+          });
+          return;
+        }
+
+        indexStatusPill.textContent = "Workflow-produced Evidence Index loaded";
+        indexStatusPill.className = "pill good";
+        indexExplorerEmpty.hidden = true;
+        indexExplorerError.hidden = true;
+        indexExplorerError.textContent = "";
+        indexEntryList.hidden = false;
+        indexEntryList.innerHTML = "";
+        indexTotalCount.textContent = String(entries.length);
+        indexVisibleCount.textContent = String(filteredEntries.length);
+        indexSourceCount.textContent = String(distinctSourceCount);
+
+        filteredEntries.forEach((entry) => {
+          indexEntryList.appendChild(renderIndexEntryCard(entry));
+        });
+      }
+
       function clearGeneratedOutputs(slug = "studio-output") {
         state.currentOutputs = {
           markdown: "",
@@ -734,6 +1204,7 @@
         htmlPreviewCopy.textContent =
           "This local-only sandbox stays empty until the Studio workflow injects renderer-produced HTML output.";
         indexPreview.textContent = message;
+        renderEvidenceIndexExplorer("");
       }
 
       function showWorkflowProducedHtmlPreview(html) {
@@ -763,12 +1234,14 @@
 
         markdownPreview.textContent = markdown || "No Markdown report loaded.";
         indexPreview.textContent = evidenceIndexJson || "No Evidence Index JSON loaded.";
+        renderEvidenceIndexExplorer(evidenceIndexJson);
         if (html) {
           showWorkflowProducedHtmlPreview(html);
         } else {
           showNoGeneratedOutputsState();
           markdownPreview.textContent = markdown || "No Markdown report loaded.";
           indexPreview.textContent = evidenceIndexJson || "No Evidence Index JSON loaded.";
+          renderEvidenceIndexExplorer(evidenceIndexJson);
         }
 
         const hasAllOutputs = Boolean(markdown && html && evidenceIndexJson);
@@ -884,6 +1357,7 @@
         htmlPreviewCopy.textContent =
           "This browser session stores selected file text or pasted JSON in memory only. Guard Core remains responsible for report generation.";
         indexPreview.textContent = "No generated outputs loaded. Run the local Studio workflow first.";
+        renderEvidenceIndexExplorer("");
         setDownloadState(
           false,
           "No generated outputs loaded. Run the local Studio workflow first.",
@@ -983,6 +1457,17 @@
 
       document.querySelectorAll("[data-download]").forEach((button) => {
         button.addEventListener("click", () => downloadCurrentOutput(button.dataset.download));
+      });
+
+      [indexSourceFilter, indexReasonFilter, indexUsedByFilter, indexSearchFilter].forEach((control) => {
+        control.addEventListener("input", () => {
+          renderEvidenceIndexExplorer(state.currentOutputs.evidenceIndexJson);
+        });
+      });
+
+      clearIndexFiltersButton.addEventListener("click", () => {
+        resetIndexFilterInputs();
+        renderEvidenceIndexExplorer(state.currentOutputs.evidenceIndexJson);
       });
 
       // Browser-side logic is intentionally limited to local file reading, in-memory text state,
