@@ -64,6 +64,8 @@ import { createStudioGeneratedOutputPayloadForSample } from "./prototypes/studio
 ## Boundary
 
 Studio remains a local-first review workspace.
+Studio remains downstream-only.
+Guard Core remains the governance source of truth.
 
 It consumes:
 
@@ -130,6 +132,30 @@ The browser page does not:
 - render or author governance HTML in browser-side JavaScript
 - create a second report model
 - fabricate report artifacts for the browser helper
+
+## Smoke Verification
+
+Run the local smoke verifier:
+
+```powershell
+node prototypes/studio/verifyStudioPrototype.mjs
+```
+
+It checks:
+
+- the existing Studio sample workflow still produces real local outputs
+- the generated-output payload helper still emits a non-empty `window.setStudioGeneratedOutputs(...)` payload
+- the static browser prototype source still avoids forbidden governance, network, and unsafe iframe permission patterns
+- the Studio prototype directory does not contain committed generated report, Evidence Index, or payload artifacts
+- the Studio docs still state the local-first, downstream-only boundary
+
+It does not check:
+
+- full browser interaction behavior
+- Guard Core outcome correctness beyond the existing workflow/output surface
+- replacement for the repository outcome verification scripts
+
+The smoke verifier does not replace Guard Core outcome verifiers, and it does not write generated artifacts.
 
 ## Current Prototype Limits
 
