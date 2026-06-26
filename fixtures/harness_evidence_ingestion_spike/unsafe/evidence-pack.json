@@ -1,0 +1,131 @@
+{
+  "schema_version": "harness_evidence_pack_v1",
+  "pack_id": "harness-unsafe-001",
+  "pack_type": "blocked_command_assist",
+  "created_at": "2026-06-26T13:00:00Z",
+  "producer": {
+    "producer_id": "harness-unsafe-producer",
+    "producer_name": "guard-native-agent-harness",
+    "producer_version": "0.5.0-pr47",
+    "producer_type": "evidence_producer",
+    "generated_by": "local-harness-fixture"
+  },
+  "workflow": {
+    "workflow_id": "wf-unsafe-001",
+    "workflow_name": "unsafe local harness evidence export",
+    "workflow_type": "pull_request",
+    "repository": {
+      "provider": "github",
+      "repo_name": "mindforge-labs/harness-demo",
+      "branch": "feat/local-ingestion-spike",
+      "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  "authority": {
+    "boundary": "producer_only",
+    "consumer_authority": "mindforge-guard-core",
+    "governance_outputs_emitted": false,
+    "execution_authority_granted": false
+  },
+  "runtime": {
+    "runtime_id": "rt-unsafe-001",
+    "runtime_name": "guard-native-agent-harness",
+    "runtime_version": "0.5.0-pr47",
+    "execution_mode": "local_fixture",
+    "platform": "windows"
+  },
+  "intent": {
+    "user_goal": "Preserve a blocked command attempt without granting authority.",
+    "agent_task": "Record the blocked attempt and bounded surrounding context only.",
+    "success_criteria": [
+      "blocked action remains visible",
+      "blocked command has no execution result"
+    ]
+  },
+  "scope": {
+    "allowed_paths": [
+      "infra/release.yml"
+    ],
+    "out_of_scope": [
+      "network execution",
+      "governance approval"
+    ]
+  },
+  "actions": [
+    {
+      "action_id": "act-unsafe-001",
+      "timestamp": "2026-06-26T13:00:11Z",
+      "action_type": "read_file",
+      "status": "completed",
+      "target_path": "infra/release.yml",
+      "summary": "Read release configuration for local context."
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "tc-unsafe-001",
+      "timestamp": "2026-06-26T13:00:10Z",
+      "tool_name": "powershell",
+      "tool_type": "shell",
+      "status": "completed",
+      "command": "Get-Content infra/release.yml",
+      "input_summary": "Read release configuration.",
+      "output_summary": "Read-only inspection completed."
+    }
+  ],
+  "blocked_actions": [
+    {
+      "blocked_action_id": "blk-unsafe-001",
+      "timestamp": "2026-06-26T13:00:50Z",
+      "attempted_action": "run_command",
+      "attempted_command": "curl https://control-plane.invalid/deploy",
+      "reason": "network_not_allowed",
+      "preserved": true,
+      "execution_result_present": false
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "art-unsafe-note",
+      "path": "artifacts/notes/blocked-attempt.md",
+      "artifact_type": "note",
+      "optional": false
+    },
+    {
+      "artifact_id": "art-unsafe-optional",
+      "path": "artifacts/screenshots/restricted.png",
+      "artifact_type": "screenshot",
+      "optional": true
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "ver-unsafe-001",
+      "verification_type": "manual_boundary_check",
+      "status": "observed",
+      "command": null,
+      "artifact_refs": [
+        "art-unsafe-note"
+      ]
+    }
+  ],
+  "risk_signals": [],
+  "provenance": {
+    "captured_at": "2026-06-26T13:01:05Z",
+    "fixture_source": "synthetic_guard_harness_pr47_shape",
+    "deterministic_export": true
+  },
+  "manifest": {
+    "completeness": "partial",
+    "files": [
+      {
+        "path": "evidence-pack.json"
+      },
+      {
+        "path": "artifacts/notes/blocked-attempt.md",
+        "sha256": "4c458ab8a629c543143d7ae197c1029c4794f05df1736265a586e2f1ce54daaa",
+        "size_bytes": 133
+      }
+    ]
+  }
+}
