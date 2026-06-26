@@ -76,6 +76,7 @@ export function normalizeHarnessEvidenceIngestSummary({
     },
     source_pack: {
       id: evidencePack.pack_id,
+      pack_type: evidencePack.pack_type,
       created_at: evidencePack.created_at,
       artifact_count: evidencePack.artifacts.length,
       manifest_count: evidencePack.manifest.files.length,

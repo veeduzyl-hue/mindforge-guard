@@ -60,6 +60,14 @@ function readJson(filePath) {
   }
 }
 
+function readText(filePath, label) {
+  try {
+    return fs.readFileSync(filePath, "utf8");
+  } catch (error) {
+    fail(`${label} must be readable (${error.message})`);
+  }
+}
+
 function walkKeys(value, visit, currentPath = "$") {
   if (Array.isArray(value)) {
     value.forEach((entry, index) => walkKeys(entry, visit, `${currentPath}[${index}]`));
@@ -227,6 +235,7 @@ function validateIngestSummary(summary, pack, fixtureName) {
   expect(summary.schema_version === "0.1-preview", `${fixtureName} summary schema version mismatch`);
   expect(summary.consumer.authority === "mindforge-guard-core", `${fixtureName} summary consumer.authority mismatch`);
   expect(summary.consumer.summary_owner === "mindforge-guard", `${fixtureName} summary consumer.summary_owner mismatch`);
+  expect(summary.source_pack.pack_type === pack.pack_type, `${fixtureName} summary source pack type mismatch`);
   expect(summary.governance_non_claims.verdict === "not_computed", `${fixtureName} summary verdict non-claim mismatch`);
   expect(summary.governance_non_claims.reason_codes === "not_computed", `${fixtureName} summary reason_codes non-claim mismatch`);
   expect(summary.governance_non_claims.risk_summary === "not_computed", `${fixtureName} summary risk_summary non-claim mismatch`);
@@ -298,11 +307,45 @@ function validateFixture(repoRoot, fixtureName, mode) {
   };
 }
 
+function validateSpecDocument(repoRoot) {
+  const specPath = path.join(
+    repoRoot,
+    "docs",
+    "adapters",
+    "harness-evidence-ingest-summary-bridge.md"
+  );
+  expect(fs.existsSync(specPath), "adapter spec document must exist");
+
+  const specText = readText(specPath, "adapter spec document");
+  for (const phrase of [
+    "harness-evidence-ingest-summary",
+    "0.1-preview",
+    "producer_only",
+    "mindforge-guard-core",
+    "not_computed",
+    "not_scored",
+    "not_generated",
+    "not_granted",
+    "does not compute final governance verdicts",
+    "does not compute Guard reason codes",
+    "does not compute risk summaries",
+    "does not score evidence coverage",
+    "does not generate governance reports",
+    "does not generate stable evidence indexes",
+    "does not approve, block, deploy, rollback, merge, commit, execute, or control runtime behavior",
+    "does not change audit, permit, or classify",
+  ]) {
+    expect(specText.includes(phrase), `adapter spec document must include phrase: ${phrase}`);
+  }
+}
+
 function main() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const repoRoot = path.resolve(__dirname, "..");
   const emitIngestSummary = process.argv.includes("--summary");
+
+  validateSpecDocument(repoRoot);
 
   const safeFixture = validateFixture(repoRoot, "safe", "safe");
   const unsafeFixture = validateFixture(repoRoot, "unsafe", "unsafe");
