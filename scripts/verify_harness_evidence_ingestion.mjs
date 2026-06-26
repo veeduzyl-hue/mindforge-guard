@@ -339,6 +339,42 @@ function validateSpecDocument(repoRoot) {
   }
 }
 
+function validateReviewPacketDocument(repoRoot) {
+  const reviewPacketPath = path.join(
+    repoRoot,
+    "docs",
+    "adapters",
+    "harness-evidence-ingest-summary-bridge-review-packet.md"
+  );
+  expect(fs.existsSync(reviewPacketPath), "adapter review packet document must exist");
+
+  const reviewPacketText = readText(reviewPacketPath, "adapter review packet document");
+  for (const phrase of [
+    "bounded internal preview",
+    "not production integration",
+    "Evidence Producer only",
+    "governance consumer and source of truth",
+    "does not compute final governance verdicts",
+    "does not compute Guard reason codes",
+    "does not compute risk summaries",
+    "does not score evidence coverage",
+    "does not generate governance reports",
+    "does not generate stable evidence indexes",
+    "does not approve, block, deploy, rollback, merge, commit, execute, or control runtime behavior",
+    "does not change Guard Core runtime paths",
+    "does not change the stable Guard Core evidence-pack contract",
+    "Ready for formal adapter review preparation, but not ready for production integration",
+  ]) {
+    expect(reviewPacketText.includes(phrase), `adapter review packet document must include phrase: ${phrase}`);
+  }
+
+  expect(
+    reviewPacketText.includes("does not change `audit`, `permit`, or `classify`") ||
+      reviewPacketText.includes("does not change audit, permit, or classify"),
+    "adapter review packet document must include audit/permit/classify non-change phrase"
+  );
+}
+
 function main() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -346,6 +382,7 @@ function main() {
   const emitIngestSummary = process.argv.includes("--summary");
 
   validateSpecDocument(repoRoot);
+  validateReviewPacketDocument(repoRoot);
 
   const safeFixture = validateFixture(repoRoot, "safe", "safe");
   const unsafeFixture = validateFixture(repoRoot, "unsafe", "unsafe");
