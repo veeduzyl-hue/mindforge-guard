@@ -131,8 +131,8 @@
       },
       {
         "path": "artifacts/diff/controller.patch",
-        "sha256": "38f62fcbd7cbdbf31119757beb7eab748cabec3a5edcace9aa46f67c760c4a25",
-        "size_bytes": 360
+        "sha256": "7d3b22a02e783108882af3544df743194f6b739ca6cd5c968e4715708307ee2a",
+        "size_bytes": 371
       },
       {
         "path": "artifacts/logs/test.log",
