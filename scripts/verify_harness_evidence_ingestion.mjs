@@ -375,6 +375,47 @@ function validateReviewPacketDocument(repoRoot) {
   );
 }
 
+function validateFormalAdapterReviewDocument(repoRoot) {
+  const reviewPath = path.join(
+    repoRoot,
+    "docs",
+    "adapters",
+    "harness-evidence-ingest-formal-adapter-review.md"
+  );
+  expect(fs.existsSync(reviewPath), "formal adapter review document must exist");
+
+  const reviewText = readText(reviewPath, "formal adapter review document");
+  for (const phrase of [
+    "formal adapter review preparation",
+    "not production integration",
+    "Guard-owned Harness Evidence Ingest Summary Bridge",
+    "Evidence Producer only",
+    "governance consumer and source of truth",
+    "does not compute final governance verdicts",
+    "does not compute Guard reason codes",
+    "does not compute risk summaries",
+    "does not score evidence coverage",
+    "does not generate governance reports",
+    "does not generate stable evidence indexes",
+    "does not approve, block, deploy, rollback, merge, commit, execute, or control runtime behavior",
+    "does not change Guard Core runtime paths",
+    "does not change the stable Guard Core evidence-pack contract",
+    "approve_for_internal_preview_continuation",
+    "request_contract_changes",
+    "request_fixture_expansion",
+    "reject_for_boundary_drift",
+    "defer_production_integration",
+  ]) {
+    expect(reviewText.includes(phrase), `formal adapter review document must include phrase: ${phrase}`);
+  }
+
+  expect(
+    reviewText.includes("does not change `audit`, `permit`, or `classify`") ||
+      reviewText.includes("does not change audit, permit, or classify"),
+    "formal adapter review document must include audit/permit/classify non-change phrase"
+  );
+}
+
 function main() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -383,6 +424,7 @@ function main() {
 
   validateSpecDocument(repoRoot);
   validateReviewPacketDocument(repoRoot);
+  validateFormalAdapterReviewDocument(repoRoot);
 
   const safeFixture = validateFixture(repoRoot, "safe", "safe");
   const unsafeFixture = validateFixture(repoRoot, "unsafe", "unsafe");
