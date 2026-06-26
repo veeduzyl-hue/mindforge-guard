@@ -1,0 +1,11 @@
+diff --git a/src/controllers/orderController.ts b/src/controllers/orderController.ts
+index 1111111..2222222 100644
+--- a/src/controllers/orderController.ts
++++ b/src/controllers/orderController.ts
+@@ -18,7 +18,10 @@ export function normalizeStatus(input) {
+-  return input?.trim() ?? "";
++  if (input == null) {
++    return "";
++  }
++  return input.trim();
+ }

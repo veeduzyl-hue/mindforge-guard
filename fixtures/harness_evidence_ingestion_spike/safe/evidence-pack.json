@@ -1,0 +1,144 @@
+{
+  "schema_version": "harness_evidence_pack_v1",
+  "pack_id": "harness-safe-001",
+  "pack_type": "pull_request_assist",
+  "created_at": "2026-06-26T12:00:00Z",
+  "producer": {
+    "producer_id": "harness-safe-producer",
+    "producer_name": "guard-native-agent-harness",
+    "producer_version": "0.5.0-pr47",
+    "producer_type": "evidence_producer",
+    "generated_by": "local-harness-fixture"
+  },
+  "workflow": {
+    "workflow_id": "wf-safe-001",
+    "workflow_name": "safe local harness evidence export",
+    "workflow_type": "pull_request",
+    "repository": {
+      "provider": "github",
+      "repo_name": "mindforge-labs/harness-demo",
+      "branch": "feat/local-ingestion-spike",
+      "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  "authority": {
+    "boundary": "producer_only",
+    "consumer_authority": "mindforge-guard-core",
+    "governance_outputs_emitted": false,
+    "execution_authority_granted": false
+  },
+  "runtime": {
+    "runtime_id": "rt-safe-001",
+    "runtime_name": "guard-native-agent-harness",
+    "runtime_version": "0.5.0-pr47",
+    "execution_mode": "local_fixture",
+    "platform": "windows"
+  },
+  "intent": {
+    "user_goal": "Collect bounded evidence for a controller patch and local test run.",
+    "agent_task": "Capture producer facts without computing governance conclusions.",
+    "success_criteria": [
+      "completed actions are preserved",
+      "completed tool calls are preserved"
+    ]
+  },
+  "scope": {
+    "allowed_paths": [
+      "src/controllers/orderController.ts",
+      "tests/orderController.test.ts"
+    ],
+    "out_of_scope": [
+      "governance verdict computation",
+      "approval issuance"
+    ]
+  },
+  "actions": [
+    {
+      "action_id": "act-safe-001",
+      "timestamp": "2026-06-26T12:00:10Z",
+      "action_type": "modify_code",
+      "status": "completed",
+      "target_path": "src/controllers/orderController.ts",
+      "summary": "Normalized null status input before trim."
+    },
+    {
+      "action_id": "act-safe-002",
+      "timestamp": "2026-06-26T12:01:05Z",
+      "action_type": "run_command",
+      "status": "completed",
+      "command": "npm test -- --runInBand",
+      "summary": "Executed local unit tests for normalizeStatus."
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "tc-safe-001",
+      "timestamp": "2026-06-26T12:00:09Z",
+      "tool_name": "apply_patch",
+      "tool_type": "filesystem",
+      "status": "completed",
+      "input_summary": "Patch controller and test fixtures.",
+      "output_summary": "Workspace files updated."
+    },
+    {
+      "tool_call_id": "tc-safe-002",
+      "timestamp": "2026-06-26T12:01:04Z",
+      "tool_name": "powershell",
+      "tool_type": "shell",
+      "status": "completed",
+      "command": "npm test -- --runInBand",
+      "input_summary": "Run local unit tests.",
+      "output_summary": "2 tests passed."
+    }
+  ],
+  "blocked_actions": [],
+  "artifacts": [
+    {
+      "artifact_id": "art-safe-diff",
+      "path": "artifacts/diff/controller.patch",
+      "artifact_type": "diff",
+      "optional": false
+    },
+    {
+      "artifact_id": "art-safe-log",
+      "path": "artifacts/logs/test.log",
+      "artifact_type": "log",
+      "optional": false
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "ver-safe-001",
+      "verification_type": "unit_test",
+      "status": "passed",
+      "command": "npm test -- --runInBand",
+      "artifact_refs": [
+        "art-safe-log"
+      ]
+    }
+  ],
+  "risk_signals": [],
+  "provenance": {
+    "captured_at": "2026-06-26T12:01:12Z",
+    "fixture_source": "synthetic_guard_harness_pr47_shape",
+    "deterministic_export": true
+  },
+  "manifest": {
+    "completeness": "complete",
+    "files": [
+      {
+        "path": "evidence-pack.json"
+      },
+      {
+        "path": "artifacts/diff/controller.patch",
+        "sha256": "38f62fcbd7cbdbf31119757beb7eab748cabec3a5edcace9aa46f67c760c4a25",
+        "size_bytes": 360
+      },
+      {
+        "path": "artifacts/logs/test.log",
+        "sha256": "69a30a70f80e023d18dbceb17bef0eaded5651a5cf0421457835fc6b1a6a72d2",
+        "size_bytes": 132
+      }
+    ]
+  }
+}
