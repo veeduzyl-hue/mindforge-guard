@@ -1,0 +1,51 @@
+{
+  "record_version": "0.1",
+  "record_id": "eer-command-result-001",
+  "evidence_type": "command_result",
+  "source": "local-powershell",
+  "source_schema": "command-result/v0.1",
+  "source_id": "command-2026-06-29-001",
+  "timestamp": "2026-06-29T09:35:45.000Z",
+  "subject": {
+    "agent_id": "codex-local",
+    "run_id": "run-2026-06-29-001",
+    "task_id": "phase2-external-evidence-design",
+    "tool_name": "functions.shell_command"
+  },
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "input_binding": "verified",
+    "execution_evidence": "provided",
+    "policy_completeness": "not_verified",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "not_required"
+  },
+  "claims": [
+    {
+      "claim_type": "command_exit_status",
+      "status": "observed",
+      "detail": "The command completed successfully with a captured exit code of 0."
+    },
+    {
+      "claim_type": "stdout_capture",
+      "status": "observed",
+      "detail": "Command output was retained for deterministic review and later normalization."
+    }
+  ],
+  "limits": [
+    {
+      "code": "command_result_not_signed",
+      "detail": "Local command output is not cryptographically signed by default."
+    },
+    {
+      "code": "governance_meaning_not_implied",
+      "detail": "A successful command result does not imply policy approval or governance sufficiency."
+    }
+  ],
+  "raw_reference": {
+    "path": "fixtures/command-result.json",
+    "digest_sha256": "915b92109c22ec65b8a5bbcf724be1f0f86def286c2abf6afeb711e631d7f44a",
+    "locator": "local-fixture"
+  },
+  "non_authority_statement": "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution."
+}

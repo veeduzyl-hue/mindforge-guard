@@ -1,0 +1,51 @@
+{
+  "record_version": "0.1",
+  "record_id": "eer-tool-call-001",
+  "evidence_type": "tool_call_trace",
+  "source": "guard-native-agent-harness-local",
+  "source_schema": "tool-call-trace/v0.1",
+  "source_id": "tool-call-2026-06-29-001",
+  "timestamp": "2026-06-29T09:32:10.000Z",
+  "subject": {
+    "agent_id": "codex-local",
+    "run_id": "run-2026-06-29-001",
+    "task_id": "phase2-external-evidence-design",
+    "tool_name": "functions.shell_command"
+  },
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "input_binding": "verified",
+    "execution_evidence": "provided",
+    "policy_completeness": "not_verified",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "pending"
+  },
+  "claims": [
+    {
+      "claim_type": "tool_invocation",
+      "status": "observed",
+      "detail": "A local shell command was invoked to inspect the repository and attachment context."
+    },
+    {
+      "claim_type": "tool_result_capture",
+      "status": "observed",
+      "detail": "Structured command output was retained for deterministic review."
+    }
+  ],
+  "limits": [
+    {
+      "code": "no_signature_layer",
+      "detail": "Tool traces do not provide cryptographic authenticity by themselves."
+    },
+    {
+      "code": "policy_semantics_not_verified",
+      "detail": "A tool trace does not establish complete policy interpretation on its own."
+    }
+  ],
+  "raw_reference": {
+    "path": "fixtures/tool-call-trace.json",
+    "digest_sha256": "6d51e5b29936fd0a8f9d98d467bd68d75ef5fd08d0bfbc88140f5c4216299d18",
+    "locator": "local-fixture"
+  },
+  "non_authority_statement": "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution."
+}
