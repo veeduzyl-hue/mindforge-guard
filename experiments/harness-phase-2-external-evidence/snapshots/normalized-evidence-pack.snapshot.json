@@ -1,0 +1,190 @@
+{
+  "normalized_pack_version": "0.1",
+  "evidence_pack_id": "normalized-harness-phase2-mixed-evidence-pack-001",
+  "generated_at": "2026-06-29T09:45:00.000Z",
+  "source_pack_id": "harness-phase2-mixed-evidence-pack-001",
+  "records": [
+    {
+      "id": "eer-agent-workflow-001",
+      "type": "agent_workflow_artifact",
+      "source": "guard-native-agent-harness-local",
+      "summary": "Agent run metadata, task scope, and local evidence capture intent were recorded.",
+      "cryptographic_validity": "not_applicable",
+      "execution_evidence": "provided",
+      "policy_completeness": "partial",
+      "legal_applicability": "not_applicable",
+      "human_review_status": "pending",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "human_review_pending"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle no final human reviewer disposition is attached to this workflow artifact."
+      ]
+    },
+    {
+      "id": "eer-blocked-action-001",
+      "type": "blocked_action",
+      "source": "sandbox",
+      "summary": "A sandbox boundary prevented the attempted action from executing.",
+      "cryptographic_validity": "not_applicable",
+      "execution_evidence": "not_applicable",
+      "policy_completeness": "partial",
+      "legal_applicability": "not_applicable",
+      "human_review_status": "pending",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "execution_not_performed"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle no execution evidence exists because the action was blocked before execution."
+      ]
+    },
+    {
+      "id": "eer-command-result-001",
+      "type": "command_result",
+      "source": "local-powershell",
+      "summary": "The command completed successfully with a captured exit code of 0.",
+      "cryptographic_validity": "not_applicable",
+      "execution_evidence": "provided",
+      "policy_completeness": "not_verified",
+      "legal_applicability": "not_applicable",
+      "human_review_status": "not_required",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "command_result_not_signed"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle local command output is not cryptographically signed by default."
+      ]
+    },
+    {
+      "id": "eer-external-receipt-ramen-001",
+      "type": "external_signed_receipt",
+      "source": "ramen",
+      "summary": "The example receipt preserved valid signature and payload binding results from the ramen review-stage spike.",
+      "cryptographic_validity": "verified",
+      "execution_evidence": "not_provided",
+      "policy_completeness": "partial",
+      "legal_applicability": "not_verified",
+      "human_review_status": "pending",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "policy_content_immutability_not_provided"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle the signed receipt does not prove immutable policy content coverage."
+      ]
+    },
+    {
+      "id": "eer-policy-finding-001",
+      "type": "policy_finding",
+      "source": "mindforge-guard-review-layer",
+      "summary": "The evidence package preserves recommendation-only posture and avoids runtime enforcement.",
+      "cryptographic_validity": "not_applicable",
+      "execution_evidence": "not_provided",
+      "policy_completeness": "partial",
+      "legal_applicability": "not_verified",
+      "human_review_status": "reviewed",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "policy_scope_partial"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle this finding covers the bounded spike only and does not represent full release acceptance."
+      ]
+    },
+    {
+      "id": "eer-tool-call-001",
+      "type": "tool_call_trace",
+      "source": "guard-native-agent-harness-local",
+      "summary": "A local shell command was invoked to inspect repository context.",
+      "cryptographic_validity": "not_applicable",
+      "execution_evidence": "provided",
+      "policy_completeness": "not_verified",
+      "legal_applicability": "not_applicable",
+      "human_review_status": "pending",
+      "missing_evidence": [],
+      "assurance_limits": [
+        "no_signature_layer"
+      ],
+      "reviewer_questions": [
+        "How should reviewers handle tool traces do not provide cryptographic authenticity by themselves."
+      ]
+    }
+  ],
+  "record_counts": {
+    "total": 6,
+    "by_type": {
+      "agent_workflow_artifact": 1,
+      "blocked_action": 1,
+      "command_result": 1,
+      "external_signed_receipt": 1,
+      "policy_finding": 1,
+      "tool_call_trace": 1
+    }
+  },
+  "assurance_summary": {
+    "cryptographic_validity": {
+      "verified": 1,
+      "failed": 0,
+      "not_applicable": 5,
+      "not_provided": 0
+    },
+    "execution_evidence": {
+      "provided": 3,
+      "missing": 0,
+      "not_applicable": 1,
+      "not_provided": 2
+    },
+    "policy_completeness": {
+      "complete": 0,
+      "partial": 4,
+      "missing": 0,
+      "not_verified": 2
+    },
+    "legal_applicability": {
+      "verified": 0,
+      "not_verified": 2,
+      "not_applicable": 4
+    },
+    "human_review_status": {
+      "pending": 4,
+      "reviewed": 1,
+      "not_required": 1
+    }
+  },
+  "missing_evidence": [
+    "missing_execution_evidence_for_eer-external-receipt-ramen-001",
+    "missing_execution_evidence_for_eer-policy-finding-001"
+  ],
+  "assurance_limits": [
+    "command_result_not_signed",
+    "execution_not_performed",
+    "human_review_pending",
+    "legal_applicability_not_verified_for_eer-external-receipt-ramen-001",
+    "legal_applicability_not_verified_for_eer-policy-finding-001",
+    "no_signature_layer",
+    "policy_completeness_not_verified_for_eer-command-result-001",
+    "policy_completeness_not_verified_for_eer-tool-call-001",
+    "policy_completeness_partial_for_eer-agent-workflow-001",
+    "policy_completeness_partial_for_eer-blocked-action-001",
+    "policy_completeness_partial_for_eer-external-receipt-ramen-001",
+    "policy_completeness_partial_for_eer-policy-finding-001",
+    "policy_content_immutability_not_provided",
+    "policy_scope_partial"
+  ],
+  "reviewer_questions": [
+    "How should reviewers handle local command output is not cryptographically signed by default.",
+    "How should reviewers handle no execution evidence exists because the action was blocked before execution.",
+    "How should reviewers handle no final human reviewer disposition is attached to this workflow artifact.",
+    "How should reviewers handle the signed receipt does not prove immutable policy content coverage.",
+    "How should reviewers handle this finding covers the bounded spike only and does not represent full release acceptance.",
+    "How should reviewers handle tool traces do not provide cryptographic authenticity by themselves.",
+    "What reviewer follow-up is needed for eer-agent-workflow-001?",
+    "What reviewer follow-up is needed for eer-blocked-action-001?",
+    "What reviewer follow-up is needed for eer-external-receipt-ramen-001?",
+    "What reviewer follow-up is needed for eer-tool-call-001?"
+  ],
+  "non_authority_statement": "This normalized evidence pack is for deterministic review only. It does not approve, block, deploy, certify, or control execution."
+}
