@@ -1,0 +1,36 @@
+Ramen Receipt V5 local verification artifact
+
+Artifact type: local verification summary
+Command: npm run verify:ramen-v5
+Baseline SHA: db8d7f46275f477286f1bae0c5869cb7f08fe49a
+Provider pack issued: 2026-06-22T10:10:42.789Z
+Secret Gist review link: https://gist.github.com/veeduzyl-hue/2ce98f6186ec4fa4e4cfe0af0b886541
+
+Result:
+- PASS: ramen receipt v5 conformance verified.
+
+Provider vectors:
+- vector_1_allowed_valid -> valid=true, cryptographic_assurance=verified, decision=allow
+- vector_2_blocked_valid -> valid=true, cryptographic_assurance=verified, decision=block
+- vector_3_steered_valid -> valid=true, cryptographic_assurance=verified, decision=steered_allow
+- negative_n1_modified_signature -> valid=false, cryptographic_assurance=failed, failure_codes=[signature_invalid]
+- negative_n2_modified_input -> valid=false, cryptographic_assurance=failed, failure_codes=[input_binding_invalid]
+- negative_n3_m1_no_receipt -> valid=false, cryptographic_assurance=absent
+
+Guard-side negatives:
+- guard_unknown_kid -> failed safely, failure_codes=[unknown_kid]
+- guard_envelope_id_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[envelope_mismatch]
+- guard_envelope_kid_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[envelope_mismatch]
+- guard_envelope_schema_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[envelope_mismatch]
+- guard_response_verdict_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[response_verdict_mismatch]
+- guard_response_policy_ids_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[response_policy_ids_mismatch]
+- guard_response_executed_at_mismatch -> failed safely, cryptographic_assurance=verified, failure_codes=[response_executed_at_mismatch]
+- guard_malformed_canonical_payload -> failed safely, cryptographic_assurance=failed, failure_codes=[invalid_canonical_payload_json]
+- guard_unsupported_schema_version -> failed safely, cryptographic_assurance=verified, failure_codes=[unsupported_schema_version, schema_invalid]
+- guard_invalid_verdict -> failed safely, cryptographic_assurance=verified, failure_codes=[invalid_verdict, schema_invalid, response_verdict_mismatch]
+- guard_missing_required_payload_field -> failed safely, cryptographic_assurance=verified, failure_codes=[missing_required_payload_field, schema_invalid]
+- guard_conflicting_receipt_alert_and_receipt -> failed safely, cryptographic_assurance=absent, warnings include receipt_alert_receipt_conflict
+
+Boundary note:
+- This artifact records verification-only local review output.
+- It does not authorize execution, deployment, approval, or runtime enforcement.

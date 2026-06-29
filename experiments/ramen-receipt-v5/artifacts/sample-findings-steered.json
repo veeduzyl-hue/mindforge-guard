@@ -1,0 +1,32 @@
+{
+  "profile": "ramen-receipt-v5",
+  "baseline_sha": "db8d7f46275f477286f1bae0c5869cb7f08fe49a",
+  "valid": true,
+  "cryptographic_assurance": "verified",
+  "decision": "steered_allow",
+  "receipt_id": "33333333-3333-4333-8333-333333333333",
+  "timestamp": "2026-06-20T09:02:00.000Z",
+  "policy_ids": [
+    "d7e8f9a0-b1c2-4d3e-5f6a-7b8c9d0e1f2a"
+  ],
+  "findings": {
+    "schema_valid": true,
+    "signature_valid": true,
+    "input_binding_valid": true,
+    "envelope_consistent": true,
+    "response_verdict_consistent": true,
+    "response_policy_ids_consistent": true,
+    "response_executed_at_consistent": true,
+    "policy_uuid_binding_valid": true,
+    "verdict_binding_valid": true,
+    "reasoning_binding_valid": true,
+    "steering_binding_valid": true,
+    "statutory_anchor_binding_valid": true,
+    "key_trust_status": "ephemeral_test_key",
+    "policy_content_immutability": "not_provided",
+    "execution_binding": "not_provided",
+    "legal_applicability": "not_verified"
+  },
+  "failures": [],
+  "warnings": []
+}

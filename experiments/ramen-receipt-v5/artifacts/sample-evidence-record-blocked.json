@@ -1,0 +1,32 @@
+{
+  "evidence_type": "external_runtime_decision_receipt",
+  "source": "ramen",
+  "source_schema": "ramen-receipt-v5",
+  "baseline_sha": "db8d7f46275f477286f1bae0c5869cb7f08fe49a",
+  "receipt_id": "22222222-2222-4222-8222-222222222222",
+  "timestamp": "2026-06-20T09:01:00.000Z",
+  "decision": "block",
+  "policy_ids": [
+    "b94f3c1d-e2a6-4c89-8d02-f5a12b3c4d56"
+  ],
+  "payload_hash": "34974baf6455a727bb95cec7f340db92c216f941997ba69a7c164b82bc06dc31",
+  "signature_valid": true,
+  "input_binding_valid": true,
+  "envelope_consistent": true,
+  "response_consistent": true,
+  "key_trust_status": "ephemeral_test_key",
+  "signed_fields": {
+    "verdict_bound": true,
+    "reasoning_bound": true,
+    "steering_bound": true,
+    "statutory_anchors_bound": true,
+    "timestamp_bound": true,
+    "policy_uuid_bound": true
+  },
+  "assurance_limits": [
+    "policy_content_immutability_not_provided",
+    "execution_binding_not_provided",
+    "legal_applicability_not_verified"
+  ],
+  "non_authority_statement": "This record is external receipt evidence only. It does not approve, block, deploy, certify, or control execution."
+}
