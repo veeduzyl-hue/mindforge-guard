@@ -27,6 +27,7 @@
       "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",
       "verify:harness-phase2:contract": "node scripts/verify_harness_phase2_evidence_type_contract_hardening.mjs",
       "verify:harness-phase2:snapshots": "node scripts/verify_harness_phase2_review_report_snapshots.mjs",
+      "verify:harness-phase2:reviewer-packet": "node scripts/verify_harness_phase2_reviewer_packet.mjs",
       "verify:outcome-foundation": "node scripts/verify_outcome_foundation_contract.mjs",
       "verify:outcome-foundation:negative": "node scripts/verify_outcome_foundation_negative_contract.mjs",
       "verify": "npm run verify:core && npm run verify:v612"
