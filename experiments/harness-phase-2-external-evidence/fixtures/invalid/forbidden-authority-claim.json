@@ -1,0 +1,15 @@
+{
+  "id": "invalid-forbidden-authority-claim",
+  "type": "policy_finding",
+  "summary": "Guard approves this execution.",
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "execution_evidence": "not_provided",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_verified",
+    "human_review_status": "reviewed"
+  },
+  "missing_evidence": [],
+  "assurance_limits": [],
+  "reviewer_questions": []
+}

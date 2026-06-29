@@ -1,0 +1,36 @@
+{
+  "pack_id": "invalid-insufficient-coverage-pack",
+  "generated_at": "2026-06-29T09:45:00.000Z",
+  "records": [
+    {
+      "id": "coverage-record-001",
+      "type": "command_result",
+      "summary": "A local command result record with valid contract fields.",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "execution_evidence": "provided",
+        "policy_completeness": "not_verified",
+        "legal_applicability": "not_applicable",
+        "human_review_status": "not_required"
+      },
+      "missing_evidence": [],
+      "assurance_limits": [],
+      "reviewer_questions": []
+    },
+    {
+      "id": "coverage-record-002",
+      "type": "policy_finding",
+      "summary": "A policy finding record with valid contract fields.",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "execution_evidence": "not_provided",
+        "policy_completeness": "partial",
+        "legal_applicability": "not_verified",
+        "human_review_status": "reviewed"
+      },
+      "missing_evidence": [],
+      "assurance_limits": [],
+      "reviewer_questions": []
+    }
+  ]
+}

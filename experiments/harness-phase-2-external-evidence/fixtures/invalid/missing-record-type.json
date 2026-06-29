@@ -1,0 +1,14 @@
+{
+  "id": "invalid-missing-record-type",
+  "summary": "A contract fixture missing its canonical evidence type should fail validation.",
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "execution_evidence": "not_applicable",
+    "policy_completeness": "missing",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "pending"
+  },
+  "missing_evidence": [],
+  "assurance_limits": [],
+  "reviewer_questions": []
+}

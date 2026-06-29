@@ -1,0 +1,14 @@
+{
+  "id": "invalid-malformed-external-signed-receipt",
+  "type": "external_signed_receipt",
+  "assurance": {
+    "cryptographic_validity": "verified",
+    "execution_evidence": "not_provided",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_verified",
+    "human_review_status": "pending"
+  },
+  "missing_evidence": [],
+  "assurance_limits": "policy_content_immutability_not_provided",
+  "reviewer_questions": []
+}

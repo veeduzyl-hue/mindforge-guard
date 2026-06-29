@@ -1,0 +1,204 @@
+{
+  "contract_version": "0.1",
+  "canonical_evidence_types": [
+    "agent_workflow_artifact",
+    "blocked_action",
+    "command_result",
+    "external_signed_receipt",
+    "policy_finding",
+    "tool_call_trace"
+  ],
+  "assurance_dimensions": [
+    "cryptographic_validity",
+    "execution_evidence",
+    "policy_completeness",
+    "legal_applicability",
+    "human_review_status"
+  ],
+  "valid_fixture_results": {
+    "mixed_evidence_pack": {
+      "contract_version": "0.1",
+      "canonical_evidence_types": [
+        "agent_workflow_artifact",
+        "blocked_action",
+        "command_result",
+        "external_signed_receipt",
+        "policy_finding",
+        "tool_call_trace"
+      ],
+      "assurance_dimensions": [
+        "cryptographic_validity",
+        "execution_evidence",
+        "policy_completeness",
+        "legal_applicability",
+        "human_review_status"
+      ],
+      "valid": true,
+      "failures": [],
+      "warnings": [],
+      "evidence_type_count": 6,
+      "canonical_type_coverage": {
+        "agent_workflow_artifact": true,
+        "blocked_action": true,
+        "command_result": true,
+        "external_signed_receipt": true,
+        "policy_finding": true,
+        "tool_call_trace": true
+      },
+      "non_authority_statement": "This evidence type contract validation is for deterministic review only. It does not approve, block, deploy, certify, or control execution."
+    },
+    "normalized_evidence_pack_generated": {
+      "contract_version": "0.1",
+      "canonical_evidence_types": [
+        "agent_workflow_artifact",
+        "blocked_action",
+        "command_result",
+        "external_signed_receipt",
+        "policy_finding",
+        "tool_call_trace"
+      ],
+      "assurance_dimensions": [
+        "cryptographic_validity",
+        "execution_evidence",
+        "policy_completeness",
+        "legal_applicability",
+        "human_review_status"
+      ],
+      "valid": true,
+      "failures": [],
+      "warnings": [
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-agent-workflow-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        },
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-blocked-action-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        },
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-command-result-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        },
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-external-receipt-ramen-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        },
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-policy-finding-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        },
+        {
+          "code": "assurance_shape_compatibility_mode",
+          "message": "eer-tool-call-001: Record uses compatibility assurance field paths instead of the normalized nested assurance object."
+        }
+      ],
+      "evidence_type_count": 6,
+      "canonical_type_coverage": {
+        "agent_workflow_artifact": true,
+        "blocked_action": true,
+        "command_result": true,
+        "external_signed_receipt": true,
+        "policy_finding": true,
+        "tool_call_trace": true
+      },
+      "non_authority_statement": "This evidence type contract validation is for deterministic review only. It does not approve, block, deploy, certify, or control execution."
+    }
+  },
+  "invalid_fixture_results": {
+    "missing_record_type": {
+      "valid": false,
+      "record_id": "invalid-missing-record-type",
+      "record_type": "unknown-type",
+      "failures": [
+        {
+          "code": "missing_record_type",
+          "message": "Evidence record must include a canonical evidence type."
+        }
+      ],
+      "warnings": []
+    },
+    "invalid_assurance_status": {
+      "valid": false,
+      "record_id": "invalid-assurance-status",
+      "record_type": "command_result",
+      "failures": [
+        {
+          "code": "invalid_assurance_status",
+          "message": "Assurance dimension execution_evidence has invalid value observed."
+        }
+      ],
+      "warnings": [
+        {
+          "code": "invalid_execution_evidence_candidate",
+          "message": "Candidate value observed for execution_evidence is outside the canonical enum."
+        }
+      ]
+    },
+    "forbidden_authority_claim": {
+      "valid": false,
+      "record_id": "invalid-forbidden-authority-claim",
+      "record_type": "policy_finding",
+      "failures": [
+        {
+          "code": "forbidden_authority_claim",
+          "message": "Evidence record contains a forbidden positive authority claim (\\bguard approves\\b)."
+        }
+      ],
+      "warnings": []
+    },
+    "malformed_external_signed_receipt": {
+      "valid": false,
+      "record_id": "invalid-malformed-external-signed-receipt",
+      "record_type": "external_signed_receipt",
+      "failures": [
+        {
+          "code": "missing_summary",
+          "message": "Evidence record must include a non-empty summary or derivable claim detail."
+        },
+        {
+          "code": "invalid_assurance_limits_array",
+          "message": "assurance_limits must be an array when present."
+        }
+      ],
+      "warnings": []
+    },
+    "insufficient_evidence_type_coverage": {
+      "valid": false,
+      "failures": [
+        {
+          "code": "insufficient_evidence_type_coverage",
+          "message": "Evidence pack covers 2 canonical evidence types; at least 6 are required."
+        }
+      ],
+      "warnings": [],
+      "record_results": [
+        {
+          "valid": true,
+          "record_id": "coverage-record-001",
+          "record_type": "command_result",
+          "failures": [],
+          "warnings": []
+        },
+        {
+          "valid": true,
+          "record_id": "coverage-record-002",
+          "record_type": "policy_finding",
+          "failures": [],
+          "warnings": []
+        }
+      ],
+      "evidence_type_count": 2,
+      "canonical_type_coverage": {
+        "agent_workflow_artifact": false,
+        "blocked_action": false,
+        "command_result": true,
+        "external_signed_receipt": false,
+        "policy_finding": true,
+        "tool_call_trace": false
+      }
+    }
+  },
+  "compatible": true,
+  "runtime_or_authority_drift_detected": false,
+  "non_authority_statement": "This evidence type contract validation is for deterministic review only. It does not approve, block, deploy, certify, or control execution."
+}
