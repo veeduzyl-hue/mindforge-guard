@@ -1,0 +1,51 @@
+{
+  "record_version": "0.1",
+  "record_id": "eer-agent-workflow-001",
+  "evidence_type": "agent_workflow_artifact",
+  "source": "guard-native-agent-harness-local",
+  "source_schema": "agent-workflow-artifact/v0.1",
+  "source_id": "run-2026-06-29-001",
+  "timestamp": "2026-06-29T09:30:00.000Z",
+  "subject": {
+    "agent_id": "codex-local",
+    "run_id": "run-2026-06-29-001",
+    "task_id": "phase2-external-evidence-design",
+    "tool_name": null
+  },
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "input_binding": "verified",
+    "execution_evidence": "provided",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "pending"
+  },
+  "claims": [
+    {
+      "claim_type": "workflow_scope",
+      "status": "observed",
+      "detail": "Agent run metadata, task scope, and local evidence capture intent were recorded."
+    },
+    {
+      "claim_type": "artifact_manifest",
+      "status": "observed",
+      "detail": "The local workflow preserved a deterministic artifact manifest for review."
+    }
+  ],
+  "limits": [
+    {
+      "code": "human_review_pending",
+      "detail": "No final human reviewer disposition is attached to this workflow artifact."
+    },
+    {
+      "code": "policy_view_partial",
+      "detail": "Workflow metadata alone does not establish complete policy coverage."
+    }
+  ],
+  "raw_reference": {
+    "path": "fixtures/agent-workflow-artifact.json",
+    "digest_sha256": "8ee783713e8e750774f0384f6db869f80d8848963379bb7b43b1628e4a76f240",
+    "locator": "local-fixture"
+  },
+  "non_authority_statement": "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution."
+}

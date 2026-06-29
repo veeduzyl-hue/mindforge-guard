@@ -1,0 +1,51 @@
+{
+  "record_version": "0.1",
+  "record_id": "eer-policy-finding-001",
+  "evidence_type": "policy_finding",
+  "source": "mindforge-guard-review-layer",
+  "source_schema": "policy-finding/v0.1",
+  "source_id": "finding-2026-06-29-001",
+  "timestamp": "2026-06-29T09:37:05.000Z",
+  "subject": {
+    "agent_id": "codex-local",
+    "run_id": "run-2026-06-29-001",
+    "task_id": "phase2-external-evidence-design",
+    "tool_name": null
+  },
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "input_binding": "not_provided",
+    "execution_evidence": "not_provided",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_verified",
+    "human_review_status": "reviewed"
+  },
+  "claims": [
+    {
+      "claim_type": "policy_observation",
+      "status": "observed",
+      "detail": "The evidence package preserves recommendation-only posture and avoids runtime enforcement."
+    },
+    {
+      "claim_type": "compatibility_status",
+      "status": "observed",
+      "detail": "No `audit`, `permit`, or `classify` semantic changes were introduced by the spike."
+    }
+  ],
+  "limits": [
+    {
+      "code": "policy_scope_partial",
+      "detail": "This finding covers the bounded spike only and does not represent full release acceptance."
+    },
+    {
+      "code": "legal_review_not_included",
+      "detail": "Technical policy findings do not verify legal applicability."
+    }
+  ],
+  "raw_reference": {
+    "path": "fixtures/policy-finding.json",
+    "digest_sha256": "ae3adad611b2df6b99e333f5c6ccdbb10a53ce97f2ac8b849061f7f386ac6665",
+    "locator": "local-fixture"
+  },
+  "non_authority_statement": "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution."
+}

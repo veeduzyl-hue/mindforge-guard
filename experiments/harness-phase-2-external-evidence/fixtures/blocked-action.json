@@ -1,0 +1,51 @@
+{
+  "record_version": "0.1",
+  "record_id": "eer-blocked-action-001",
+  "evidence_type": "blocked_action",
+  "source": "sandbox",
+  "source_schema": "blocked-action/v0.1",
+  "source_id": "blocked-action-2026-06-29-001",
+  "timestamp": "2026-06-29T09:34:00.000Z",
+  "subject": {
+    "agent_id": "codex-local",
+    "run_id": "run-2026-06-29-001",
+    "task_id": "phase2-external-evidence-design",
+    "tool_name": "functions.shell_command"
+  },
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "input_binding": "not_provided",
+    "execution_evidence": "not_applicable",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "pending"
+  },
+  "claims": [
+    {
+      "claim_type": "blocked_attempt",
+      "status": "observed",
+      "detail": "A filesystem or sandbox boundary prevented the attempted action from executing."
+    },
+    {
+      "claim_type": "execution_absence",
+      "status": "observed",
+      "detail": "The attempted command did not run, so no execution output was produced."
+    }
+  ],
+  "limits": [
+    {
+      "code": "execution_not_performed",
+      "detail": "No execution evidence exists because the action was blocked before execution."
+    },
+    {
+      "code": "attempt_context_partial",
+      "detail": "Blocked action context alone may not include all upstream policy inputs."
+    }
+  ],
+  "raw_reference": {
+    "path": "fixtures/blocked-action.json",
+    "digest_sha256": "23c14f39d6fe3869e40aef4fa3bb4ec5bf4d8d8771bb9367c6d1e501fa37d100",
+    "locator": "local-fixture"
+  },
+  "non_authority_statement": "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution."
+}

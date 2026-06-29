@@ -23,6 +23,8 @@
       "verify:license-hub-phase3": "node scripts/verify_license_hub_phase3_admin_boundary.mjs",
       "verify:license-hub-phase2": "node scripts/verify_license_hub_phase2_boundary.mjs",
       "verify:license-hub-skeleton": "node scripts/verify_license_hub_skeleton_phase1.mjs",
+      "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",
+      "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",
       "verify:outcome-foundation": "node scripts/verify_outcome_foundation_contract.mjs",
       "verify:outcome-foundation:negative": "node scripts/verify_outcome_foundation_negative_contract.mjs",
       "verify": "npm run verify:core && npm run verify:v612"

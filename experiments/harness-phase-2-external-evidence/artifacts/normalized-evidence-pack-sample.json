@@ -1,0 +1,156 @@
+{
+  "evidence_pack_id": "normalized-harness-phase2-pack-001",
+  "generated_at": "2026-06-29T09:50:00.000Z",
+  "records": [
+    {
+      "record_id": "eer-agent-workflow-001",
+      "evidence_type": "agent_workflow_artifact",
+      "source": "guard-native-agent-harness-local",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "input_binding": "verified",
+        "execution_evidence": "provided",
+        "policy_completeness": "partial",
+        "legal_applicability": "not_applicable",
+        "human_review_status": "pending"
+      },
+      "claims_summary": [
+        "workflow scope recorded",
+        "artifact manifest captured"
+      ],
+      "limits": [
+        "human_review_pending",
+        "policy_view_partial"
+      ]
+    },
+    {
+      "record_id": "eer-tool-call-001",
+      "evidence_type": "tool_call_trace",
+      "source": "guard-native-agent-harness-local",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "input_binding": "verified",
+        "execution_evidence": "provided",
+        "policy_completeness": "not_verified",
+        "legal_applicability": "not_applicable",
+        "human_review_status": "pending"
+      },
+      "claims_summary": [
+        "tool invocation recorded",
+        "tool result captured"
+      ],
+      "limits": [
+        "no_signature_layer",
+        "policy_semantics_not_verified"
+      ]
+    },
+    {
+      "record_id": "eer-blocked-action-001",
+      "evidence_type": "blocked_action",
+      "source": "sandbox",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "input_binding": "not_provided",
+        "execution_evidence": "not_applicable",
+        "policy_completeness": "partial",
+        "legal_applicability": "not_applicable",
+        "human_review_status": "pending"
+      },
+      "claims_summary": [
+        "blocked attempt preserved",
+        "execution absence recorded"
+      ],
+      "limits": [
+        "execution_not_performed",
+        "attempt_context_partial"
+      ]
+    },
+    {
+      "record_id": "eer-command-result-001",
+      "evidence_type": "command_result",
+      "source": "local-powershell",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "input_binding": "verified",
+        "execution_evidence": "provided",
+        "policy_completeness": "not_verified",
+        "legal_applicability": "not_applicable",
+        "human_review_status": "not_required"
+      },
+      "claims_summary": [
+        "command exit status preserved",
+        "stdout captured"
+      ],
+      "limits": [
+        "command_result_not_signed",
+        "governance_meaning_not_implied"
+      ]
+    },
+    {
+      "record_id": "eer-policy-finding-001",
+      "evidence_type": "policy_finding",
+      "source": "mindforge-guard-review-layer",
+      "assurance": {
+        "cryptographic_validity": "not_applicable",
+        "input_binding": "not_provided",
+        "execution_evidence": "not_provided",
+        "policy_completeness": "partial",
+        "legal_applicability": "not_verified",
+        "human_review_status": "reviewed"
+      },
+      "claims_summary": [
+        "recommendation-only posture preserved",
+        "main-path semantics unchanged"
+      ],
+      "limits": [
+        "policy_scope_partial",
+        "legal_review_not_included"
+      ]
+    },
+    {
+      "record_id": "eer-external-receipt-ramen-001",
+      "evidence_type": "external_signed_receipt",
+      "source": "ramen",
+      "assurance": {
+        "cryptographic_validity": "verified",
+        "input_binding": "verified",
+        "execution_evidence": "not_provided",
+        "policy_completeness": "partial",
+        "legal_applicability": "not_verified",
+        "human_review_status": "pending"
+      },
+      "claims_summary": [
+        "signed receipt verification preserved",
+        "ramen kept as example adapter only"
+      ],
+      "limits": [
+        "policy_content_immutability_not_provided",
+        "execution_binding_not_provided",
+        "legal_applicability_not_verified"
+      ]
+    }
+  ],
+  "missing_evidence": [
+    {
+      "code": "missing_trusted_key_registry_attestation",
+      "detail": "The external signed receipt example does not include a trusted production key registry attestation."
+    },
+    {
+      "code": "missing_human_signoff_for_pack",
+      "detail": "The normalized sample does not include a final human reviewer approval or rejection note."
+    }
+  ],
+  "assurance_limits": [
+    "cryptographic validity does not prove execution",
+    "execution evidence is incomplete across the full workflow",
+    "policy completeness remains partial for mixed evidence",
+    "legal applicability remains not verified",
+    "human review remains pending at the pack level"
+  ],
+  "reviewer_questions": [
+    "Which missing evidence items should become required before a wider preview?",
+    "Should pack-level assurance limits be derived automatically or explicitly authored?",
+    "What minimum reviewer metadata is needed without creating workflow-management drift?"
+  ],
+  "non_authority_statement": "This evidence pack is for deterministic review only. It does not approve, block, deploy, certify, or control execution."
+}
