@@ -1,0 +1,15 @@
+{
+  "id": "invalid-assurance-status",
+  "type": "command_result",
+  "summary": "A record with a non-canonical assurance enum value should fail validation.",
+  "assurance": {
+    "cryptographic_validity": "not_applicable",
+    "execution_evidence": "observed",
+    "policy_completeness": "partial",
+    "legal_applicability": "not_applicable",
+    "human_review_status": "pending"
+  },
+  "missing_evidence": [],
+  "assurance_limits": [],
+  "reviewer_questions": []
+}
