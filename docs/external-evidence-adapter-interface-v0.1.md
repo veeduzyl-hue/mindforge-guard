@@ -62,9 +62,7 @@ It is not an implementation contract yet.
 
 ```ts
 interface EvidenceSourceAdapter {
-  adapter_name: string;
-  adapter_version: string;
-  source_type: string;
+  identity: AdapterIdentity;
 
   parse(input: unknown, context?: AdapterContext): ParseResult;
   validate(
@@ -73,15 +71,18 @@ interface EvidenceSourceAdapter {
   ): ContractValidationResult;
   verify(
     parsed: ParsedExternalEvidence,
+    validation: ContractValidationResult,
     context?: AdapterContext
   ): VerificationResult;
   normalize(
     parsed: ParsedExternalEvidence,
+    validation: ContractValidationResult,
     verification: VerificationResult,
     context?: AdapterContext
   ): NormalizedEvidenceRecord;
   emitFindings(
     record: NormalizedEvidenceRecord,
+    diagnostics?: AdapterDiagnostic[],
     context?: AdapterContext
   ): VerificationFinding[];
 }
@@ -89,12 +90,18 @@ interface EvidenceSourceAdapter {
 
 Design interpretation:
 
-- `adapter_name` identifies the documented adapter mapping
-- `adapter_version` identifies the adapter design or implementation lineage
-- `source_type` identifies the external evidence family being mapped
+- `identity` carries adapter name, adapter version, and external evidence source type
 - method ordering expresses review flow, not runtime orchestration authority
 
 This sketch defines the minimum logical surface needed to move from external evidence into Guard-owned review artifacts without exposing execution authority.
+
+### Type-only contract notes
+
+For the Phase 2 type-only contract pass:
+
+- `ContractValidationResult` should be carried into both `verify` and `normalize`
+- `AdapterLimitations` should have a stable final location on normalized record adapter metadata
+- diagnostics may feed findings, but diagnostics and findings remain review artifacts rather than approval or blocking decisions
 
 ## 5. Method Responsibilities
 
