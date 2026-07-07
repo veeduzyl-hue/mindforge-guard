@@ -130,6 +130,8 @@ These fields may improve provenance, reviewer context, or cross-receipt chaining
 
 An evidence source adapter is a bounded verification and normalization layer.
 
+A reference adapter is a documented example of an Evidence Source Adapter mapping. It does not define the framework or carry authority beyond that example.
+
 Adapter responsibilities are limited to:
 
 - parse

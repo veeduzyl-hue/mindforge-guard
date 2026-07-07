@@ -47,6 +47,8 @@ If left unconstrained, they can drift into product-center narratives or appear t
 In `v0.1`, a reference adapter exists only to demonstrate bounded mapping into Guard's verification framework.
 It does not create authority, default runtime coupling, or vendor preference.
 
+A reference adapter is a documented example of an Evidence Source Adapter mapping. It does not define the framework or carry authority beyond that example.
+
 ## 3. Relationship to External Evidence Framework
 
 Every reference adapter must map into the generalized Guard framework rather than redefine it.
@@ -145,8 +147,8 @@ It is a framework example, not a product center.
 - `supported_receipt_version`: `v5`
 - `boundary`: `ramen issues. Guard verifies.`
 - `role`: demonstrates signed runtime receipt verification
-- `status`: review-stage reference adapter
 - `limitation`: does not define the generalized External Evidence Framework
+- `review_notes`: suitable as a review-stage reference adapter and documented example mapping
 
 ramen is a reference adapter, not a privileged dependency.
 

@@ -1261,6 +1261,7 @@ The following table summarizes how each sample sits within the compatibility voc
 | Sample H | yes | partial | yes | `issuer_key_unavailable`, `signature_not_checked`, `requires_human_review` |
 
 The table uses `yes`, `no`, and `partial`.
+The `yes` / `no` / `partial` values describe documentation-level compatibility semantics for `contract_parseable`, `integrity_verifiable`, and `review_ready`. They are not pass/fail gate outcomes, deployment judgments, or approval states.
 It does not use deployment or enforcement judgments.
 
 ## 14. Report Language Examples
