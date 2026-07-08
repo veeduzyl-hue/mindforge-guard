@@ -101,11 +101,11 @@ function denyPolicy() {
   return policy;
 }
 
-const tmp = os.tmpdir();
-const allowOut = path.join(tmp, "mindforge-guard-permit-gate-allow.json");
-const denyOut = path.join(tmp, "mindforge-guard-permit-gate-deny.json");
-const allowReceiptOut = path.join(tmp, "mindforge-guard-permit-gate-allow-receipt.json");
-const denyReceiptOut = path.join(tmp, "mindforge-guard-permit-gate-deny-receipt.json");
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mindforge-guard-permit-gate-"));
+const allowOut = path.join(tempRoot, "allow.json");
+const denyOut = path.join(tempRoot, "deny.json");
+const allowReceiptOut = path.join(tempRoot, "allow-receipt.json");
+const denyReceiptOut = path.join(tempRoot, "deny-receipt.json");
 const auditHistoryPath = path.join(
   process.cwd(),
   ".mindforge",
@@ -120,12 +120,6 @@ const historyEntries = [
   { path: auditHistoryPath, snapshot: auditHistorySnapshot },
   { path: driftEventsPath, snapshot: driftEventsSnapshot },
 ];
-
-for (const filePath of [allowOut, denyOut, allowReceiptOut, denyReceiptOut]) {
-  try {
-    fs.unlinkSync(filePath);
-  } catch {}
-}
 
 try {
   const baseline = await runAuditWithHistoryBaseline({
@@ -247,10 +241,7 @@ try {
     throw new Error("permit gate deny path exit code mismatch");
   }
 
-  const denyRepo = path.join(tmp, "mindforge-guard-permit-gate-deny-repo");
-  try {
-    fs.rmSync(denyRepo, { recursive: true, force: true });
-  } catch {}
+  const denyRepo = path.join(tempRoot, "deny-repo");
   fs.mkdirSync(path.join(denyRepo, ".mindforge", "config"), { recursive: true });
   fs.writeFileSync(path.join(denyRepo, ".mindforge", "config", "policy.json"), JSON.stringify(denyPolicy(), null, 2));
   execFileSync("git", ["init"], { cwd: denyRepo, stdio: "ignore" });
@@ -304,4 +295,7 @@ try {
   process.stdout.write("audit permit gate verified\n");
 } finally {
   restoreHistoryBaselines(historyEntries);
+  try {
+    fs.rmSync(tempRoot, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
+  } catch {}
 }
