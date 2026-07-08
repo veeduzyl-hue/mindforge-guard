@@ -15,6 +15,14 @@ const files = {
     "externalEvidence",
     "types.ts"
   ),
+  registryTypes: path.join(
+    repoRoot,
+    "packages",
+    "guard-core",
+    "src",
+    "externalEvidence",
+    "registryTypes.ts"
+  ),
   doc: path.join(
     repoRoot,
     "docs",
@@ -46,9 +54,20 @@ function expectExcludes(haystack, snippet, message) {
   }
 }
 
+function stripComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
+}
+
 const typesSource = requireFile("types.ts", files.types);
+const registryTypesSource = requireFile(
+  "registryTypes.ts",
+  files.registryTypes
+);
 const docSource = requireFile("design doc", files.doc);
 const indexSource = requireFile("guard-core index", files.index);
+const registryTypesCode = stripComments(registryTypesSource);
 
 const forbiddenRuntimeImports = [
   'import fs',
@@ -114,6 +133,137 @@ for (const value of stringLiteralMatches) {
       `types.ts must not use forbidden status/API literal value: "${value}"`
     );
   }
+}
+
+const registryForbiddenRuntimeImports = [
+  'import fs',
+  'import crypto',
+  'from "fs"',
+  'from "crypto"',
+  'from "node:fs"',
+  'from "node:crypto"',
+  "require(",
+];
+
+for (const token of registryForbiddenRuntimeImports) {
+  expectExcludes(
+    registryTypesCode,
+    token,
+    `registryTypes.ts must not include runtime import token: ${token}`
+  );
+}
+
+expectIncludes(
+  registryTypesCode,
+  "import type",
+  "registryTypes.ts must use import type for reused types"
+);
+
+const registryForbiddenRuntimeImplementationTokens = [
+  "function ",
+  "=>",
+  "new Promise",
+  "fetch(",
+  "process.",
+  "child_process",
+  "fs.",
+  "crypto.",
+];
+
+for (const token of registryForbiddenRuntimeImplementationTokens) {
+  expectExcludes(
+    registryTypesCode,
+    token,
+    `registryTypes.ts must not include runtime implementation token: ${token}`
+  );
+}
+
+const forbiddenRegistryStatusValues = new Set([
+  "approved",
+  "blocked",
+  "allowed",
+  "denied",
+  "certified",
+  "compliant",
+  "safe",
+  "unsafe",
+  "trusted",
+  "production_ready",
+  "deployment_ready",
+  "authorized",
+  "rejected",
+]);
+
+const registryStringLiteralMatches = Array.from(
+  registryTypesSource.matchAll(/"([^"]*)"/g),
+  (match) => match[1]
+);
+
+for (const value of registryStringLiteralMatches) {
+  if (forbiddenRegistryStatusValues.has(value)) {
+    failures.push(
+      `registryTypes.ts must not use forbidden status/API literal value: "${value}"`
+    );
+  }
+}
+
+const requiredRegistryTypeNames = [
+  "AdapterRegistryLifecycleStatus",
+  "AdapterRegistryEvidenceContractLevel",
+  "AdapterRegistryReferenceStatus",
+  "AdapterRegistryMappingSupport",
+  "AdapterRegistryLimitation",
+  "AdapterRegistryDocumentationRef",
+  "AdapterRegistryEntry",
+  "AdapterRegistryIndex",
+];
+
+for (const name of requiredRegistryTypeNames) {
+  const pattern = new RegExp(`export\\s+(?:type|interface)\\s+${name}\\b`);
+  if (!pattern.test(registryTypesSource)) {
+    failures.push(
+      `registryTypes.ts is missing required exported type/interface: ${name}`
+    );
+  }
+}
+
+const requiredRegistrySnippets = [
+  "adapter_id: string",
+  "identity: AdapterIdentity",
+  "lifecycle_status: AdapterRegistryLifecycleStatus",
+  "evidence_contract_level: AdapterRegistryEvidenceContractLevel",
+  "mapping_support: AdapterRegistryMappingSupport",
+  "limitations: AdapterRegistryLimitation[]",
+  "reference_status: AdapterRegistryReferenceStatus",
+  "documentation_refs: AdapterRegistryDocumentationRef[]",
+  "review_notes: string[]",
+  'registry_version: "0.1"',
+  "entries: AdapterRegistryEntry[]",
+];
+
+for (const snippet of requiredRegistrySnippets) {
+  expectIncludes(
+    registryTypesSource,
+    snippet,
+    `registryTypes.ts is missing required snippet: ${snippet}`
+  );
+}
+
+const requiredRegistryBoundaryPhrases = [
+  "documentation/review status only",
+  "compatibility for review only",
+  "does not imply privilege, approval, certification",
+  "not runtime configs",
+  "not trust registry records",
+  "not allowlists",
+];
+
+for (const phrase of requiredRegistryBoundaryPhrases) {
+  expectIncludes(
+    registryTypesSource,
+    phrase,
+    `registryTypes.ts is missing required non-authority phrase: ${phrase}`
+  );
 }
 
 const requiredTypeNames = [
@@ -193,6 +343,10 @@ const forbiddenIndexExports = [
   "EvidenceSourceAdapter",
   "NormalizedEvidenceRecord",
   "VerificationFinding",
+  "registryTypes",
+  "AdapterRegistryEntry",
+  "AdapterRegistryIndex",
+  "AdapterRegistryLifecycleStatus",
 ];
 
 for (const token of forbiddenIndexExports) {
