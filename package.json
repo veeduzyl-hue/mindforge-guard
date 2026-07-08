@@ -31,6 +31,6 @@
       "verify:harness-phase2:reviewer-packet": "node scripts/verify_harness_phase2_reviewer_packet.mjs",
       "verify:outcome-foundation": "node scripts/verify_outcome_foundation_contract.mjs",
       "verify:outcome-foundation:negative": "node scripts/verify_outcome_foundation_negative_contract.mjs",
-      "verify": "npm run verify:core && npm run verify:v612"
+      "verify": "npm run verify:core && npm run verify:v612 && npm run verify:external-evidence:type-contract"
     }
   }
