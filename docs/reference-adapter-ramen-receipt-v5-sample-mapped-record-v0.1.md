@@ -6,6 +6,7 @@ This document provides a documentation-only sample that shows how the `ramen-rec
 
 This is a docs-only illustrative sample.
 It is not a runtime adapter implementation.
+This is not a conformance fixture.
 It is not an executable fixture.
 It is not a conformance vector.
 It is not a product integration announcement.
