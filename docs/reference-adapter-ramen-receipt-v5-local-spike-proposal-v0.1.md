@@ -188,6 +188,16 @@ This proposal does not include:
 - trust registry
 - default enablement
 
+Additional exact boundary phrases for review checks:
+
+- not exported from package index
+- not wired into `audit` / `permit` / `classify`
+- not dynamically loaded
+- no runtime registry
+- no executable conformance vectors
+- no blocking
+- no privileged ramen dependency
+
 ## 11. Eligible Follow-Up PRs
 
 The following may be proposed separately later, but are not started here:
