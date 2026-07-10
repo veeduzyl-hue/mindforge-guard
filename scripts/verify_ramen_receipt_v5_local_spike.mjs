@@ -8,6 +8,7 @@ import {
   createRamenReceiptV5LocalSpikeAdapter,
 } from "../packages/guard-core/src/externalEvidence/referenceAdapters/ramenReceiptV5/localSpike.mjs";
 
+const VERIFIER_SELF_ID = "verify_ramen_receipt_v5_local_spike";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
@@ -24,6 +25,12 @@ const files = {
     "localSpike.mjs"
   ),
 };
+
+assert.equal(
+  VERIFIER_SELF_ID,
+  "verify_ramen_receipt_v5_local_spike",
+  "verifier self identifier must remain stable"
+);
 
 const adapter = createRamenReceiptV5LocalSpikeAdapter();
 const sample = {
