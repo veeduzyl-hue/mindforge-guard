@@ -191,6 +191,7 @@ This proposal does not include:
 Additional exact boundary phrases for review checks:
 
 - not exported from package index
+- not wired into audit / permit / classify
 - not wired into `audit` / `permit` / `classify`
 - not dynamically loaded
 - no runtime registry
