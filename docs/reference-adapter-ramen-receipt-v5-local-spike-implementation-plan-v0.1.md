@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This document is a docs-only implementation plan for a future local-only adapter spike. It is not the spike implementation, not a product integration announcement, not an executable fixture, and not a conformance vector.
+This document is a docs-only implementation plan for a future local-only adapter spike. It is not the spike implementation, not a runtime adapter implementation, not a product integration announcement, not an executable fixture, and not a conformance vector.
+
+It is also not a runtime registry, not dynamic loading, not a package export, not an approval / blocking / certification / deployment-control layer, not a trust registry, and not a privileged ramen dependency.
 
 The governing boundary remains: `ramen issues. Guard verifies.` External systems issue evidence. Guard verifies evidence.
 
