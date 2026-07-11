@@ -23,6 +23,14 @@ const files = {
     "externalEvidence",
     "registryTypes.ts"
   ),
+  verificationTypes: path.join(
+    repoRoot,
+    "packages",
+    "guard-core",
+    "src",
+    "externalEvidence",
+    "verificationTypes.ts"
+  ),
   doc: path.join(
     repoRoot,
     "docs",
@@ -65,9 +73,14 @@ const registryTypesSource = requireFile(
   "registryTypes.ts",
   files.registryTypes
 );
+const verificationTypesSource = requireFile(
+  "verificationTypes.ts",
+  files.verificationTypes
+);
 const docSource = requireFile("design doc", files.doc);
 const indexSource = requireFile("guard-core index", files.index);
 const registryTypesCode = stripComments(registryTypesSource);
+const verificationTypesCode = stripComments(verificationTypesSource);
 
 const forbiddenRuntimeImports = [
   'import fs',
@@ -266,6 +279,190 @@ for (const phrase of requiredRegistryBoundaryPhrases) {
   );
 }
 
+const verificationForbiddenRuntimeImports = [
+  'import fs',
+  'import crypto',
+  'from "fs"',
+  'from "crypto"',
+  'from "node:fs"',
+  'from "node:crypto"',
+  "require(",
+];
+
+for (const token of verificationForbiddenRuntimeImports) {
+  expectExcludes(
+    verificationTypesCode,
+    token,
+    `verificationTypes.ts must not include runtime import token: ${token}`
+  );
+}
+
+expectIncludes(
+  verificationTypesSource,
+  "import type",
+  "verificationTypes.ts must use import type for reused contracts"
+);
+
+const verificationForbiddenRuntimeImplementationTokens = [
+  "function ",
+  "=>",
+  "new Promise",
+  "fetch(",
+  "process.",
+  "child_process",
+  "fs.",
+  "crypto.",
+];
+
+for (const token of verificationForbiddenRuntimeImplementationTokens) {
+  expectExcludes(
+    verificationTypesCode,
+    token,
+    `verificationTypes.ts must not include runtime implementation token: ${token}`
+  );
+}
+
+const requiredVerificationTypeNames = [
+  "EvidencePackage",
+  "AdapterManifest",
+  "AssuranceProfile",
+  "VerificationRequest",
+  "VerificationJobStatus",
+  "VerificationJob",
+  "AssuranceReport",
+  "VerificationUsageRecord",
+];
+
+for (const name of requiredVerificationTypeNames) {
+  const pattern = new RegExp(`export\\s+(?:type|interface)\\s+${name}\\b`);
+  if (!pattern.test(verificationTypesSource)) {
+    failures.push(
+      `verificationTypes.ts is missing required exported type/interface: ${name}`
+    );
+  }
+}
+
+const requiredVerificationSnippets = [
+  "identity: AdapterIdentity",
+  "source_type: EvidenceSourceType",
+  "declared_limitations: AdapterLimitations",
+  "lifecycle_status: AdapterRegistryLifecycleStatus",
+  "declared_mapping_capability: AdapterRegistryMappingSupport",
+  "status: VerificationJobStatus",
+  "verification_status?: VerificationStatus",
+  "normalized_records?: NormalizedEvidenceRecord[]",
+  "unresolved_findings: VerificationFinding[]",
+  "priority?: FindingSeverity",
+  'report_schema_version: "0.1"',
+  'usage_schema_version: "0.1"',
+];
+
+for (const snippet of requiredVerificationSnippets) {
+  expectIncludes(
+    verificationTypesSource,
+    snippet,
+    `verificationTypes.ts is missing required snippet: ${snippet}`
+  );
+}
+
+const verificationStringLiteralMatches = Array.from(
+  verificationTypesSource.matchAll(/"([^"]*)"/g),
+  (match) => match[1]
+);
+
+const forbiddenVerificationLiteralValues = new Set([
+  "approved",
+  "denied",
+  "permitted",
+  "blocked",
+  "certified",
+  "compliant",
+  "safe",
+  "trusted",
+  "deployable",
+  "charge",
+  "payment",
+  "subscription",
+  "invoice",
+  "checkout",
+]);
+
+for (const value of verificationStringLiteralMatches) {
+  if (forbiddenVerificationLiteralValues.has(value)) {
+    failures.push(
+      `verificationTypes.ts must not use forbidden status/billing literal value: "${value}"`
+    );
+  }
+}
+
+const forbiddenVerificationFieldSnippets = [
+  "module_path:",
+  "loader:",
+  "factory:",
+  "callback:",
+  "network_endpoint:",
+  "credential:",
+  "key_material:",
+  "auto_activation:",
+  "privileged:",
+  "default_adapter:",
+  "trust_decision:",
+  "price:",
+  "currency:",
+  "invoice:",
+  "payment:",
+  "subscription:",
+  "checkout:",
+  "billing_account:",
+  "customer_balance:",
+  "charge_status:",
+  "revenue:",
+  "tax:",
+];
+
+for (const snippet of forbiddenVerificationFieldSnippets) {
+  expectExcludes(
+    verificationTypesCode,
+    snippet,
+    `verificationTypes.ts must not include forbidden field snippet: ${snippet}`
+  );
+}
+
+expectExcludes(
+  verificationTypesCode,
+  "ramen",
+  "verificationTypes.ts must remain producer-neutral and must not include ramen-specific identifiers"
+);
+
+const requiredVerificationBoundaryPhrases = [
+  "producer-neutral platform contracts",
+  "do not define runtime execution, approval, blocking, certification",
+  "dynamic loading, persistence, or billing behavior",
+];
+
+for (const phrase of requiredVerificationBoundaryPhrases) {
+  expectIncludes(
+    verificationTypesSource,
+    phrase,
+    `verificationTypes.ts is missing required boundary phrase: ${phrase}`
+  );
+}
+
+const requiredVerificationVersionSnippets = [
+  'package_version: "0.1"',
+  'contract_version: "0.1"',
+  "unresolved_findings: VerificationFinding[]",
+  "requested_assurance_profiles:",
+];
+
+for (const snippet of requiredVerificationVersionSnippets) {
+  expectIncludes(
+    verificationTypesSource,
+    snippet,
+    `verificationTypes.ts is missing required snippet: ${snippet}`
+  );
+}
+
 const requiredTypeNames = [
   "EvidenceSourceType",
   "AdapterIdentity",
@@ -344,9 +541,17 @@ const forbiddenIndexExports = [
   "NormalizedEvidenceRecord",
   "VerificationFinding",
   "registryTypes",
+  "verificationTypes",
   "AdapterRegistryEntry",
   "AdapterRegistryIndex",
   "AdapterRegistryLifecycleStatus",
+  "EvidencePackage",
+  "AdapterManifest",
+  "AssuranceProfile",
+  "VerificationRequest",
+  "VerificationJob",
+  "AssuranceReport",
+  "VerificationUsageRecord",
 ];
 
 for (const token of forbiddenIndexExports) {
