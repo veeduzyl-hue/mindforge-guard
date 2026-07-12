@@ -24,12 +24,17 @@ const integrityModulePath = path.join(
 );
 const packageJsonPath = path.join(repoRoot, "package.json");
 const guardCoreIndexPath = path.join(repoRoot, "packages/guard-core/src/index.ts");
+const crossSourceCases = [
+  { label: "runtime receipt", title: "Runtime Receipt", idPrefix: "runtime-receipt", producerId: "producer-synthetic-runtime-receipt", sourceType: "runtime_receipt", sourceSystem: "synthetic-runtime-receipt-source", adapterId: "adapter-synthetic-runtime-receipt" },
+  { label: "CI provenance", title: "CI Provenance", idPrefix: "ci-provenance", producerId: "producer-synthetic-ci-provenance", sourceType: "ci_cd_evidence", sourceSystem: "synthetic-ci-provenance-source", adapterId: "adapter-synthetic-ci-provenance" },
+];
 
 verifyModuleBoundary();
 verifyPackageScripts();
 verifyIsolation();
 verifyKnownAnswer();
 verifyDeterministicFixture();
+verifyCrossSourceFixtureCoverage();
 verifyCallerProvidedIntegrityRejected();
 verifyValidationFailure();
 
@@ -77,6 +82,24 @@ function verifyModuleBoundary() {
     !integritySource.includes("certificate"),
     "integrity helper must not introduce certificate semantics"
   );
+
+  for (const token of [
+    "synthetic-runtime-receipt-source",
+    "synthetic-ci-provenance-source",
+    "producer-synthetic-runtime-receipt",
+    "producer-synthetic-ci-provenance",
+    "adapter-synthetic-runtime-receipt",
+    "adapter-synthetic-ci-provenance",
+  ]) {
+    assert.ok(
+      !fixtureSource.includes(token),
+      `fixture module must stay source-agnostic in production code: ${token}`
+    );
+    assert.ok(
+      !integritySource.includes(token),
+      `integrity helper must stay source-agnostic in production code: ${token}`
+    );
+  }
 }
 
 function verifyPackageScripts() {
@@ -495,6 +518,100 @@ function verifyDeterministicFixture() {
   );
 }
 
+function verifyCrossSourceFixtureCoverage() {
+  const baseInput = createFixtureInput();
+  const [firstCase, secondCase] = crossSourceCases;
+  const firstInput = createCrossSourceInput(baseInput, firstCase);
+  const secondInput = createCrossSourceInput(baseInput, secondCase);
+  const firstResult = buildLocalAssuranceReportFixture(firstInput);
+  const secondResult = buildLocalAssuranceReportFixture(secondInput);
+  const pristineFirstReport = cloneValue(firstResult.assurance_report);
+
+  assertCrossSourceOutput(firstCase, firstInput, firstResult, secondCase);
+  assertCrossSourceOutput(secondCase, secondInput, secondResult, firstCase);
+  assert.deepStrictEqual(buildLocalAssuranceReportFixture(firstInput), firstResult);
+  assert.deepStrictEqual(buildLocalAssuranceReportFixture(secondInput), secondResult);
+  assert.deepStrictEqual(baseInput, createFixtureInput());
+  assert.notEqual(firstResult.assurance_report.report_integrity.digest, secondResult.assurance_report.report_integrity.digest);
+  assert.notEqual(firstResult.assurance_report.report_id, secondResult.assurance_report.report_id);
+  assert.notEqual(firstResult.assurance_report.producer.producer_id, secondResult.assurance_report.producer.producer_id);
+  assert.notEqual(firstResult.assurance_report.adapter.adapter_id, secondResult.assurance_report.adapter.adapter_id);
+
+  firstResult.assurance_report.verified_claims[0].summary = "mutated";
+  assert.equal(secondResult.assurance_report.verified_claims[0].summary, secondInput.verified_claims[0].summary);
+
+  firstInput.verified_claims[0].summary = "mutated input";
+  const rebuiltSecondResult = buildLocalAssuranceReportFixture(
+    createCrossSourceInput(baseInput, secondCase)
+  );
+  assert.deepStrictEqual(rebuiltSecondResult, secondResult);
+
+  expectTamperMismatch(pristineFirstReport, (tampered) => {
+    tampered.verified_claims[0].summary = "Changed runtime receipt claim.";
+  }, "runtime receipt claim tamper must be detected");
+  expectTamperMismatch(secondResult.assurance_report, (tampered) => {
+    tampered.missing_evidence[0].description =
+      "Changed CI provenance missing evidence description.";
+  }, "CI provenance missing evidence tamper must be detected");
+}
+
+function assertCrossSourceOutput(sourceCase, input, output, otherSourceCase) {
+  const outputJson = JSON.stringify(output);
+  const report = output.assurance_report;
+
+  assert.deepStrictEqual(
+    {
+      verificationId: output.verification_job.verification_id,
+      requestId: output.verification_job.request.request_id,
+      packageId: output.verification_job.evidence_package.package_id,
+      usageRecordId: output.verification_usage_record.usage_record_id,
+      reportId: report.report_id,
+      producerId: report.producer.producer_id,
+      sourceType: report.producer.source_type,
+      adapterId: report.adapter.adapter_id,
+      profileId: report.assurance_profiles[0].profile_id,
+      checkSummary: report.executed_checks[0].summary,
+      claimSummary: report.verified_claims[0].summary,
+      findingMessage: output.verification_job.findings[0].message,
+      unresolvedMessage: report.unresolved_findings[0].message,
+      missingDescription: report.missing_evidence[0].description,
+      limitation: output.verification_job.limitations[0],
+      recommendationSummary: report.human_review_recommendations[0].summary,
+      normalizedSourceType: output.verification_job.normalized_records[0].source.source_type,
+    },
+    {
+      verificationId: input.verification_id,
+      requestId: input.request_id,
+      packageId: input.evidence_package.package_id,
+      usageRecordId: input.verification_usage_record.usage_record_id,
+      reportId: input.report_id,
+      producerId: sourceCase.producerId,
+      sourceType: sourceCase.sourceType,
+      adapterId: sourceCase.adapterId,
+      profileId: input.assurance_profiles[0].profile_id,
+      checkSummary: input.executed_checks[0].summary,
+      claimSummary: input.verified_claims[0].summary,
+      findingMessage: input.findings[0].message,
+      unresolvedMessage: input.unresolved_findings[0].message,
+      missingDescription: input.missing_evidence[0].description,
+      limitation: input.limitations[0],
+      recommendationSummary: input.human_review_recommendations[0].summary,
+      normalizedSourceType: sourceCase.sourceType,
+    }
+  );
+
+  assert.deepStrictEqual(verifyAssuranceReportIntegrity(report), { matches: true, algorithm: "sha256", expectedDigest: report.report_integrity.digest, actualDigest: report.report_integrity.digest });
+
+  assert.ok(
+    !outputJson.includes(otherSourceCase.producerId),
+    `${sourceCase.label} output must not contain the other source producer id`
+  );
+  assert.ok(
+    !outputJson.includes(otherSourceCase.idPrefix),
+    `${sourceCase.label} output must not contain the other source id prefix`
+  );
+}
+
 function verifyCallerProvidedIntegrityRejected() {
   const fixtureInput = createFixtureInput();
   fixtureInput.report_integrity = {
@@ -760,6 +877,63 @@ function createFixtureInput() {
       usage_schema_version: "0.1",
     },
   };
+}
+
+function createCrossSourceInput(baseInput, sourceCase) {
+  const input = cloneValue(baseInput);
+  const prefix = sourceCase.idPrefix;
+  const producerName = `Synthetic ${sourceCase.title} Producer`;
+  const id = (kind, suffix = "001") => `${kind}-${prefix}-${suffix}`;
+  const localRef = (kind) => `local://synthetic/${prefix}/${kind}-001`;
+
+  input.verification_id = id("verification");
+  input.report_id = id("report");
+  input.request_id = id("request");
+  input.caller_reference = `demo-${prefix}-assurance`;
+  input.evidence_package.package_id = id("package");
+  input.evidence_package.digest = `sha256:${prefix}-package-digest`;
+  input.evidence_package.integrity_ref = `integrity://local/${id("package")}`;
+  input.producer.producer_id = sourceCase.producerId;
+  input.producer.producer_name = producerName;
+  input.producer.source_type = sourceCase.sourceType;
+  input.producer.external_reference = localRef("source");
+  input.adapter.adapter_id = sourceCase.adapterId;
+  input.assurance_profiles = [{ profile_id: id("profile"), profile_version: "0.1" }];
+  input.executed_checks = [{ check_type: "payload_binding", status: "verified", summary: `${sourceCase.title} fields remain aligned with the supplied verification request.`, evidence_refs: [id("record")] }];
+  input.failed_checks = [];
+  input.verified_claims = [{ claim_id: id("claim"), claim_type: "evidence_binding", summary: `The ${sourceCase.label} remains bound to the supplied local request.`, evidence_refs: [id("record")] }];
+  input.findings = [{ finding_id: id("finding"), finding_type: "integrity_gap", severity: "medium", category: "integrity", message: `${sourceCase.title} coverage remains partial for one supporting artifact.`, evidence_ref: id("record"), recommendation: `Review the absent ${sourceCase.label} attachment before treating this evidence as complete.`, verification_stage: "verify", source_adapter: sourceCase.adapterId }];
+  input.unresolved_findings = [{ finding_id: id("finding", "002"), finding_type: "missing_attachment", severity: "high", category: "evidence_completeness", message: `One ${sourceCase.label} attachment is intentionally absent from the local bundle.`, evidence_ref: id("record", "002"), recommendation: `Review the absent ${sourceCase.label} attachment before treating this evidence as complete.`, verification_stage: "emit_findings", source_adapter: sourceCase.adapterId }];
+  input.missing_evidence = [{ missing_evidence_id: id("missing"), description: `${sourceCase.title} attachment not included in the local bundle.`, evidence_refs: [id("record", "002")] }];
+  input.limitations = [`${sourceCase.title} fixture coverage remains bounded to deterministic offline verification only.`];
+  input.scope_limitations = [`This synthetic ${sourceCase.label} fixture does not represent a production external evidence producer.`];
+  input.human_review_recommendations = [{ recommendation_id: id("review"), summary: `Review the absent ${sourceCase.label} attachment before treating this evidence as complete.`, priority: "high", evidence_refs: [id("record", "002")] }];
+  input.normalized_records = [
+    {
+      record: { record_id: `normalized-${id("record")}`, record_version: "0.1", generated_at: "2026-07-11T09:30:10.000Z" },
+      adapter: { adapter_name: `Synthetic ${sourceCase.title} Adapter`, adapter_version: "0.1.0", source_type: sourceCase.sourceType },
+      source: { source_system: sourceCase.sourceSystem, source_type: sourceCase.sourceType, issuer: producerName, trust_status: "unknown" },
+      receipt: { receipt_id: id("receipt"), receipt_version: "0.1", raw_receipt_ref: localRef("receipt") },
+      subject: { subject: "demo-artifact", subject_type: "synthetic_payload", action_summary: `${sourceCase.label} assurance fixture verification` },
+      verification: {
+        status: "partially_verified",
+        integrity: { payload_hash: `sha256:${prefix}-payload-hash`, hash_algorithm: "sha256", raw_payload_available: true, payload_hash_status: "match" },
+        diagnostics: [],
+      },
+      contract_validation: { status: "contract_parseable", required_fields_present: true, missing_required_fields: [], diagnostics: [] },
+      evidence: { evidence_refs: [id("record")], raw_payload_ref: localRef("payload"), external_report_uri: localRef("external-report"), completeness_status: "partial" },
+      diagnostics: [],
+      findings: [{ finding_id: id("finding", "003"), finding_type: "review_gap", category: "review", severity: "low", message: `${sourceCase.label} review context may still be useful.`, evidence_ref: id("record"), source_adapter: sourceCase.adapterId }],
+    },
+  ];
+  input.verification_summary = `Synthetic ${sourceCase.label} assurance report fixture completed with bounded findings.`;
+  input.verification_usage_record.usage_record_id = id("usage");
+  input.verification_usage_record.verification_id = input.verification_id;
+  input.verification_usage_record.evidence_record_count = 1;
+  input.verification_usage_record.assurance_profile_count = 1;
+  input.verification_usage_record.verification_check_count = 1;
+
+  return input;
 }
 
 function expectTamperMismatch(report, mutate, message) {
