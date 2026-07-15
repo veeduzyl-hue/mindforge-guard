@@ -22,6 +22,10 @@ const integrityModulePath = path.join(
   repoRoot,
   "packages/guard-core/src/externalEvidence/localAssuranceReportIntegrity.mjs"
 );
+const envelopeFixtureModulePath = path.join(
+  repoRoot,
+  "packages/guard-core/src/externalEvidence/localVerificationJobEnvelopeFixture.mjs"
+);
 const packageJsonPath = path.join(repoRoot, "package.json");
 const guardCoreIndexPath = path.join(repoRoot, "packages/guard-core/src/index.ts");
 const crossSourceCases = [
@@ -139,14 +143,40 @@ function verifyIsolation() {
 
   assert.deepStrictEqual(
     fixturePackageReferences,
-    [],
-    "fixture module must remain isolated from package exports and runtime wiring"
+    [normalizePath(envelopeFixtureModulePath)],
+    "fixture module must remain local-only and may only be consumed by the verification job envelope fixture in package runtime code"
   );
   assert.deepStrictEqual(
     integrityPackageReferences,
-    [normalizePath(fixtureModulePath)],
-    "integrity helper must remain local-only and only be consumed by the fixture module in package runtime code"
+    [
+      normalizePath(fixtureModulePath),
+      normalizePath(envelopeFixtureModulePath),
+    ],
+    "integrity helper must remain local-only and only be consumed by the canonical assurance report fixture and verification job envelope fixture in package runtime code"
   );
+
+  const envelopeFixtureSource = fs.readFileSync(
+    envelopeFixtureModulePath,
+    "utf8"
+  );
+  assert.ok(
+    envelopeFixtureSource.includes(
+      'import { buildLocalAssuranceReportFixture } from "./localAssuranceReportFixture.mjs";'
+    ),
+    "verification job envelope fixture must use a plain static import for the canonical assurance report fixture"
+  );
+  assert.ok(
+    envelopeFixtureSource.includes(
+      'import { verifyAssuranceReportIntegrity } from "./localAssuranceReportIntegrity.mjs";'
+    ),
+    "verification job envelope fixture must use a plain static import for the canonical integrity verifier"
+  );
+  for (const forbiddenToken of ["\\\\u", "import(", "createHash(", "node:crypto"]) {
+    assert.ok(
+      !envelopeFixtureSource.includes(forbiddenToken),
+      `verification job envelope fixture must not use verifier-evasion or duplicate integrity token: ${forbiddenToken}`
+    );
+  }
 }
 
 function verifyKnownAnswer() {
