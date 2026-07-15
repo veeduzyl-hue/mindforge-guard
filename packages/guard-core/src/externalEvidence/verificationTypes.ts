@@ -119,9 +119,7 @@ export interface VerificationIdempotencyBoundary {
   request_fingerprint_ref?: string;
 }
 
-export type VerificationReplayMode =
-  | "deterministic_reexecution"
-  | "analysis_recheck";
+export type VerificationReplayMode = "deterministic_reexecution";
 
 export interface VerificationReplayContext {
   replay_mode: VerificationReplayMode;
@@ -161,8 +159,6 @@ export interface VerificationRequestReference {
  */
 export type VerificationJobStatus =
   | "pending"
-  | "received"
-  | "validated"
   | "accepted_for_verification"
   | "ready"
   | "completed"
@@ -186,8 +182,7 @@ export type VerificationAttemptStatus =
 
 export type VerificationAttemptFailureKind =
   | "verification_execution_failed"
-  | "internal_service_failure"
-  | "report_integrity_failed";
+  | "internal_service_failure";
 
 export interface VerificationJobResultRecordReference {
   verification_job_result_id: string;
@@ -218,6 +213,8 @@ export interface VerificationJob {
   completed_at?: string;
   attempts?: VerificationAttemptReference[];
   result?: VerificationJobResultRecordReference;
+  // These fields remain compatibility projections for the existing local-only
+  // fixture line until the finalized result-record line is consumed directly.
   normalized_records?: NormalizedEvidenceRecord[];
   findings?: VerificationFinding[];
   limitations?: string[];
@@ -276,16 +273,16 @@ export type VerificationJobResultStatus =
   | "completed"
   | "completed_with_findings";
 
-export type VerificationJobResultClassification =
-  | "no_findings"
-  | "findings_present";
-
 export type ReportIntegrityStatus = "not_checked" | "valid" | "invalid";
 
 /**
- * Job-level finalized result record.
+ * Canonical finalized job-result artifact for the service-boundary contract line.
  * This remains distinct from adapter-level VerificationResult in types.ts
  * and from per-attempt operational state.
+ * Existing VerificationJob normalized_records, findings, and assurance_report
+ * fields remain compatibility projections for the local-only fixture line.
+ * If both job projections and this result record are present, they must remain
+ * semantically consistent and must not be treated as independent result authorities.
  */
 export interface VerificationJobResultRecord {
   verification_job_result_id: string;
@@ -293,13 +290,13 @@ export interface VerificationJobResultRecord {
   verification_attempt_id?: string;
   job_status: VerificationJobResultStatus;
   verification_status?: VerificationStatus;
-  completion_classification?: VerificationJobResultClassification;
+  // Report integrity is a finalized-result observation only.
+  // It is not itself an operational failure or evidence invalidity decision.
   report_integrity_status?: ReportIntegrityStatus;
   normalized_records?: NormalizedEvidenceRecord[];
   findings?: VerificationFinding[];
   assurance_report?: AssuranceReportReference;
   finalized_at: string;
-  deterministic_result?: VerificationJobResultRecordReference;
   result_summary?: string;
 }
 
@@ -324,18 +321,13 @@ export interface AssuranceReport {
   verification_summary?: string;
 }
 
-export type RetentionDeletionExpectation =
-  | "ephemeral"
-  | "bounded_retention"
-  | "caller_managed";
-
 /**
  * Opaque retention reference only.
  * This does not implement storage, deletion, scheduling, legal hold, or tenant policy.
  */
 export interface RetentionClassReference {
   retention_class_id: string;
-  deletion_expectation?: RetentionDeletionExpectation;
+  retention_class_version?: string;
 }
 
 export type VerificationJobTerminalOutcome =

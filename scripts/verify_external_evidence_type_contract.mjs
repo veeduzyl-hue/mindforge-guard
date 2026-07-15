@@ -73,6 +73,20 @@ function stripComments(source) {
     .replace(/\/\/.*$/gm, "");
 }
 
+function extractInterfaceBlock(source, name) {
+  const match = source.match(
+    new RegExp(`export\\s+interface\\s+${name}\\s*\\{([\\s\\S]*?)\\n\\}`, "m")
+  );
+  return match ? match[1] : "";
+}
+
+function extractTypeAliasBlock(source, name) {
+  const match = source.match(
+    new RegExp(`export\\s+type\\s+${name}\\s*=([\\s\\S]*?);`, "m")
+  );
+  return match ? match[1] : "";
+}
+
 const typesSource = requireFile("types.ts", files.types);
 const registryTypesSource = requireFile(
   "registryTypes.ts",
@@ -90,6 +104,34 @@ const serviceBoundaryDocSource = requireFile(
 const indexSource = requireFile("guard-core index", files.index);
 const registryTypesCode = stripComments(registryTypesSource);
 const verificationTypesCode = stripComments(verificationTypesSource);
+const verificationJobStatusBlock = extractTypeAliasBlock(
+  verificationTypesCode,
+  "VerificationJobStatus"
+);
+const verificationReplayModeBlock = extractTypeAliasBlock(
+  verificationTypesCode,
+  "VerificationReplayMode"
+);
+const verificationAttemptFailureKindBlock = extractTypeAliasBlock(
+  verificationTypesCode,
+  "VerificationAttemptFailureKind"
+);
+const verificationAttemptBlock = extractInterfaceBlock(
+  verificationTypesCode,
+  "VerificationAttempt"
+);
+const verificationJobResultRecordBlock = extractInterfaceBlock(
+  verificationTypesCode,
+  "VerificationJobResultRecord"
+);
+const verificationUsageRecordBlock = extractInterfaceBlock(
+  verificationTypesCode,
+  "VerificationUsageRecord"
+);
+const retentionClassReferenceBlock = extractInterfaceBlock(
+  verificationTypesCode,
+  "RetentionClassReference"
+);
 
 const forbiddenRuntimeImports = [
   'import fs',
@@ -374,8 +416,6 @@ const requiredVerificationSnippets = [
   "normalized_records?: NormalizedEvidenceRecord[]",
   "retention_class?: RetentionClassReference",
   "terminal_outcome?: VerificationJobTerminalOutcome",
-  "completion_classification?: VerificationJobResultClassification",
-  "deterministic_result?: VerificationJobResultRecordReference",
   "unresolved_findings: VerificationFinding[]",
   "priority?: FindingSeverity",
   'report_schema_version: "0.1"',
@@ -491,6 +531,155 @@ expectExcludes(
   "verificationTypes.ts must not introduce a BillableUsageEvent type in this phase"
 );
 
+expectExcludes(
+  verificationTypesSource,
+  "export type VerificationJobResultClassification",
+  "verificationTypes.ts must not define a duplicate VerificationJobResultClassification"
+);
+
+expectExcludes(
+  verificationTypesCode,
+  "completion_classification?: VerificationJobResultClassification",
+  "verificationTypes.ts must not reintroduce completion_classification on VerificationJobResultRecord"
+);
+
+expectExcludes(
+  verificationTypesSource,
+  "export type RetentionDeletionExpectation",
+  "verificationTypes.ts must not define RetentionDeletionExpectation in this phase"
+);
+
+expectExcludes(
+  verificationTypesCode,
+  "deletion_expectation?:",
+  "verificationTypes.ts must not include deletion_expectation on retention references"
+);
+
+if (!verificationJobStatusBlock) {
+  failures.push("verificationTypes.ts must define VerificationJobStatus");
+} else {
+  expectIncludes(
+    verificationJobStatusBlock,
+    '"accepted_for_verification"',
+    'VerificationJobStatus must include "accepted_for_verification"'
+  );
+  expectIncludes(
+    verificationJobStatusBlock,
+    '"pending"',
+    'VerificationJobStatus must include "pending"'
+  );
+  expectIncludes(
+    verificationJobStatusBlock,
+    '"ready"',
+    'VerificationJobStatus must include "ready"'
+  );
+  expectExcludes(
+    verificationJobStatusBlock,
+    '"received"',
+    'VerificationJobStatus must not include request-ingestion status "received"'
+  );
+  expectExcludes(
+    verificationJobStatusBlock,
+    '"validated"',
+    'VerificationJobStatus must not include request-validation status "validated"'
+  );
+}
+
+if (!verificationReplayModeBlock) {
+  failures.push("verificationTypes.ts must define VerificationReplayMode");
+} else {
+  expectIncludes(
+    verificationReplayModeBlock,
+    '"deterministic_reexecution"',
+    'VerificationReplayMode must include "deterministic_reexecution"'
+  );
+  expectExcludes(
+    verificationReplayModeBlock,
+    '"analysis_recheck"',
+    'VerificationReplayMode must not include "analysis_recheck"'
+  );
+}
+
+if (!verificationAttemptFailureKindBlock) {
+  failures.push("verificationTypes.ts must define VerificationAttemptFailureKind");
+} else {
+  expectIncludes(
+    verificationAttemptFailureKindBlock,
+    '"verification_execution_failed"',
+    'VerificationAttemptFailureKind must include "verification_execution_failed"'
+  );
+  expectIncludes(
+    verificationAttemptFailureKindBlock,
+    '"internal_service_failure"',
+    'VerificationAttemptFailureKind must include "internal_service_failure"'
+  );
+  expectExcludes(
+    verificationAttemptFailureKindBlock,
+    '"report_integrity_failed"',
+    'VerificationAttemptFailureKind must not include "report_integrity_failed"'
+  );
+}
+
+if (!verificationAttemptBlock) {
+  failures.push("verificationTypes.ts must define VerificationAttempt");
+} else {
+  expectIncludes(
+    verificationAttemptBlock,
+    "verification_id: string",
+    "VerificationAttempt must reference its parent verification job"
+  );
+}
+
+if (!verificationJobResultRecordBlock) {
+  failures.push("verificationTypes.ts must define VerificationJobResultRecord");
+} else {
+  expectIncludes(
+    verificationJobResultRecordBlock,
+    "report_integrity_status?: ReportIntegrityStatus",
+    "VerificationJobResultRecord must keep report_integrity_status as a finalized-result observation"
+  );
+  expectExcludes(
+    verificationJobResultRecordBlock,
+    "completion_classification",
+    "VerificationJobResultRecord must not include completion_classification"
+  );
+  expectExcludes(
+    verificationJobResultRecordBlock,
+    "deterministic_result",
+    "VerificationJobResultRecord must not include deterministic_result self-reference"
+  );
+}
+
+if (!verificationUsageRecordBlock) {
+  failures.push("verificationTypes.ts must define VerificationUsageRecord");
+} else {
+  expectIncludes(
+    verificationUsageRecordBlock,
+    "deterministic_result?: VerificationJobResultRecordReference",
+    "VerificationUsageRecord must include deterministic_result reference to VerificationJobResultRecord"
+  );
+}
+
+if (!retentionClassReferenceBlock) {
+  failures.push("verificationTypes.ts must define RetentionClassReference");
+} else {
+  expectIncludes(
+    retentionClassReferenceBlock,
+    "retention_class_id: string",
+    "RetentionClassReference must include retention_class_id"
+  );
+  expectIncludes(
+    retentionClassReferenceBlock,
+    "retention_class_version?: string",
+    "RetentionClassReference must include optional retention_class_version"
+  );
+  expectExcludes(
+    retentionClassReferenceBlock,
+    "deletion_expectation",
+    "RetentionClassReference must remain opaque and must not include deletion_expectation"
+  );
+}
+
 const requiredVerificationBoundaryPhrases = [
   "producer-neutral platform contracts",
   "do not define runtime execution, approval, blocking, certification",
@@ -511,9 +700,6 @@ const requiredVerificationVersionSnippets = [
   "unresolved_findings: VerificationFinding[]",
   "requested_assurance_profiles:",
   '"deterministic_reexecution"',
-  '"analysis_recheck"',
-  '"report_integrity_failed"',
-  '"bounded_retention"',
 ];
 
 for (const snippet of requiredVerificationVersionSnippets) {
@@ -643,10 +829,16 @@ const requiredServiceBoundaryDocSnippets = [
   "VerificationJob remains the logical unit",
   "VerificationAttempt is one execution attempt for that job",
   "`VerificationJobStatus` remains job-scoped only:",
+  "`received` and `validated` remain deferred request-ingestion lifecycle concepts and are not `VerificationJobStatus` values in `v0.1`.",
   "VerificationUsageRecord remains the current canonical technical usage record contract",
   "VerificationUsageRecord != future billable usage interpretation != pricing != invoice != payment",
-  "They are not independent authoritative retention decisions",
+  "They must point to the same retention class and must not express conflicting selections.",
   "VerificationResult in `packages/guard-core/src/externalEvidence/types.ts` remains the adapter-level evidence verification result",
+  "`VerificationJobResultRecord` is the canonical finalized job-result artifact for the new service-boundary contract line.",
+  "Existing `VerificationJob.normalized_records`, `findings`, and `assurance_report` fields remain compatibility projections for the existing local-only fixture line.",
+  "they must be semantically consistent and must not be treated as independent result authorities",
+  "`report_integrity_status` remains a finalized-result observation only.",
+  "reuse of the source report identity",
   "This phase does not introduce:",
   "an HTTP API",
   "persistence",
