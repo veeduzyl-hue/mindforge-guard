@@ -36,6 +36,11 @@ const files = {
     "docs",
     "external-evidence-adapter-interface-v0.1.md"
   ),
+  serviceBoundaryDoc: path.join(
+    repoRoot,
+    "docs",
+    "external-evidence-assurance-service-boundary-contracts-v0.1.md"
+  ),
   index: path.join(repoRoot, "packages", "guard-core", "src", "index.ts"),
 };
 
@@ -78,6 +83,10 @@ const verificationTypesSource = requireFile(
   files.verificationTypes
 );
 const docSource = requireFile("design doc", files.doc);
+const serviceBoundaryDocSource = requireFile(
+  "service boundary doc",
+  files.serviceBoundaryDoc
+);
 const indexSource = requireFile("guard-core index", files.index);
 const registryTypesCode = stripComments(registryTypesSource);
 const verificationTypesCode = stripComments(verificationTypesSource);
@@ -326,9 +335,14 @@ const requiredVerificationTypeNames = [
   "EvidencePackage",
   "AdapterManifest",
   "AssuranceProfile",
+  "VerificationIdempotencyBoundary",
+  "VerificationReplayContext",
   "VerificationRequest",
   "VerificationJobStatus",
   "VerificationJob",
+  "VerificationAttempt",
+  "VerificationJobResultRecord",
+  "VerificationJobTerminalOutcome",
   "AssuranceReport",
   "VerificationUsageRecord",
 ];
@@ -348,9 +362,20 @@ const requiredVerificationSnippets = [
   "declared_limitations: AdapterLimitations",
   "lifecycle_status: AdapterRegistryLifecycleStatus",
   "declared_mapping_capability: AdapterRegistryMappingSupport",
+  "idempotency?: VerificationIdempotencyBoundary",
+  "replay_context?: VerificationReplayContext",
   "status: VerificationJobStatus",
+  "attempts?: VerificationAttemptReference[]",
+  "result?: VerificationJobResultRecordReference",
   "verification_status?: VerificationStatus",
+  "created_at: string",
+  "failure_kind?: VerificationAttemptFailureKind",
+  "job_status: VerificationJobResultStatus",
   "normalized_records?: NormalizedEvidenceRecord[]",
+  "retention_class?: RetentionClassReference",
+  "terminal_outcome?: VerificationJobTerminalOutcome",
+  "completion_classification?: VerificationJobResultClassification",
+  "deterministic_result?: VerificationJobResultRecordReference",
   "unresolved_findings: VerificationFinding[]",
   "priority?: FindingSeverity",
   'report_schema_version: "0.1"',
@@ -408,16 +433,24 @@ const forbiddenVerificationFieldSnippets = [
   "default_adapter:",
   "trust_decision:",
   "price:",
+  "amount:",
   "currency:",
+  "fee:",
   "invoice:",
   "payment:",
   "subscription:",
   "checkout:",
   "billing_account:",
   "customer_balance:",
+  "customer_id:",
+  "account_id:",
   "charge_status:",
   "revenue:",
   "tax:",
+  "discount:",
+  "credit:",
+  "debit:",
+  "settlement:",
 ];
 
 for (const snippet of forbiddenVerificationFieldSnippets) {
@@ -432,6 +465,30 @@ expectExcludes(
   verificationTypesCode,
   "ramen",
   "verificationTypes.ts must remain producer-neutral and must not include ramen-specific identifiers"
+);
+
+expectExcludes(
+  verificationTypesSource,
+  "export interface VerificationResult {",
+  "verificationTypes.ts must not redefine adapter-level VerificationResult"
+);
+
+expectExcludes(
+  verificationTypesSource,
+  "export interface TechnicalUsageRecord",
+  "verificationTypes.ts must not introduce a parallel TechnicalUsageRecord schema"
+);
+
+expectExcludes(
+  verificationTypesSource,
+  "export interface TechnicalUsageRecordReference",
+  "verificationTypes.ts must not introduce a parallel TechnicalUsageRecordReference schema"
+);
+
+expectExcludes(
+  verificationTypesSource,
+  "export interface BillableUsageEvent",
+  "verificationTypes.ts must not introduce a BillableUsageEvent type in this phase"
 );
 
 const requiredVerificationBoundaryPhrases = [
@@ -453,6 +510,10 @@ const requiredVerificationVersionSnippets = [
   'contract_version: "0.1"',
   "unresolved_findings: VerificationFinding[]",
   "requested_assurance_profiles:",
+  '"deterministic_reexecution"',
+  '"analysis_recheck"',
+  '"report_integrity_failed"',
+  '"bounded_retention"',
 ];
 
 for (const snippet of requiredVerificationVersionSnippets) {
@@ -575,6 +636,48 @@ for (const snippet of requiredDocSnippets) {
     docSource,
     snippet,
     `design doc is missing aligned pseudo-interface snippet: ${snippet}`
+  );
+}
+
+const requiredServiceBoundaryDocSnippets = [
+  "VerificationJob remains the logical unit",
+  "VerificationAttempt is one execution attempt for that job",
+  "`VerificationJobStatus` remains job-scoped only:",
+  "VerificationUsageRecord remains the current canonical technical usage record contract",
+  "VerificationUsageRecord != future billable usage interpretation != pricing != invoice != payment",
+  "They are not independent authoritative retention decisions",
+  "VerificationResult in `packages/guard-core/src/externalEvidence/types.ts` remains the adapter-level evidence verification result",
+  "This phase does not introduce:",
+  "an HTTP API",
+  "persistence",
+  "authentication",
+  "Ramen-specific privilege",
+  "approval, blocking, enforcement, certification, or deployment authority",
+];
+
+for (const snippet of requiredServiceBoundaryDocSnippets) {
+  expectIncludes(
+    serviceBoundaryDocSource,
+    snippet,
+    `service boundary doc is missing required snippet: ${snippet}`
+  );
+}
+
+const forbiddenServiceBoundaryDocSnippets = [
+  "implements a service runtime",
+  "deployment authorization",
+  "payment processor",
+  "service ready",
+  "HTTP ready",
+  "billing ready",
+  "production readiness",
+];
+
+for (const snippet of forbiddenServiceBoundaryDocSnippets) {
+  expectExcludes(
+    serviceBoundaryDocSource,
+    snippet,
+    `service boundary doc must not include forbidden claim: ${snippet}`
   );
 }
 

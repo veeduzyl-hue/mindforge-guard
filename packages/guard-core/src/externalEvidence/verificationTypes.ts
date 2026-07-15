@@ -113,6 +113,23 @@ export interface AssuranceProfile {
   execution_constraints?: string[];
 }
 
+export interface VerificationIdempotencyBoundary {
+  idempotency_key: string;
+  scope_reference?: string;
+  request_fingerprint_ref?: string;
+}
+
+export type VerificationReplayMode =
+  | "deterministic_reexecution"
+  | "analysis_recheck";
+
+export interface VerificationReplayContext {
+  replay_mode: VerificationReplayMode;
+  replay_reference?: string;
+  source_verification_id?: string;
+  source_verification_attempt_id?: string;
+}
+
 export interface VerificationRequestHumanReviewContext {
   requested?: boolean;
   requested_by?: string;
@@ -126,6 +143,8 @@ export interface VerificationRequest {
   adapter: AdapterManifestReference;
   requested_assurance_profiles: AssuranceProfileReference[];
   requested_at: string;
+  idempotency?: VerificationIdempotencyBoundary;
+  replay_context?: VerificationReplayContext;
   human_review_context?: VerificationRequestHumanReviewContext;
   customer_reference?: string;
   request_metadata?: Record<string, ExternalEvidenceMetadataValue>;
@@ -136,14 +155,43 @@ export interface VerificationRequestReference {
   caller_reference?: string;
 }
 
+/**
+ * VerificationJobStatus describes logical job-boundary lifecycle only.
+ * It must not be used to encode per-attempt execution state or authority decisions.
+ */
 export type VerificationJobStatus =
   | "pending"
+  | "received"
+  | "validated"
+  | "accepted_for_verification"
   | "ready"
   | "completed"
   | "completed_with_findings"
   | "unsupported"
   | "invalid_input"
-  | "verification_error";
+  | "verification_error"
+  | "cancelled";
+
+export interface VerificationAttemptReference {
+  verification_attempt_id: string;
+  attempt_number?: number;
+}
+
+export type VerificationAttemptStatus =
+  | "accepted"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export type VerificationAttemptFailureKind =
+  | "verification_execution_failed"
+  | "internal_service_failure"
+  | "report_integrity_failed";
+
+export interface VerificationJobResultRecordReference {
+  verification_job_result_id: string;
+}
 
 export interface VerificationUsageRecordReference {
   usage_record_id: string;
@@ -162,15 +210,32 @@ export interface VerificationJob {
   contract_version: "0.1";
   engine_version: string;
   status: VerificationJobStatus;
+  idempotency?: VerificationIdempotencyBoundary;
+  replay_context?: VerificationReplayContext;
   verification_status?: VerificationStatus;
   created_at: string;
   started_at?: string;
   completed_at?: string;
+  attempts?: VerificationAttemptReference[];
+  result?: VerificationJobResultRecordReference;
   normalized_records?: NormalizedEvidenceRecord[];
   findings?: VerificationFinding[];
   limitations?: string[];
   usage_record?: VerificationUsageRecordReference;
   assurance_report?: AssuranceReportReference;
+}
+
+export interface VerificationAttempt {
+  verification_attempt_id: string;
+  verification_id: string;
+  attempt_number: number;
+  status: VerificationAttemptStatus;
+  created_at: string;
+  replay_context?: VerificationReplayContext;
+  failure_kind?: VerificationAttemptFailureKind;
+  started_at?: string;
+  completed_at?: string;
+  result?: VerificationJobResultRecordReference;
 }
 
 export type AssuranceCheckExecutionStatus =
@@ -207,6 +272,37 @@ export interface HumanReviewRecommendation {
   evidence_refs?: string[];
 }
 
+export type VerificationJobResultStatus =
+  | "completed"
+  | "completed_with_findings";
+
+export type VerificationJobResultClassification =
+  | "no_findings"
+  | "findings_present";
+
+export type ReportIntegrityStatus = "not_checked" | "valid" | "invalid";
+
+/**
+ * Job-level finalized result record.
+ * This remains distinct from adapter-level VerificationResult in types.ts
+ * and from per-attempt operational state.
+ */
+export interface VerificationJobResultRecord {
+  verification_job_result_id: string;
+  verification_id: string;
+  verification_attempt_id?: string;
+  job_status: VerificationJobResultStatus;
+  verification_status?: VerificationStatus;
+  completion_classification?: VerificationJobResultClassification;
+  report_integrity_status?: ReportIntegrityStatus;
+  normalized_records?: NormalizedEvidenceRecord[];
+  findings?: VerificationFinding[];
+  assurance_report?: AssuranceReportReference;
+  finalized_at: string;
+  deterministic_result?: VerificationJobResultRecordReference;
+  result_summary?: string;
+}
+
 export interface AssuranceReport {
   report_id: string;
   verification_id: string;
@@ -228,9 +324,39 @@ export interface AssuranceReport {
   verification_summary?: string;
 }
 
+export type RetentionDeletionExpectation =
+  | "ephemeral"
+  | "bounded_retention"
+  | "caller_managed";
+
+/**
+ * Opaque retention reference only.
+ * This does not implement storage, deletion, scheduling, legal hold, or tenant policy.
+ */
+export interface RetentionClassReference {
+  retention_class_id: string;
+  deletion_expectation?: RetentionDeletionExpectation;
+}
+
+export type VerificationJobTerminalOutcome =
+  | "completed"
+  | "completed_with_findings"
+  | "unsupported"
+  | "invalid_input"
+  | "verification_error"
+  | "cancelled";
+
+/**
+ * VerificationUsageRecord is the current technical usage record contract.
+ * It remains the canonical technical usage artifact for this repository line.
+ * If both retention fields appear, retention_tier_ref remains the compatibility
+ * string reference and retention_class remains the structured reference.
+ * They must not be treated as independent authoritative retention decisions.
+ */
 export interface VerificationUsageRecord {
   usage_record_id: string;
   verification_id: string;
+  verification_attempt_id?: string;
   evidence_package_count: number;
   evidence_record_count: number;
   assurance_profile_count: number;
@@ -239,7 +365,10 @@ export interface VerificationUsageRecord {
   evidence_chain_depth?: number;
   report_count: number;
   retention_tier_ref?: string;
+  retention_class?: RetentionClassReference;
   human_review_requested?: boolean;
+  terminal_outcome?: VerificationJobTerminalOutcome;
+  deterministic_result?: VerificationJobResultRecordReference;
   recorded_at: string;
   usage_schema_version: "0.1";
 }
