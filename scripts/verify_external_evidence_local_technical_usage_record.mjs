@@ -473,6 +473,43 @@ function verifyNegativeCases() {
     /input must contain exactly/
   );
   assertNegativeCase(
+    "non-completed job",
+    (input) => {
+      input.source_envelope.verification_job.status = "verification_error";
+      input.source_envelope.verification_usage_record.terminal_outcome =
+        "verification_error";
+    },
+    /verification_job\.status must be one of: completed, completed_with_findings/
+  );
+  assertNegativeCase(
+    "failed attempt",
+    (input) => {
+      input.source_envelope.verification_attempts[0].status = "failed";
+    },
+    /verification_attempts\[0\]\.status must be completed/
+  );
+  assertNegativeCase(
+    "result and job status mismatch",
+    (input) => {
+      input.source_envelope.verification_job.status =
+        "completed_with_findings";
+      input.source_envelope.verification_usage_record.terminal_outcome =
+        "completed_with_findings";
+      input.source_envelope.verification_job_result.job_status = "completed";
+    },
+    /verification_job_result\.job_status must match verification_job\.status/
+  );
+  assertNegativeCase(
+    "unsupported terminal envelope",
+    (input) => {
+      input.source_envelope.verification_job.status = "unsupported";
+      input.source_envelope.verification_job_result.job_status = "unsupported";
+      input.source_envelope.verification_usage_record.terminal_outcome =
+        "unsupported";
+    },
+    /verification_job\.status must be one of: completed, completed_with_findings/
+  );
+  assertNegativeCase(
     "negative required counter",
     (input) => {
       input.source_envelope.verification_usage_record.evidence_package_count =
@@ -615,6 +652,29 @@ function verifyNegativeCases() {
     /must not include commercial field key: billing/
   );
   assertNegativeCase(
+    "unknown non-commercial usage field",
+    (input) => {
+      input.source_envelope.verification_usage_record.metered_units = 7;
+    },
+    /verification_usage_record must not include unknown field: metered_units/
+  );
+  assertNegativeCase(
+    "unknown retention field",
+    (input) => {
+      input.source_envelope.verification_usage_record.retention_class.duration_days =
+        30;
+    },
+    /retention_class must not include unknown field: duration_days/
+  );
+  assertNegativeCase(
+    "unknown deterministic-result field",
+    (input) => {
+      input.source_envelope.verification_usage_record.deterministic_result.source_kind =
+        "local";
+    },
+    /deterministic_result must contain exactly/
+  );
+  assertNegativeCase(
     "replay usage id reuse",
     (input) => {
       const sourceUsageId =
@@ -695,6 +755,22 @@ function verifyNegativeCases() {
         "usage-mismatch";
     },
     /usage_record_id must reference the source artifact/
+  );
+  assertNegativeCase(
+    "resubmission-carried usage artifact",
+    (input) => {
+      input.idempotent_resubmission_resolution.verification_usage_record = {
+        usage_record_id: "usage-resubmission-new",
+      };
+    },
+    /idempotent_resubmission_resolution must contain exactly/
+  );
+  assertNegativeCase(
+    "resubmission usage delta",
+    (input) => {
+      input.idempotent_resubmission_resolution.usage_delta = 1;
+    },
+    /idempotent_resubmission_resolution must contain exactly/
   );
 }
 

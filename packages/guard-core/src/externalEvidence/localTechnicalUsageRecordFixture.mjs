@@ -5,6 +5,50 @@ const EXPECTED_INPUT_KEYS = Object.freeze([
   "source_envelope",
 ]);
 
+const EXPECTED_RESUBMISSION_RESOLUTION_KEYS = Object.freeze([
+  "report_id",
+  "request_id",
+  "resolution",
+  "usage_record_id",
+  "verification_attempt_id",
+  "verification_id",
+  "verification_job_result_id",
+]);
+
+const COMPLETED_JOB_STATUSES = Object.freeze([
+  "completed",
+  "completed_with_findings",
+]);
+
+const ALLOWED_USAGE_RECORD_KEYS = Object.freeze([
+  "assurance_profile_count",
+  "cryptographic_operation_count",
+  "deterministic_result",
+  "evidence_chain_depth",
+  "evidence_package_count",
+  "evidence_record_count",
+  "human_review_requested",
+  "recorded_at",
+  "report_count",
+  "retention_class",
+  "retention_tier_ref",
+  "terminal_outcome",
+  "usage_record_id",
+  "usage_schema_version",
+  "verification_attempt_id",
+  "verification_check_count",
+  "verification_id",
+]);
+
+const EXPECTED_DETERMINISTIC_RESULT_KEYS = Object.freeze([
+  "verification_job_result_id",
+]);
+
+const ALLOWED_RETENTION_CLASS_KEYS = Object.freeze([
+  "retention_class_id",
+  "retention_class_version",
+]);
+
 const COMMERCIAL_FIELD_NAMES = Object.freeze([
   "amount",
   "billable",
@@ -108,6 +152,15 @@ function buildUsageProjection(envelope, label) {
     envelope.verification_usage_record,
     `${label}.verification_usage_record`
   );
+  assertNoCommercialFields(
+    usageRecord,
+    `${label}.verification_usage_record`
+  );
+  assertAllowedKeys(
+    usageRecord,
+    ALLOWED_USAGE_RECORD_KEYS,
+    `${label}.verification_usage_record`
+  );
   const jobUsageReference = expectPlainObject(
     job.usage_record,
     `${label}.verification_job.usage_record`
@@ -122,6 +175,11 @@ function buildUsageProjection(envelope, label) {
   );
   const deterministicResult = expectPlainObject(
     usageRecord.deterministic_result,
+    `${label}.verification_usage_record.deterministic_result`
+  );
+  assertExactKeys(
+    deterministicResult,
+    EXPECTED_DETERMINISTIC_RESULT_KEYS,
     `${label}.verification_usage_record.deterministic_result`
   );
 
@@ -145,9 +203,28 @@ function buildUsageProjection(envelope, label) {
     usageRecord.usage_record_id,
     `${label}.verification_usage_record.usage_record_id`
   );
-  const terminalOutcome = expectString(
+  const terminalOutcome = expectEnumString(
     job.status,
-    `${label}.verification_job.status`
+    `${label}.verification_job.status`,
+    COMPLETED_JOB_STATUSES
+  );
+
+  assertEqual(
+    expectString(
+      attempt.status,
+      `${label}.verification_attempts[0].status`
+    ),
+    "completed",
+    `${label}.verification_attempts[0].status must be completed`
+  );
+  assertEqual(
+    expectEnumString(
+      result.job_status,
+      `${label}.verification_job_result.job_status`,
+      COMPLETED_JOB_STATUSES
+    ),
+    terminalOutcome,
+    `${label}.verification_job_result.job_status must match verification_job.status`
   );
 
   assertEqual(
@@ -262,10 +339,6 @@ function buildUsageProjection(envelope, label) {
   assertOptionalTechnicalCounters(usageRecord, label);
   assertRetentionCompatibility(usageRecord, label);
   assertHumanReviewConsistency({ request, usageRecord, label });
-  assertNoCommercialFields(
-    usageRecord,
-    `${label}.verification_usage_record`
-  );
 
   return {
     binding: {
@@ -345,6 +418,11 @@ function assertRetentionCompatibility(usageRecord, label) {
         );
 
   if (retentionClass !== undefined) {
+    assertAllowedKeys(
+      retentionClass,
+      ALLOWED_RETENTION_CLASS_KEYS,
+      `${label}.verification_usage_record.retention_class`
+    );
     const retentionClassId = expectString(
       retentionClass.retention_class_id,
       `${label}.verification_usage_record.retention_class.retention_class_id`
@@ -401,6 +479,12 @@ function resolveIdempotentResubmissionUsage({
   sourceEnvelope,
   resubmissionResolution,
 }) {
+  assertExactKeys(
+    resubmissionResolution,
+    EXPECTED_RESUBMISSION_RESOLUTION_KEYS,
+    "idempotent_resubmission_resolution"
+  );
+
   const sourceRequest = expectPlainObject(
     sourceEnvelope.verification_request,
     "source_envelope.verification_request"
@@ -527,6 +611,14 @@ function assertExactKeys(value, expectedKeys, label) {
   }
 }
 
+function assertAllowedKeys(value, allowedKeys, label) {
+  for (const key of Object.keys(value)) {
+    if (!allowedKeys.includes(key)) {
+      throw new TypeError(`${label} must not include unknown field: ${key}`);
+    }
+  }
+}
+
 function expectPlainObject(value, label) {
   if (!isPlainObject(value)) {
     throw new TypeError(`${label} must be a plain object`);
@@ -546,6 +638,16 @@ function expectString(value, label) {
     throw new TypeError(`${label} must be a non-empty string`);
   }
   return value;
+}
+
+function expectEnumString(value, label, allowedValues) {
+  const actual = expectString(value, label);
+  if (!allowedValues.includes(actual)) {
+    throw new TypeError(
+      `${label} must be one of: ${allowedValues.join(", ")}`
+    );
+  }
+  return actual;
 }
 
 function expectBoolean(value, label) {
