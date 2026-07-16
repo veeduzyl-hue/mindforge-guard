@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,21 +25,12 @@ const samplesModulePath = path.join(
   repoRoot,
   "scripts/fixtures/local_external_evidence_idempotency_replay.mjs"
 );
+const verifierModulePath = path.join(
+  repoRoot,
+  "scripts/verify_external_evidence_local_idempotency_replay.mjs"
+);
 const packageJsonPath = path.join(repoRoot, "package.json");
-const packageLockPath = path.join(repoRoot, "package-lock.json");
 const guardCoreIndexPath = path.join(repoRoot, "packages/guard-core/src/index.ts");
-const verificationTypesPath = path.join(
-  repoRoot,
-  "packages/guard-core/src/externalEvidence/verificationTypes.ts"
-);
-const envelopeFixturePath = path.join(
-  repoRoot,
-  "packages/guard-core/src/externalEvidence/localVerificationJobEnvelopeFixture.mjs"
-);
-const permitVerifierPath = path.join(
-  repoRoot,
-  "scripts/verify_audit_permit_gate.mjs"
-);
 
 verifyModuleBoundary();
 verifyPackageScripts();
@@ -549,40 +539,142 @@ function verifyNegativeCases() {
 }
 
 function verifyRepoBoundaries() {
+  for (const requiredFilePath of [
+    fixtureModulePath,
+    samplesModulePath,
+    verifierModulePath,
+  ]) {
+    assert.equal(
+      fs.existsSync(requiredFilePath),
+      true,
+      `required local fixture file must exist: ${normalizePath(
+        path.relative(repoRoot, requiredFilePath)
+      )}`
+    );
+  }
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const focusedVerifyCommand =
+    "node scripts/verify_external_evidence_local_idempotency_replay.mjs";
   assert.equal(
-    runGitNameOnlyDiff(packageLockPath),
-    "",
-    "package-lock.json must remain unchanged"
+    packageJson.scripts["verify:external-evidence:local-idempotency-replay"],
+    focusedVerifyCommand,
+    "package.json must expose the focused idempotency replay verifier"
   );
   assert.equal(
-    runGitNameOnlyDiff(guardCoreIndexPath),
-    "",
-    "packages/guard-core/src/index.ts must remain unchanged"
+    packageJson.scripts.verify.includes(
+      "verify:external-evidence:local-idempotency-replay"
+    ),
+    false,
+    "aggregate verify must not invoke the focused verifier by script name"
   );
   assert.equal(
-    runGitNameOnlyDiff(verificationTypesPath),
-    "",
-    "verificationTypes.ts must remain unchanged"
-  );
-  assert.equal(
-    runGitNameOnlyDiff(envelopeFixturePath),
-    "",
-    "existing verification job envelope fixture must remain unchanged"
-  );
-  assert.equal(
-    runGitNameOnlyDiff(permitVerifierPath),
-    "",
-    "Permit Gate verifier must remain unchanged"
+    packageJson.scripts.verify.includes(
+      "verify_external_evidence_local_idempotency_replay.mjs"
+    ),
+    false,
+    "aggregate verify must not invoke the focused verifier directly"
   );
 
-  const changedFiles = listChangedWorkingTreeFiles().sort();
-  assert.deepStrictEqual(changedFiles, [
-    "package.json",
-    "packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs",
-    "scripts/fixtures/local_external_evidence_idempotency_replay.mjs",
-    "scripts/verify_external_evidence_local_idempotency_replay.mjs",
-    "scripts/verify_external_evidence_local_verification_job_envelope.mjs",
-  ]);
+  const indexSource = fs.readFileSync(guardCoreIndexPath, "utf8");
+  for (const privateExportName of [
+    "localIdempotencyReplayFixture",
+    "buildLocalIdempotencyReplayFixture",
+  ]) {
+    assert.equal(
+      indexSource.includes(privateExportName),
+      false,
+      `guard-core index must not export ${privateExportName}`
+    );
+  }
+
+  const fixtureSource = fs.readFileSync(fixtureModulePath, "utf8");
+  const staticEnvelopeImport =
+    'import { buildLocalVerificationJobEnvelopeFixture } from "./localVerificationJobEnvelopeFixture.mjs";';
+  assert.equal(
+    fixtureSource.includes(staticEnvelopeImport),
+    true,
+    "fixture must reuse the envelope fixture through the plain static import"
+  );
+  assert.equal(
+    countOccurrences(fixtureSource, "localVerificationJobEnvelopeFixture.mjs"),
+    1,
+    "fixture must reference the envelope fixture only through its static import"
+  );
+  assert.doesNotMatch(
+    fixtureSource,
+    /\\u[0-9a-f]{4}/i,
+    "fixture must not encode its module import with Unicode escapes"
+  );
+  assert.doesNotMatch(
+    fixtureSource,
+    /import\s*\(/,
+    "fixture must not use dynamic imports"
+  );
+  assert.doesNotMatch(
+    fixtureSource,
+    /from\s+[`]|localVerificationJobEnvelopeFixture(?:\.mjs)?["'`]\s*\+/,
+    "fixture must not compute or concatenate its envelope module path"
+  );
+
+  for (const duplicatedImplementationPattern of [
+    /function\s+buildLocalVerificationJobEnvelopeFixture\s*\(/,
+    /(?:const|let|var)\s+buildLocalVerificationJobEnvelopeFixture\s*=/,
+    /buildLocalAssuranceReportFixture/,
+    /verifyAssuranceReportIntegrity/,
+    /createHash\s*\(/,
+    /canonical(?:ize|ization)?AssuranceReport/i,
+  ]) {
+    assert.doesNotMatch(
+      fixtureSource,
+      duplicatedImplementationPattern,
+      "fixture must not duplicate envelope or assurance-report integrity implementation"
+    );
+  }
+
+  for (const prohibitedRuntimePattern of [
+    /node:fs/,
+    /node:http/,
+    /node:https/,
+    /fetch\s*\(/,
+    /process\.env/,
+    /Date\.now/,
+    /Math\.random/,
+    /randomUUID/,
+    /persistence/i,
+    /database/i,
+    /scheduler/i,
+    /billing/i,
+    /invoice/i,
+    /payment/i,
+    /approval/i,
+    /authorization/i,
+    /certification/i,
+    /deployment[ _-]*authority/i,
+    /ramen/i,
+  ]) {
+    assert.doesNotMatch(
+      fixtureSource,
+      prohibitedRuntimePattern,
+      `fixture must not include prohibited runtime surface: ${prohibitedRuntimePattern}`
+    );
+  }
+
+  assert.equal(
+    countOccurrences(fixtureSource, '"worker"'),
+    1,
+    "worker must appear only in the deferred retry-field rejection list"
+  );
+  assert.equal(
+    countOccurrences(fixtureSource, '"queue"'),
+    1,
+    "queue must appear only in the deferred retry-field rejection list"
+  );
+  assert.match(
+    fixtureSource,
+    /const FORBIDDEN_RETRY_FIELDS = \[[\s\S]*?"worker",\s*"queue",\s*\];/,
+    "worker and queue tokens must remain confined to the deferred retry-field rejection list"
+  );
 }
 
 function assertNegativeCase(label, mutate, pattern) {
@@ -635,31 +727,8 @@ function walkFiles(rootDir, visit) {
   }
 }
 
-function runGitNameOnlyDiff(filePath) {
-  return execFileSync("git", ["diff", "--name-only", "--", filePath], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  }).trim();
-}
-
-function runGitDiffNameOnly() {
-  return execFileSync("git", ["diff", "--name-only"], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  })
-    .trim()
-    .split(/\r?\n/)
-    .filter((entry) => entry.length > 0);
-}
-
-function listChangedWorkingTreeFiles() {
-  return execFileSync("git", ["status", "--short"], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  })
-    .split(/\r?\n/)
-    .filter((entry) => entry.length > 0)
-    .map((entry) => entry.replace(/^[ MADRCU?!]{1,2}\s+/, "").trim());
+function countOccurrences(source, token) {
+  return source.split(token).length - 1;
 }
 
 function cloneValue(value) {
