@@ -27,6 +27,10 @@ const samplesModulePath = path.join(
 const packageJsonPath = path.join(repoRoot, "package.json");
 const packageLockPath = path.join(repoRoot, "package-lock.json");
 const guardCoreIndexPath = path.join(repoRoot, "packages/guard-core/src/index.ts");
+const idempotencyReplayFixtureModulePath = path.join(
+  repoRoot,
+  "packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs"
+);
 
 verifyModuleBoundary();
 verifyPackageScripts();
@@ -133,11 +137,20 @@ function verifyPackageScripts() {
 
 function verifyIsolationBoundary() {
   const indexSource = fs.readFileSync(guardCoreIndexPath, "utf8");
+  const idempotencyReplayFixtureSource = fs.readFileSync(
+    idempotencyReplayFixtureModulePath,
+    "utf8"
+  );
 
   assert.equal(
     indexSource.includes("localVerificationJobEnvelopeFixture"),
     false,
     "fixture module must not be exported from guard-core index"
+  );
+  assert.equal(
+    indexSource.includes("localIdempotencyReplayFixture"),
+    false,
+    "local idempotency/replay fixture must not be exported from guard-core index"
   );
   assert.deepStrictEqual(
     collectStringReferences(
@@ -145,9 +158,31 @@ function verifyIsolationBoundary() {
       "localVerificationJobEnvelopeFixture",
       fixtureModulePath
     ),
-    [],
-    "fixture module must remain isolated from package exports and runtime wiring"
+    [normalizePath(idempotencyReplayFixtureModulePath)],
+    "verification job envelope fixture must remain local-only and may only be consumed by the local idempotency/replay fixture in package code"
   );
+
+  assert.ok(
+    idempotencyReplayFixtureSource.includes(
+      'import { buildLocalVerificationJobEnvelopeFixture } from "./localVerificationJobEnvelopeFixture.mjs";'
+    ),
+    "local idempotency/replay fixture must import the verification job envelope fixture through a plain static import"
+  );
+
+  for (const forbiddenToken of [
+    "\\\\u",
+    "import(",
+    "node:crypto",
+    "createHash(",
+    "localAssuranceReportFixture",
+    "localAssuranceReportIntegrity",
+  ]) {
+    assert.equal(
+      idempotencyReplayFixtureSource.includes(forbiddenToken),
+      false,
+      `local idempotency/replay fixture must not include forbidden token: ${forbiddenToken}`
+    );
+  }
 }
 
 function verifySamples() {
