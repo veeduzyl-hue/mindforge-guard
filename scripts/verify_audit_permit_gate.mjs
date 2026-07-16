@@ -23,8 +23,29 @@ const __dirname = path.dirname(__filename);
 const sourceRepoRoot = path.resolve(__dirname, "..");
 const runGuardPath = path.join(sourceRepoRoot, "packages/guard/src/runGuard.mjs");
 const launchCwd = process.cwd();
-const skipExternalCallerRepoChecks =
-  process.env.MINDFORGE_GUARD_SKIP_EXTERNAL_CALLER_REPOS === "1";
+const INTERNAL_CALLER_REPO_PROBE_ARG = "--internal-caller-repo-probe";
+const legacySkipEnvVarName = [
+  "MINDFORGE",
+  "GUARD",
+  "SKIP",
+  "EXTERNAL",
+  "CALLER",
+  "REPOS",
+].join("_");
+const verifierArgs = process.argv.slice(2);
+
+if (
+  verifierArgs.length > 1 ||
+  (verifierArgs.length === 1 &&
+    verifierArgs[0] !== INTERNAL_CALLER_REPO_PROBE_ARG)
+) {
+  throw new Error(`unsupported verifier arguments: ${verifierArgs.join(" ")}`);
+}
+
+const isInternalCallerRepoProbe =
+  verifierArgs.includes(INTERNAL_CALLER_REPO_PROBE_ARG);
+const shouldRunLegacyEnvRegression =
+  !isInternalCallerRepoProbe && launchCwd === sourceRepoRoot;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -227,12 +248,34 @@ function assertCallerRepositoryUnchanged(label, before, after) {
 
 function runVerifierFromCallerRepository(repoPath, label) {
   const before = snapshotCallerRepository(repoPath);
+  const verifierRun = spawnSync(
+    process.execPath,
+    [__filename, INTERNAL_CALLER_REPO_PROBE_ARG],
+    {
+      cwd: repoPath,
+      encoding: "utf8",
+      env: process.env,
+    }
+  );
+  const after = snapshotCallerRepository(repoPath);
+
+  if (verifierRun.status !== 0) {
+    throw new Error(
+      `${label} verifier run failed with exit ${verifierRun.status}\nstdout:\n${verifierRun.stdout}\nstderr:\n${verifierRun.stderr}`
+    );
+  }
+
+  assertCallerRepositoryUnchanged(label, before, after);
+}
+
+function runVerifierTopLevelFromRepository(repoPath, label, envOverrides = {}) {
+  const before = snapshotCallerRepository(repoPath);
   const verifierRun = spawnSync(process.execPath, [__filename], {
     cwd: repoPath,
     encoding: "utf8",
     env: {
       ...process.env,
-      MINDFORGE_GUARD_SKIP_EXTERNAL_CALLER_REPOS: "1",
+      ...envOverrides,
     },
   });
   const after = snapshotCallerRepository(repoPath);
@@ -496,7 +539,7 @@ try {
     throw new Error("runGuard deny path receipt exit code mismatch");
   }
 
-  if (!skipExternalCallerRepoChecks) {
+  if (!isInternalCallerRepoProbe) {
     const callerRepoA = path.join(tempRoot, "caller-repo-a");
     initializeCallerRepository(callerRepoA);
     stageFile(callerRepoA, "notes.txt", "caller repo a staged note\n");
@@ -521,6 +564,19 @@ try {
       "export const callerProbe = true;\n"
     );
     runVerifierFromCallerRepository(callerRepoB, "caller repo B");
+
+    if (shouldRunLegacyEnvRegression) {
+      const legacyEnvRepo = path.join(tempRoot, "legacy-env-caller-repo");
+      initializeCallerRepository(legacyEnvRepo);
+      stageFile(legacyEnvRepo, "legacy-env.txt", "legacy env probe\n");
+      runVerifierTopLevelFromRepository(
+        legacyEnvRepo,
+        "legacy env caller repo",
+        {
+          [legacySkipEnvVarName]: "1",
+        }
+      );
+    }
   }
 
   if (process.cwd() !== launchCwd) {
