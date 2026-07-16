@@ -29,6 +29,7 @@
       "verify:external-evidence:local-assurance-report": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
       "verify:external-evidence:local-composition": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
       "verify:external-evidence:local-verification-job-envelope": "node scripts/verify_external_evidence_local_verification_job_envelope.mjs",
+      "verify:external-evidence:local-idempotency-replay": "node scripts/verify_external_evidence_local_idempotency_replay.mjs",
       "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",
       "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",
       "verify:harness-phase2:contract": "node scripts/verify_harness_phase2_evidence_type_contract_hardening.mjs",
