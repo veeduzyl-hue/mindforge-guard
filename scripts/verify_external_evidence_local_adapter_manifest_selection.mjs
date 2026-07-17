@@ -37,6 +37,7 @@ const registryTypesPath = path.join(
 
 verifyRepositoryBoundaries();
 verifyPositiveSelection();
+verifyOpaqueExactVersionAcceptance();
 verifyLifecycleAndLimitationBoundaries();
 verifyOrderIndependence();
 verifyDeterminismAndImmutability();
@@ -283,6 +284,64 @@ function verifyPositiveSelection() {
   );
 }
 
+function verifyOpaqueExactVersionAcceptance() {
+  assertOpaqueVersionCase({
+    adapterVersion: "vendor=2026-07+build.5",
+    sourceSchemaVersion: "schema=2026-07+revision.2",
+    profileVersion: "profile=review-v1+revision.3",
+  });
+  assertOpaqueVersionCase({
+    adapterVersion: "release-candidate-1",
+    sourceSchemaVersion: "vendor-schema-2026-07",
+    profileVersion: "review-profile-v1",
+  });
+  assertOpaqueVersionCase({
+    adapterVersion: "xray-1",
+    sourceSchemaVersion: "linux-2026",
+    profileVersion: "index-v1",
+  });
+}
+
+function assertOpaqueVersionCase({
+  adapterVersion,
+  sourceSchemaVersion,
+  profileVersion,
+}) {
+  const input = createLocalAdapterManifestSelectionFixtureInput();
+  const selected = findExactManifest(input);
+  input.verification_request.adapter.adapter_version = adapterVersion;
+  selected.identity.adapter_version = adapterVersion;
+  input.evidence_package.source_schema_version = sourceSchemaVersion;
+  selected.supported_source_schema_versions = [sourceSchemaVersion];
+  input.verification_request.requested_assurance_profiles[0].profile_version =
+    profileVersion;
+  selected.supported_assurance_profiles[0].profile_version = profileVersion;
+
+  const output = buildLocalAdapterManifestSelectionFixture(input);
+  assert.equal(output.selection.adapter.adapter_version, adapterVersion);
+  assert.equal(
+    output.selection.manifest.identity.adapter_version,
+    adapterVersion
+  );
+  assert.equal(
+    output.fixed_input_compatibility.evidence_package.source_schema_version,
+    sourceSchemaVersion
+  );
+  assert.equal(
+    output.selection.manifest.supported_source_schema_versions[0],
+    sourceSchemaVersion
+  );
+  assert.equal(
+    output.fixed_input_compatibility.requested_assurance_profiles[0]
+      .profile_version,
+    profileVersion
+  );
+  assert.equal(
+    output.selection.manifest.supported_assurance_profiles[0].profile_version,
+    profileVersion
+  );
+}
+
 function verifyLifecycleAndLimitationBoundaries() {
   for (const lifecycleStatus of [
     "draft",
@@ -462,11 +521,47 @@ function verifyNegativeCases() {
     /verification_request.adapter.adapter_version must be an exact version/
   );
   assertNegativeCase(
+    "whitespace symbolic latest adapter pin",
+    (input) => {
+      const selected = findExactManifest(input);
+      input.verification_request.adapter.adapter_version = " latest ";
+      selected.identity.adapter_version = " latest ";
+    },
+    /verification_request.adapter.adapter_version must be an exact version/
+  );
+  assertNegativeCase(
+    "adapter x wildcard pin",
+    (input) => {
+      const selected = findExactManifest(input);
+      input.verification_request.adapter.adapter_version = "1.2.x";
+      selected.identity.adapter_version = "1.2.x";
+    },
+    /verification_request.adapter.adapter_version must be an exact version/
+  );
+  assertNegativeCase(
     "adapter version range pin",
     (input) => {
       const selected = findExactManifest(input);
       input.verification_request.adapter.adapter_version = "^1.2.0";
       selected.identity.adapter_version = "^1.2.0";
+    },
+    /verification_request.adapter.adapter_version must be an exact version/
+  );
+  assertNegativeCase(
+    "adapter leading comparator pin",
+    (input) => {
+      const selected = findExactManifest(input);
+      input.verification_request.adapter.adapter_version = ">=1.0";
+      selected.identity.adapter_version = ">=1.0";
+    },
+    /verification_request.adapter.adapter_version must be an exact version/
+  );
+  assertNegativeCase(
+    "adapter interval range pin",
+    (input) => {
+      const selected = findExactManifest(input);
+      input.verification_request.adapter.adapter_version = "[1.0,2.0)";
+      selected.identity.adapter_version = "[1.0,2.0)";
     },
     /verification_request.adapter.adapter_version must be an exact version/
   );
@@ -479,6 +574,36 @@ function verifyNegativeCases() {
         "latest";
     },
     /requested_assurance_profiles\[0\]\.profile_version must be an exact version/
+  );
+  assertNegativeCase(
+    "profile x wildcard version",
+    (input) => {
+      input.verification_request.requested_assurance_profiles[0].profile_version =
+        "2.X";
+      findExactManifest(input).supported_assurance_profiles[0].profile_version =
+        "2.X";
+    },
+    /requested_assurance_profiles\[0\]\.profile_version must be an exact version/
+  );
+  assertNegativeCase(
+    "profile logical range version",
+    (input) => {
+      input.verification_request.requested_assurance_profiles[0].profile_version =
+        "1.0 || 2.0";
+      findExactManifest(input).supported_assurance_profiles[0].profile_version =
+        "1.0 || 2.0";
+    },
+    /requested_assurance_profiles\[0\]\.profile_version must be an exact version/
+  );
+  assertNegativeCase(
+    "source schema hyphen range",
+    (input) => {
+      input.evidence_package.source_schema_version = "1.0 - 2.0";
+      findExactManifest(input).supported_source_schema_versions = [
+        "1.0 - 2.0",
+      ];
+    },
+    /evidence_package.source_schema_version must be an exact version/
   );
   assertNegativeCase(
     "unsupported profile ID",

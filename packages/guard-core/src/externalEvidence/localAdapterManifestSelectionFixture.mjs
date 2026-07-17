@@ -520,9 +520,19 @@ function expectString(value, label) {
 
 function expectExactVersion(value, label) {
   const actual = expectString(value, label);
+  const normalized = actual.trim();
+  const isIntervalRange =
+    (normalized.startsWith("[") || normalized.startsWith("(")) &&
+    (normalized.endsWith("]") || normalized.endsWith(")")) &&
+    normalized.includes(",");
   if (
-    /^(?:default|latest|preferred)$/i.test(actual) ||
-    /[<>=~^*|]/.test(actual)
+    /^(?:default|latest|preferred)$/i.test(normalized) ||
+    normalized.includes("*") ||
+    /(?:^|[^a-z0-9])x(?:$|[^a-z0-9])/i.test(normalized) ||
+    /^[<>=~^]/.test(normalized) ||
+    normalized.includes("||") ||
+    /\s+-\s+/.test(normalized) ||
+    isIntervalRange
   ) {
     throw new TypeError(`${label} must be an exact version`);
   }
