@@ -31,6 +31,7 @@
       "verify:external-evidence:local-verification-job-envelope": "node scripts/verify_external_evidence_local_verification_job_envelope.mjs",
       "verify:external-evidence:local-idempotency-replay": "node scripts/verify_external_evidence_local_idempotency_replay.mjs",
       "verify:external-evidence:local-technical-usage-record": "node scripts/verify_external_evidence_local_technical_usage_record.mjs",
+      "verify:external-evidence:local-adapter-manifest-selection": "node scripts/verify_external_evidence_local_adapter_manifest_selection.mjs",
       "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",
       "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",
       "verify:harness-phase2:contract": "node scripts/verify_harness_phase2_evidence_type_contract_hardening.mjs",
