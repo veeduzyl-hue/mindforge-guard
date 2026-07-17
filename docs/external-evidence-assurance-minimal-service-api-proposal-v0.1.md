@@ -58,6 +58,8 @@ The proposed surface remains:
 - producer-neutral
 - default-off
 
+In this proposal, non-executing means that Guard does not execute, authorize, approve, block, deploy, or control external actions and does not become an execution controller. It does not prohibit internal verification computation within a separately approved, bounded verification design.
+
 The proposed surface may only provide:
 
 - bounded verification submission
@@ -174,7 +176,7 @@ required_mapping_capabilities
 
 These labels describe a proposal-level composition only. No new type is created in this phase.
 
-The caller explicitly provides adapter-manifest candidates. The future service does not discover, install, download, activate, load, or execute an adapter. The request continues to pin an exact adapter ID and opaque exact version. There is no latest, default, preferred, nearest, or fallback selection.
+The caller explicitly provides adapter-manifest candidates. In this proposal, those manifests are data-only compatibility declarations. This proposal does not define adapter discovery, installation, download, activation, dynamic module loading, adapter invocation, or runtime execution architecture. The request continues to pin an exact adapter ID and opaque exact version. There is no latest, default, preferred, nearest, or fallback selection.
 
 ### 7.3 Conceptual processing order
 
@@ -188,7 +190,9 @@ Submission semantics are ordered as follows:
 6. resolve the idempotency boundary when present
 7. establish a bounded `VerificationJob` or return the existing logical job
 
-This order is a contract boundary, not a worker pipeline or runtime execution design.
+This list expresses semantic dependency order only. It is not a database transaction order, durable idempotency lookup order, queue or worker execution order, or concurrency protocol.
+
+`resolved_existing_job` still requires the same idempotency scope, key, and fingerprint. Whether a future fingerprint covers evidence binding, the adapter pin, selected manifest identity, assurance profiles, required capabilities, or the candidate-manifest set remains deferred to separately approved type-only and persistence/idempotency hardening. This proposal does not freeze a fingerprint algorithm or prescribe whether a durable lookup occurs before or after manifest selection.
 
 ### 7.4 Conceptual output
 
@@ -229,8 +233,17 @@ A pre-acceptance problem occurs before a bounded `VerificationJob` has been esta
 - request and evidence-package binding mismatch
 - no exact adapter-manifest match
 - duplicate exact adapter-manifest matches
-- unsupported pinned compatibility
+- submission-time unsupported compatibility
 - idempotency conflict
+
+Any compatibility failure that can be determined completely from the submitted bounded artifacts before job establishment is a pre-acceptance `unsupported_compatibility` problem. This includes:
+
+- no exact adapter-manifest match
+- duplicate exact adapter-manifest matches
+- a pinned manifest source-type mismatch
+- an unsupported pinned source schema
+- an unsupported requested assurance profile
+- a required mapping capability that is missing or false
 
 A pre-acceptance problem:
 
@@ -240,6 +253,8 @@ A pre-acceptance problem:
 - does not establish a `VerificationJob`
 - does not create a `VerificationAttempt`
 - does not create a finding, result, report, or usage artifact
+
+A pre-acceptance `unsupported_compatibility` problem does not prove that evidence is invalid or that a producer is untrusted.
 
 `invalid_input` is a job status only when invalidity is determined after a logical job has already been established. Input rejected before establishment remains a pre-acceptance problem.
 
@@ -266,14 +281,20 @@ Status interpretation remains bounded:
 - `ready` means its required evidence, adapter-manifest, and profile selections are fixed.
 - `completed` means verification completed without findings requiring separate findings representation.
 - `completed_with_findings` means verification completed successfully and produced findings; it is not a service failure.
-- `unsupported` means the pinned evidence, adapter manifest, profile, or capability is unsupported; it is not proof that evidence is invalid.
+- `unsupported` means that, after a bounded job was established, verification determined that the fixed evidence or required verification behavior could not be supported by the bounded execution path. Compatibility failures deterministically known during submission remain pre-acceptance problems. The status is not a finding, evidence-invalidity conclusion, infrastructure-failure synonym, or authority decision.
 - `invalid_input` means invalidity was determined after job establishment; it is not a finding.
 - `verification_error` means verification did not complete because of execution or operational failure; it is not proof that evidence is invalid.
 - `cancelled` means processing stopped; it is not a policy decision.
 
 Statuses for approval, blocking, permission, denial, deployment, certification, compliance, safety, or trust are forbidden.
 
+Deterministic incompatibility known before establishment is not accepted job status `unsupported`. Accepted `unsupported` is limited to a condition discovered after establishment by deeper bounded verification, such as an unsupported evidence property, cryptographic characteristic, or verification-capability limitation that was not represented by the submitted compatibility declarations. Exact manifest selection is not repeated after establishment, and no fallback selection is introduced.
+
 ## 11. Artifact Availability
+
+For this proposed minimal API boundary, `completed` and `completed_with_findings` require one canonical `VerificationJobResultRecord` and one canonical `AssuranceReport`.
+
+This is a proposal-level future contract decision. It is not implemented, is not frozen into the current TypeScript types, requires separately approved type-only hardening, and is not a current runtime guarantee. `completed_with_findings` remains successful completion, not a service failure. A future completed job missing either required artifact must not be exposed as a normal completed artifact set; the internal consistency problem type remains deferred and is not created here.
 
 The following matrix describes artifact availability, not transport responses:
 
@@ -399,7 +420,9 @@ Selection rules remain:
 
 Lifecycle status and limitations are review metadata. They do not affect eligibility, ranking, priority, or tie-breaking.
 
-Selection does not establish adapter behavior, quality, trust, certification, safety, compliance, or production readiness. The proposed service does not provide a runtime registry and does not load or execute adapter modules.
+Selection does not establish adapter behavior, quality, trust, certification, safety, compliance, or production readiness. This proposal does not define a runtime registry or load or invoke adapter modules.
+
+For the current proposal, no adapter module is loaded or invoked. Any future internal adapter verification computation requires a separate proposal, a separate threat model, and a statically selected or otherwise explicitly bounded invocation design. It must remain verification-only, must not execute or control external actions, must not become a runtime control plane, and is not authorized by this proposal.
 
 ## 17. Technical Usage
 
@@ -518,8 +541,8 @@ The following questions remain intentionally unresolved:
 
 1. What exact additive fields should a future submission envelope freeze without duplicating existing contracts?
 2. What durable idempotency scope and concurrency guarantees are required before submission can be implemented?
-3. Which terminal job conditions require a canonical result, and which explicitly permit no result?
-4. Which terminal job conditions require a report, and which explicitly permit no report?
+3. Which non-completed terminal job conditions among `unsupported`, `invalid_input`, `verification_error`, and `cancelled` may still produce a canonical result?
+4. Which non-completed terminal job conditions among `unsupported`, `invalid_input`, `verification_error`, and `cancelled` may still produce an `AssuranceReport`?
 5. What authorization policy will distinguish nonexistent from non-visible resources?
 6. What persistence, retention, and deletion guarantees apply to raw evidence and generated artifacts?
 7. What input, record-count, cryptographic-operation, and execution-cost limits are required?
@@ -535,7 +558,9 @@ This proposal is acceptable for architecture review only when all of the followi
 - exactly four transport-neutral operations are proposed
 - submission creates or resolves only one bounded logical job
 - pre-acceptance problems remain separate from jobs, findings, and reports
+- submission-time deterministic incompatibility remains separate from post-establishment job status `unsupported`
 - existing job statuses are reused without authority statuses
+- `completed` and `completed_with_findings` require a canonical result and report as a proposal-level, not-yet-implemented decision
 - result and report availability remain explicit
 - not yet available, not produced, and not found remain distinct
 - artifact identities remain role-specific
@@ -544,6 +569,8 @@ This proposal is acceptable for architecture review only when all of the followi
 - technical usage remains separate from commercial interpretation
 - human-review artifacts remain outside Guard decision authority
 - security, persistence, asynchronous execution, and runtime remain deferred
+- non-executing excludes external-action execution and control without prohibiting separately approved internal verification computation
+- submission processing order remains semantic rather than a persistence, lookup, queue, worker, or concurrency prescription
 - no existing type, fixture, verifier, package surface, or command behavior changes
 
 The next action after review may only be a separately approved type-only contract phase.
