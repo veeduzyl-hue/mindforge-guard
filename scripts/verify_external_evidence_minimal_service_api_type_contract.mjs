@@ -33,6 +33,19 @@ function normalizeType(value) {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function isExactSet(actualValues, expectedValues) {
+  if (new Set(actualValues).size !== actualValues.length) {
+    return false;
+  }
+
+  const actual = [...actualValues].sort();
+  const expected = [...expectedValues].sort();
+  return (
+    actual.length === expected.length &&
+    actual.every((value, index) => value === expected[index])
+  );
+}
+
 function expectExactSet(actualValues, expectedValues, label) {
   expect(
     new Set(actualValues).size === actualValues.length,
@@ -66,15 +79,15 @@ function stripComments(source) {
     .replace(/\/\/.*$/gm, "");
 }
 
-function extractInterfaceBody(source, name) {
+function extractInterfaceRange(source, name) {
   const match = new RegExp(`export\\s+interface\\s+${name}\\b`).exec(source);
   if (!match) {
-    return "";
+    return null;
   }
 
   const openingBrace = source.indexOf("{", match.index + match[0].length);
   if (openingBrace < 0) {
-    return "";
+    return null;
   }
 
   let depth = 0;
@@ -84,33 +97,114 @@ function extractInterfaceBody(source, name) {
     } else if (source[index] === "}") {
       depth -= 1;
       if (depth === 0) {
-        return source.slice(openingBrace + 1, index);
+        let end = index + 1;
+        let possibleSemicolon = end;
+        while (/\s/.test(source[possibleSemicolon] ?? "")) {
+          possibleSemicolon += 1;
+        }
+        if (source[possibleSemicolon] === ";") {
+          end = possibleSemicolon + 1;
+        }
+        return {
+          start: match.index,
+          end,
+          body: source.slice(openingBrace + 1, index),
+        };
       }
     }
   }
 
-  return "";
+  return null;
 }
 
-function extractTypeAlias(source, name) {
+function extractInterfaceBody(source, name) {
+  return extractInterfaceRange(source, name)?.body ?? "";
+}
+
+function extractTypeAliasRange(source, name) {
   const match = new RegExp(`export\\s+type\\s+${name}\\s*=`).exec(source);
   if (!match) {
-    return "";
+    return null;
   }
 
   const end = source.indexOf(";", match.index + match[0].length);
-  return end < 0 ? "" : source.slice(match.index + match[0].length, end);
+  return end < 0
+    ? null
+    : {
+        start: match.index,
+        end: end + 1,
+        body: source.slice(match.index + match[0].length, end),
+      };
+}
+
+function extractTypeAlias(source, name) {
+  return extractTypeAliasRange(source, name)?.body ?? "";
+}
+
+function extractImportRanges(source) {
+  return Array.from(source.matchAll(/^import[\s\S]*?;$/gm), (match) => ({
+    start: match.index,
+    end: match.index + match[0].length,
+    statement: match[0],
+  }));
+}
+
+function analyzeSourceCoverage(source, ranges) {
+  const orderedRanges = [...ranges].sort((left, right) => left.start - right.start);
+  const hasInvalidRange = orderedRanges.some(
+    ({ start, end }) =>
+      !Number.isInteger(start) ||
+      !Number.isInteger(end) ||
+      start < 0 ||
+      end <= start ||
+      end > source.length
+  );
+  const hasOverlap = orderedRanges.some(
+    (range, index) => index > 0 && range.start < orderedRanges[index - 1].end
+  );
+
+  let residual = source;
+  if (!hasInvalidRange && !hasOverlap) {
+    for (const { start, end } of orderedRanges.reverse()) {
+      residual =
+        residual.slice(0, start) + " ".repeat(end - start) + residual.slice(end);
+    }
+  }
+
+  return {
+    hasInvalidRange,
+    hasOverlap,
+    residual: residual.trim(),
+  };
 }
 
 function parseFields(body) {
-  return Array.from(
-    body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)(\?)?:\s*([^;]+);/gm),
-    (match) => ({
-      name: match[1],
-      optional: match[2] === "?",
-      type: normalizeType(match[3]),
-    })
-  );
+  const fields = [];
+  const ranges = [];
+
+  for (const statement of body.matchAll(/[^;]*;/g)) {
+    const field = statement[0].match(
+      /^\s*([A-Za-z_][A-Za-z0-9_]*)(\?)?\s*:\s*([\s\S]*?)\s*;\s*$/
+    );
+    if (!field || normalizeType(field[3]).length === 0) {
+      continue;
+    }
+
+    fields.push({
+      name: field[1],
+      optional: field[2] === "?",
+      type: normalizeType(field[3]),
+    });
+    ranges.push({
+      start: statement.index,
+      end: statement.index + statement[0].length,
+    });
+  }
+
+  return {
+    fields,
+    residual: analyzeSourceCoverage(body, ranges).residual,
+  };
 }
 
 function fieldSignature(field) {
@@ -121,7 +215,12 @@ function expectExactFields(source, name, expectedFields) {
   const body = extractInterfaceBody(source, name);
   expect(body.length > 0, `${name} must be an exported interface`);
   if (body.length > 0) {
-    const actualFields = parseFields(body);
+    const analysis = parseFields(body);
+    const actualFields = analysis.fields;
+    expect(
+      analysis.residual.length === 0,
+      `${name} must contain only recognized property signatures`
+    );
     expect(
       new Set(actualFields.map((field) => field.name)).size ===
         actualFields.length,
@@ -140,15 +239,46 @@ function extractStringLiterals(source) {
   return Array.from(source.matchAll(/"([^"]+)"/g), (match) => match[1]);
 }
 
+function parseQuotedStringLiteralMember(member) {
+  const normalized = normalizeType(member);
+  const match = normalized.match(
+    /^(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)')$/
+  );
+  return match ? (match[1] ?? match[2]) : null;
+}
+
+function analyzeExactLiteralUnion(alias, expectedLiterals) {
+  const members = parseUnionMembers(alias);
+  const values = [];
+  const invalidMembers = [];
+
+  for (const member of members) {
+    const value = parseQuotedStringLiteralMember(member);
+    if (value === null) {
+      invalidMembers.push(member);
+    } else {
+      values.push(value);
+    }
+  }
+
+  return {
+    invalidMembers,
+    values,
+    exact:
+      invalidMembers.length === 0 && isExactSet(values, expectedLiterals),
+  };
+}
+
 function expectExactLiterals(source, name, expectedLiterals) {
   const alias = extractTypeAlias(source, name);
   expect(alias.length > 0, `${name} must be an exported type alias`);
   if (alias.length > 0) {
-    expectExactSet(
-      extractStringLiterals(alias),
-      expectedLiterals,
-      `${name} literal values`
+    const analysis = analyzeExactLiteralUnion(alias, expectedLiterals);
+    expect(
+      analysis.invalidMembers.length === 0,
+      `${name} must contain only quoted string literal members`
     );
+    expectExactSet(analysis.values, expectedLiterals, `${name} literal values`);
   }
   return alias;
 }
@@ -185,6 +315,48 @@ function parseTypeImport(statement) {
       .filter(Boolean),
   };
 }
+
+const literalUnionSelfProbes = [
+  ['"a" | "b" | string', "string"],
+  ['"a" | "b" | number', "number"],
+  ['"a" | "b" | OtherAlias', "OtherAlias"],
+];
+for (const [alias, invalidMember] of literalUnionSelfProbes) {
+  const analysis = analyzeExactLiteralUnion(alias, ["a", "b"]);
+  expect(
+    !analysis.exact && analysis.invalidMembers.includes(invalidMember),
+    `literal-union self-probe must reject nonliteral member: ${invalidMember}`
+  );
+}
+
+const interfaceResidualSelfProbes = [
+  ["value: string;\nrun(): void;", "method signature"],
+  ["value: string;\n[key: string]: unknown;", "index signature"],
+  ["value: string;\n(): void;", "call signature"],
+  ["value: string;\nnew (): unknown;", "construct signature"],
+  ["value: string,", "comma-separated field"],
+];
+for (const [body, label] of interfaceResidualSelfProbes) {
+  const analysis = parseFields(body);
+  expect(
+    analysis.residual.length > 0,
+    `interface parser self-probe must retain ${label} as residual source`
+  );
+}
+
+const topLevelProbeSource = [
+  'import type { A } from "./a";',
+  'export type Probe = "a";',
+  "const hiddenRuntime = 1;",
+].join("\n");
+const topLevelProbeCoverage = analyzeSourceCoverage(topLevelProbeSource, [
+  ...extractImportRanges(topLevelProbeSource),
+  extractTypeAliasRange(topLevelProbeSource, "Probe"),
+].filter(Boolean));
+expect(
+  topLevelProbeCoverage.residual === "const hiddenRuntime = 1;",
+  "top-level source-coverage self-probe must detect appended runtime source"
+);
 
 async function readRequired(relativePath) {
   try {
@@ -356,10 +528,8 @@ expect(
   "existing external evidence type verifier must exist"
 );
 
-const imports = Array.from(
-  typeCode.matchAll(/^import[\s\S]*?;$/gm),
-  (match) => match[0]
-);
+const importRanges = extractImportRanges(typeCode);
+const imports = importRanges.map(({ statement }) => statement);
 expect(imports.length === 2, "type file must contain exactly two imports");
 expect(
   imports.every((statement) => /^import\s+type\b/.test(statement)),
@@ -403,9 +573,18 @@ for (const [source, expectedNames] of expectedImports) {
     );
   }
 }
+const approvedImportRanges = importRanges.filter((range, index) => {
+  const parsed = parsedImports[index];
+  const expectedNames = parsed ? expectedImports.get(parsed.source) : null;
+  return (
+    expectedNames &&
+    validImports.filter((entry) => entry.source === parsed.source).length === 1 &&
+    isExactSet(parsed.names, expectedNames)
+  );
+});
 
 const runtimeImplementationPattern =
-  /\b(?:function|class|const|let|enum|namespace)\b|=>|\bPromise\b|fetch\s*\(|process\.|child_process|\bfs\.|\bcrypto\.|import\s*\(/;
+  /\b(?:function|class|const|let|var|enum|namespace|new|throw|try|if|for|while|switch|await)\b|console\.|=>|\bPromise\b|fetch\s*\(|process\.|child_process|\bfs\.|\bcrypto\.|import\s*\(/;
 expect(
   !runtimeImplementationPattern.test(typeCode),
   "type file must not contain runtime implementation syntax"
@@ -442,6 +621,35 @@ expectExactSet(
   actualDeclarations,
   expectedDeclarations,
   "type file declarations"
+);
+const expectedInterfaceDeclarations = new Set([
+  "VerificationJobSubmissionEnvelope",
+  "VerificationServiceProblem",
+  "VerificationJobSubmissionResolvedResponse",
+  "VerificationJobSubmissionProblemResponse",
+]);
+const approvedDeclarationRanges = expectedDeclarations
+  .map((name) =>
+    expectedInterfaceDeclarations.has(name)
+      ? extractInterfaceRange(typeCode, name)
+      : extractTypeAliasRange(typeCode, name)
+  )
+  .filter(Boolean);
+expect(
+  approvedDeclarationRanges.length === expectedDeclarations.length,
+  "type file must contain a complete source range for every approved declaration"
+);
+const typeSourceCoverage = analyzeSourceCoverage(typeCode, [
+  ...approvedImportRanges,
+  ...approvedDeclarationRanges,
+]);
+expect(
+  !typeSourceCoverage.hasInvalidRange && !typeSourceCoverage.hasOverlap,
+  "approved type-only source ranges must be valid and non-overlapping"
+);
+expect(
+  typeSourceCoverage.residual.length === 0,
+  "type file must contain only approved import type and export declarations"
 );
 
 expectExactFields(typeCode, "VerificationJobSubmissionEnvelope", [
@@ -613,7 +821,9 @@ const forbiddenFieldNames = [
   "deployable",
 ];
 const allInterfaceFields = expectedDeclarations.flatMap((name) =>
-  parseFields(extractInterfaceBody(typeCode, name)).map((field) => field.name)
+  parseFields(extractInterfaceBody(typeCode, name)).fields.map(
+    (field) => field.name
+  )
 );
 for (const forbiddenField of forbiddenFieldNames) {
   expect(
