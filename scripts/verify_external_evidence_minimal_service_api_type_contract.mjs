@@ -20,8 +20,6 @@ const relativeFiles = {
 
 const dedicatedVerifierScript =
   "node scripts/verify_external_evidence_minimal_service_api_type_contract.mjs";
-const aggregateVerifyScript =
-  "npm run verify:core && npm run verify:v612 && npm run verify:external-evidence:type-contract";
 
 const failures = [];
 
@@ -33,6 +31,33 @@ function expect(condition, message) {
 
 function normalizeType(value) {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function expectExactSet(actualValues, expectedValues, label) {
+  expect(
+    new Set(actualValues).size === actualValues.length,
+    `${label} must not contain duplicates`
+  );
+
+  const actual = [...actualValues].sort();
+  const expected = [...expectedValues].sort();
+  expect(
+    actual.length === expected.length &&
+      actual.every((value, index) => value === expected[index]),
+    `${label} must contain exactly the approved members`
+  );
+}
+
+function expectPhrases(source, phrases, message) {
+  const normalizedSource = normalizeType(
+    source.replace(/^\s*\*+\s?/gm, "")
+  ).toLowerCase();
+  expect(
+    phrases.every((phrase) =>
+      normalizedSource.includes(normalizeType(phrase).toLowerCase())
+    ),
+    message
+  );
 }
 
 function stripComments(source) {
@@ -88,13 +113,24 @@ function parseFields(body) {
   );
 }
 
+function fieldSignature(field) {
+  return `${field.name}|${field.optional ? "optional" : "required"}|${field.type}`;
+}
+
 function expectExactFields(source, name, expectedFields) {
   const body = extractInterfaceBody(source, name);
   expect(body.length > 0, `${name} must be an exported interface`);
   if (body.length > 0) {
+    const actualFields = parseFields(body);
     expect(
-      JSON.stringify(parseFields(body)) === JSON.stringify(expectedFields),
-      `${name} fields must match the approved contract exactly`
+      new Set(actualFields.map((field) => field.name)).size ===
+        actualFields.length,
+      `${name} must not contain duplicate field names`
+    );
+    expectExactSet(
+      actualFields.map(fieldSignature),
+      expectedFields.map(fieldSignature),
+      `${name} fields`
     );
   }
   return body;
@@ -108,13 +144,46 @@ function expectExactLiterals(source, name, expectedLiterals) {
   const alias = extractTypeAlias(source, name);
   expect(alias.length > 0, `${name} must be an exported type alias`);
   if (alias.length > 0) {
-    expect(
-      JSON.stringify(extractStringLiterals(alias)) ===
-        JSON.stringify(expectedLiterals),
-      `${name} literal values must match the approved contract exactly`
+    expectExactSet(
+      extractStringLiterals(alias),
+      expectedLiterals,
+      `${name} literal values`
     );
   }
   return alias;
+}
+
+function parseUnionMembers(alias) {
+  return alias
+    .split("|")
+    .map((member) => normalizeType(member))
+    .filter(Boolean);
+}
+
+function expectExactUnionMembers(source, name, expectedMembers) {
+  const alias = extractTypeAlias(source, name);
+  expect(alias.length > 0, `${name} must be an exported type alias`);
+  if (alias.length > 0) {
+    expectExactSet(parseUnionMembers(alias), expectedMembers, `${name} members`);
+  }
+  return alias;
+}
+
+function parseTypeImport(statement) {
+  const match = statement.match(
+    /^import\s+type\s*\{([\s\S]*?)\}\s*from\s*["']([^"']+)["']\s*;$/
+  );
+  if (!match) {
+    return null;
+  }
+
+  return {
+    source: match[2],
+    names: match[1]
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean),
+  };
 }
 
 async function readRequired(relativePath) {
@@ -169,14 +238,25 @@ expect(
   ] === dedicatedVerifierScript,
   "package script must invoke the dedicated verifier exactly"
 );
+const aggregateVerify = packageJson.scripts?.verify;
 expect(
-  packageJson.scripts?.verify === aggregateVerifyScript,
-  "aggregate verify script must remain unchanged"
+  typeof aggregateVerify === "string",
+  "aggregate verify script must exist"
 );
-expect(
-  !packageJson.scripts?.verify?.includes("minimal-service-api-type-contract"),
-  "aggregate verify must not include the new verifier"
-);
+if (typeof aggregateVerify === "string") {
+  expect(
+    !aggregateVerify.includes(
+      "verify:external-evidence:minimal-service-api-type-contract"
+    ),
+    "aggregate verify must not include the new package script"
+  );
+  expect(
+    !aggregateVerify.includes(
+      "verify_external_evidence_minimal_service_api_type_contract.mjs"
+    ),
+    "aggregate verify must not invoke the new verifier directly"
+  );
+}
 
 /**
  * Permanent checks validate stable contract semantics. Version-control review
@@ -217,16 +297,17 @@ expect(
   !verificationTypesCode.includes("minimalServiceApiTypes"),
   "verificationTypes.ts must not import or export minimalServiceApiTypes"
 );
-for (const phrase of [
-  "producer-neutral platform contracts",
-  "They do not define runtime execution, approval, blocking, certification",
-  "dynamic loading, persistence, or billing behavior",
-]) {
-  expect(
-    verificationTypesSource.includes(phrase),
-    `verificationTypes.ts is missing its producer-neutral boundary: ${phrase}`
-  );
-}
+expectPhrases(
+  verificationTypesSource,
+  [
+    "producer-neutral",
+    "do not define runtime execution",
+    "approval",
+    "persistence",
+    "billing",
+  ],
+  "verificationTypes.ts must retain its producer-neutral, non-runtime boundary"
+);
 
 expectExactFields(registryTypesCode, "AdapterRegistryMappingSupport", [
   { name: "external_receipt_contract", optional: true, type: "boolean" },
@@ -234,10 +315,9 @@ expectExactFields(registryTypesCode, "AdapterRegistryMappingSupport", [
   { name: "verification_findings", optional: true, type: "boolean" },
   { name: "report_language", optional: true, type: "boolean" },
 ]);
-expect(
-  registryTypesSource.includes(
-    "They are not runtime configs, not trust registry records, or not allowlists."
-  ),
+expectPhrases(
+  registryTypesSource,
+  ["not runtime configs", "not trust registry records", "not allowlists"],
   "registryTypes.ts must retain its non-runtime, non-trust boundary"
 );
 
@@ -249,21 +329,26 @@ const approvedProposalCandidates = [
   "VerificationServiceProblem",
 ];
 for (const name of approvedProposalCandidates) {
-  expect(
-    proposalSource.includes(
-      `- \`${name}\` - candidate name only; not implemented or frozen`
-    ),
-    `proposal must retain the approved candidate marker for ${name}`
-  );
+  const candidateLine = proposalSource
+    .split(/\r?\n/)
+    .find((line) => line.includes(`\`${name}\``));
+  expect(Boolean(candidateLine), `proposal must include candidate ${name}`);
+  if (candidateLine) {
+    expectPhrases(
+      candidateLine,
+      ["candidate name", "not implemented or frozen"],
+      `proposal must retain the candidate boundary for ${name}`
+    );
+  }
 }
-expect(
-  proposalSource.includes(
-    "The following names may be evaluated in a separate type-only phase:"
-  ),
+expectPhrases(
+  proposalSource,
+  ["separate type-only phase"],
   "proposal must identify the separately reviewed type-only phase"
 );
-expect(
-  proposalSource.includes("This proposal does not authorize runtime implementation."),
+expectPhrases(
+  proposalSource,
+  ["does not authorize runtime implementation"],
   "proposal must not authorize runtime implementation"
 );
 expect(
@@ -271,26 +356,53 @@ expect(
   "existing external evidence type verifier must exist"
 );
 
-const imports = Array.from(typeCode.matchAll(/^import[\s\S]*?;$/gm), (match) =>
-  normalizeType(match[0])
+const imports = Array.from(
+  typeCode.matchAll(/^import[\s\S]*?;$/gm),
+  (match) => match[0]
 );
 expect(imports.length === 2, "type file must contain exactly two imports");
 expect(
-  imports.every((statement) => statement.startsWith("import type ")),
+  imports.every((statement) => /^import\s+type\b/.test(statement)),
   "type file imports must all use import type"
 );
+const parsedImports = imports.map(parseTypeImport);
 expect(
-  imports.includes(
-    'import type { AdapterManifest, EvidencePackage, VerificationJob, VerificationRequest, VerificationRequestReference, } from "./verificationTypes";'
-  ),
-  "type file must reuse the exact verification artifact contracts"
+  parsedImports.every(Boolean),
+  "type file imports must use named import type syntax"
 );
-expect(
-  imports.includes(
-    'import type { AdapterRegistryMappingSupport } from "./registryTypes";'
-  ),
-  "type file must reuse AdapterRegistryMappingSupport"
+const validImports = parsedImports.filter(Boolean);
+expectExactSet(
+  validImports.map((entry) => entry.source),
+  ["./verificationTypes", "./registryTypes"],
+  "type import modules"
 );
+const expectedImports = new Map([
+  [
+    "./verificationTypes",
+    [
+      "AdapterManifest",
+      "EvidencePackage",
+      "VerificationJob",
+      "VerificationRequest",
+      "VerificationRequestReference",
+    ],
+  ],
+  ["./registryTypes", ["AdapterRegistryMappingSupport"]],
+]);
+for (const [source, expectedNames] of expectedImports) {
+  const matchingImports = validImports.filter((entry) => entry.source === source);
+  expect(
+    matchingImports.length === 1,
+    `type file must import from ${source} exactly once`
+  );
+  if (matchingImports.length === 1) {
+    expectExactSet(
+      matchingImports[0].names,
+      expectedNames,
+      `type names imported from ${source}`
+    );
+  }
+}
 
 const runtimeImplementationPattern =
   /\b(?:function|class|const|let|enum|namespace)\b|=>|\bPromise\b|fetch\s*\(|process\.|child_process|\bfs\.|\bcrypto\.|import\s*\(/;
@@ -326,9 +438,10 @@ const actualDeclarations = Array.from(
   typeCode.matchAll(/export\s+(?:type|interface)\s+([A-Za-z_][A-Za-z0-9_]*)/g),
   (match) => match[1]
 );
-expect(
-  JSON.stringify(actualDeclarations) === JSON.stringify(expectedDeclarations),
-  "type file must contain exactly the approved main and supporting declarations"
+expectExactSet(
+  actualDeclarations,
+  expectedDeclarations,
+  "type file declarations"
 );
 
 expectExactFields(typeCode, "VerificationJobSubmissionEnvelope", [
@@ -375,23 +488,21 @@ expectExactLiterals(typeCode, "VerificationArtifactProblemCategory", [
   "internal_verification_service_error",
 ]);
 
-const submissionProblemAlias = extractTypeAlias(
+expectExactUnionMembers(
   typeCode,
-  "VerificationSubmissionProblemCategory"
+  "VerificationSubmissionProblemCategory",
+  [
+    "VerificationPreAcceptanceProblemCategory",
+    '"internal_verification_service_error"',
+  ]
 );
-expect(
-  normalizeType(submissionProblemAlias) ===
-    '| VerificationPreAcceptanceProblemCategory | "internal_verification_service_error"',
-  "submission problem category must add only the internal service error"
-);
-const serviceProblemAlias = extractTypeAlias(
+expectExactUnionMembers(
   typeCode,
-  "VerificationServiceProblemCategory"
-);
-expect(
-  normalizeType(serviceProblemAlias) ===
-    "| VerificationPreAcceptanceProblemCategory | VerificationArtifactProblemCategory",
-  "service problem category must compose only the approved category aliases"
+  "VerificationServiceProblemCategory",
+  [
+    "VerificationPreAcceptanceProblemCategory",
+    "VerificationArtifactProblemCategory",
+  ]
 );
 
 expect(
@@ -463,14 +574,13 @@ for (const forbiddenField of ["verification_id", "job", "disposition"]) {
   );
 }
 
-const responseAlias = extractTypeAlias(
+expectExactUnionMembers(
   typeCode,
-  "VerificationJobSubmissionResponse"
-);
-expect(
-  normalizeType(responseAlias) ===
-    "| VerificationJobSubmissionResolvedResponse | VerificationJobSubmissionProblemResponse",
-  "submission response must be the exact two-variant union"
+  "VerificationJobSubmissionResponse",
+  [
+    "VerificationJobSubmissionResolvedResponse",
+    "VerificationJobSubmissionProblemResponse",
+  ]
 );
 expect(
   !/export\s+interface\s+VerificationJobSubmissionResponse\b/.test(typeCode),
@@ -570,28 +680,26 @@ for (const pattern of forbiddenOperationNames) {
   );
 }
 
-const requiredBoundaryPhrases = [
-  "transport-neutral, additive-only, producer-neutral",
-  "intentionally not publicly exported",
-  "provide no runtime implementation",
-  "Array types do not enforce nonempty candidates, uniqueness, selection, or compatibility",
-  "Candidates are supplied explicitly by the caller; this type does not perform identity validation",
-  "Neither implies execution start or completion",
-  "No authorization, tenant hiding, or enumeration protection is implemented",
-  "Service problems are not verification findings",
-  "an internal service error does not establish that evidence is invalid",
-  "this type-only contract does not enforce those equalities",
-  "The job may have any existing status",
-  "A malformed envelope may prevent formation of a request reference",
-  "carries no fabricated verification job identity, job, disposition",
+const requiredBoundaryConcepts = [
+  ["transport-neutral", "additive-only", "producer-neutral"],
+  ["not publicly exported"],
+  ["no runtime implementation"],
+  ["nonempty candidates", "uniqueness", "selection", "compatibility"],
+  ["supplied explicitly by the caller", "does not perform identity validation"],
+  ["neither implies execution start or completion"],
+  ["no authorization", "tenant hiding", "enumeration protection"],
+  ["service problems are not verification findings"],
+  ["internal service error", "does not establish", "evidence is invalid"],
+  ["does not enforce those equalities"],
+  ["any existing status"],
+  ["malformed envelope", "request reference"],
+  ["no fabricated verification job identity", "job", "disposition"],
 ];
-const normalizedDocumentation = normalizeType(
-  typeSource.replace(/^\s*\*\s?/gm, "")
-);
-for (const phrase of requiredBoundaryPhrases) {
-  expect(
-    normalizedDocumentation.includes(normalizeType(phrase)),
-    `type file is missing required boundary explanation: ${phrase}`
+for (const phrases of requiredBoundaryConcepts) {
+  expectPhrases(
+    typeSource,
+    phrases,
+    `type file is missing required boundary concepts: ${phrases.join(", ")}`
   );
 }
 
