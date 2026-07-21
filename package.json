@@ -25,6 +25,7 @@
       "verify:license-hub-skeleton": "node scripts/verify_license_hub_skeleton_phase1.mjs",
       "verify:ramen:v5:local-spike": "node scripts/verify_ramen_receipt_v5_local_spike.mjs",
       "verify:external-evidence:type-contract": "node scripts/verify_external_evidence_type_contract.mjs",
+      "verify:external-evidence:minimal-service-api-type-contract": "node scripts/verify_external_evidence_minimal_service_api_type_contract.mjs",
       "verify:external-evidence:local-normalization": "node scripts/verify_external_evidence_local_normalization_fixture.mjs",
       "verify:external-evidence:local-assurance-report": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
       "verify:external-evidence:local-composition": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
