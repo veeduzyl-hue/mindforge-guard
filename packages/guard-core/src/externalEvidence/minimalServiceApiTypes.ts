@@ -43,11 +43,14 @@ export type VerificationJobSubmissionDisposition =
   | "resolved_existing_job";
 
 /**
- * `available` means the artifact exists. `not_yet_available` means a
- * nonterminal job may still produce it. `not_produced` means a terminal job did
- * not produce it. `not_found` means the resource does not exist or may be
- * invisible under a future authorization boundary. No authorization, tenant
- * hiding, or enumeration protection is implemented by these types.
+ * `available` means the canonical artifact for that role has been published
+ * and may be returned by a future retrieval surface.
+ * `not_yet_available` means the job is nonterminal and may still publish that canonical artifact.
+ * `not_produced` means the job is terminal and no canonical artifact for that role was ever published;
+ * staged, temporary, incomplete, or orphaned internal data does not count as publication, and an artifact
+ * that was previously published must not later be reinterpreted as `not_produced`.
+ * `not_found` means the resource identity does not exist or may be invisible under a future authorization boundary.
+ * No authorization, tenant hiding, enumeration protection, deletion, or tombstone behavior is implemented by these types.
  */
 export type VerificationArtifactAvailability =
   | "available"
