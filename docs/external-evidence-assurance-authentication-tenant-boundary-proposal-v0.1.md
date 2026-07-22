@@ -425,7 +425,7 @@ Future identity establishment may depend on:
 - delegation constraints
 
 Those mechanisms remain deferred. This proposal freezes only the semantic
-requirement that the service, not caller text, owns final canonical identity
+requirement that the service, not caller text, controls final canonical identity
 and tenant establishment. Exact snapshot, chain, and reference representation
 remain deferred.
 
@@ -496,8 +496,31 @@ The future service may preserve historical identity binding as a snapshot,
 canonical reference, or another immutable representation, but it must not rely
 only on a mutable external directory record that can drift.
 
-This proposal does not define snapshot schema, reference schema, or
-content-addressed representation.
+Historical identity explanation is not credential retention. A future
+representation must not preserve reusable authentication secrets or require
+the complete identity-provider payload merely to explain the accepted
+principal, actor, represented principal, delegation, and tenant context.
+
+Historical identity binding must not preserve or rely on reusable
+authentication material such as:
+
+- access tokens
+- refresh tokens
+- session secrets
+- private keys
+- bearer credentials
+- equivalent reusable secrets
+
+Historical provenance may preserve only non-secret, non-replayable stable
+references, digests, or other immutable explanation material sufficient to
+explain the accepted principal, actor, represented principal, delegation,
+tenant, and acceptance context.
+
+Identity history is not a credential archive, and historical provenance must
+not become a credential replay path.
+
+This proposal does not define snapshot schema, reference schema,
+content-addressed representation, token storage, or secret retention design.
 
 ## 13. Effective Idempotency Scope
 
@@ -673,14 +696,24 @@ Retry must not:
 Replay must require:
 
 - current authenticated context
-- current authorization for the replay target tenant boundary
+- current authorization for the source job's canonical tenant security domain
 - preserved lineage to the source job
+
+The replayed logical job must bind to the same canonical tenant security
+domain as the source job, revalidated under the current authenticated and
+delegated context.
 
 Replay must not:
 
 - overwrite source lineage
 - switch tenant binding in place
 - allow one tenant to replay another tenant's job
+- select a different tenant from the source job
+- migrate source lineage into another tenant
+
+If a future workflow needs to use the same or related evidence in another
+tenant, that must be a separately authorized new submission boundary rather
+than replay.
 
 Historical authorization at the time of the source job is not by itself enough
 to authorize replay later. Current authorization remains required.
@@ -710,26 +743,44 @@ This proposal freezes only the following minimum rule:
 
 - operator identity does not automatically imply cross-tenant visibility
 
+If a future privileged operator or support boundary is separately approved, it
+must preserve the resource's original canonical tenant binding. It must not
+treat the operator tenant as the resource tenant, create cross-tenant
+idempotency resolution, authorize cross-tenant retry or replay, rewrite
+historical identity or lineage, reclassify tenant-bound resources as shared,
+or grant approval, blocking, or deployment authority.
+
 Break-glass, impersonation, and support-access behavior require separate
 security design and are not authorized here.
 
 ## 21. Cross-tenant Prohibitions
 
-The future service must prohibit all of the following unless a separately
-approved boundary explicitly says otherwise:
+The following tenant-bound invariants must remain prohibited:
 
 - cross-tenant job lookup
 - cross-tenant artifact retrieval
 - cross-tenant idempotency resolution
+- cross-tenant durable claim reuse
 - cross-tenant replay
 - cross-tenant retry
+- cross-tenant job tenant rebinding
 - cross-tenant usage retrieval
 - conflict-based probing of another tenant's key
 - timing or error-detail probing of resource existence
 - caller-controlled reference override of tenant binding
+- turning a tenant-bound resource into a shared resource through visibility
+  privilege
+- changing historical tenant binding through visibility privilege
 - inference of another tenant's job from shared manifest use
 - default operator bypass of tenant isolation
 - describing tenant isolation as producer trust or evidence validity
+
+Future operator or support boundaries may separately evaluate privileged
+visibility only as a distinct deferred question. Any such future visibility
+must preserve the resource's original canonical tenant binding and must not be
+treated as cross-tenant resource resolution, tenant rebinding, idempotency
+resolution, retry, replay, ownership transfer, or new authority over approval,
+blocking, or deployment.
 
 ## 22. Operation Matrix
 
@@ -748,21 +799,25 @@ read as collapsing those relationships into one opaque caller.
 | `GetAssuranceReport` | yes | inherited from parent job binding | may this context observe the report? | prohibited | only if visible | no | not implemented | reviewer-specific policy detail |
 | `GetVerificationAttempt` | yes | inherited from parent job binding | may this context observe the attempt? | prohibited | only if visible | no | not implemented | whether attempt retrieval is public at all |
 | `GetUsageRecord` | yes | inherited from parent job binding | may this context observe usage? | prohibited | only if visible | no | not implemented | whether extra permission is required |
-| `ReplayVerification` | yes | target tenant established by service; lineage inherited from source | may this context create a new replay job from that source? | prohibited | no | source lineage preserved; new job binding fixed | not implemented | current-versus-historical authorization rules |
+| `ReplayVerification` | yes | same canonical tenant as the source job, revalidated under the current authenticated and delegated context; lineage inherited from source | may this context create a new replay job from that source within the same tenant boundary? | prohibited | no | source lineage preserved; new job binding fixed to the source tenant | not implemented | current-versus-historical authorization rules |
 | `RetryVerification` | yes | inherited from existing job binding | may this context append a new attempt for this job? | prohibited | no | no change to job tenant binding | not implemented | retryable failure policy |
 | `ListJobs` | yes | each listed item must remain tenant-bound | may this context observe any job identities at all? | prohibited | no for non-visible items | no | not implemented | non-enumerating list shape |
 | `ListArtifacts` | yes | each artifact inherits job tenant binding | may this context observe any artifact identities at all? | prohibited | no for non-visible items | no | not implemented | artifact aggregation visibility |
-| Administrative or operator retrieval | yes | separately approved boundary only | does this operator context have specially approved access? | prohibited by default | no by default | must not rewrite historical binding | not implemented | break-glass and operator model |
+| Administrative or operator retrieval | yes | original resource canonical tenant binding; no rebinding to operator tenant | does this operator context have separately approved privileged visibility without changing tenant binding or lineage? | tenant-bound resolution remains prohibited; separately approved privileged visibility remains deferred | only within a separately approved operator boundary if one exists | must not rewrite historical binding, tenant binding, or lineage | not implemented | break-glass and operator model |
 
 The operation names above are conceptual analysis names only. They do not add
 current service operations or source types.
+
+Privileged visibility, if separately approved in the future, would not be
+cross-tenant resource resolution, tenant rebinding, idempotency resolution,
+retry, replay, or ownership transfer.
 
 ## 23. Resource-binding Matrix
 
 | Resource | Tenant-bound or potentially shared? | Canonical tenant inheritance source | Authenticated actor relationship | Visibility inheritance | Historical immutability | Cross-tenant rule | Unresolved decisions |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `VerificationRequest` | tenant-bound | established at job acceptance | created by the accepted requesting actor within the authenticated and represented context as applicable | follows parent job or stricter request rule | accepted binding immutable | cross-tenant lookup prohibited | request projection policy |
-| `EvidencePackage` | tenant-bound in accepted access context | inherited from accepted job binding | submitted or referenced by the accepted requesting actor within the represented context as applicable | may be stricter than report visibility | accepted binding immutable | cross-tenant retrieval prohibited | raw evidence visibility granularity |
+| `VerificationRequest` | tenant-bound | established at job acceptance | accepted under the validated authenticated, requesting, represented, and delegated context as applicable; no authorship or ownership inference | follows parent job or stricter request rule | accepted binding immutable | cross-tenant lookup prohibited | request projection policy |
+| `EvidencePackage` | tenant-bound in accepted access context | inherited from accepted job binding | accepted as submitted or referenced under the validated requesting and represented context; no producer, authorship, or ownership inference | may be stricter than report visibility | accepted binding immutable | cross-tenant retrieval prohibited | raw evidence visibility granularity |
 | `VerificationJob` | tenant-bound | canonical job binding | bound to the accepted authenticated, requesting, and represented context; no ownership inference | base visibility anchor | immutable tenant binding | cross-tenant lookup prohibited | list semantics |
 | `VerificationAttempt` | tenant-bound | inherited from parent job | retry actor must be currently authorized | cannot exceed parent job visibility | attempt lineage immutable | cross-tenant retrieval prohibited | public attempt surface |
 | `VerificationJobResultRecord` | tenant-bound | inherited from parent job | readable only within visible authenticated context | cannot exceed parent job visibility | publication history immutable | cross-tenant retrieval prohibited | narrower result visibility |
@@ -785,10 +840,11 @@ current service operations or source types.
 | confused deputy | tenant selection cannot rely only on caller hints; authorization must consider requesting actor, represented principal, validated delegation, and canonical tenant; the service must not represent one principal into another tenant without explicit validated delegation |
 | stale tenant membership | current authorization is required for retrieval, retry, and replay; historical binding remains immutable |
 | mutable identity directory drift | mutable external identity records cannot be the sole historical record |
-| operator cross-tenant overreach | operator identity does not automatically bypass tenant isolation; separate boundary required |
+| operator cross-tenant overreach | privileged visibility must preserve the resource's canonical tenant binding; it must not create cross-tenant idempotency resolution, retry, replay, ownership transfer, or tenant rebinding |
 | logs or error details leaking existence | submission denial and retrieval concealment must avoid tenant-membership or existence disclosure |
 | shared manifest mistaken for shared job | shared reference data remains distinct from tenant-bound job history |
-| retry or replay crossing tenant | retry and replay must inherit or explicitly re-establish authorized tenant binding without cross-tenant resolution |
+| retry or replay crossing tenant | retry must inherit the existing job tenant; replay must bind to the same canonical tenant as the source job; privileged visibility cannot authorize cross-tenant retry or replay |
+| historical identity retention becomes credential retention | historical explanation may preserve only non-secret, non-replayable identity and delegation context; reusable authentication material and complete identity-provider payload remain out of scope; exact representation stays deferred |
 | access revocation rewriting publication history | visibility changes do not change whether publication happened |
 | `not_found`, `not_produced`, and deletion confusion | `not_found` is visibility or inexistence concealment, `not_produced` means never published, deletion semantics remain deferred |
 
@@ -962,6 +1018,9 @@ following remain true:
 - each accepted job has one immutable tenant binding
 - historical job binding can explain direct actor, represented principal,
   delegation provenance, and tenant context
+- historical identity explanation does not retain reusable credential secrets
+- complete identity-provider payload is not required for historical explanation
+- identity history is not a credential archive
 - tenant binding is not ownership
 - visibility is not ownership
 - artifacts inherit the job tenant boundary
@@ -973,6 +1032,11 @@ following remain true:
 - cross-tenant idempotency resolution is prohibited
 - cross-tenant retrieval is prohibited
 - cross-tenant retry and replay are prohibited
+- core tenant-bound invariants are not changed by privileged visibility
+- privileged visibility is not tenant rebinding
+- privileged visibility is not cross-tenant idempotency resolution
+- privileged visibility does not authorize cross-tenant retry or replay
+- replayed jobs bind to the same tenant as the source job
 - authentication failure does not create job or claim
 - authorization denial does not leak existing job visibility
 - visibility is decided before artifact disclosure
@@ -982,7 +1046,10 @@ following remain true:
 - caller text is not delegation proof
 - sub-agents do not automatically gain parent permissions
 - operator identity does not automatically imply cross-tenant visibility
+- `VerificationRequest` context does not imply authorship or ownership
+- `EvidencePackage` context does not imply producer, authorship, or ownership
 - no JWT, OAuth, RBAC, ABAC, ACL, or provider implementation is designed
+- no credential or token storage design is introduced
 - no tenant database is designed
 - no HTTP mapping is designed
 - no auth or tenant type implementation is introduced
