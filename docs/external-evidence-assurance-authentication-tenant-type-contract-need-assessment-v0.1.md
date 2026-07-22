@@ -155,37 +155,98 @@ type shapes.
 
 ## 5. Current Consumer Inventory
 
-Current source consumers visible in repository evidence are:
+### 5.1 Source contract definitions
 
-- existing artifact contracts such as `VerificationRequest`,
-  `VerificationJob`, `VerificationAttempt`, `VerificationJobResultRecord`,
-  `AssuranceReport`, and `VerificationUsageRecord`
-- package-internal service-API composition contracts such as
+Current source-contract definitions visible in repository evidence are:
+
+- existing artifact contract definitions in `verificationTypes.ts`, including
+  `VerificationRequest`, `VerificationJob`, `VerificationAttempt`,
+  `VerificationJobResultRecord`, `AssuranceReport`,
+  `VerificationUsageRecord`, and `VerificationReplayContext`
+- existing service-API composition contract definitions in
+  `minimalServiceApiTypes.ts`, including
   `VerificationJobSubmissionEnvelope`, `VerificationArtifactAvailability`,
   `VerificationServiceProblem`, and `VerificationJobSubmissionResponse`
-- local verification-job envelope, idempotency/replay, technical-usage-record,
-  and adapter-manifest-selection fixtures and verifiers that compose existing
-  request, job, attempt, result, report, usage, replay-lineage, and
-  service-response shapes
+
+Contract definitions are providers of source vocabulary. They are not, merely
+by being defined, independent consumers of themselves.
+
+### 5.2 Type-composition sites
+
+Current type-composition sites visible in repository evidence are:
+
+- `minimalServiceApiTypes.ts`, which composes existing
+  `VerificationRequest`, `VerificationRequestReference`, `VerificationJob`,
+  `VerificationArtifactAvailability`, and `VerificationServiceProblem`
+  contracts into package-internal submission and response declarations
+
+These are type-level composition sites. They currently reuse existing request,
+job, problem, and response vocabulary only. They do not consume a new
+Authentication/Tenant shape.
+
+### 5.3 Concrete fixture and verifier consumers
+
+Current concrete fixture and verifier consumers visible in repository evidence
+are:
+
+- local verification-job envelope fixture and verifier surfaces, including
+  `localVerificationJobEnvelopeFixture.mjs`,
+  `scripts/fixtures/local_external_evidence_verification_job_envelope.mjs`, and
+  `scripts/verify_external_evidence_local_verification_job_envelope.mjs`
+- local idempotency/replay fixture and verifier surfaces, including
+  `localIdempotencyReplayFixture.mjs`,
+  `scripts/fixtures/local_external_evidence_idempotency_replay.mjs`, and
+  `scripts/verify_external_evidence_local_idempotency_replay.mjs`
+- local technical-usage-record fixture and verifier surfaces, including
+  `localTechnicalUsageRecordFixture.mjs` and
+  `scripts/verify_external_evidence_local_technical_usage_record.mjs`
+- local adapter-manifest-selection fixture and verifier surfaces, including
+  `localAdapterManifestSelectionFixture.mjs` and
+  `scripts/verify_external_evidence_local_adapter_manifest_selection.mjs`
+- local assurance-report and composition verifier surfaces, including
+  `localAssuranceReportFixture.mjs`,
+  `scripts/verify_external_evidence_local_assurance_report_fixture.mjs`, and
+  `scripts/verify_external_evidence_local_assurance_composition.mjs`
+- type-contract verifiers, including
+  `scripts/verify_external_evidence_type_contract.mjs` and
+  `scripts/verify_external_evidence_minimal_service_api_type_contract.mjs`
+
+These concrete consumers compose or assert existing request, job, attempt,
+result, report, usage, replay-lineage, and service-response shapes. They do
+not consume a source-level `AuthenticatedPrincipal`, `TenantContext`,
+`EffectiveIdempotencyScope`, `AuthorizationDecision`, `ResourceVisibility`, or
+`DelegationChain` shape.
+
+One fixture and its verifier also do not automatically constitute two
+independent architecture consumers for a new Authentication/Tenant type-only
+contract.
+
+### 5.4 Docs-only semantic constraints
 
 Docs-only semantic constraints visible in repository evidence are:
 
 - the approved Authentication/Tenant proposal
 - this assessment itself
 
-Important current consumer conclusions:
+These documents constrain future behavior and future evaluation. They are not
+source consumers and cannot satisfy the "two independent consumers" threshold
+for a new type-only contract.
 
+Important current consumer-evidence conclusions:
+
+- current source-contract definitions provide stable vocabulary
+- current type-composition sites and concrete fixtures/verifiers consume
+  existing vocabulary only
 - no current source consumer requires a new Authentication/Tenant shape
-- docs-only architecture proposals and assessments are semantic constraints for
-  future behavior, not TypeScript source consumers
-- docs-only concept use therefore does not count toward the "two independent
-  source consumers" threshold for a new type-only contract
-- current source consumers do not consume a source-level
+- no current concrete consumer composes or asserts a source-level
   `AuthenticatedPrincipal`, `TenantContext`, `EffectiveIdempotencyScope`,
-  `AuthorizationDecision`, `ResourceVisibility`, or `DelegationChain` type
-- local fixtures and verifiers do not consume new Authentication/Tenant shapes;
-  they consume existing request, job, attempt, result, report, usage,
-  replay-lineage, and service-response contracts
+  `AuthorizationDecision`, `ResourceVisibility`, or `DelegationChain` shape
+- no two independent current source consumers require the same new
+  Authentication/Tenant shape
+- no currently proven stable service boundary is transmitting such a new shape
+- future expected consumers in the candidate matrix are not current consumer
+  evidence
+- conceptual importance does not substitute for actual consumer evidence
 - current source consumers mostly need existing artifact and
   service-composition shapes plus documented invariants
 
@@ -300,7 +361,7 @@ runtime flags, enums, or code-generation input.
 | Identity-provider provenance reference | explain accepted identity source without provider lock-in | docs-only credential-safety boundary only | future historical explanation only | `identity_provider_dependent_gap` | no | yes | no | possible | no | internal/service | very high | keep as documented invariant | provider-specific payload and source naming remain explicitly excluded |
 | Credential-safety marker | prevent reusable secret retention | docs-only negative invariant | threat model and implementation review only | `documented_security_invariant` | no | yes | no | no | no | internal/service | high | keep as negative invariant | secret safety is mainly a prohibition, not a stable business noun requiring fields |
 | Tenant membership reference | future membership linkage | none | no current consumer | `authorization_policy_dependent_gap` | no | no | yes | possible | no | internal/service | very high | defer entirely | membership representation would prematurely freeze tenant-account-policy structure |
-| Operation namespace | scope establishment namespace | docs-only semantic dependency | future effective-scope computation only | `fingerprint_or_scope_dependency_gap` | no | no | possible | possible | yes | service/internal | high | defer to fingerprint-profile decision | no namespace freeze exists, and current consumers do not need a source type |
+| Operation namespace | scope establishment namespace | docs-only semantic dependency | future effective-scope computation only | `fingerprint_or_scope_dependency_gap` | no | no | possible | possible | yes | service/internal | high | defer to fingerprint-profile decision | no namespace freeze exists, and current consumer evidence does not require a source type |
 | Cross-tenant conflict or concealment representation | represent conflict or concealment without leakage | `VerificationServiceProblem`, `VerificationArtifactAvailability`, docs-only cross-tenant invariants | future service responses only | `transport_mapping_gap` | no | no | yes | yes | yes | service/internal | high | reuse current problem/availability vocabulary; defer new type | response concealment remains transport-sensitive and not yet frozen |
 | Historical identity snapshot or reference | preserve immutable accepted identity explanation | docs-only historical-binding boundary | future persistence/history only | `implementation_representation_gap` | no | possible | possible | possible | possible | internal/service | very high | defer representation decision | exact snapshot/reference/content-addressed choice remains explicitly deferred |
 
@@ -318,8 +379,8 @@ Assessment:
   subject, provider, or actor taxonomy
 - any concrete source-level principal type would risk masquerading provider
   assumptions as domain contract
-- current consumers do not prove a stable opaque principal reference shared
-  across two independent consumers
+- current consumer evidence does not prove a stable opaque principal reference
+  shared across two independent source consumers
 
 Decision:
 
@@ -341,7 +402,7 @@ Assessment:
 
 - these concepts are semantically important, but current source evidence does
   not prove they are stable type shapes today
-- current consumers do not require a shared structural representation
+- current consumer evidence does not require a shared structural representation
 - freezing them now would likely imply authorship, ownership, or middleware
   request-context assumptions that the approved proposal explicitly rejects
 
@@ -419,8 +480,8 @@ Assessment:
   already justified type field
 - no current auth-aware construction, persistence, or transport consumer
   requires a new source shape
-- current consumers already operate on these artifacts without needing an extra
-  job-tenant-binding wrapper type
+- current concrete consumers already operate on these artifacts without needing
+  an extra job-tenant-binding wrapper type
 
 Decision:
 
@@ -490,8 +551,8 @@ Assessment:
   authentication, authorization, tenant, and delegation into one bag
 - it would also risk becoming a future middleware DTO rather than a stable
   domain contract
-- current evidence does not show two independent consumers needing one shared
-  aggregate shape
+- current consumer evidence does not show two independent source consumers
+  needing one shared aggregate shape
 
 Decision:
 
@@ -573,7 +634,8 @@ Assessment:
   dependencies
 - authorization dependency and submission-identity dependency must remain
   separate
-- current consumers do not prove a standalone retry-auth or replay-auth type
+- current consumer evidence does not prove a standalone retry-auth or
+  replay-auth type
 
 Decision:
 
