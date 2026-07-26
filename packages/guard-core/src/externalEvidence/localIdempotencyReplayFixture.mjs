@@ -17,6 +17,10 @@ const FORBIDDEN_RETRY_FIELDS = [
   "queue",
 ];
 
+// Package-internal, local-only fixture proof. Its exact resubmission checks
+// are fixture preconditions, not the Idempotency Fingerprint Profile v0.1
+// preimage, and they do not implement service claim resolution, effective
+// scope, or an effective request fingerprint.
 export function buildLocalIdempotencyReplayFixture(input) {
   const fixtureInput = expectPlainObject(input, "input");
   const sourceEnvelopeInput = expectPlainObject(
@@ -221,6 +225,10 @@ function buildProjectedEnvelope(envelopeInput, options) {
   return projectedEnvelope;
 }
 
+// This helper returns a fixture-local same_logical_job outcome after exact
+// local checks. It reuses source artifact identities for this bounded proof;
+// it is not a transport response or profile-conformance result, and preserved
+// selections do not form a content-deduplication decision.
 function resolveIdempotentResubmission({ sourceEnvelope, resubmissionRequest }) {
   const normalizedResubmissionRequest = normalizeResubmissionRequest(
     resubmissionRequest,
