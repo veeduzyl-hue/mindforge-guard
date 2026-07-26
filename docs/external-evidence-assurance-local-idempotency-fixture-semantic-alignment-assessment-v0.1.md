@@ -373,7 +373,8 @@ A current fixture behavior change is eligible only when:
 4. the change does not imply profile implementation
 5. the change does not depend on effective scope, authentication, tenant,
    persistence, transport, or runtime behavior
-6. the fixture remains deterministic, local-only, and non-exported
+6. the fixture remains deterministic, local-only, package-internal, and
+   absent from the Guard Core public index
 7. replay and intentional-new-job boundaries remain intact
 8. a concrete current fixture or verifier consumer supports the change
 9. one separate small PR can contain the change
@@ -727,7 +728,8 @@ Stable behavior-change needs:
 
 Stable comment-alignment needs:
 
-- add one bounded-purpose comment at the exported fixture builder
+- add one bounded-purpose comment at the module-exported, package-internal
+  fixture builder
 - add one local-result comment at the resubmission resolution helper or return
 
 Stable naming changes:
