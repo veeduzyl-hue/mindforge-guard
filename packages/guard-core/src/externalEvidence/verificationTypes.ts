@@ -113,6 +113,12 @@ export interface AssuranceProfile {
   execution_constraints?: string[];
 }
 
+/**
+ * Carries caller-provided submission intent only. `scope_reference` does not
+ * establish effective scope, `request_fingerprint_ref` does not establish a
+ * canonical request fingerprint, and this shape is not a complete durable
+ * claim.
+ */
 export interface VerificationIdempotencyBoundary {
   idempotency_key: string;
   scope_reference?: string;
@@ -121,6 +127,10 @@ export interface VerificationIdempotencyBoundary {
 
 export type VerificationReplayMode = "deterministic_reexecution";
 
+/**
+ * Carries deterministic replay lineage only. It does not establish effective
+ * scope, fingerprint identity, authorization, or claim-resolution state.
+ */
 export interface VerificationReplayContext {
   replay_mode: VerificationReplayMode;
   replay_reference?: string;
