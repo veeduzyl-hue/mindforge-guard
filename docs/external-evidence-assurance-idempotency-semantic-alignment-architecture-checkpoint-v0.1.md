@@ -110,26 +110,26 @@ All five checkpoints are ancestors of current `main` at
 
 Approved baseline inputs for this checkpoint are:
 
-- [external-evidence-assurance-idempotency-fingerprint-profile-proposal-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-idempotency-fingerprint-profile-proposal-v0.1.md:1)
-- [external-evidence-assurance-idempotency-fingerprint-type-contract-need-assessment-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-idempotency-fingerprint-type-contract-need-assessment-v0.1.md:1)
-- [external-evidence-assurance-local-idempotency-fixture-semantic-alignment-assessment-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-local-idempotency-fixture-semantic-alignment-assessment-v0.1.md:1)
-- [verificationTypes.ts](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/verificationTypes.ts:1)
-- [minimalServiceApiTypes.ts](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts:1)
-- [localIdempotencyReplayFixture.mjs](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs:1)
-- [localVerificationJobEnvelopeFixture.mjs](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/localVerificationJobEnvelopeFixture.mjs:1)
-- [local_external_evidence_idempotency_replay.mjs](/D:/AI%20project/mindforge-guard/scripts/fixtures/local_external_evidence_idempotency_replay.mjs:1)
-- [verify_external_evidence_type_contract.mjs](/D:/AI%20project/mindforge-guard/scripts/verify_external_evidence_type_contract.mjs:1)
-- [verify_external_evidence_minimal_service_api_type_contract.mjs](/D:/AI%20project/mindforge-guard/scripts/verify_external_evidence_minimal_service_api_type_contract.mjs:1)
-- [verify_external_evidence_local_idempotency_replay.mjs](/D:/AI%20project/mindforge-guard/scripts/verify_external_evidence_local_idempotency_replay.mjs:1)
-- [external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md:1)
-- [external-evidence-assurance-persistence-boundary-proposal-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-persistence-boundary-proposal-v0.1.md:1)
-- [external-evidence-assurance-minimal-service-api-proposal-v0.1.md](/D:/AI%20project/mindforge-guard/docs/external-evidence-assurance-minimal-service-api-proposal-v0.1.md:1)
+- [external-evidence-assurance-idempotency-fingerprint-profile-proposal-v0.1.md](./external-evidence-assurance-idempotency-fingerprint-profile-proposal-v0.1.md)
+- [external-evidence-assurance-idempotency-fingerprint-type-contract-need-assessment-v0.1.md](./external-evidence-assurance-idempotency-fingerprint-type-contract-need-assessment-v0.1.md)
+- [external-evidence-assurance-local-idempotency-fixture-semantic-alignment-assessment-v0.1.md](./external-evidence-assurance-local-idempotency-fixture-semantic-alignment-assessment-v0.1.md)
+- [verificationTypes.ts](../packages/guard-core/src/externalEvidence/verificationTypes.ts)
+- [minimalServiceApiTypes.ts](../packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts)
+- [localIdempotencyReplayFixture.mjs](../packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs)
+- [localVerificationJobEnvelopeFixture.mjs](../packages/guard-core/src/externalEvidence/localVerificationJobEnvelopeFixture.mjs)
+- [local_external_evidence_idempotency_replay.mjs](../scripts/fixtures/local_external_evidence_idempotency_replay.mjs)
+- [verify_external_evidence_type_contract.mjs](../scripts/verify_external_evidence_type_contract.mjs)
+- [verify_external_evidence_minimal_service_api_type_contract.mjs](../scripts/verify_external_evidence_minimal_service_api_type_contract.mjs)
+- [verify_external_evidence_local_idempotency_replay.mjs](../scripts/verify_external_evidence_local_idempotency_replay.mjs)
+- [external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md](./external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md)
+- [external-evidence-assurance-persistence-boundary-proposal-v0.1.md](./external-evidence-assurance-persistence-boundary-proposal-v0.1.md)
+- [external-evidence-assurance-minimal-service-api-proposal-v0.1.md](./external-evidence-assurance-minimal-service-api-proposal-v0.1.md)
 
 No separate documentation file named `Minimal Service API Type Contracts v0.1`
 was found. The current realized contract boundary is the package-internal source
-[minimalServiceApiTypes.ts](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts:1)
+[minimalServiceApiTypes.ts](../packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts)
 plus its focused verifier
-[verify_external_evidence_minimal_service_api_type_contract.mjs](/D:/AI%20project/mindforge-guard/scripts/verify_external_evidence_minimal_service_api_type_contract.mjs:1).
+[verify_external_evidence_minimal_service_api_type_contract.mjs](../scripts/verify_external_evidence_minimal_service_api_type_contract.mjs).
 
 ## 6. Current Source Inventory
 
@@ -223,9 +223,9 @@ Current fixture alignment status is:
 - no current fixture behavior change is still required
 
 The merged source comments in
-[localIdempotencyReplayFixture.mjs](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs:21)
+[localIdempotencyReplayFixture.mjs](../packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs#L21)
 and
-[localIdempotencyReplayFixture.mjs](/D:/AI%20project/mindforge-guard/packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs:228)
+[localIdempotencyReplayFixture.mjs](../packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs#L228)
 close the residual fixture-source misread identified by the earlier assessment.
 
 ## 11. Source-comment Alignment Review
