@@ -83,14 +83,14 @@ Current baseline findings from repository-grounded review are:
 
 Current concrete artifact baseline includes:
 
-- [external-evidence-assurance-platform-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-platform-v0.1.md:1>)
-- [external-evidence-assurance-service-gap-assessment-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-service-gap-assessment-v0.1.md:1>)
-- [external-evidence-assurance-minimal-service-api-proposal-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-minimal-service-api-proposal-v0.1.md:1>)
-- [external-evidence-assurance-persistence-boundary-proposal-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-persistence-boundary-proposal-v0.1.md:1>)
-- [external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md:1>)
-- [external-evidence-assurance-idempotency-semantic-alignment-architecture-checkpoint-v0.1.md](</D:/AI project/mindforge-guard/docs/external-evidence-assurance-idempotency-semantic-alignment-architecture-checkpoint-v0.1.md:1>)
-- [verificationTypes.ts](</D:/AI project/mindforge-guard/packages/guard-core/src/externalEvidence/verificationTypes.ts:1>)
-- [minimalServiceApiTypes.ts](</D:/AI project/mindforge-guard/packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts:1>)
+- [external-evidence-assurance-platform-v0.1.md](./external-evidence-assurance-platform-v0.1.md)
+- [external-evidence-assurance-service-gap-assessment-v0.1.md](./external-evidence-assurance-service-gap-assessment-v0.1.md)
+- [external-evidence-assurance-minimal-service-api-proposal-v0.1.md](./external-evidence-assurance-minimal-service-api-proposal-v0.1.md)
+- [external-evidence-assurance-persistence-boundary-proposal-v0.1.md](./external-evidence-assurance-persistence-boundary-proposal-v0.1.md)
+- [external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md](./external-evidence-assurance-authentication-tenant-boundary-proposal-v0.1.md)
+- [external-evidence-assurance-idempotency-semantic-alignment-architecture-checkpoint-v0.1.md](./external-evidence-assurance-idempotency-semantic-alignment-architecture-checkpoint-v0.1.md)
+- [verificationTypes.ts](../packages/guard-core/src/externalEvidence/verificationTypes.ts)
+- [minimalServiceApiTypes.ts](../packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts)
 
 This protocol starts from the conclusion that the next missing proof is
 consumer evidence, not a new implementation line.
