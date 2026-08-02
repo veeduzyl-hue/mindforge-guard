@@ -294,6 +294,27 @@ This verifier checks that the GitHub Action is manually triggered, installs `@ve
 
 It confirms the workflow produces review artifacts only and does not approve, block, deploy, certify, or control execution.
 
+## v7.0.1 Aggregated Baseline Verification
+
+The `v7.0.1` aggregated baseline verification bundles the documented `v7.0.1` released baseline scripts into a single npm command. It is intended as a minimal recorded verification entry point for the current published `v7.0.1` baseline.
+
+Required aggregate verification:
+
+```bash
+npm run verify:v7.0.1
+```
+
+Because some included verifiers inspect working-tree path scope, run this aggregate from a clean working tree or a clean CI checkout.
+
+This aggregate command explicitly runs the documented `v7.0.1` released baseline verifiers:
+
+- `scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs`
+- `scripts/verify_v7_0_1_public_surface_consistency.mjs`
+- `scripts/verify_v7_0_1_current_docs_baseline.mjs`
+- `scripts/verify_v7_0_1_github_action_first_report.mjs`
+
+It does not include the currently out-of-scope `v7.0.1` verifier scripts that are not part of the documented released baseline.
+
 ## 16. v7.1 Adoption Readiness Docs Verification
 
 `v7.1` adoption readiness remains a bounded docs, examples, templates, report-handoff, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
