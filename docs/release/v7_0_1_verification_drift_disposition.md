@@ -28,22 +28,34 @@
 
 This assessment used:
 
-- current verifier execution from the repository root
+- current verifier execution from the local main worktree
+- clean-checkout verifier execution from a temporary clone of `docs/v7.0.1-verification-drift-disposition`
 - git history with `git log --follow --oneline` and `git log --follow --stat`
 - `git blame` on each legacy verifier
 - current docs and product-surface comparison
 - overlap analysis against the current canonical verification matrix in `docs/VERIFY.md`
+- reference audit with `git grep` for each legacy verifier name
+
+### Execution Environment Caveat
+
+- in the local main worktree, all three legacy verifiers failed first on `.vercel/.env.production.local`
+- that path is not tracked by git
+- that path is ignored by `.gitignore:11:.vercel/`
+- `git status --ignored --short -- ".vercel"` reports `.vercel/` as ignored local state
+- this means the initial local failure is a local environment path-interference result, not standalone proof that the verifier semantics are stale
+- semantic disposition in this assessment is based on the separate clean-checkout execution evidence plus source and reference review
+- this assessment did not read, print, copy, stage, or commit `.vercel/.env.production.local`
 
 This assessment did not modify any verifier, release file, runtime file, package file, or License Hub surface.
 
 ## 4. Findings Summary
 
-| Artifact | Current result | Historical role | Current authority | Classification | Recommended action |
-| --- | --- | --- | --- | --- | --- |
-| `scripts/verify_v7_0_1_cli_entrypoint_hotfix.mjs` | Exit `1`; fails on `unexpected changed path outside allowed hotfix set: .vercel/.env.production.local` | One-time `v7.0.1` CLI packaging hotfix evidence for `b13d5ef` and `bf01487` | Not referenced by `package.json` or `docs/VERIFY.md`; release-note scoped | `TARGETED_RELEASE_EVIDENCE` | `ARCHIVE_VERIFIER` |
-| `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs` | Exit `1`; fails on `unexpected changed path outside positioning rewrite set: .vercel/.env.production.local` | Docs-only rewrite verifier for `aa7368b`, then aligned in `0283c81` | Current positioning authority is carried by later `v7.0.1` canonical verifiers and current docs | `SUPERSEDED_BY_LATER_FLOW` | `ARCHIVE_VERIFIER` |
-| `scripts/verify_v7_0_1_public_install_references.mjs` | Exit `1`; fails on `unexpected changed path outside allowed public install update: .vercel/.env.production.local` | Docs-only install-reference verifier for `9b6bfdd`, then aligned in `0283c81` | Current install-reference authority is carried by later `v7.0.1` canonical verifiers and current docs | `DUPLICATED_COVERAGE` | `ARCHIVE_VERIFIER` |
-| `RELEASE.md` | No runtime failure; current text conflicts with the rest of the `v7.0.1` public baseline | Historical release-process tracker with `v6.12.0` and `v6.13.1` current-language residue | Not authoritative for the current `v7.0.1` public baseline in its present wording | n/a | `SEPARATE_PR_REQUIRED` |
+| Artifact | Local-worktree result | Clean-checkout result | Historical role | Current authority | Classification | Recommended next action |
+| --- | --- | --- | --- | --- | --- | --- |
+| `scripts/verify_v7_0_1_cli_entrypoint_hotfix.mjs` | Exit `1`; `unexpected changed path outside allowed hotfix set: .vercel/.env.production.local` | Exit `1`; `packages/guard/README.md must state v7.0.1 as the current package release` | One-time `v7.0.1` CLI packaging hotfix evidence for `b13d5ef` and `bf01487` | Not referenced by `package.json` or `docs/VERIFY.md`; release-note scoped | `TARGETED_RELEASE_EVIDENCE` | `SEPARATE_PR_REQUIRED` |
+| `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs` | Exit `1`; `unexpected changed path outside positioning rewrite set: .vercel/.env.production.local` | Exit `1`; `License Hub home must keep install references inside the secondary technical install section` | Docs-only rewrite verifier for `aa7368b`, then aligned in `0283c81` | Current positioning authority is carried by later `v7.0.1` canonical verifiers and current docs | `SUPERSEDED_BY_LATER_FLOW` | `SEPARATE_PR_REQUIRED` |
+| `scripts/verify_v7_0_1_public_install_references.mjs` | Exit `1`; `unexpected changed path outside allowed public install update: .vercel/.env.production.local` | Exit `1`; `apps/license-hub/app/page.tsx must keep install references inside a secondary technical install context` | Docs-only install-reference verifier for `9b6bfdd`, then aligned in `0283c81` | Current install-reference authority is partially duplicated by later `v7.0.1` canonical verifiers and current docs | `DUPLICATED_COVERAGE` | `SEPARATE_PR_REQUIRED` |
+| `RELEASE.md` | No runtime failure; current text conflicts with the rest of the `v7.0.1` public baseline | n/a | Historical release-process tracker with `v6.12.0` and `v6.13.1` current-language residue | Not authoritative for the current `v7.0.1` public baseline in its present wording | n/a | `SEPARATE_PR_REQUIRED` |
 
 ## 5. Individual Findings
 
@@ -56,32 +68,45 @@ This assessment did not modify any verifier, release file, runtime file, package
     - `packages/guard/package.json`
     - `packages/guard/README.md`
   - follow-up hardening in `bf014870874f0cc1a70af7ffd976eb188373afe8` kept the scope on package manifest normalization
-  - the release note explicitly frames it as a bounded `v7.0.1` hotfix with a dedicated verifier and release note
-- current failure:
-  - current run exits `1`
-  - current failure message:
+  - the paired release note frames it as a bounded `v7.0.1` hotfix with a dedicated verifier and release note
+- local environment failure:
+  - exit `1`
+  - first failure:
     - `unexpected changed path outside allowed hotfix set: .vercel/.env.production.local`
-- root cause:
-  - the script performs a working-tree path-scope check before semantic assertions
-  - current repository state includes ignored root `.vercel/` content
-  - the verifier's ignored-path filter excludes `apps/license-hub/.env*` and `apps/license-hub/.next/`, but not root `.vercel/`
-  - separate from that immediate failure, the script also asserts package README phrases that are no longer present in the current `packages/guard/README.md`, including:
-    - `The current package release is \`v7.0.1\`.`
-    - `veeduzyl-mindforge-guard-7.0.1.tgz`
-  - that means a clean checkout would avoid the working-tree failure, but the script would still be tied to stale release-stage README wording
-- overlap:
-  - no current canonical verifier in `docs/VERIFY.md` or `package.json` uses this script
-  - current official `v7.0.1` verification instead routes through the four verifiers added to `verify:v7.0.1`
-  - this script remains specific to the original package hotfix packet, not the current released baseline matrix
-- risk of updating:
-  - rewriting the script to fit current README wording would blur the boundary between historical hotfix evidence and current canonical baseline
-  - restoring tarball-oriented wording in the current package README would reintroduce release-stage assertions that are no longer the current authority
-- risk of retaining:
-  - ad hoc execution continues to produce confusing failure noise
-  - readers can mistake it for a current canonical verifier even though the repository no longer treats it that way
+  - failure class:
+    - working-tree environment gate
+- clean-checkout execution result:
+  - exit `1`
+  - first failure:
+    - `packages/guard/README.md must state v7.0.1 as the current package release`
+  - failure class:
+    - stale exact phrase
+- source-level assertion review:
+  - after the path-scope gate, the verifier requires package README text that is no longer present in the current [packages/guard/README.md](D:\AI%20project\mindforge-guard\packages\guard\README.md)
+  - it also requires `veeduzyl-mindforge-guard-7.0.1.tgz`, another release-stage phrase absent from the current package README
+  - the current manifest and CLI entrypoint facts it checks remain historically meaningful, but the README assertions are tied to the original hotfix packet wording
+- current reference audit:
+  - current references:
+    - `docs/release/v7_0_1_cli_entrypoint_hotfix.md`
+    - this assessment document
+    - self-reference inside the script allowed-change set
+  - not referenced by:
+    - root `package.json`
+    - `docs/VERIFY.md`
+    - any current canonical `verify:v7.0.1` aggregate
+  - moving or deleting it without a reference-safe plan would break the historical release-note path that still points to the script
+- semantic conflict:
+  - yes
+  - the clean-checkout failure shows direct conflict between current package README wording and the historical hotfix verifier's exact phrase expectations
+- duplicate only:
+  - no
+  - this script still captures a distinct historical package hotfix packet, even though it is not a current canonical verifier
+- historical replay value:
+  - yes
+  - it remains useful as historical release evidence for the original `v7.0.1` CLI packaging hotfix
 - recommendation:
-  - keep the script content unchanged in this assessment
-  - treat it as historical `v7.0.1` release evidence and close it through a separate lifecycle PR that archives or clearly de-authorizes it
+  - keep unchanged in this assessment
+  - require a separate lifecycle PR to decide whether to retain it as historical evidence, explicitly de-authorize it, archive it, move it, or remove it with updated references
 - confidence: high
 
 ### B. `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs`
@@ -92,59 +117,99 @@ This assessment did not modify any verifier, release file, runtime file, package
     - `docs/commercial/*`
     - `docs/commercial/v7_0_1_single_agent_governance_positioning.md`
   - later updated in `0283c81b09274b868f2415b9dda3462c412a5577` to align verifier assertions with single-agent positioning and related implementation verifiers
-- current failure:
-  - current run exits `1`
-  - current failure message:
+- local environment failure:
+  - exit `1`
+  - first failure:
     - `unexpected changed path outside positioning rewrite set: .vercel/.env.production.local`
-- root cause:
-  - like the other two legacy verifiers, it fails first on working-tree path scope because root `.vercel/` is not excluded by its ignored-path filter
-  - after that gate, its semantic assertions mostly describe the current single-agent commercial story that is now already expressed by current product surfaces
-- overlap:
-  - current canonical `v7.0.1` verification already covers this surface through:
-    - `verify_v7_0_1_license_hub_after_purchase_copy.mjs`
-    - `verify_v7_0_1_public_surface_consistency.mjs`
-    - `verify_v7_0_1_current_docs_baseline.mjs`
-  - `docs/VERIFY.md` documents those scripts as the current released baseline and explicitly excludes out-of-scope `v7.0.1` verifiers
-  - `package.json` only wires the four canonical `v7.0.1` scripts into `verify:v7.0.1`
-- risk of updating:
-  - keeping this verifier "current" would create a second authority chain for public positioning
-  - future copy updates would have to satisfy both canonical baseline verifiers and a legacy rewrite verifier
-- risk of retaining:
-  - it continues to look current because its assertions were partially refreshed in `0283c81`
-  - that can confuse reviewers about which verifier set is actually authoritative
+  - failure class:
+    - working-tree environment gate
+- clean-checkout execution result:
+  - exit `1`
+  - first failure:
+    - `License Hub home must keep install references inside the secondary technical install section`
+  - failure class:
+    - ordering assertion
+- source-level assertion review:
+  - this verifier does not merely check for the existence of a `Secondary technical install` section
+  - it uses `assertSecondaryTechnicalInstall(...)` and requires the first occurrence of `@veeduzyl/mindforge-guard@7.0.1` to appear after that section heading
+  - current [apps/license-hub/app/page.tsx](D:\AI%20project\mindforge-guard\apps\license-hub\app\page.tsx) contains the section at line `320`, but the first install command appears earlier at line `83`
+  - the clean-checkout failure therefore reflects a live ordering assertion, not the absence of the section
+- current reference audit:
+  - current references:
+    - `scripts/verify_v7_0_license_hub_copy_implementation.mjs`
+    - `scripts/verify_v7_0_mindforge_run_implementation_pack.mjs`
+    - `scripts/verify_v7_0_1_public_install_references.mjs`
+    - this assessment document
+    - self-reference inside the script allowed-change set
+  - not referenced by:
+    - root `package.json`
+    - `docs/VERIFY.md`
+  - because other historical verifiers still reference it, direct movement or deletion would not be reference-safe
+- semantic conflict:
+  - yes
+  - the clean-checkout failure shows that current License Hub home ordering does not satisfy this legacy verifier's stricter install-placement rule
+- duplicate only:
+  - not fully
+  - it overlaps heavily with later canonical positioning coverage, but its exact ordering assertion is not identical to the newer verifier set
+- historical replay value:
+  - yes
+  - it preserves the specific rewrite-stage contract that was asserted during the May 13, 2026 positioning pass
 - recommendation:
-  - close it as a superseded flow, not as an active canonical verifier
-  - use a follow-up lifecycle PR to archive or clearly de-authorize it once the repository records that the later `v7.0.1` verification chain owns this surface
-- confidence: medium-high
+  - keep unchanged in this assessment
+  - require a separate lifecycle PR to decide whether the ordering rule should be explicitly de-authorized, archived as historical replay evidence, or otherwise closed in a reference-safe way
+- confidence: high
 
 ### C. `scripts/verify_v7_0_1_public_install_references.mjs`
 
 - original intent:
   - introduced in `9b6bfdd55bc54fb279c6a3f1eeaa44ff2fcd89bb` on 2026-05-13 to update public install references to `v7.0.1`
   - later updated in `0283c81b09274b868f2415b9dda3462c412a5577` to align install placement and supporting text with the single-agent positioning rewrite
-- current failure:
-  - current run exits `1`
-  - current failure message:
+- local environment failure:
+  - exit `1`
+  - first failure:
     - `unexpected changed path outside allowed public install update: .vercel/.env.production.local`
-- root cause:
-  - immediate failure is the same working-tree path-scope gate that does not exclude root `.vercel/`
-  - semantically, its assertions are largely already satisfied by current docs and License Hub pages:
-    - current install commands point to `@veeduzyl/mindforge-guard@7.0.1`
-    - current pages place install guidance in `Secondary technical install`
-    - current README and current product docs reference `v7.0.1`
-- overlap:
-  - overlap with canonical `v7.0.1` coverage is strong:
-    - install and public copy consistency are already covered by `verify_v7_0_1_public_surface_consistency.mjs`
-    - current docs baseline alignment is already covered by `verify_v7_0_1_current_docs_baseline.mjs`
-    - License Hub onboarding/install guidance is already covered by `verify_v7_0_1_license_hub_after_purchase_copy.mjs`
-- risk of updating:
-  - a refreshed legacy verifier would duplicate current install-surface assertions already owned by the canonical baseline matrix
-  - duplicate coverage increases maintenance cost without adding a new bounded guarantee
-- risk of retaining:
-  - it continues to fail in normal local environments because of the path-scope rule
-  - it suggests there is still an independent install-reference authority when the current matrix already covers that area
+  - failure class:
+    - working-tree environment gate
+- clean-checkout execution result:
+  - exit `1`
+  - first failure:
+    - `apps/license-hub/app/page.tsx must keep install references inside a secondary technical install context`
+  - failure class:
+    - ordering assertion
+- source-level assertion review:
+  - this verifier also checks ordering, not just presence
+  - it uses `assertSecondaryInstallContext(...)`, which only passes when the first `@veeduzyl/mindforge-guard@7.0.1` appears after `Secondary technical install`
+  - current surfaces do contain the section:
+    - home section heading at line `320`
+    - docs section heading at line `217`
+    - product section heading at line `163`
+  - but on the home and docs pages the first install string appears earlier:
+    - home install command first appears at line `83`
+    - docs install command first appears at line `70`
+  - the clean-checkout result therefore reflects a real ordering mismatch, not missing install guidance
+- current reference audit:
+  - current references:
+    - `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs`
+    - `scripts/verify_v7_0_license_hub_copy_implementation.mjs`
+    - `scripts/verify_v7_0_mindforge_run_implementation_pack.mjs`
+    - this assessment document
+    - self-reference inside the script allowed-change set
+  - not referenced by:
+    - root `package.json`
+    - `docs/VERIFY.md`
+  - direct movement or deletion would require updating other historical verifier references first
+- semantic conflict:
+  - yes
+  - the clean-checkout failure shows the legacy install-placement assertion conflicts with current page ordering
+- duplicate only:
+  - partially
+  - current canonical verifiers already cover public install correctness at a broader level, but this legacy verifier still carries its own stricter ordering rule
+- historical replay value:
+  - yes
+  - it preserves the exact install-reference closure rule asserted in the May 13, 2026 docs pass
 - recommendation:
-  - treat it as duplicate legacy coverage and close it through the same lifecycle PR family as the commercial positioning verifier
+  - keep unchanged in this assessment
+  - require a separate lifecycle PR to decide whether to retain it as historical replay evidence, explicitly de-authorize its stricter ordering rule, archive it, move it, or remove it in a reference-safe way
 - confidence: high
 
 ## 6. RELEASE.md Drift
@@ -184,11 +249,16 @@ Scope only, not implementation:
 Scope only, not implementation:
 
 - document that the three assessed verifiers are not part of the canonical `verify:v7.0.1` baseline
-- archive or clearly de-authorize:
-  - `scripts/verify_v7_0_1_cli_entrypoint_hotfix.mjs`
-  - `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs`
-  - `scripts/verify_v7_0_1_public_install_references.mjs`
-- retain historical evidence value without rewriting the original release-stage assertions into current authority
+- perform reference-safe lifecycle closure before any physical script move or deletion
+- define whether `archive` means:
+  - documentation-only de-authorization
+  - physical file movement
+  - or full removal after all references are updated
+- preserve historical replayability where needed
+- avoid moving or deleting scripts unless:
+  - all references are updated
+  - historical evidence remains recoverable
+  - the repository records the intended authority boundary clearly
 
 ## 8. Explicit Non-Goals
 
@@ -209,3 +279,9 @@ This assessment does not propose or implement changes to:
 ## 9. Final Decision
 
 `BOTH_FOLLOW_UP_PRS_REQUIRED`
+
+Notes:
+
+- PR-A is confirmed required for current-baseline clarity in `RELEASE.md`
+- PR-B is required for verifier authority clarity
+- the concrete PR-B mechanism for archive, move, delete, or de-authorization is not authorized by this assessment and remains a separate lifecycle decision
