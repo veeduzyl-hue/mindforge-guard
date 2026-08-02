@@ -1,14 +1,17 @@
 # MindForge Guard Release Process
 
-MindForge Guard now uses npm as the official public install path for the buyer-facing CLI package.
+MindForge Guard uses npm as the official public install path for the buyer-facing CLI package.
 
-A packaged `.tgz` install artifact remains the bounded fallback delivery path for direct handoff, mirrored release assets, or support-led recovery installs.
+A version-pinned `.tgz` package remains the bounded fallback delivery path for direct handoff, mirrored release assets, or support-led recovery installs.
+
+That fallback path does not replace the current public npm install entry point and does not change Guard runtime authority.
 
 ## Current Released Baseline
 
-The currently released governance baseline is:
+The current released public baseline is:
 
-- `v6.12.0 = Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1`
+- `v7.0.1`
+- package: `@veeduzyl/mindforge-guard@7.0.1`
 
 This release remains:
 
@@ -22,43 +25,70 @@ This release remains:
 
 The current published install-facing release is:
 
-- `v6.13.1 = npm Installation Delivery Closeout`
+- `@veeduzyl/mindforge-guard@7.0.1`
 
-Why `v6.13.1`:
+Recommended public install command:
 
-- it stays on the current commercial release line
-- it makes npm the explicit official buyer install path
-- it keeps a local `.tgz` install fallback without changing CLI semantics
-- it closes package-delivery clarity without reopening the `v6.13.0` boundary
-- it is the published install-facing release for `@veeduzyl/mindforge-guard`
+```bash
+npm install -g @veeduzyl/mindforge-guard@7.0.1
+```
 
-## Scope Of `v6.13.1`
+Install delivery notes:
 
-`v6.13.1` formalizes:
+- npm remains the official public install path
+- a version-pinned `.tgz` package remains the bounded fallback delivery path
+- the `.tgz` fallback is not a replacement for the public npm install entry point
+- install delivery does not change CLI semantics
+- install delivery does not change license, pricing, checkout, or entitlement
+- install delivery does not expand authority
 
-- official public install path = npm package install
-- fallback install path = direct `.tgz` package install
-- clean published package manifest with no stale local file dependency
-- explicit first-run license verify/install/status guidance
-- install-facing README and release wording alignment
+## Historical Release Lineage
 
-It should not add:
+The following releases remain important historical lineage and evidence sources for the current `v7.0.1` line:
 
-- authority expansion
-- permit-lane consumption
-- execution binding
-- main-path takeover
-- risk integration
-- UI / control-plane behavior
+- `v6.12.0`
+  - Governance Case Closure Evidence Package Delivery Manifest / Acceptance Semantics Finalization v1
+- `v6.13.0`
+  - Commercial Edition Boundary Completion
+- `v6.13.1`
+  - npm Installation Delivery Closeout
 
-## Release Verification
+These historical releases are not the current public baseline and should not be described with present-tense current-baseline language.
+
+## Current Release Verification
+
+Run the current release verification from a clean working tree or a clean CI checkout. `verify:v7.0.1` is the documented aggregate for the four canonical `v7.0.1` released-baseline verifiers in [docs/VERIFY.md](docs/VERIFY.md); it does not automatically run every `verify_v7_0_1_*` script. The existing `verify` aggregate remains unchanged.
 
 From the repository root:
 
 ```bash
-$env:npm_config_cache='D:\AI project\mindforge-guard\.npm-cache'; npm.cmd pack --json --workspace @veeduzyl/mindforge-guard
-tar -tf veeduzyl-mindforge-guard-6.13.1.tgz
+npm.cmd run verify:v7.0.1
+npm.cmd run verify
 git diff --check
 ```
 
-Use [docs/VERIFY.md](/D:/AI%20project/mindforge-guard/docs/VERIFY.md) as the release verification matrix.
+Use [docs/VERIFY.md](docs/VERIFY.md) as the current release verification matrix.
+
+## Explicit Compatibility Boundaries
+
+This release-process clarification remains:
+
+- supporting-artifact-only
+- non-authoritative
+- additive-only
+- non-executing
+- default-off
+
+It does not change:
+
+- runtime behavior
+- CLI semantics
+- audit / permit / classify semantics
+- license, pricing, checkout, or entitlement
+- package version or package exports
+
+It does not introduce:
+
+- approval, blocking, deployment, certification, or control-plane authority
+- authority expansion
+- a legacy verifier lifecycle decision
