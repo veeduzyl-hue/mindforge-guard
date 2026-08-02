@@ -58,7 +58,7 @@ This verification confirms:
 
 The canonical release-boundary evidence for `v6.13.0` is:
 
-- [docs/archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md](/D:/AI%20project/mindforge-guard/docs/archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md)
+- [docs/archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md](archive/status/STATUS_v6.13_commercial_edition_boundary_completion.md)
 
 It is valid for:
 
@@ -315,6 +315,26 @@ This aggregate command explicitly runs the documented `v7.0.1` released baseline
 
 It does not include the currently out-of-scope `v7.0.1` verifier scripts that are not part of the documented released baseline.
 
+## v7.0.1 Historical Targeted Verifier Authority
+
+The following scripts are retained as historical targeted release evidence:
+
+- `scripts/verify_v7_0_1_cli_entrypoint_hotfix.mjs`
+- `scripts/verify_v7_0_1_commercial_positioning_rewrite.mjs`
+- `scripts/verify_v7_0_1_public_install_references.mjs`
+
+They are not part of the current canonical `verify:v7.0.1` aggregate and are not current release acceptance gates.
+
+They remain at their existing paths to preserve historical references and replay context.
+
+Current main does not guarantee continued satisfaction of their historical exact-phrase or ordering assertions.
+
+Do not use a glob to reintroduce these scripts into the current aggregate.
+
+The current canonical authority remains the four verifiers listed in the aggregated baseline section above.
+
+See [Legacy verifier authority closure](release/v7_0_1_legacy_verifier_authority_closure.md).
+
 ## 16. v7.1 Adoption Readiness Docs Verification
 
 `v7.1` adoption readiness remains a bounded docs, examples, templates, report-handoff, and verifier update only. It does not change runtime behavior, pricing values, checkout behavior, Paddle behavior, license signing, entitlement, CLI semantics, License Hub production behavior, or Vercel production deployment settings.
@@ -379,6 +399,6 @@ It is not runtime control-plane behavior.
 
 ## 20. See Also
 
-- [RELEASE.md](/D:/AI%20project/mindforge-guard/RELEASE.md)
-- [docs/EDITIONS.md](/D:/AI%20project/mindforge-guard/docs/EDITIONS.md)
-- [docs/LICENSE.md](/D:/AI%20project/mindforge-guard/docs/LICENSE.md)
+- [RELEASE.md](../RELEASE.md)
+- [docs/EDITIONS.md](EDITIONS.md)
+- [docs/LICENSE.md](LICENSE.md)
