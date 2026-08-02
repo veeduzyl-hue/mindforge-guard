@@ -10,7 +10,7 @@
 
 ## 2. Current Baseline
 
-- current main SHA: `14fbfeb4435b99c8b2f5317e0ff2642a5a79ecf3`
+- assessment base main SHA: `14fbfeb4435b99c8b2f5317e0ff2642a5a79ecf3`
 - current package baseline: `@veeduzyl/mindforge-guard@7.0.1`
 - current release tag: `v7.0.1` -> `698cf0b5f8886491d34b2aeb38d7bb2d033b759c`
 - PR `#341` added the named `verify:v7.0.1` aggregate and documented the current released baseline scope
@@ -82,7 +82,7 @@ This assessment did not modify any verifier, release file, runtime file, package
   - failure class:
     - stale exact phrase
 - source-level assertion review:
-  - after the path-scope gate, the verifier requires package README text that is no longer present in the current [packages/guard/README.md](D:\AI%20project\mindforge-guard\packages\guard\README.md)
+  - after the path-scope gate, the verifier requires package README text that is no longer present in the current [packages/guard/README.md](../../packages/guard/README.md)
   - it also requires `veeduzyl-mindforge-guard-7.0.1.tgz`, another release-stage phrase absent from the current package README
   - the current manifest and CLI entrypoint facts it checks remain historically meaningful, but the README assertions are tied to the original hotfix packet wording
 - current reference audit:
@@ -132,7 +132,7 @@ This assessment did not modify any verifier, release file, runtime file, package
 - source-level assertion review:
   - this verifier does not merely check for the existence of a `Secondary technical install` section
   - it uses `assertSecondaryTechnicalInstall(...)` and requires the first occurrence of `@veeduzyl/mindforge-guard@7.0.1` to appear after that section heading
-  - current [apps/license-hub/app/page.tsx](D:\AI%20project\mindforge-guard\apps\license-hub\app\page.tsx) contains the section at line `320`, but the first install command appears earlier at line `83`
+  - current [apps/license-hub/app/page.tsx](../../apps/license-hub/app/page.tsx) contains the section at line `320`, but the first install command appears earlier at line `83`
   - the clean-checkout failure therefore reflects a live ordering assertion, not the absence of the section
 - current reference audit:
   - current references:
