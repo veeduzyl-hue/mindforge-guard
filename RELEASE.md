@@ -57,6 +57,8 @@ These historical releases are not the current public baseline and should not be 
 
 ## Current Release Verification
 
+Run the current release verification from a clean working tree or a clean CI checkout. `verify:v7.0.1` is the documented aggregate for the four canonical `v7.0.1` released-baseline verifiers in [docs/VERIFY.md](docs/VERIFY.md); it does not automatically run every `verify_v7_0_1_*` script. The existing `verify` aggregate remains unchanged.
+
 From the repository root:
 
 ```bash
@@ -66,3 +68,27 @@ git diff --check
 ```
 
 Use [docs/VERIFY.md](docs/VERIFY.md) as the current release verification matrix.
+
+## Explicit Compatibility Boundaries
+
+This release-process clarification remains:
+
+- supporting-artifact-only
+- non-authoritative
+- additive-only
+- non-executing
+- default-off
+
+It does not change:
+
+- runtime behavior
+- CLI semantics
+- audit / permit / classify semantics
+- license, pricing, checkout, or entitlement
+- package version or package exports
+
+It does not introduce:
+
+- approval, blocking, deployment, certification, or control-plane authority
+- authority expansion
+- a legacy verifier lifecycle decision
