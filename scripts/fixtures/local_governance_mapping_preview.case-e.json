@@ -1,0 +1,28 @@
+{
+  "mapping_id": "governance-mapping:epk_ai_pr_low_risk_complete_001",
+  "default_off": true,
+  "public_contract_changed": false,
+  "governance_reasoning_inputs": {
+    "reason_codes": [
+      "kernel:contradiction_visible",
+      "kernel:residual_uncertainty_present",
+      "kernel:supported_conclusion_present"
+    ],
+    "missing_evidence": [],
+    "human_review_requirements": [
+      {
+        "summary": "build outcome differs between pack-bounded evidence and external assurance evidence",
+        "evidence_refs": [
+          "art_build_log",
+          "evidence://assurance-report-ci-contradiction/build",
+          "ver_ai_pr_low_risk_complete_002"
+        ]
+      }
+    ],
+    "decision_notes": [
+      "kernel findings remain internal and default-off",
+      "the released GovernanceReportModel public contract remains unchanged",
+      "final governance verdict ownership stays outside the kernel"
+    ]
+  }
+}

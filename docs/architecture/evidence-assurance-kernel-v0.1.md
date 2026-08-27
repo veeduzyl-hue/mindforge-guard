@@ -1,6 +1,6 @@
 # Evidence Assurance Kernel v0.1
 
-Status: Draft architecture specification for bounded implementation planning on 2026-08-27.
+Status: Draft architecture specification with bounded PoC implementation notes on 2026-08-27.
 
 ## 1. Purpose
 
@@ -427,3 +427,25 @@ This means:
 8. Future service architecture remains conditional on repeated validated workflow demand, not on kernel completion alone.
 
 [Recommendation] Nothing in v0.1 requires changing released CLI contracts, released licensing behavior, or current commercial product surfaces.
+
+## 18. Bounded PoC Implementation Notes
+
+[Repo] The bounded PoC implementation on 2026-08-27 is intentionally internal-only and local-only.
+
+Implementation footprint:
+
+- `packages/guard-core/src/evidenceAssuranceKernel.ts`
+- `scripts/fixtures/evidence_assurance_experiment_0_cases.mjs`
+- `scripts/verify_evidence_assurance_kernel_poc.mjs`
+- `scripts/fixtures/local_governance_mapping_preview.case-e.json`
+- `scripts/fixtures/production_evidence_readiness_review_preview.case-c.json`
+
+Resolved PoC decisions:
+
+- evidence applicability is modeled independently from verification requirement
+- `not_applicable` is preserved as distinct from missing evidence
+- structural missing evidence is preserved as distinct from conclusion-specific missing evidence
+- normalization alone does not upgrade trust or create independent verification
+- integrity binding remains distinct from truth verification
+- kernel findings remain internal and do not replace the final governance verdict surface
+- local governance mapping preview remains default-off and does not change the released `GovernanceReportModel` public contract

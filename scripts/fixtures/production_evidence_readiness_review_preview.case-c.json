@@ -1,0 +1,453 @@
+{
+  "review_subject": {
+    "subject_id": "epk_ai_pr_low_risk_complete_001",
+    "subject_type": "ai_software_change",
+    "workflow_id": "wf_ai_pr_low_risk_complete_001",
+    "workflow_name": "small utility fix pull request"
+  },
+  "review_scope": {
+    "third_party_responsibility_material": false,
+    "runtime_behavior_in_scope": true,
+    "material_production_change": false,
+    "model_change_material": true,
+    "security_sensitive": false,
+    "tools_in_scope": true,
+    "release_review": false,
+    "outcome_verification_expected": false
+  },
+  "profile": {
+    "profile_id": "production_evidence_readiness",
+    "profile_version": "0.1",
+    "purpose": "determine what evidence is structurally present, supportable, contradictory, or still missing for a bounded production evidence readiness review"
+  },
+  "evidence_inventory": [
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:authority_scope",
+      "family_id": "authority_scope",
+      "summary": "submitted authority material",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "art_auth_pr_ticket",
+        "art_auth_review_scope"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:model_configuration",
+      "family_id": "model_configuration",
+      "summary": "declared runtime model and configuration",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "1.2",
+        "synthetic-code-assistant"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:provenance_integrity",
+      "family_id": "provenance_integrity",
+      "summary": "submitted provenance and artifact binding",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "1234123412341234123412341234123412341234123412341234123412341234",
+        "art_auth_pr_ticket",
+        "art_auth_review_scope",
+        "art_build_log",
+        "art_pr_diff",
+        "art_unit_test_log"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:tests_evaluations",
+      "family_id": "tests_evaluations",
+      "summary": "submitted test and build verification entries",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "art_build_log",
+        "art_unit_test_log",
+        "ver_ai_pr_low_risk_complete_001",
+        "ver_ai_pr_low_risk_complete_002"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:tooling_surface",
+      "family_id": "tooling_surface",
+      "summary": "declared tool and tool-call surface",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "git-cli",
+        "node-test-runner",
+        "tc_ai_pr_low_risk_complete_fs_001",
+        "tc_ai_pr_low_risk_complete_fs_002",
+        "tc_ai_pr_low_risk_complete_test_001",
+        "workspace-filesystem"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:workflow_identity",
+      "family_id": "workflow_identity",
+      "summary": "submitted workflow identity",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "1111111111111111111111111111111111111111",
+        "epk_ai_pr_low_risk_complete_001"
+      ]
+    },
+    {
+      "evidence_item_id": "evidence:epk_ai_pr_low_risk_complete_001:workflow_scope",
+      "family_id": "identity_actor",
+      "summary": "submitted actor, owner, and changed-file context",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "evidence_refs": [
+        "developer.synthetic",
+        "src/utils/slugify.ts",
+        "team.synthetic-platform",
+        "tests/utils/slugify.test.ts"
+      ]
+    }
+  ],
+  "source_map": [
+    {
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "source_type": "evidence_pack",
+      "producer_id": "prod_guard_harness_ci_pr_001",
+      "producer_name": "Guard Evidence Harness",
+      "raw_trace_refs": [
+        "art_auth_pr_ticket",
+        "art_auth_review_scope",
+        "art_build_log",
+        "art_pr_diff",
+        "art_unit_test_log"
+      ]
+    }
+  ],
+  "verification_posture": [
+    {
+      "verification_id": "ver_ai_pr_low_risk_complete_001",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "status": "verified",
+      "verifier": {
+        "verifier_id": "verifier:ver_ai_pr_low_risk_complete_001",
+        "verifier_name": "unit_test",
+        "verification_method": "unit_test",
+        "verification_scope": "utility-specific tests executed for changed function",
+        "verification_limitations": [
+          "pack verification entries remain producer-provided unless corroborated by separate verifier evidence"
+        ]
+      },
+      "evidence_refs": [
+        "art_unit_test_log",
+        "ver_ai_pr_low_risk_complete_001"
+      ]
+    },
+    {
+      "verification_id": "ver_ai_pr_low_risk_complete_002",
+      "source_id": "source:epk_ai_pr_low_risk_complete_001",
+      "status": "verified",
+      "verifier": {
+        "verifier_id": "verifier:ver_ai_pr_low_risk_complete_002",
+        "verifier_name": "build",
+        "verification_method": "build",
+        "verification_scope": "repository build completed in CI",
+        "verification_limitations": [
+          "pack verification entries remain producer-provided unless corroborated by separate verifier evidence"
+        ]
+      },
+      "evidence_refs": [
+        "art_build_log",
+        "ver_ai_pr_low_risk_complete_002"
+      ]
+    }
+  ],
+  "supportability": [
+    {
+      "conclusion_id": "identity_actor",
+      "summary": "Identity / actor",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "developer.synthetic",
+        "team.synthetic-platform"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "first-party workflow review does not require extra actor proof by default"
+    },
+    {
+      "conclusion_id": "authority_scope",
+      "summary": "Authority / scope",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "art_auth_pr_ticket",
+        "art_auth_review_scope"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [
+        "uncertainty:authority_scope:1"
+      ],
+      "rationale": "the review must bind to a declared owner, requester, and scope boundary"
+    },
+    {
+      "conclusion_id": "workflow_identity",
+      "summary": "Workflow / version",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "1111111111111111111111111111111111111111",
+        "feature/slugify-trim-fix",
+        "wf_ai_pr_low_risk_complete_001"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "the review must bind to a concrete workflow and change set"
+    },
+    {
+      "conclusion_id": "tooling_surface",
+      "summary": "Tools",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "git-cli",
+        "node-test-runner",
+        "tc_ai_pr_low_risk_complete_fs_001",
+        "tc_ai_pr_low_risk_complete_fs_002",
+        "tc_ai_pr_low_risk_complete_test_001",
+        "workspace-filesystem"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "the workflow uses tools or recorded tool calls"
+    },
+    {
+      "conclusion_id": "model_configuration",
+      "summary": "Model / configuration",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "1.2",
+        "synthetic-code-assistant"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [
+        "uncertainty:model_configuration:1"
+      ],
+      "rationale": "model or runtime configuration can materially affect this review"
+    },
+    {
+      "conclusion_id": "tests_evaluations",
+      "summary": "Tests / evaluations",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "art_build_log",
+        "art_unit_test_log",
+        "ver_ai_pr_low_risk_complete_001",
+        "ver_ai_pr_low_risk_complete_002"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [
+        "uncertainty:tests_evaluations:1"
+      ],
+      "rationale": "test and build evidence is core production-readiness material"
+    },
+    {
+      "conclusion_id": "runtime_behavior",
+      "summary": "Runtime evidence",
+      "supportability": "insufficient_evidence",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [
+        "missing:runtime_behavior:conclusion"
+      ],
+      "residual_uncertainty_ids": [],
+      "rationale": "staging, pilot, or runtime behavior is inside the current review scope"
+    },
+    {
+      "conclusion_id": "security_safety",
+      "summary": "Security / safety evidence",
+      "supportability": "inadmissible",
+      "profile_admissibility": "not_applicable",
+      "evidence_refs": [],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "security or safety evidence is not a material differentiator for this review"
+    },
+    {
+      "conclusion_id": "rollback_recovery",
+      "summary": "Rollback / recovery evidence",
+      "supportability": "inadmissible",
+      "profile_admissibility": "not_applicable",
+      "evidence_refs": [],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "rollback and recovery are outside the current review scope"
+    },
+    {
+      "conclusion_id": "provenance_integrity",
+      "summary": "Provenance / integrity",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "1234123412341234123412341234123412341234123412341234123412341234",
+        "art_auth_pr_ticket",
+        "art_auth_review_scope",
+        "art_build_log",
+        "art_pr_diff",
+        "art_unit_test_log"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [],
+      "rationale": "traceability and artifact binding are required for bounded assurance"
+    },
+    {
+      "conclusion_id": "outcome_verification",
+      "summary": "Outcome verification",
+      "supportability": "supported",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [],
+      "residual_uncertainty_ids": [
+        "uncertainty:outcome_verification:1"
+      ],
+      "rationale": "outcome verification remains optional in v0.1"
+    },
+    {
+      "conclusion_id": "overall_production_evidence_readiness",
+      "summary": "Overall production evidence readiness basis",
+      "supportability": "insufficient_evidence",
+      "profile_admissibility": "admissible",
+      "evidence_refs": [
+        "1.2",
+        "1111111111111111111111111111111111111111",
+        "1234123412341234123412341234123412341234123412341234123412341234",
+        "art_auth_pr_ticket",
+        "art_auth_review_scope",
+        "art_build_log",
+        "art_pr_diff",
+        "art_unit_test_log",
+        "developer.synthetic",
+        "epk_ai_pr_low_risk_complete_001",
+        "git-cli",
+        "node-test-runner",
+        "src/utils/slugify.ts",
+        "synthetic-code-assistant",
+        "tc_ai_pr_low_risk_complete_fs_001",
+        "tc_ai_pr_low_risk_complete_fs_002",
+        "tc_ai_pr_low_risk_complete_test_001",
+        "team.synthetic-platform",
+        "tests/utils/slugify.test.ts",
+        "ver_ai_pr_low_risk_complete_001",
+        "ver_ai_pr_low_risk_complete_002",
+        "workspace-filesystem"
+      ],
+      "contradiction_ids": [],
+      "missing_evidence_ids": [
+        "missing:runtime_behavior:conclusion"
+      ],
+      "residual_uncertainty_ids": [
+        "uncertainty:authority_scope:1",
+        "uncertainty:model_configuration:1",
+        "uncertainty:tests_evaluations:1",
+        "uncertainty:outcome_verification:1"
+      ],
+      "rationale": "the overall bounded conclusion is derived from applicable family assessments, contradictions, explicit missing evidence, and residual uncertainty"
+    }
+  ],
+  "missing_evidence": [
+    {
+      "missing_evidence_id": "missing:runtime_behavior:conclusion",
+      "kind": "conclusion_specific_missing_evidence",
+      "family_id": "runtime_behavior",
+      "conclusion_id": "runtime_behavior",
+      "summary": "runtime or staging evidence is applicable to this review but is not present",
+      "evidence_refs": []
+    }
+  ],
+  "contradictions": [],
+  "residual_uncertainty": [
+    {
+      "uncertainty_id": "uncertainty:authority_scope:1",
+      "family_id": "authority_scope",
+      "summary": "authority is present but still depends on producer-supplied review context",
+      "evidence_refs": [
+        "art_auth_pr_ticket",
+        "art_auth_review_scope"
+      ]
+    },
+    {
+      "uncertainty_id": "uncertainty:model_configuration:1",
+      "family_id": "model_configuration",
+      "summary": "model configuration remains declaration-backed unless corroborated by external runtime evidence",
+      "evidence_refs": [
+        "1.2",
+        "synthetic-code-assistant"
+      ]
+    },
+    {
+      "uncertainty_id": "uncertainty:tests_evaluations:1",
+      "family_id": "tests_evaluations",
+      "summary": "tests and build succeeded, but the evidence remains producer-bounded unless corroborated separately",
+      "evidence_refs": [
+        "art_build_log",
+        "art_unit_test_log",
+        "ver_ai_pr_low_risk_complete_001",
+        "ver_ai_pr_low_risk_complete_002"
+      ]
+    },
+    {
+      "uncertainty_id": "uncertainty:outcome_verification:1",
+      "family_id": "outcome_verification",
+      "summary": "outcome verification remains absent in this bounded v0.1 review",
+      "evidence_refs": []
+    }
+  ],
+  "human_review_items": [
+    {
+      "review_item_id": "review:missing:runtime_behavior:conclusion",
+      "priority": "medium",
+      "summary": "runtime or staging evidence is applicable to this review but is not present",
+      "evidence_refs": []
+    }
+  ],
+  "provenance": {
+    "source_pack_id": "epk_ai_pr_low_risk_complete_001",
+    "source_pack_hash": "1234123412341234123412341234123412341234123412341234123412341234",
+    "evidence_refs": [
+      "1.2",
+      "1111111111111111111111111111111111111111",
+      "1234123412341234123412341234123412341234123412341234123412341234",
+      "art_auth_pr_ticket",
+      "art_auth_review_scope",
+      "art_build_log",
+      "art_pr_diff",
+      "art_unit_test_log",
+      "developer.synthetic",
+      "epk_ai_pr_low_risk_complete_001",
+      "git-cli",
+      "node-test-runner",
+      "src/utils/slugify.ts",
+      "synthetic-code-assistant",
+      "tc_ai_pr_low_risk_complete_fs_001",
+      "tc_ai_pr_low_risk_complete_fs_002",
+      "tc_ai_pr_low_risk_complete_test_001",
+      "team.synthetic-platform",
+      "tests/utils/slugify.test.ts",
+      "ver_ai_pr_low_risk_complete_001",
+      "ver_ai_pr_low_risk_complete_002",
+      "workspace-filesystem"
+    ]
+  },
+  "integrity": {
+    "result_hash": "sha256:ea9d3005f3b386601271a6a5d8483ab34385e4ba9a2dda2036ef111a4c5218ed"
+  }
+}

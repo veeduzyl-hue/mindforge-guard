@@ -367,3 +367,18 @@ flowchart TD
 - run Experiment 0 and Experiment 1 before broad design-partner outreach
 
 [Recommendation] Do not move to service architecture until Experiment 4 demonstrates repeat-review leverage.
+
+## 20. Bounded PoC Notes
+
+[Repo] On 2026-08-27 the bounded PoC implementation added:
+
+- internal Evidence Assurance Kernel semantics in `packages/guard-core/src/evidenceAssuranceKernel.ts`
+- deterministic Experiment 0 coverage in `scripts/verify_evidence_assurance_kernel_poc.mjs`
+- a local governance-mapping preview fixture at `scripts/fixtures/local_governance_mapping_preview.case-e.json`
+- a local Production Evidence Readiness review preview fixture at `scripts/fixtures/production_evidence_readiness_review_preview.case-c.json`
+
+[Repo] Experiment 2 measurement readiness is prepared separately in:
+
+- `docs/strategy/production-evidence-readiness-measurement-template-v0.1.md`
+
+[Repo] Experiment 1 remains gated on real artifact availability and secret-safe access clarity.
