@@ -6,6 +6,10 @@ Classification: **REAL PRODUCER EVIDENCE / SANITIZED**
 
 Local, read-only review of one completed GitHub Actions workflow run and one GitHub Deployment record. This packet is not a certification, approval, production-safety conclusion, or execution control.
 
+## Fresh CI Payload Addendum
+
+**REAL PRODUCER EVIDENCE / SANITIZED.** Fresh GitHub Actions run `33100734304` produced non-expired artifact `9658328160` for commit `e8b8a1249ba17bd4dd0a5ccd0bc277a017d30b73`. Guard inspected two downloaded JSON files outside Git: a `valid_with_no_omissions` pack-validation result and a reviewable, non-executing single-agent governance-report preview. GitHub supplied no artifact digest; Guard computed `sha256:4f6ef688c3a264b755771b2b5b5c3aedfb7890c6e4527eff01d8f855f93a81e1` from the canonical file inventory. This verifies payload availability and binding context, not production readiness, runtime truth, deployment state, or business approval.
+
 ## Producer Sources And Evidence Inventory
 
 | Source | Sanitized identity | Producer declaration | Raw traceability | Integrity |

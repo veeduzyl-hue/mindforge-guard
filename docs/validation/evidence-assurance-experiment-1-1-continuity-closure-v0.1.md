@@ -1,10 +1,12 @@
 # Evidence Assurance Experiment 1.1 Release Continuity Closure v0.1
 
-Status: Blocked on fresh CI artifact availability; terminology and design-partner readiness documentation completed on 2026-08-28.
+Status: Fresh CI artifact closure completed on 2026-08-28.
 
 ## Observed Evidence
 
-The only available GitHub Actions artifact index was bound to workflow run `25858085587` and commit `5574e40218d6353bab763e81b7facf4892c1cb29`. Its artifact `6993509675` was expired, so payload availability and a Guard-computed artifact digest could not be established.
+Fresh run `33100734304` for `MindForge Guard First Governance Report` completed successfully for commit `e8b8a1249ba17bd4dd0a5ccd0bc277a017d30b73`. Artifact `9658328160` is non-expired through `2026-11-25T17:53:42Z`, was downloaded outside Git, and contains `guard-pack-validate.json` and `guard-single-agent-report.json`.
+
+GitHub did not provide an artifact digest. Guard computed `sha256:4f6ef688c3a264b755771b2b5b5c3aedfb7890c6e4527eff01d8f855f93a81e1` over the canonical sorted file-name/SHA-256 inventory. The payload proves that this workflow produced a valid-with-no-omissions preview validation output and a reviewable, non-executing governance report preview. It does not prove application correctness, deployment reality, runtime outcomes, business approval, or production readiness.
 
 GitHub Deployment records were available read-only, but none matched that CI commit. The prior Experiment 1 deployment record `4518932465` refers to `680f20dbf6c5138922832b6c4d0ddc3dabfa1d52` instead. No deployment was created or altered for this review.
 
@@ -19,13 +21,13 @@ The Experiment 1 records remain distinct GitHub evidence sources, but they are n
 
 ## Gate Result
 
-`FRESH_CI_ARTIFACT_AVAILABLE = NO`
+`FRESH_CI_ARTIFACT_AVAILABLE = YES`
 
 `SAME_COMMIT_CONTINUITY_AVAILABLE = NO`
 
 `INDEPENDENT_SECOND_PRODUCER_AVAILABLE = NO`
 
-To unblock R6 without remote mutation, a user must provide or allow observation of an existing completed workflow run with a non-expired downloadable artifact, then identify a pre-existing GitHub Deployment record bound to the same commit. For true cross-producer corroboration, an already-authorized independent provenance system such as Vercel or Kubernetes must expose a real artifact through a secret-safe read-only path.
+`SAME_COMMIT_RELEASE_CONTINUITY = NOT AVAILABLE` is an allowed result: no GitHub Deployment record matched the fresh CI commit. True cross-producer corroboration remains later validation work.
 
 ## Preserved Boundaries
 
