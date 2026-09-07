@@ -25,7 +25,9 @@ const directExecutableFiles = [
   "scripts/verify_mesr_reason_bindings.mjs",
   "scripts/verify_mesr_claim_stability.mjs",
   "scripts/verify_mesr_composition.mjs",
+  "scripts/verify_mesr_runtime_portability.mjs",
   "scripts/fixtures/mesr_experiment_3_phase2a_fixtures.mjs",
+  "scripts/fixtures/mesr_e3_a1_runtime_portability_fixtures.mjs",
 ];
 
 function read(relativePath) {
@@ -96,7 +98,7 @@ assert.ok(phase2Commands.every((command) => !/tsx|ts-node|--loader|--import/.tes
 const expectedDirectEdges = directTsEdges(directExecutableFiles);
 assert.ok(expectedDirectEdges.length > 0);
 
-const mesrFiles = expectedMesrFiles.map((name) => path.join(mesrRoot, name));
+const mesrFiles = walk(mesrRoot, ".ts");
 const scannedFiles = [...mesrFiles, ...directExecutableFiles.map((name) => path.join(repoRoot, name))];
 const forbiddenSyntax = [
   ["runtime_enum", /\b(?:const\s+)?enum\s+[A-Za-z_$]/],

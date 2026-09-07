@@ -23,6 +23,13 @@ export function createCanonicalSemanticSnapshot(
       .map((entry) => ({ reason_code: entry.reason_code, binding_status: entry.binding_status, required: entry.required }))
       .sort((left, right) => left.reason_code.localeCompare(right.reason_code)),
     explicit_non_claims: sortedUnique(projection.explicit_non_claims),
+    subject_effect_bindings: [...(projection.subject_effect_bindings ?? [])]
+      .map((entry) => ({
+        semantic_id: entry.semantic_id,
+        binding: entry.binding,
+        value: Array.isArray(entry.value) ? sortedUnique(entry.value) : entry.value,
+      }))
+      .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right))),
   };
 }
 

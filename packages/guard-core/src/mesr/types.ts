@@ -178,9 +178,16 @@ export interface MesrSemanticProjection {
   claim_boundaries_applied: readonly string[];
   explicit_non_claims: readonly string[];
   semantic_provenance: readonly string[];
+  subject_effect_bindings?: readonly MesrSemanticBinding[];
   reason_code_bindings?: readonly MesrReasonCodeBinding[];
   presentation?: Readonly<Record<string, unknown>>;
   external_references?: readonly string[];
+}
+
+export interface MesrSemanticBinding {
+  semantic_id: string;
+  binding: string;
+  value: string | boolean | readonly string[] | null;
 }
 
 export interface CanonicalSemanticSnapshot {
@@ -199,4 +206,9 @@ export interface CanonicalSemanticSnapshot {
     required: true;
   }>;
   explicit_non_claims: string[];
+  subject_effect_bindings: Array<{
+    semantic_id: string;
+    binding: string;
+    value: string | boolean | string[] | null;
+  }>;
 }

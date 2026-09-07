@@ -1,0 +1,206 @@
+const NON_AUTHORITY =
+  "This evidence record is for review only. It does not approve, block, deploy, certify, or control execution.";
+
+function harnessRecord({
+  id,
+  type,
+  sourceId,
+  sourceSchema,
+  timestamp,
+  subject,
+  claims,
+  digest,
+}) {
+  return {
+    record_version: "0.1",
+    record_id: id,
+    evidence_type: type,
+    source: "guard-native-agent-harness-local",
+    source_schema: sourceSchema,
+    source_id: sourceId,
+    timestamp,
+    subject,
+    assurance: {
+      cryptographic_validity: digest ? "verified" : "not_applicable",
+      input_binding: "verified",
+      execution_evidence: type === "command_result" ? "provided" : "not_applicable",
+      policy_completeness: "partial",
+      legal_applicability: "not_applicable",
+      human_review_status: type === "review_record" ? "reviewed" : "not_required",
+    },
+    claims: claims.map(([claim_type, detail]) => ({ claim_type, status: "observed", detail })),
+    limits: [{ code: "bounded_controlled_fixture", detail: "Controlled equivalence evidence is not production evidence." }],
+    raw_reference: {
+      path: `controlled/${id}.json`,
+      digest_sha256: digest ?? "0000000000000000000000000000000000000000000000000000000000000000",
+      locator: "local-controlled-fixture",
+    },
+    non_authority_statement: NON_AUTHORITY,
+  };
+}
+
+export function createMesrE3A1RuntimePortabilityFixtures() {
+  const github = {
+    schema_version: "github-actions-controlled-equivalence/v0.1",
+    classification: "CONTROLLED EQUIVALENCE FIXTURE",
+    producer: "GitHub Actions",
+    workflow_run: {
+      id: "gha-run-9001",
+      name: "Controlled Software Change Verification",
+      run_attempt: 1,
+      ref: "refs/heads/controlled",
+      event: "workflow_dispatch",
+      actor: "agent-build-01",
+      conclusion: "success",
+      created_at: "2026-09-02T10:00:00Z",
+      completed_at: "2026-09-02T10:03:00Z",
+    },
+    change: {
+      repository: "example/repo",
+      base_sha: "commit-A",
+      head_sha: "commit-B",
+      changed_paths: ["src/payment.ts"],
+      action: "modify",
+    },
+    declared_authority: {
+      source: "repo-policy:paths-v1",
+      path_scope: ["src/payment.ts"],
+      valid_at: "2026-09-02T10:00:00Z",
+    },
+    verification: {
+      executed: true,
+      result: "passed",
+      commit_sha: "commit-B",
+      job_name: "verify",
+      completed_at: "2026-09-02T10:02:00Z",
+    },
+    artifact: {
+      id: "gha-artifact-7001",
+      name: "release-bundle",
+      sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      commit_sha: "commit-B",
+    },
+    review: {
+      exists: true,
+      conclusion: "approved",
+      reviewer: "reviewer-01",
+      commit_sha: "commit-B",
+      scope: ["src/payment.ts"],
+      authority_ref: "repo-codeowners:v1",
+      reviewed_at: "2026-09-02T10:04:00Z",
+    },
+    release: {
+      release_id: "release:commit-B",
+      commit_sha: "commit-B",
+      artifact_sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    },
+    effect: {
+      observed: true,
+      release_id: "release:commit-B",
+      commit_sha: "commit-B",
+      environment: "staging",
+      before_state: "candidate_not_observed",
+      after_state: "release_artifact_observed",
+      observed_at: "2026-09-02T10:05:00Z",
+    },
+  };
+
+  const harness = {
+    pack_version: "0.1",
+    pack_id: "harness-controlled-software-change-001",
+    producer: "guard-native-agent-harness-local",
+    classification: "CONTROLLED EQUIVALENCE FIXTURE",
+    generated_at: "2026-09-02T10:05:00Z",
+    record_count: 5,
+    records: [
+      harnessRecord({
+        id: "harness-workflow-001",
+        type: "agent_workflow_artifact",
+        sourceId: "harness-run-4401",
+        sourceSchema: "agent-workflow-artifact/v0.1",
+        timestamp: "2026-09-02T10:00:00Z",
+        subject: { agent_id: "agent-build-01", run_id: "harness-run-4401", task_id: "software-change:example/repo:commit-B", tool_name: null },
+        claims: [
+          ["repository", "example/repo"],
+          ["base_revision", "commit-A"],
+          ["candidate_revision", "commit-B"],
+          ["changed_path", "src/payment.ts"],
+          ["change_action", "modify"],
+          ["declared_authority_source", "repo-policy:paths-v1"],
+          ["declared_authority_scope", "src/payment.ts"],
+          ["declared_authority_valid_at", "2026-09-02T10:00:00Z"],
+        ],
+      }),
+      harnessRecord({
+        id: "harness-command-001",
+        type: "command_result",
+        sourceId: "tool-call-8101",
+        sourceSchema: "command-result/v0.1",
+        timestamp: "2026-09-02T10:02:00Z",
+        subject: { agent_id: "agent-build-01", run_id: "harness-run-4401", task_id: "software-change:example/repo:commit-B", tool_name: "verify" },
+        claims: [
+          ["verification_executed", "true"],
+          ["verification_result", "passed"],
+          ["verification_subject_revision", "commit-B"],
+          ["verification_method", "verify"],
+          ["verification_observed_at", "2026-09-02T10:02:00Z"],
+        ],
+      }),
+      harnessRecord({
+        id: "harness-artifact-001",
+        type: "external_signed_receipt",
+        sourceId: "harness-artifact-8801",
+        sourceSchema: "external-signed-receipt/v0.1",
+        timestamp: "2026-09-02T10:03:00Z",
+        subject: { agent_id: "agent-build-01", run_id: "harness-run-4401", task_id: "software-change:example/repo:commit-B", tool_name: null },
+        claims: [
+          ["artifact_identity", "release-bundle"],
+          ["artifact_digest", "sha256:1111111111111111111111111111111111111111111111111111111111111111"],
+          ["artifact_subject_revision", "commit-B"],
+        ],
+        digest: "1111111111111111111111111111111111111111111111111111111111111111",
+      }),
+      harnessRecord({
+        id: "harness-review-001",
+        type: "review_record",
+        sourceId: "harness-review-3301",
+        sourceSchema: "review-record/v0.1",
+        timestamp: "2026-09-02T10:04:00Z",
+        subject: { agent_id: "reviewer-01", run_id: "harness-run-4401", task_id: "software-change:example/repo:commit-B", tool_name: null },
+        claims: [
+          ["review_exists", "true"],
+          ["approval_record", "approved"],
+          ["reviewer", "reviewer-01"],
+          ["review_subject_revision", "commit-B"],
+          ["review_scope", "src/payment.ts"],
+          ["review_authority_ref", "repo-codeowners:v1"],
+          ["reviewed_at", "2026-09-02T10:04:00Z"],
+        ],
+      }),
+      harnessRecord({
+        id: "harness-effect-001",
+        type: "agent_workflow_artifact",
+        sourceId: "harness-release-2201",
+        sourceSchema: "agent-workflow-artifact/v0.1",
+        timestamp: "2026-09-02T10:05:00Z",
+        subject: { agent_id: "agent-build-01", run_id: "harness-run-4401", task_id: "software-change:example/repo:commit-B", tool_name: null },
+        claims: [
+          ["release_identity", "release:commit-B"],
+          ["release_subject_revision", "commit-B"],
+          ["release_artifact_digest", "sha256:1111111111111111111111111111111111111111111111111111111111111111"],
+          ["effect_observed", "true"],
+          ["effect_release_identity", "release:commit-B"],
+          ["effect_subject_revision", "commit-B"],
+          ["effect_environment", "staging"],
+          ["effect_before_state", "candidate_not_observed"],
+          ["effect_after_state", "release_artifact_observed"],
+          ["effect_observed_at", "2026-09-02T10:05:00Z"],
+        ],
+      }),
+    ],
+    non_authority_statement:
+      "This evidence pack is for deterministic review only. It does not approve, block, deploy, certify, or control execution.",
+  };
+
+  return { github, harness };
+}
