@@ -28,9 +28,11 @@ const directExecutableFiles = [
   "scripts/verify_mesr_composition.mjs",
   "scripts/verify_mesr_runtime_portability.mjs",
   "scripts/verify_mesr_cross_domain.mjs",
+  "scripts/verify_mesr_apaai_crosswalk.mjs",
   "scripts/fixtures/mesr_experiment_3_phase2a_fixtures.mjs",
   "scripts/fixtures/mesr_e3_a1_runtime_portability_fixtures.mjs",
   "scripts/fixtures/mesr_experiment_3_phase2c_fixtures.mjs",
+  "scripts/fixtures/mesr_e3_a2_apaai_crosswalk_fixtures.mjs",
 ];
 
 function read(relativePath) {

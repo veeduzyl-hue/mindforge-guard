@@ -43,6 +43,7 @@
       "verify:mesr:composition": "node scripts/verify_mesr_composition.mjs",
       "verify:mesr:runtime-portability": "node scripts/verify_mesr_runtime_portability.mjs",
       "verify:mesr:cross-domain": "node scripts/verify_mesr_cross_domain.mjs",
+      "verify:mesr:apaai-crosswalk": "node scripts/verify_mesr_apaai_crosswalk.mjs",
       "verify:v8:semantic-foundation:phase2": "npm run verify:mesr:registry && npm run verify:mesr:reason-bindings && npm run verify:mesr:claim-stability && npm run verify:mesr:composition",
       "verify:v8:runtime-compatibility": "node scripts/verify_v8_runtime_compatibility.mjs",
       "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",

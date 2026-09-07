@@ -1,0 +1,106 @@
+{
+  "source_id": "apaai.protocol.openapi.commit-723defe",
+  "source_name": "APAAI Protocol",
+  "source_kind": "external_protocol_vocabulary",
+  "official_url": "https://www.apaaiprotocol.org/",
+  "repository": "https://github.com/apaAI-Labs/apaai-protocol",
+  "commit": "723defe1972a7e9df19eaff7db3d5d7101297137",
+  "artifact": "openapi.yaml",
+  "artifact_url": "https://github.com/apaAI-Labs/apaai-protocol/blob/723defe1972a7e9df19eaff7db3d5d7101297137/openapi.yaml",
+  "raw_artifact_url": "https://raw.githubusercontent.com/apaAI-Labs/apaai-protocol/723defe1972a7e9df19eaff7db3d5d7101297137/openapi.yaml",
+  "declared_protocol_identity": "APAAI Protocol v1.0 (RFC-2025-001)",
+  "machine_artifact": {
+    "openapi": "3.0.3",
+    "title": "APAAI Protocol API",
+    "version": "0.1.0",
+    "sha256": "7af928ebf4c421a28d289585471d2407d728d1cc6d18bc1df128827ca9571bc1",
+    "byte_length": 15981,
+    "line_count": 479
+  },
+  "retrieved_at": "2026-09-07",
+  "license_reference": {
+    "identifier": "Apache-2.0",
+    "name": "Apache License 2.0",
+    "source": "APAAI official site and pinned OpenAPI info.license"
+  },
+  "source_ambiguities": [
+    {
+      "ambiguity_id": "APAAI-SA-01",
+      "source_pointer": "official site identity versus openapi.yaml info.version",
+      "description": "The official site identifies APAAI Protocol v1.0 / RFC-2025-001 while the pinned machine artifact declares API version 0.1.0.",
+      "deterministic_treatment": "Preserve both as separate provenance dimensions; do not equate or normalize one into the other."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-02",
+      "source_pointer": "official site Three primitives versus openapi.yaml Decision schema",
+      "description": "The site presents Action, Policy, and Evidence as three primitives while the machine schema also defines Decision.",
+      "deterministic_treatment": "Treat Decision as a source-defined response record and never as a Guard disposition or authority primitive."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-03",
+      "source_pointer": "POST /actions prose and examples versus components.schemas.Decision.status",
+      "description": "Endpoint prose/examples use approved or rejected while the machine enum is allowed, requires_approval, or recorded.",
+      "deterministic_treatment": "The pinned machine enum is normative for controlled fixtures; prose-only status values are rejected."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-04",
+      "source_pointer": "GET /policy example versus components.schemas.Policy",
+      "description": "The response example uses direct actionType/requiresApproval/checks/evidence fields while the Policy schema requires rules with when and mode.",
+      "deterministic_treatment": "The controlled fixture follows components.schemas.Policy and rejects the incompatible example shape."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-05",
+      "source_pointer": "POST /evidence examples versus Evidence.checks item schema",
+      "description": "Examples add metadata or error to evidence checks while the schema disallows additional properties and permits only name, pass, approver, and note.",
+      "deterministic_treatment": "The controlled fixture accepts only the pinned check-item schema fields."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-06",
+      "source_pointer": "POST /evidence response verified flag",
+      "description": "The response-level verified flag means all APAAI evidence checks passed but does not establish source separation or independent verification.",
+      "deterministic_treatment": "Map it only as an external observation and apply the producer-claim boundary."
+    },
+    {
+      "ambiguity_id": "APAAI-SA-07",
+      "source_pointer": "official scope statement versus API governance and approval language",
+      "description": "The site says governance is intentionally out of scope while API descriptions use governance, enforcement, approval, and execution-adjacent wording.",
+      "deterministic_treatment": "Preserve source wording as external facts; none confers Guard execution, approval, legal, certification, or authority semantics."
+    }
+  ],
+  "scope_used_by_guard": [
+    "Actor.kind",
+    "Actor.name",
+    "Actor.provider",
+    "Action.id",
+    "Action.type",
+    "Action.actor",
+    "Action.target",
+    "Action.timestamp",
+    "Policy.rules",
+    "Policy.rules[].when",
+    "Policy.rules[].mode",
+    "Policy.rules[].require",
+    "Decision.actionId",
+    "Decision.status",
+    "Decision.checks",
+    "Evidence.actionId",
+    "Evidence.checks",
+    "Evidence.checks[].name",
+    "Evidence.checks[].pass",
+    "Evidence.checks[].approver",
+    "Evidence.timestamp",
+    "Evidence.signed",
+    "Evidence.hash",
+    "POST /evidence response.verified"
+  ],
+  "explicit_non_authority": [
+    "source identity is not Guard endorsement",
+    "source vocabulary is not Guard authority",
+    "Policy mode enforce is not Guard enforcement",
+    "Decision status is not Guard disposition",
+    "Evidence pass or verified is not independent verification",
+    "signing or hashing is not truth or correctness",
+    "approver presence is not applicable approval",
+    "protocol conformance is not legal compliance or certification"
+  ]
+}
