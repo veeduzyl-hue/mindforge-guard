@@ -45,6 +45,7 @@
       "verify:mesr:cross-domain": "node scripts/verify_mesr_cross_domain.mjs",
       "verify:mesr:apaai-crosswalk": "node scripts/verify_mesr_apaai_crosswalk.mjs",
       "verify:v8:semantic-foundation:phase2": "npm run verify:mesr:registry && npm run verify:mesr:reason-bindings && npm run verify:mesr:claim-stability && npm run verify:mesr:composition",
+      "verify:v8:institutional-artifact-readiness": "node scripts/verify_v8_institutional_artifact_readiness.mjs",
       "verify:v8:runtime-compatibility": "node scripts/verify_v8_runtime_compatibility.mjs",
       "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",
       "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",

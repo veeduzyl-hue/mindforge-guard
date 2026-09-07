@@ -1,0 +1,255 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mindforge.dev/schemas/institutional-artifact-v0.1.schema.json",
+  "title": "MindForge Guard Institutional Artifact v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_identity",
+    "semantic_state",
+    "presentation"
+  ],
+  "properties": {
+    "schema_version": { "const": "institutional-artifact-v0.1" },
+    "artifact_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_version",
+        "generated_at",
+        "profile",
+        "semantic_snapshot_sha256",
+        "source_case"
+      ],
+      "properties": {
+        "artifact_id": { "type": "string", "minLength": 1 },
+        "artifact_version": { "const": "0.1" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "profile": { "enum": ["Developer", "Audit/Assurance"] },
+        "semantic_snapshot_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "source_case": { "type": "string", "minLength": 1 }
+      }
+    },
+    "semantic_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consequential_transition",
+        "evidence_summary",
+        "claim_support",
+        "explicit_nonclaims",
+        "authority_context",
+        "temporal_basis",
+        "semantic_provenance",
+        "residual_uncertainty",
+        "reviewer_questions",
+        "required_follow_up"
+      ],
+      "properties": {
+        "consequential_transition": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/statement" }
+        },
+        "evidence_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observed", "verified", "missing", "conflicting"],
+          "properties": {
+            "observed": { "$ref": "#/$defs/statements" },
+            "verified": { "$ref": "#/$defs/statements" },
+            "missing": { "$ref": "#/$defs/statements" },
+            "conflicting": { "$ref": "#/$defs/statements" }
+          }
+        },
+        "claim_support": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/claimSupport" }
+        },
+        "explicit_nonclaims": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonClaimStatement" }
+        },
+        "authority_context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["declared", "verified", "missing"],
+          "properties": {
+            "declared": { "$ref": "#/$defs/statements" },
+            "verified": { "$ref": "#/$defs/statements" },
+            "missing": { "$ref": "#/$defs/statements" }
+          }
+        },
+        "temporal_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["basis_valid_at", "basis_status", "statements", "provenance_refs"],
+          "properties": {
+            "basis_valid_at": { "type": "string", "format": "date-time" },
+            "basis_status": { "enum": ["current", "stale", "expired", "not_yet_valid", "unknown"] },
+            "statements": { "$ref": "#/$defs/statements" },
+            "provenance_refs": { "$ref": "#/$defs/stringArray" }
+          }
+        },
+        "semantic_provenance": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "$ref": "#/$defs/provenanceChain" }
+        },
+        "residual_uncertainty": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/statement" }
+        },
+        "reviewer_questions": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/reviewRequestStatement" }
+        },
+        "required_follow_up": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/reviewRequestStatement" }
+        }
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "section_order", "emphasis_statement_ids"],
+      "properties": {
+        "profile_id": {
+          "enum": [
+            "mesr.profile.developer.phase3a_v0_1",
+            "mesr.profile.audit_assurance.phase3a_v0_1"
+          ]
+        },
+        "section_order": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "consequential_transition",
+              "evidence_summary",
+              "claim_support",
+              "explicit_nonclaims",
+              "authority_context",
+              "temporal_basis",
+              "semantic_provenance",
+              "residual_uncertainty",
+              "reviewer_questions",
+              "required_follow_up"
+            ]
+          }
+        },
+        "emphasis_statement_ids": { "$ref": "#/$defs/stringArray" }
+      }
+    }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement_id", "statement_kind", "text", "evidence_refs"],
+      "properties": {
+        "statement_id": { "type": "string", "minLength": 1 },
+        "statement_kind": {
+          "enum": ["FACT", "SUPPORTED_CLAIM", "NON_CLAIM", "UNCERTAINTY", "REVIEW_REQUEST"]
+        },
+        "text": { "type": "string", "minLength": 1 },
+        "evidence_refs": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "statements": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/statement" }
+    },
+    "nonClaimStatement": {
+      "allOf": [
+        { "$ref": "#/$defs/statement" },
+        {
+          "type": "object",
+          "properties": { "statement_kind": { "const": "NON_CLAIM" } }
+        }
+      ]
+    },
+    "reviewRequestStatement": {
+      "allOf": [
+        { "$ref": "#/$defs/statement" },
+        {
+          "type": "object",
+          "properties": { "statement_kind": { "const": "REVIEW_REQUEST" } }
+        }
+      ]
+    },
+    "claimSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "core_semantic_id",
+        "domain_semantic_id",
+        "relation",
+        "claim_boundary_ids",
+        "required_bindings",
+        "observed_bindings",
+        "missing_bindings",
+        "supporting_evidence_refs",
+        "statement"
+      ],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 1 },
+        "core_semantic_id": { "type": "string", "minLength": 1 },
+        "domain_semantic_id": { "type": "string", "minLength": 1 },
+        "relation": {
+          "enum": ["supports", "partially_supports", "contradicts", "does_not_support", "indeterminate"]
+        },
+        "claim_boundary_ids": { "$ref": "#/$defs/stringArray" },
+        "required_bindings": { "$ref": "#/$defs/stringArray" },
+        "observed_bindings": { "$ref": "#/$defs/stringArray" },
+        "missing_bindings": { "$ref": "#/$defs/stringArray" },
+        "supporting_evidence_refs": { "$ref": "#/$defs/stringArray" },
+        "statement": { "$ref": "#/$defs/statement" }
+      }
+    },
+    "provenanceChain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain_id",
+        "chain_kind",
+        "source_pointer",
+        "normalized_fact",
+        "core_semantic_id",
+        "domain_semantic_id",
+        "claim_boundary_id",
+        "support_relation",
+        "artifact_statement_id"
+      ],
+      "properties": {
+        "chain_id": { "type": "string", "minLength": 1 },
+        "chain_kind": { "enum": ["supported_claim", "explicit_nonclaim", "missing_or_indeterminate"] },
+        "source_pointer": { "type": "string", "minLength": 1 },
+        "normalized_fact": { "$ref": "#/$defs/statement" },
+        "core_semantic_id": { "type": "string", "minLength": 1 },
+        "domain_semantic_id": { "type": "string", "minLength": 1 },
+        "claim_boundary_id": { "type": ["string", "null"] },
+        "support_relation": {
+          "enum": ["supports", "partially_supports", "contradicts", "does_not_support", "indeterminate"]
+        },
+        "artifact_statement_id": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -33,6 +33,8 @@ const directExecutableFiles = [
   "scripts/fixtures/mesr_e3_a1_runtime_portability_fixtures.mjs",
   "scripts/fixtures/mesr_experiment_3_phase2c_fixtures.mjs",
   "scripts/fixtures/mesr_e3_a2_apaai_crosswalk_fixtures.mjs",
+  "scripts/fixtures/v8_phase3a_institutional_artifact_fixture.mjs",
+  "scripts/verify_v8_institutional_artifact_readiness.mjs",
 ];
 
 function read(relativePath) {
