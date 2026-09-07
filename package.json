@@ -42,6 +42,7 @@
       "verify:mesr:claim-stability": "node scripts/verify_mesr_claim_stability.mjs",
       "verify:mesr:composition": "node scripts/verify_mesr_composition.mjs",
       "verify:v8:semantic-foundation:phase2": "npm run verify:mesr:registry && npm run verify:mesr:reason-bindings && npm run verify:mesr:claim-stability && npm run verify:mesr:composition",
+      "verify:v8:runtime-compatibility": "node scripts/verify_v8_runtime_compatibility.mjs",
       "verify:harness-phase2:evidence": "node scripts/verify_harness_phase2_external_evidence_schema.mjs",
       "verify:harness-phase2:normalizer": "node scripts/verify_harness_phase2_pack_normalizer_renderer.mjs",
       "verify:harness-phase2:contract": "node scripts/verify_harness_phase2_evidence_type_contract_hardening.mjs",
