@@ -1,6 +1,6 @@
 # Experiment 3 - Semantic Portability And Composition Validation v0.1
 
-Status: V8.0 architecture acceptance suite design. All cases are `DESIGNED / NOT RUN`; no portability or composition hypothesis is claimed as passed.
+Status: V8.0 architecture acceptance suite. Phase 2A provides initial executable PASS evidence for E3-C1 through C4 and E3-D1 through D3; E3-A and E3-B remain `NOT RUN`, and Gate 2 remains `NOT YET`.
 
 ## 1. Purpose
 
@@ -23,6 +23,8 @@ Every executable case must pin:
 - expected support relations and explicit non-claims.
 
 Same pinned inputs must replay byte-equivalently after canonical ordering. A failure cannot be waived by changing vocabulary, presentation, or module order.
+
+Phase 2A executable C/D cases use explicitly test-only external vocabulary. They validate architecture only and do not assert real NIST, ISO, AIUC, OWASP, or other normative mappings.
 
 ## 3. E3-A - Runtime Portability
 
@@ -190,7 +192,7 @@ Same pinned inputs must replay byte-equivalently after canonical ordering. A fai
 - `producer`: Guard-native fixture producer.
 - `domain_context`: Software Change Pack.
 - `input_vocabulary`: Native terms plus NIST mapping and Audit presentation labels.
-- `expected_core_semantics`: byte-equivalent Core bindings after presentation fields are removed.
+- `expected_core_semantics`: canonical semantic snapshot equality for Core semantic IDs, support relations, claim boundaries, required binding status, and explicit non-claims; presentation and external-reference metadata are excluded.
 - `expected_support_relations`: byte-equivalent `supports_claim()` results.
 - `explicit_non_claims`: certification, compliance, approval, execution authorization.
 - `pass_condition`: Only external references, mapping metadata, grouping, and presentation differ.
@@ -237,13 +239,13 @@ Same pinned inputs must replay byte-equivalently after canonical ordering. A fai
 | E3-B1 | Delegation Core survives software/synthetic-finance scopes | Designed / not run |
 | E3-B2 | Review Core survives software/synthetic-healthcare contexts | Designed / not run |
 | E3-B3 | One Core transition model spans operational/epistemic cases | Designed / not run |
-| E3-C1 | Identity vocabulary preserves authority non-claim | Designed / not run |
-| E3-C2 | Approval vocabulary cannot bypass bindings | Designed / not run |
-| E3-C3 | Integrity cannot inflate into truth | Designed / not run |
-| E3-C4 | Framework mapping cannot inflate into compliance/certification | Designed / not run |
-| E3-D1 | NIST Crosswalk/Audit Profile do not change support | Designed / not run |
-| E3-D2 | Dynamic OWASP Crosswalk is non-interfering | Designed / not run |
-| E3-D3 | Semantic collision is rejected | Designed / not run |
+| E3-C1 | Identity vocabulary preserves authority non-claim | Phase 2A executable / PASS |
+| E3-C2 | Approval vocabulary cannot bypass bindings | Phase 2A executable / PASS |
+| E3-C3 | Integrity cannot inflate into truth | Phase 2A executable / PASS |
+| E3-C4 | Test-only framework vocabulary cannot inflate into compliance/certification | Phase 2A executable / PASS |
+| E3-D1 | Test Crosswalk/Profile do not change support | Phase 2A executable / PASS |
+| E3-D2 | Dynamic test Crosswalk is non-interfering | Phase 2A executable / PASS |
+| E3-D3 | Semantic collision is rejected | Phase 2A executable / PASS |
 
 ## 8. Non-Consensus Hypotheses
 
