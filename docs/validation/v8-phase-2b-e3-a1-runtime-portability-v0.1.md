@@ -32,6 +32,13 @@ The raw structures and producer-native identifiers intentionally differ. They re
 ### HYPOTHESIS
 
 The experiment tests only the initial two-producer portability hypothesis. It does not prove broad runtime portability, cross-domain neutrality, or third-producer compatibility.
+Correction recorded at the start of Phase 2C:
+
+```text
+PH-02 EAK Domain Neutrality = UNCHANGED / NOT DIRECTLY TESTED by E3-A1
+```
+
+E3-A1 tested the same domain across different producers, not materially different domains.
 
 ## Existing producer assets reviewed
 

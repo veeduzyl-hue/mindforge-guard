@@ -10,6 +10,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const mesrRoot = path.join(repoRoot, "packages", "guard-core", "src", "mesr");
 const expectedMesrFiles = [
   "claimBoundaries.ts",
+  "corePatternSignature.ts",
   "coreRegistry.ts",
   "eakProjection.ts",
   "moduleManifest.ts",
@@ -26,8 +27,10 @@ const directExecutableFiles = [
   "scripts/verify_mesr_claim_stability.mjs",
   "scripts/verify_mesr_composition.mjs",
   "scripts/verify_mesr_runtime_portability.mjs",
+  "scripts/verify_mesr_cross_domain.mjs",
   "scripts/fixtures/mesr_experiment_3_phase2a_fixtures.mjs",
   "scripts/fixtures/mesr_e3_a1_runtime_portability_fixtures.mjs",
+  "scripts/fixtures/mesr_experiment_3_phase2c_fixtures.mjs",
 ];
 
 function read(relativePath) {
