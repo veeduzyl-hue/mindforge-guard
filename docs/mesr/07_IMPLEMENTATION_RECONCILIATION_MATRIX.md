@@ -1,0 +1,22706 @@
+# V8-000 Implementation Reconciliation Matrix
+
+Generated from reviewed [JSON](implementation-reconciliation.v0.1.json) by `python scripts/_build_v8_000.py --render`.
+
+Current Guard source remains canonical. Research IDs are candidate mapping keys, not a second runtime registry or equivalence aliases.
+
+This file mirrors every machine-readable conclusion. Source trace arrays and provenance are retained as JSON blocks to preserve exact field names, line numbers and excerpts. They describe this pinned baseline only.
+
+## Counts
+
+core_candidates: ALIGN_AND_ADOPT=19, ALREADY_IMPLEMENTED=0, NEEDS_EXPERIMENT=21, REJECT_OR_DEFER=1; total=41.
+
+meta_assurance_candidates: ALIGN_AND_ADOPT=1, ALREADY_IMPLEMENTED=0, NEEDS_EXPERIMENT=2, REJECT_OR_DEFER=0; total=3.
+
+Primary compatibility totals cover ALIGN_AND_ADOPT only (Core + metadata): ADDITIVE_WITH_ALIAS=0, POTENTIALLY_BREAKING=0, PURELY_ADDITIVE=19, REQUIRES_REASON_CODE_MIGRATION=0, REQUIRES_REPORT_MIGRATION=1, REQUIRES_SCHEMA_MIGRATION=0.
+
+## Core Candidates Index
+
+| Candidate | Verdict | Meaning / boundary | Primary impact |
+|---|---|---|---|
+| [identity.observed](#identityobserved) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [identity.declared](#identitydeclared) | ALIGN_AND_ADOPT | PARTIAL / CONFLICT | PURELY_ADDITIVE |
+| [identity.verified](#identityverified) | NEEDS_EXPERIMENT | PARTIAL / CONFLICT | Experiment/defer: narrative risk |
+| [identity.bound_to_principal](#identitybound_to_principal) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [delegation.declared](#delegationdeclared) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [delegation.verified](#delegationverified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [delegation.current](#delegationcurrent) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [authority.declared](#authoritydeclared) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [authority.verified](#authorityverified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [authority.current](#authoritycurrent) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [authority.scope_bound](#authorityscope_bound) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [authority.reachable](#authorityreachable) | REJECT_OR_DEFER | NONE / NONE | Experiment/defer: narrative risk |
+| [authority.rebound](#authorityrebound) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [capability.observed](#capabilityobserved) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [capability.verified](#capabilityverified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [access.observed](#accessobserved) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [action.proposed](#actionproposed) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [action.observed](#actionobserved) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [action.succeeded](#actionsucceeded) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [commitment.boundary_declared](#commitmentboundary_declared) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [commitment.crossed](#commitmentcrossed) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [verification.execution_absent](#verificationexecution_absent) | NEEDS_EXPERIMENT | PARTIAL / CONFLICT | Experiment/defer: narrative risk |
+| [verification.producer_asserted](#verificationproducer_asserted) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [verification.independent](#verificationindependent) | NEEDS_EXPERIMENT | PARTIAL / CONFLICT | Experiment/defer: narrative risk |
+| [verification.passed](#verificationpassed) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [evidence.present](#evidencepresent) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [evidence.integrity_verified](#evidenceintegrity_verified) | NEEDS_EXPERIMENT | PARTIAL / CONFLICT | Experiment/defer: narrative risk |
+| [evidence.coverage_bounded](#evidencecoverage_bounded) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [evidence.custody_independent](#evidencecustody_independent) | NEEDS_EXPERIMENT | NONE / PARTIAL | Experiment/defer: narrative risk |
+| [evidence.sufficient](#evidencesufficient) | ALIGN_AND_ADOPT | PARTIAL / CONFLICT | REQUIRES_REPORT_MIGRATION |
+| [provenance.source_declared](#provenancesource_declared) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [provenance.source_verified](#provenancesource_verified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [provenance.chain_complete](#provenancechain_complete) | NEEDS_EXPERIMENT | PARTIAL / CONFLICT | Experiment/defer: narrative risk |
+| [provenance.environment_continuous](#provenanceenvironment_continuous) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [outcome.observed](#outcomeobserved) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [outcome.verified](#outcomeverified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [acceptance.decision_recorded](#acceptancedecision_recorded) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [acceptance.authority_verified](#acceptanceauthority_verified) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [acceptance.current](#acceptancecurrent) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [standing.historical](#standinghistorical) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [standing.current](#standingcurrent) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+
+## Meta Assurance Candidates Index
+
+| Candidate | Verdict | Meaning / boundary | Primary impact |
+|---|---|---|---|
+| [mesr_assurance.replayable](#mesr_assurancereplayable) | ALIGN_AND_ADOPT | PARTIAL / PARTIAL | PURELY_ADDITIVE |
+| [mesr_assurance.claim_stable](#mesr_assuranceclaim_stable) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+| [mesr_assurance.semantic_portable](#mesr_assurancesemantic_portable) | NEEDS_EXPERIMENT | PARTIAL / PARTIAL | Experiment/defer: narrative risk |
+
+## Reason Code Index
+
+| Code | Primary role | Current trigger status |
+|---|---|---|
+| [MISSING_AUTHORITY](#missing_authority) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [DECLARED_AUTHORITY_ONLY](#declared_authority_only) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [AUTHORITY_OUT_OF_SCOPE](#authority_out_of_scope) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [REVIEWER_MISSING](#reviewer_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [OWNER_MISSING](#owner_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [TIME_WINDOW_MISSING](#time_window_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [TIME_WINDOW_EXPIRED](#time_window_expired) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [OUT_OF_SCOPE_ACTION](#out_of_scope_action) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [OUT_OF_SCOPE_RESOURCE](#out_of_scope_resource) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [PROTECTED_RESOURCE_TOUCHED](#protected_resource_touched) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [UNDECLARED_FILE_CHANGE](#undeclared_file_change) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [SCOPE_TOO_BROAD](#scope_too_broad) | NEEDS_REVIEW | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [SCOPE_INCOMPLETE](#scope_incomplete) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [INSUFFICIENT_VERIFICATION](#insufficient_verification) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [TESTS_NOT_RUN](#tests_not_run) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [TESTS_FAILED](#tests_failed) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [BUILD_NOT_RUN](#build_not_run) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [BUILD_FAILED](#build_failed) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [STATIC_ANALYSIS_NOT_RUN](#static_analysis_not_run) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [SECURITY_SCAN_NOT_RUN](#security_scan_not_run) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [MANUAL_REVIEW_MISSING](#manual_review_missing) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [ROLLBACK_MISSING](#rollback_missing) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [ROLLBACK_UNVERIFIED](#rollback_unverified) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [RELEASE_TARGET_UNCLEAR](#release_target_unclear) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [PRODUCTION_ENVIRONMENT_UNVERIFIED](#production_environment_unverified) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [BLOCKED_ACTION_PRESENT](#blocked_action_present) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [DESTRUCTIVE_COMMAND_ATTEMPTED](#destructive_command_attempted) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [SECRET_ACCESS_ATTEMPTED](#secret_access_attempted) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [NETWORK_ACCESS_ATTEMPTED](#network_access_attempted) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [UNSAFE_GIT_OPERATION](#unsafe_git_operation) | NEEDS_REVIEW | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [TOOL_OUTPUT_MISSING](#tool_output_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [COMMAND_RESULT_MISSING](#command_result_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [HIGH_RISK_DATA](#high_risk_data) | NEEDS_REVIEW | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [DATA_SENSITIVITY_UNKNOWN](#data_sensitivity_unknown) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [CREDENTIAL_RISK](#credential_risk) | NEEDS_REVIEW | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [EXFILTRATION_RISK](#exfiltration_risk) | NEEDS_REVIEW | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [SECURITY_PATCH_SCOPE_UNCLEAR](#security_patch_scope_unclear) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [CYBER_AUTHORIZATION_REQUIRED](#cyber_authorization_required) | POLICY_RESULT | IMPLEMENTED_TRIGGER |
+| [EVIDENCE_INCOMPLETE](#evidence_incomplete) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [MANIFEST_INCOMPLETE](#manifest_incomplete) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [ARTIFACT_MISSING](#artifact_missing) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [ARTIFACT_HASH_MISSING](#artifact_hash_missing) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [ARTIFACT_REF_UNRESOLVED](#artifact_ref_unresolved) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [PROVENANCE_MISSING](#provenance_missing) | CORE_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [PRODUCER_IDENTITY_UNKNOWN](#producer_identity_unknown) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [NON_DETERMINISTIC_PRODUCER](#non_deterministic_producer) | CORE_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [DEPENDENCY_CHANGE_DETECTED](#dependency_change_detected) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [BREAKING_CHANGE_UNVERIFIED](#breaking_change_unverified) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [LOCKFILE_CHANGED](#lockfile_changed) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [MIGRATION_NOT_DOCUMENTED](#migration_not_documented) | DOMAIN_SEMANTIC | IMPLEMENTED_TRIGGER |
+| [PUBLIC_API_CHANGE_UNVERIFIED](#public_api_change_unverified) | DOMAIN_SEMANTIC | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+| [HUMAN_REVIEW_REQUIRED](#human_review_required) | POLICY_RESULT | IMPLEMENTED_TRIGGER |
+| [SECURITY_REVIEW_REQUIRED](#security_review_required) | POLICY_RESULT | IMPLEMENTED_TRIGGER |
+| [OWNER_REVIEW_REQUIRED](#owner_review_required) | POLICY_RESULT | IMPLEMENTED_TRIGGER |
+| [RELEASE_REVIEW_REQUIRED](#release_review_required) | POLICY_RESULT | IMPLEMENTED_TRIGGER |
+| [CUSTOMER_REVIEW_REQUIRED](#customer_review_required) | POLICY_RESULT | DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND |
+
+## Schema Version
+
+v8-000-reconciliation/0.1
+
+## Status
+
+V8_000_PASS_WITH_BLOCKERS
+
+## Source Of Truth
+
+Current Guard source remains canonical. Research IDs are candidate mapping keys, not a second runtime registry or equivalence aliases.
+
+## Baseline
+
+```json
+{
+  "repository_root": "D:\\AI project\\mindforge-guard",
+  "branch": "validation/v8-000-source-reconciliation-v0.1",
+  "base_ref": "validation/v8-gate-3-institutional-artifact-readiness-v0.1",
+  "base_commit": "30512dff336435f8d1c1bf4b633058c374668eb8",
+  "agents_context_commit": "20aa844fe6f0239d5c0d18184cf5faffa366abf5",
+  "des_closure_commit": "b909228ac9928fbdf22bd7081532683930c4209a",
+  "des_imported": false,
+  "patch_sha256": "62bddd822df7d8f91890ce1c3b324a7d371fe5e0564df28a4dd19dd18c4e27ec",
+  "worktree_before_reconciliation": "clean",
+  "research_root": "E:\\MindForge Guard\\Guard Strategic Research OS",
+  "research_validation": "REPAIRED_BASELINE_PASS",
+  "research_hashes_before": {
+    "Access-Not-Authority_Cymphony_x_MindForge-Guard-EAK_Architecture-Note_v0.1.docx": "fcb2cdc68b7d3bae09b0696c4d602ed1eeacf7a84e17e74d8749485f94cd5338",
+    "Action_Commitment_Boundary_Independent_Evidence_Custody_Sociable_Systems_to_MindForge_Guard_v0.1.docx": "78ab1c8f272ceb0ce3e5d89f4eaa4370c175a61dccee51e7d3accfb34e0e3055",
+    "AGCP_x_MindForge_Guard_Strategic_Overlap_Boundary_Matrix_2026-09-08.xlsx": "d3cce35fe90ecfcbbc2f518245adc2a8464689300c4bb4aea0c12f2f9a3fe24d",
+    "AI_Workspace_Custody_to_Evidence_Custody_Guard_EAK_Strategic_Architecture_Note_v0.1.docx": "95b8851de60f2c2c2be2ee8d2d6b6dd878c2116dc8a1c52a493b7993769079f9",
+    "ARO_Guard_Strategic_Research_Asset_P0_v0.1.docx": "0e6cd3f8bf18241551c580dfc71f39cbc06f3a77bc3ec9c4f51e2c04f2540960",
+    "Audit_not_Assurance_California_SB813_AB1405_MindForge_Guard_EAK_v0.1.docx": "e685ca7316171d76942f05353e281f609a4dd7c8ffaf5f49308e82afaa0d07c1",
+    "Audit_Not_Assurance_ISACA_AI_in_Audit_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "c25b2e69657a906900c021f96bdfa49dce0be302eb31ea9e221784613fe46ad8",
+    "Australian_AISI_Multi-Agent_Governance_x_MindForge_Guard_V8_EAK_MESR_Alignment_Matrix.docx": "d3a91138a149c26059b6800d0746f9090dd571cdd68387db0a7c898e25225944",
+    "Capability_Authority_AuroraLens_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "ac90ee993308cf86c64ccf6da3b0e28bb302339d0f3c79d8a6b45b66b7cf8afa",
+    "Context_not_Evidence_Euno_x_MindForge_Guard_Architecture_Boundary_Integration_Matrix_v0.1.docx": "67dc77a1ecb7b9e3c54789b77d900008c44781e7fa4140f3fae3212f20870231",
+    "Control_Stack_not_Assurance_Stack_Guard_EAK_Strategic_Architecture_Note_v0.1.docx": "6704a11ac9a35ba3fb642c6ebaf9da6b71beecb1cee3e6c68959484d8dee97f4",
+    "Dataset_Integrity_to_Evidence_Integrity_Guard_Strategic_Research_Asset_v0.1.docx": "94059820cf357ca26e2961e35c82bb8806993c8ee28b51ec135907a201938398",
+    "Derk_Kraai_x_MindForge_Guard_Strategic_Research_Asset_v0.1.docx": "872cfced94342910a7d3919fde93ca0649ddcb03cee5264c546dc8a74e9169d0",
+    "Disclosure_Principal_Binding_Authority_Evidence_Guard_EAK_v0.1.docx": "82da78428342e1f628fce119a07e08bd9a13dcf3d9d7d82b5527ebe87e7d1aed",
+    "Execution_Outcome_Evidence_Madrona_IA40_2026_MindForge_Guard_EAK_v0.1(1).docx": "2432b3524c92728c700c9a88a7fa9f56ae084afe75a3cbae9f1905924a3e6af0",
+    "FERZ_ETA_x_MindForge_Guard_Architecture_Gap_Matrix_v0.1.docx": "3e8d18e173cda59386213e27be7f89a682282b7834a5146a713e49b2483a0b6a",
+    "Forecasting_AI_Cyber_Risks_x_MindForge_Guard_Effect_Boundary_Evidence.docx": "18a8f22094753f26deec3d89e28c29383136389deaff89ac4f7472e80a16176a",
+    "Geopolitics_of_AI_x_MindForge_Guard_From_AI_Power_to_Governable_Power_v0.1.docx": "663dc8dfd929616688946f8bb1a8ff33c6452626648f8842805e3a77223ed3e7",
+    "Governed_Execution_vs_Independent_Assurance_GIS_to_Guard_EAK_v0.1.docx": "5234108cd43af3fccf95b89c924a74dbd1021c8a633c3fa58ee73fcb751e56dc",
+    "Guard Research OS → Strategic Re.docx": "f40c0d77d750dbaddd786ea220eba429f1b67e6c4ee182b7f03d0f736492692f",
+    "Guard Research OS.docx": "fd6edff9cbcc2e5d8c15b2fb4847284b1ccb994587fa7ed593efc172885b6355",
+    "Guard_Competitive_Evidence_Ecosystem_Matrix_v0.1.docx": "4dddf066e6767074a67e1b5541e763fe841fe48edb9543ddf34b199e9f67c73a",
+    "guard_dennis_authority_runtime_assurance_interface_v0.1.docx": "ca71e464d40ef93a955cbe2fb2b4a43eeaef152b81283d3bdc66a2c9fafae10e",
+    "Guard_EAK_OpenAI_HuggingFace_Runtime_Evidence_Strategic_Architecture_Note_v0.1.docx": "e5649a994df443cfcd2bfba2cad67cffaa1f22e39a8933ac41288e87afa99475",
+    "Guard_V8_EAK_RSI_Recursive_Authority_Architecture_Note_v0.1.docx": "e9552b5aa264c52265981856bdcabbca681ace80205a93b06344d4acfa89e7b0",
+    "Guard_V8_Enterprise_AI_Value_Realization_Evidence_Acceptance_Layer_v0.1.docx": "165a2f92c8862b5424a3bb98b516418ad01fbe49d0ce5cb7445aa0f9825228eb",
+    "HKCGI_Governance_Playbook_x_Guard_Evidence_Layer_Semantic_Gap_Matrix_v0.1.docx": "94b2210b04932d3733098565eed007894dfeee46ced7dda3d9465bb3549e0460",
+    "Identity_not_Authority_KYA_Agentic_Payments_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "e8224ef697bdeb13185208d04ddcbbc7215b2969f3a1a4bcaa3164dd1ccef9c1",
+    "Julia_Kung_Halt_Under_Pressure_x_MindForge_Guard_Strategic_Analysis_Revised_v2.docx": "2cba0896f7ebad1e30ff96e29694a30ef8e91ddb40bde0783e683ce2b2d94ee6",
+    "Kenney_AI_Governance_Stack_x_MindForge_Guard_Gap_Overlap_Matrix_v0.1.xlsx": "b711c5418b8fed6c144c47b395c9ff6c9b888a6ea21fcbaa75c19da4a260f78f",
+    "Kenney_AI_Governance_Stack_x_MindForge_Guard_Runtime_Evidence_Architecture_v0.1.docx": "346306d16ed5bead4d25a93830a9e94d1aa060d1cc39a212559c860e85f3ced0",
+    "Memory_Not_Authority_Endogenous_Authorization_Laundering_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "19ae93efc1b186727626f784b4d5a44c6cda5102072f1e2f07533ec688e22b1f",
+    "MindForge_Guard_Agent_Capability_Authority_Assurance_Strategic_Research_Reference_v0.1(1).docx": "97b70d9246ef975d81acf144cdb76c63d04b8e9fa8ba692bfb6c723c29a5667e",
+    "MindForge_Guard_AI_Tokenomics_Runtime_Evidence_Strategic_Note_v0.1.docx": "15b1ca123ef38b8089df35972eb6e7e1e66e70d9bbd2cba39da9299a1b60eef0",
+    "MindForge_Guard_Anthropic风险报告战略启示与路线建议.docx": "fc13fb0cd46e0ee2eda478d05db1f235584fa4ab0ba7b664b944f372c094ad76",
+    "MindForge_Guard_ARCHead_Strategic_Implications_and_Roadmap.docx": "a9cb54d77429072b10f7c346459db632200cc3a7ed1bff2199965ee3b8251ab4",
+    "MindForge_Guard_Authority_Boundary_to_Evidence_Boundary_Strategic_Synthesis_Note_v0.1.docx": "bb9f87a6877d6805433987744f26c38abbe80262d6d202f601257baeae524a1b",
+    "MindForge_Guard_Evidence_Semantic_Control_Point_Blueprint.docx": "19d943301e675daeaf095e4409ed84593e63cda258b484b71c4948dc3dd68765",
+    "MindForge_Guard_Evidence_Semantic_Control_Point_Blueprint_v2.docx": "da04f3451cba401cc0fae7dd337e8121aabde3f33cddc2edbc0fca96ea3f4174",
+    "MindForge_Guard_Human-in-the-Mesh_Authority_Reachability_Architecture_Note_v0.1.docx": "4fdd3cc3dc5304af720bb96c100de26f4ef61bdeb95606c3066202d10f7b0120",
+    "MindForge_Guard_IP_and_Adoption_Strategy_2026.docx": "683594ce3cb0faad8add900772ac06d7bc652d51478e43c4c09691742d9b3594",
+    "MindForge_Guard_Policy_Not_Runtime_Governance_Blackman_Architecture_Note_v0.1.docx": "754ddbd226376adb526b2b41eba3acc28340b42fafe523260a396d41f03a8fdf",
+    "MindForge_Guard_Reasoning_Governance_Strategic_Implications.docx": "ebe9877647c628cb7bd692687d7d48a0cb9fb15504aa91333b9c6b386c2c3d19",
+    "MindForge_Guard_Salesforce_Agentic_Enterprise_Strategy_2026.docx": "0f5bae472e70fdb5d9b7b46abee78455f228babcff48100a9b351a8c47b0cad4",
+    "MindForge_Guard_V8_Epistemic_State_Transition_Evidence_Strategy.docx": "5f72bb65fd9968fb667a9cccb8893ecc838aebbe163385b2d8a49da618a51bf5",
+    "MindForge_Guard_可复制上下文安全研究_产品规划与开发参考.docx": "77400430648dbbb28032d48ed346badfb7379c87eae3d46b029a1ce5cb7d60ea",
+    "MindForge_Guard_战略启示_给管理者的AI应用手册.docx": "e75442f606c0afbb0763b364948c8fd6434b363fca5754f604b817d2af261dce",
+    "MindForge_Guard_董事会治理案例_战略启示.docx": "a50fc9a7c33565e16ad1c974b3449374ebab8b76997fec0c45ee846411a3dac7",
+    "Model_Not_Agent_Self_Improving_Harness_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "aae8bc4ea457f71edeb6a1460ad4f1d44bc554f2599c780ceed3fd7f61055258",
+    "Model_Not_System_Arm_AI_Portal_x_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "832bb01f71259794aa2034f420274669ee74a0de0b3e1a052cf2fba2a91e3f07",
+    "Observability_to_Evidence_to_Assurance_KPMG_x_MindForge_Guard_EAK_v0.1.docx": "341849f941dbf8a850689cd669cf1f3e3f9b5b89107438e744a6406324b5d3c4",
+    "Odingard_TTP_x_MindForge_Guard_Architecture_Gap_Matrix_v0.1.docx": "ed481d0daeec898c4b998508dc8e4089f93fbec856f4ca32a875268c737967e5",
+    "Odingard_TTP_x_MindForge_Guard_Architecture_Gap_Matrix_v0.1.xlsx": "32498e507ed6fdacafbb1c7fb89b5295c0403d890d2a85427a9b969dd2f670f5",
+    "Path_Not_Proof_Guard_EAK_Strategic_Architecture_Note_v0.1.docx": "0bcfb939b041e311cc4ef927c9c4b3dda29ddd6de2a87071d1fedda335e51c88",
+    "Permission_not_Authority_MindForge_Guard_EAK_Architecture_Note_v0.1.docx": "2b84f3361b1ee3f9de7f1b8446e4d57a33c4e02c4603af9c75255df41ad38180",
+    "Perspective_Bound_Evidence_EDPB_02_2026_x_MindForge_Guard_Strategic_Research_Asset_v0.1.docx": "28308c7fcd20e69bc958d8acec3aabab2e2c86ad0fe157e151b674521caa7c01",
+    "Risk_not_Evidence_Catastrophic_AI_Risk_Matrix_x_MindForge_Guard_EAK_v0.1.docx": "85dab12e44968f31e99cf18c6b5313f17876443722cccaec95a222df3d0e8b53",
+    "Runtime Decision Receipts Need Independent Assurance Layers Final Pre-Publication.docx": "4d4d7ee4cdcf5f26de719283a8171c1cd79029fdcd10f189ce971776347071f8",
+    "Shobha_Shah_Independent_Verification_Reachability_Guard_EAK_v0.1.docx": "be6ad91effacebdfba61f134442e0fc14472c3d8f9d0619f7c1fb188e19424b1",
+    "Software_Agent_ServiceProvider_Evidence_Guard_EAK_Runtime_Assurance_Architecture_Note_v0.1.docx": "19174e73e21928aaa49b885dca7aac34a6eb2e027b1c99dac51a8980bc8f114e",
+    "Structure_not_Evidence_Agentic_Context_Cracking_MindForge_Guard_EAK_v0.1.docx": "7e3b2858accb23f0fbcc50ea45bfc7334b7052e3ed62c047e4e232e3b3abdaab",
+    "Tests_Not_Acceptance_MindForge_Guard_Evidence_Acceptance_Architecture_Note_v0.1.docx": "86f5699d2e9fd75377ebbc1c51628d57ff635b927127c480b60499657bd1a1b5",
+    "The_AI_Governance_Practitioners_Manual_x_MindForge_Guard_Strategic_Architecture_Matrix_v0.2.docx": "e9118bc3bfd299b52161611bb5755058b8a9cc039a821c712b1d95004581545f",
+    "The_Algorithm_in_the_Room_Guard_EAK_Strategic_Research_Reference_v0.1.docx": "fc953688997dfe3fdab35274e352be6447313d3ced4c3ad99d5a7f98fd697d0b",
+    "Trust_Not_Acceptance_Ant_ASL_Runtime_Agent_Security_to_MindForge_Guard_Architecture_Note_v0.1.docx": "aaf60fc5a65c57eae4474bebc741c4e7ba65b2027b745e0828ca2609bb079a24",
+    "v8.0启动计划.docx": "37d8a5233ec10f6e4618d2db4965a7188fbd4386b7fa2140abf567ddedb7b054",
+    "docs/architecture/07_COMPOSABLE_EVIDENCE_ARCHITECTURE_v0.1.md": "347d6ec3c304232a2e9d7d08569c0bd03409e183cef1450162d919c0c138b09c",
+    "docs/experiments/experiment-3-semantic-portability-v0.1.md": "cdaf4d2e308978e30a3e4de8774d14c9f52d6e44b05c02e936489904547ffc7e",
+    "docs/mesr/02_MESR_CORE_CANDIDATE_INVENTORY.md": "0741f877d46d02722c9bb4ac1e16de90e2fca2bab27872861f58af8b8d473646",
+    "docs/mesr/03_CORE_CLAIM_BOUNDARY_MATRIX.md": "5ebd7cb904b1b24bec63a150d768d663d32449f4dc1cd5b2f34dd3cc79fef726",
+    "docs/mesr/04_REASON_CODE_TO_MESR_MAPPING.md": "630f4e0059c122972c4207630dc04ad94885128bf1f484f6172a259ebe2cb34d",
+    "docs/mesr/05_SOFTWARE_CHANGE_DOMAIN_PACK_v0.1.md": "68b5f23d0d72815d28dcf9805fdf31894de98cf7b492793d4c45e775f208d047",
+    "docs/mesr/06_EXTERNAL_CROSSWALK_CANDIDATES.md": "c1cae5e36d6f2d1d90e37de4c8622dea4c3caa60fb0a49a7f83f12ff2f066c92",
+    "docs/mesr/mesr-core-candidates.v0.1.json": "ddaaee7f124a833e86f4febb458da364ce9bf9f1c0372ffbcee362a48966f33b",
+    "docs/mesr/semantic-relations.v0.2.json": "990343c22724099cf417ab0c11a2722d1a5da28ba7f6d7b966bb12fa26477076",
+    "docs/planning/08_V8_SEMANTIC_FOUNDATION_SCOPE.md": "c30287025481cd928d6f9865e2b0a5d3fe71785e9cb0178a878f5890bca21259",
+    "docs/planning/09_V8_EAK_MESR_IMPLEMENTATION_BACKLOG.md": "4b081bf3749f2a9237c8562059b963a517c7c40dffdd25cf2664b8442ed20a8d",
+    "docs/planning/11_NEXT_STAGE_DECISION_MEMO.md": "47b305ed225c0bb722bba8da936e3bca7a5d11fba244c5af1eb4ca0a94d6272a",
+    "docs/planning/12_SEMANTIC_ARCHITECTURE_REPAIR_CHANGELOG.md": "2665a62e28c384bdb4afb45b3b7ef5d23cfa19a6d59c1150fe1d54ffaf861c88",
+    "docs/research-os/00_CORPUS_INVENTORY.md": "d9a4bddd770f5bbf9839a1a6867d330e72aee8b3392c48da88b6bbe9fa822813",
+    "docs/research-os/01_STRATEGIC_CONVERGENCE_MAP.md": "f050aac9ebffa9301848aa5861841afe65396c5251604b593acb4c5a416936c4",
+    "docs/research-os/10_RESEARCH_DEBT_AND_CONTRADICTIONS.md": "efc2583540d2b72c85cadc574e67e0b58f4af198a7868ec50a32bdd90c71feef",
+    "docs/research-os/corpus-index.json": "e205c9c75b57b894ff32d4c40a143d35cf26234d1e48e8093f664ea820d4bbff",
+    "scripts/build_corpus_index.py": "3c37f9cffb2fb59193247348e0b68bbb00e58d7f2a5ccf37e217867feafa4b55",
+    "scripts/build_mesr_candidates.py": "2b5483edeba3ea7a9d6c5007c18b103396b29b45c2ca24b46943983bf7cce6b0",
+    "scripts/build_research_digest.py": "706f011fe85c38a4915de30ada63b611b3a16d8376fbcfc4be736b5b98828d38",
+    "scripts/extract_research_corpus.py": "109324826bcafe0a9c52cc373b7d3890754d700605d509b17697544cad325c3e",
+    "scripts/query_research_corpus.py": "f26410ea648d042d62c04186a9aa33e3b9d9c802d6248f71f60e9311dd605316",
+    "scripts/validate_architecture_compression_outputs.py": "98b48d18ed1e29d58074eca8eff14c2fb20d62cfc3bcff14588b0b42867600c2",
+    "tests/fixtures/experiment-3/README.md": "3e308c42a3dfb6f23eeb2f110eaadeec2781c8bab5ba2f7e40221e1ac5d06236",
+    "tests/fixtures/experiment-3/e3-a/ci-producer.json": "75b9cb3dc00f2f98b82781c0ac6d009b6345c3e63f5844bde2421cf02dcee375",
+    "tests/fixtures/experiment-3/e3-a/execution-success-without-verification.json": "bc3cd50e162f952105e6f9b4a0fa8223249db5fa427ee935c6d703ff6814e5bf",
+    "tests/fixtures/experiment-3/e3-a/normalization-expectations.json": "bb4aa1e010c12a5a003e7ddc4e1c69f730a72460008c42b352358e31939ff775",
+    "tests/fixtures/experiment-3/e3-a/runtime-producer.json": "9edec1beff2d19eacb3afaf636834e8e777c8fca5efa52e83dec5aa5baac4390",
+    "tests/fixtures/experiment-3/e3-b/shared-core-evidence.json": "11119e1ddee76cb10fe773dd096d96265cddbf218b7964784bdb6e3dbfcef4de",
+    "tests/fixtures/experiment-3/e3-c/vocabulary-collisions.json": "2edbba0c06e0371eb75961333d590ef27eccfc76b1a4f4e2e671a9007c747ca2",
+    "tests/fixtures/experiment-3/e3-d/compositions.json": "353b9322cae485434d077094c6fa934dd80bd9f4e6fcc82d6e3bb250063ce271"
+  },
+  "harness_root": "D:\\AI project\\guard-native-agent-harness",
+  "harness_commit": "8116457d2a64e45c2154d9f480e68d40937b6ab0",
+  "harness_worktree": "clean",
+  "harness_source_hashes": {
+    "src/evidence/schema.ts": "bbcec9a616a7b60b2d4fa1735299526bb0538dcd2466e4d67b1e7ac83cb1e624",
+    "src/evidence/compatibility.ts": "f71fe0e5a76a5753329111bf7fe20405e2d9f3c16dd29722743a327a69bcff72"
+  },
+  "node_version": "v24.15.0"
+}
+```
+
+## Core Candidates
+
+### identity.observed
+
+**semantic_id:** identity.observed
+
+**research_definition:** An identifier or actor representation was observed in a bounded source and time context.
+
+**supports**
+
+```json
+[
+  "an identity representation was observed"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "identity verified",
+  "principal bound",
+  "authority verified",
+  "delegation current"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.actor.actor
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:37"
+]
+```
+
+**current_behavior:** Actor attribution is represented; observation versus source assertion is not isolated.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Actor attribution is represented; observation versus source assertion is not isolated. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** An observed identifier without credential or delegation must not establish verification or authority.
+
+**gate1_action:** Define an observation facet over existing attribution.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### identity.declared
+
+**semantic_id:** identity.declared
+
+**research_definition:** A producer or source asserts an identity for an actor or system.
+
+**supports**
+
+```json
+[
+  "identity was declared by the named source"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "identity independently verified",
+  "authority",
+  "current delegation"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.actor.identity_assertion
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:38"
+]
+```
+
+**current_behavior:** identity_assertion supports both assertion presence and verified_identity, unlike the declaration-only research predicate.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Current identity_assertion explicitly supports verified_identity, which the repaired declaration-only predicate excludes. ALIGN_AND_ADOPT applies only to an additive declaration facet; narrowing or aliasing the old entry is not authorized.
+
+**required_experiment:** An asserted identifier without verification method remains declaration only.
+
+**gate1_action:** Specify a declaration facet while retaining the old ID and historical bindings.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### identity.verified
+
+**semantic_id:** identity.verified
+
+**research_definition:** A declared identity was checked by a named method within a stated scope and time.
+
+**supports**
+
+```json
+[
+  "identity check passed within verifier scope"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority verified",
+  "delegation valid",
+  "action authorized",
+  "outcome accepted"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "identity.declared"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.actor.identity_assertion
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:38",
+  "packages/guard-core/src/mesr/supportEvaluator.ts:27"
+]
+```
+
+**current_behavior:** verified_identity is supported by identity_assertion without requiring a successful named verification method.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** verified_identity is supported by identity_assertion without requiring a successful named verification method. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Credential/source and observed time without a verification act must leave identity verification unresolved.
+
+**gate1_action:** Test a verified predicate before narrowing old positive claims.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### identity.bound_to_principal
+
+**semantic_id:** identity.bound_to_principal
+
+**research_definition:** A verified identity is linked to an accountable principal for a bounded context.
+
+**supports**
+
+```json
+[
+  "actor-to-principal binding is supported"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "the principal has current authority",
+  "the action is authorized"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "identity.verified"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "authority.verified"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.actor.principal
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:36"
+]
+```
+
+**current_behavior:** Principal and actor references exist separately; verified actor-to-accountable-principal binding is not evaluated.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Principal and actor references exist separately; verified actor-to-accountable-principal binding is not evaluated. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Two actors sharing a principal label must not prove binding or authority.
+
+**gate1_action:** Specify a separate verified relationship; do not issue identity.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### delegation.declared
+
+**semantic_id:** delegation.declared
+
+**research_definition:** A delegation or mandate was asserted by a named source.
+
+**supports**
+
+```json
+[
+  "delegation was declared"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "delegation authentic",
+  "delegation current",
+  "scope valid",
+  "authority current"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.authority.delegation
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:41"
+]
+```
+
+**current_behavior:** Current delegation records a transfer and supports occurrence/scope; source declaration is not a separate predicate.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Current delegation records a transfer and supports occurrence/scope; source declaration is not a separate predicate. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** A declared mandate without authentic origin must not become verified delegation.
+
+**gate1_action:** Add a declaration facet without altering transfer semantics.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### delegation.verified
+
+**semantic_id:** delegation.verified
+
+**research_definition:** The origin and integrity of a delegation were verified within a stated method and scope.
+
+**supports**
+
+```json
+[
+  "delegation provenance and integrity were verified"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "delegation remains current",
+  "target action is in scope",
+  "revocation clear"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "delegation.declared"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.authority.delegation
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:41"
+]
+```
+
+**current_behavior:** Delegator/delegate/scope/time/provenance presence is not origin/integrity verification.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Delegator/delegate/scope/time/provenance presence is not origin/integrity verification. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Signed-but-unchecked and verified-but-revoked delegations must differ.
+
+**gate1_action:** Test named origin and integrity checks.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### delegation.current
+
+**semantic_id:** delegation.current
+
+**research_definition:** A verified delegation is within its validity window and has no demonstrated revocation for the evaluated context.
+
+**supports**
+
+```json
+[
+  "delegation current for the evaluated context"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "all action preconditions satisfied",
+  "execution authorized outside the evaluated scope"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "delegation.verified"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "authority.current",
+    "authority.scope_bound"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/mesr/temporalBasis.ts:9"
+]
+```
+
+**current_behavior:** Temporal validator checks shape and supplied status, not delegation revocation or validity-window evaluation.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Temporal validator checks shape and supplied status, not delegation revocation or validity-window evaluation. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Expired delegation with supplied current status must not establish currentness.
+
+**gate1_action:** Design separate time and revocation evaluation.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.declared
+
+**semantic_id:** authority.declared
+
+**research_definition:** A source asserts that a principal has authority.
+
+**supports**
+
+```json
+[
+  "authority was declared"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority verified",
+  "authority current",
+  "authority in scope",
+  "execution authorized"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "principal_ref",
+  "authority_source_ref",
+  "scope",
+  "declaration_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.authority.declared
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:42"
+]
+```
+
+**current_behavior:** Definitions and principal non-claims align; producer/subject/scope/asserted_time bindings differ from principal/source/scope/declaration_time.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Definitions and principal non-claims align; producer/subject/scope/asserted_time bindings differ from principal/source/scope/declaration_time. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Declared authority must not imply verified/current authority or execution permission.
+
+**gate1_action:** Specify binding correspondence without treating producer as principal.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.verified
+
+**semantic_id:** authority.verified
+
+**research_definition:** The basis of authority was verified against a named authority source and method.
+
+**supports**
+
+```json
+[
+  "authority basis verified within scope"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority current",
+  "authority applies to this target",
+  "commitment permitted"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "authority.declared"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "principal_ref",
+  "authority_source_ref",
+  "verification_method",
+  "scope",
+  "evaluation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.authority.source
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:39"
+]
+```
+
+**current_behavior:** Source attribution excludes validity/applicable authority; pack provided status remains producer input.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Source attribution excludes validity/applicable authority; pack provided status remains producer input. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** provided status plus artifact refs alone must not prove authority verified.
+
+**gate1_action:** Test scoped authority-source verification.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.current
+
+**semantic_id:** authority.current
+
+**research_definition:** Verified authority remains valid at the evaluation time with expiry and revocation checks resolved.
+
+**supports**
+
+```json
+[
+  "authority current at evaluation time"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority covers this action, target, or commitment class",
+  "action safe"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "authority.verified"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "standing.current"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "principal_ref",
+  "scope",
+  "evaluation_time",
+  "expiry_check",
+  "revocation_check"
+]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts:282",
+  "packages/guard-core/src/mesr/temporalBasis.ts:9"
+]
+```
+
+**current_behavior:** Coverage compares end_at with pack.created_at; no reliance-time revocation evaluator exists in MESR.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Coverage compares end_at with pack.created_at; no reliance-time revocation evaluator exists in MESR. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Historically valid pack with later revocation must not establish current authority.
+
+**gate1_action:** Require verified authority and separately resolved expiry/revocation.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.scope_bound
+
+**semantic_id:** authority.scope_bound
+
+**research_definition:** Current authority is explicitly bounded to subject, action, target, purpose, and commitment class.
+
+**supports**
+
+```json
+[
+  "evaluated action is within the stated authority scope"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "all runtime preconditions satisfied",
+  "outcome correct",
+  "institutional acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "authority.current"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "commitment.boundary_declared"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "principal_ref",
+  "subject",
+  "action",
+  "target",
+  "purpose",
+  "commitment_class",
+  "evaluation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.authority.scope
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:40"
+]
+```
+
+**current_behavior:** Scope binds subject/action/target/scope/time, but does not prove current authority, purpose or commitment class.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Scope binds subject/action/target/scope/time, but does not prove current authority, purpose or commitment class. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Matching path with wrong purpose or stale authority must not imply current scope-bound authority.
+
+**gate1_action:** Specify contextual additions while preserving scope-only claims.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.reachable
+
+**semantic_id:** authority.reachable
+
+**research_definition:** An authorized principal can be reached with sufficient time, standing, and intervention power for the evaluated commitment.
+
+**supports**
+
+```json
+[
+  "authority is operationally reachable"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "intervention occurred",
+  "decision was accepted",
+  "human presence guarantees safety"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "acceptance.decision_recorded"
+  ],
+  "adjacent_to": [
+    "authority.current",
+    "commitment.crossed"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.review.review
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:64"
+]
+```
+
+**current_behavior:** Reviewer names and requests do not establish contactability, intervention power or time to commitment.
+
+**meaning_match:** NONE
+
+**claim_boundary_match:** NONE
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** REJECT_OR_DEFER
+
+**verdict_reason:** Reviewer names and requests do not establish contactability, intervention power or time to commitment. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Re-entry needs reachable-without-decision and unreachable-with-valid-authority fixtures.
+
+**gate1_action:** Defer pending external evidence and materiality criteria; no contact/orchestration feature.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### authority.rebound
+
+**semantic_id:** authority.rebound
+
+**research_definition:** Authority was revalidated and rebound after a material change in identity, target, route, environment, or risk.
+
+**supports**
+
+```json
+[
+  "authority basis was re-established after material change"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "earlier authority remained continuously valid",
+  "all consequences accepted"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "authority.verified"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "provenance.environment_continuous"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/mesr/temporalBasis.ts:9"
+]
+```
+
+**current_behavior:** Subject hashes and CB-16 express continuity boundaries; no rebinding evaluator proves re-established authority.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Subject hashes and CB-16 express continuity boundaries; no rebinding evaluator proves re-established authority. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Unchanged capability after identity/target change must not reuse prior authority.
+
+**gate1_action:** Reuse historical references in a continuity/rebinding experiment.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### capability.observed
+
+**semantic_id:** capability.observed
+
+**research_definition:** An actor or system demonstrated or exposed an ability in a bounded context.
+
+**supports**
+
+```json
+[
+  "capability was observed"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "permission",
+  "authority",
+  "intent",
+  "commitment allowed"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.action.tool_invocation
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:45"
+]
+```
+
+**current_behavior:** Runtime tool inventory and CB-04 separate capability from authority; inventory alone does not demonstrate ability.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Runtime tool inventory and CB-04 separate capability from authority; inventory alone does not demonstrate ability. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Tool availability without invocation or authority must not prove either.
+
+**gate1_action:** Distinguish exposed and demonstrated capability in context.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### capability.verified
+
+**semantic_id:** capability.verified
+
+**research_definition:** A capability was tested by a named method in a bounded environment.
+
+**supports**
+
+```json
+[
+  "capability check passed in the test environment"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority",
+  "production availability",
+  "outcome correctness"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "capability.observed"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "verification.passed"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.verification
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:56"
+]
+```
+
+**current_behavior:** Generic bounded verification exists; capability-specific test environment is not evaluated.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Generic bounded verification exists; capability-specific test environment is not evaluated. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Successful rehearsal must not imply production availability or authority.
+
+**gate1_action:** Test bounded capability rehearsal.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### access.observed
+
+**semantic_id:** access.observed
+
+**research_definition:** An access path or permission relationship was observed.
+
+**supports**
+
+```json
+[
+  "access existed at observation time"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "authority",
+  "delegated purpose",
+  "actual use",
+  "safe execution"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "capability.observed"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.boundary.authority
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:46"
+]
+```
+
+**current_behavior:** CB-03 separates access from authority; no dedicated access-observation predicate is registered.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** CB-03 separates access from authority; no dedicated access-observation predicate is registered. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Token access must not imply delegated purpose, actual use or safe execution.
+
+**gate1_action:** Record a narrow observed access relationship.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### action.proposed
+
+**semantic_id:** action.proposed
+
+**research_definition:** A candidate action and target were represented before execution.
+
+**supports**
+
+```json
+[
+  "an action was proposed"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "action executed",
+  "action authorized",
+  "effect occurred"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.action.action
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:44",
+  "packages/guard-core/src/validateEvidencePack.ts:123",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Core action combines proposed/attempted/observed/completed; optional plan has planned states but action status has no proposed value.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Core action combines proposed/attempted/observed/completed; optional plan has planned states but action status has no proposed value. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Planned step with no event must not become executed action.
+
+**gate1_action:** Specify contextual proposal state without changing action enum.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### action.observed
+
+**semantic_id:** action.observed
+
+**research_definition:** A producer recorded that an action or tool invocation occurred.
+
+**supports**
+
+```json
+[
+  "action occurrence was observed by the producer"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "action succeeded",
+  "effect complete",
+  "outcome correct",
+  "action authorized"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.action.action
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:44",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Actions/tool invocations carry producer status and time; occurrence is not an independently checked success.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Actions/tool invocations carry producer status and time; occurrence is not an independently checked success. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Attempted invocation must not imply success, correctness or authority.
+
+**gate1_action:** Add observation predicate retaining producer attribution.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### action.succeeded
+
+**semantic_id:** action.succeeded
+
+**research_definition:** The action met its declared execution success condition and is bound to the evaluated artifact and environment.
+
+**supports**
+
+```json
+[
+  "declared execution condition succeeded"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "business outcome correct",
+  "rollback ready",
+  "institutional acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "action.observed"
+  ],
+  "entails": [],
+  "orthogonal_to": [
+    "verification.passed"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.action.action
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:44",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Canonical succeeded is producer status; generic action lacks mandatory success criteria and artifact/environment binding.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Canonical succeeded is producer status; generic action lacks mandatory success criteria and artifact/environment binding. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Execution completion without constraint/method/result must not become verification.passed.
+
+**gate1_action:** Test bounded execution-success predicate.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### commitment.boundary_declared
+
+**semantic_id:** commitment.boundary_declared
+
+**research_definition:** The event at which an action creates consequential external effect is explicitly defined.
+
+**supports**
+
+```json
+[
+  "commitment boundary is declared"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "boundary was crossed",
+  "authority was sufficient",
+  "effect reversible"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.boundary.effect
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:48"
+]
+```
+
+**current_behavior:** Effect/execution boundaries exist but do not explicitly define the consequential commitment event.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Effect/execution boundaries exist but do not explicitly define the consequential commitment event. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Declared merge/deploy boundary without event must not imply crossing.
+
+**gate1_action:** Specify declared event over existing boundary references.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### commitment.crossed
+
+**semantic_id:** commitment.crossed
+
+**research_definition:** Evidence demonstrates that the declared consequential commitment event occurred.
+
+**supports**
+
+```json
+[
+  "action crossed the declared commitment boundary"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "commitment authorized",
+  "effect correct",
+  "effect accepted",
+  "effect reversible"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "commitment.boundary_declared"
+  ],
+  "entails": [],
+  "orthogonal_to": [
+    "authority.scope_bound"
+  ],
+  "adjacent_to": [
+    "outcome.observed"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.effect.state_transition
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:52"
+]
+```
+
+**current_behavior:** State transition binds before/after/boundary/time but does not prove a consequential external commitment.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** State transition binds before/after/boundary/time but does not prove a consequential external commitment. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Dry-run/tool success without external effect must not prove crossing.
+
+**gate1_action:** Test domain transition-to-commitment binding.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### verification.execution_absent
+
+**semantic_id:** verification.execution_absent
+
+**research_definition:** No evidence demonstrates that the required verification execution occurred.
+
+**supports**
+
+```json
+[
+  "verification execution is not demonstrated"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "verification failed",
+  "underlying claim false",
+  "release rejected without policy"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [
+    "verification.passed",
+    "verification.producer_asserted"
+  ],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.verification
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:56",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts:389",
+  "packages/guard-core/src/mesr/reasonCodeBindings.ts:51",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** TESTS_NOT_RUN also covers present inconclusive/nonpassing records; a global absence alias would change meaning.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** TESTS_NOT_RUN also covers present inconclusive/nonpassing records; a global absence alias would change meaning. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** No record and producer pass with unresolved independence must diverge.
+
+**gate1_action:** Keep reason behavior; distinguish search-bound absence from result insufficiency.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### verification.producer_asserted
+
+**semantic_id:** verification.producer_asserted
+
+**research_definition:** The evidence producer reports that a verification passed.
+
+**supports**
+
+```json
+[
+  "producer asserted verification"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "independent verification",
+  "evidence sufficient",
+  "acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "verification.independent"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "verification_id",
+  "producer_principal_ref",
+  "subject",
+  "scope",
+  "claim_set_id",
+  "evaluation_time",
+  "asserted_result"
+]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.verification
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:56",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Pack verification and producer-claim markers exist; research claim-set/principal/time bindings are incomplete.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Pack verification and producer-claim markers exist; research claim-set/principal/time bindings are incomplete. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Producer PASS must remain an assertion when independence is unresolved.
+
+**gate1_action:** Specify assertion context over current verification.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### verification.independent
+
+**semantic_id:** verification.independent
+
+**research_definition:** The verifier is sufficiently separate from the producer, executor, and sole evidence custody path for the stated scope.
+
+**supports**
+
+```json
+[
+  "verification independence requirements were met"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "verification passed",
+  "evidence sufficient",
+  "audit opinion"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "verification.passed",
+    "verification.producer_asserted"
+  ],
+  "adjacent_to": [
+    "evidence.custody_independent"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "verification_id",
+  "verifier_principal_ref",
+  "producer_principal_ref",
+  "executor_principal_ref",
+  "custody_path",
+  "independence_profile_id",
+  "scope",
+  "evaluation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.provenance.verifier
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:61",
+  "packages/guard-core/src/evidenceAssuranceKernel.ts:1048",
+  "packages/guard-core/src/evidenceAssuranceKernel.ts:946",
+  "packages/guard-core/src/mesr/claimBoundaries.ts:50",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Core requires producer separation, but EAK marks verified normalized records or any nonempty external executed_checks independently_verified without custody/principal comparison.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Core requires producer separation, but EAK marks verified normalized records or any nonempty external executed_checks independently_verified without custody/principal comparison. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Same-producer/sole-custody report with checks must not prove independent verification.
+
+**gate1_action:** Falsify independence shortcut before changing PoC classification.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### verification.passed
+
+**semantic_id:** verification.passed
+
+**research_definition:** A named verification method passed against declared inputs, criteria, environment, and scope.
+
+**supports**
+
+```json
+[
+  "the verified constraint passed within scope"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "all relevant claims passed",
+  "outcome correct",
+  "acceptance",
+  "safety"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "verification.independent",
+    "acceptance.decision_recorded"
+  ],
+  "adjacent_to": [
+    "evidence.coverage_bounded"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "verification_id",
+  "verifier_principal_ref",
+  "method_id",
+  "subject",
+  "scope",
+  "claim_set_id",
+  "artifact_binding",
+  "environment_binding",
+  "evaluation_time",
+  "result"
+]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.verification
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:56",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Verification and tests_passed projection exist; research artifact/environment/claim-set/verifier bindings are incomplete.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Verification and tests_passed projection exist; research artifact/environment/claim-set/verifier bindings are incomplete. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Same test label on another artifact/environment must not preserve bounded pass.
+
+**gate1_action:** Specify result facet with orthogonal independence and acceptance.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### evidence.present
+
+**semantic_id:** evidence.present
+
+**research_definition:** A record or artifact is available for evaluation.
+
+**supports**
+
+```json
+[
+  "evidence object is present"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "integrity verified",
+  "provenance verified",
+  "evidence sufficient",
+  "claim true"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "evidence_id",
+  "subject",
+  "source_ref",
+  "observation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.item
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:53",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Evidence item supports presence and excludes sufficiency/truth/authority; observation time and several explicit non-claims are dispersed.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Evidence item supports presence and excludes sufficiency/truth/authority; observation time and several explicit non-claims are dispersed. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Present artifact without integrity/source checks remains presence only.
+
+**gate1_action:** Align presence context and non-claims over evidence.item.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### evidence.integrity_verified
+
+**semantic_id:** evidence.integrity_verified
+
+**research_definition:** The evaluated evidence content is bound to its identifier and has passed stated integrity checks.
+
+**supports**
+
+```json
+[
+  "evidence integrity passed"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "source truthful",
+  "coverage sufficient",
+  "claim supported"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "evidence.present"
+  ],
+  "entails": [],
+  "orthogonal_to": [
+    "provenance.source_verified",
+    "evidence.coverage_bounded"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "evidence_id",
+  "integrity_method",
+  "evaluation_time",
+  "result"
+]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.verification
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:56",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:124",
+  "packages/guard-core/src/evidenceAssuranceKernel.ts:1102",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** External verifier can compare hashes, but producer projection supports artifact_integrity from digest presence plus subject; EAK report digest presence becomes bound.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** External verifier can compare hashes, but producer projection supports artifact_integrity from digest presence plus subject; EAK report digest presence becomes bound. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Digest present with mismatched bytes must not support verified integrity.
+
+**gate1_action:** Separate digest supplied, content binding and actual check result.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### evidence.coverage_bounded
+
+**semantic_id:** evidence.coverage_bounded
+
+**research_definition:** The evidence scope and the claims or constraints it covers are explicitly enumerated.
+
+**supports**
+
+```json
+[
+  "evidence coverage boundary is known"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "coverage complete",
+  "unlisted claims supported",
+  "acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "evidence.integrity_verified",
+    "evidence.custody_independent"
+  ],
+  "adjacent_to": [
+    "verification.passed"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "evidence_id",
+  "claim_set_id",
+  "scope",
+  "coverage_boundary"
+]
+```
+
+**current_implementation_analogue:** mesr.core.claim.scope
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:58",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Claim scope/evidence refs/coverage exist; inventory counts and coverage_note do not enumerate a named claim-set boundary.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Claim scope/evidence refs/coverage exist; inventory counts and coverage_note do not enumerate a named claim-set boundary. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Complete manifest with uncovered release constraint must not imply sufficiency.
+
+**gate1_action:** Specify explicit claim-set coverage metadata.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### evidence.custody_independent
+
+**semantic_id:** evidence.custody_independent
+
+**research_definition:** No actor whose action is being judged is the sole custodian of the material evidence used for that judgment.
+
+**supports**
+
+```json
+[
+  "independent custody requirement met"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "verifier independent",
+  "evidence true",
+  "evidence sufficient"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "verification.independent",
+    "evidence.integrity_verified"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "evidence_id",
+  "custody_path",
+  "producer_principal_ref",
+  "evaluation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.provenance.lineage
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:62",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Lineage/source refs exist but no custody-principal path or sole-custodian evaluator exists.
+
+**meaning_match:** NONE
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Lineage/source refs exist but no custody-principal path or sole-custodian evaluator exists. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Different adapter names with the same sole custodian must not prove independent custody.
+
+**gate1_action:** Design bounded custody experiment without inferring independence from external origin.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### evidence.sufficient
+
+**semantic_id:** evidence.sufficient
+
+**research_definition:** The available qualified evidence covers the required claim set under an explicit assurance profile, with material gaps resolved.
+
+**supports**
+
+```json
+[
+  "specified claim set is supportable under the named profile"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "audit opinion",
+  "legal compliance",
+  "action safe",
+  "institutional acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "evidence.present",
+    "evidence.coverage_bounded"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "acceptance.decision_recorded"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "profile_id",
+  "claim_set_id",
+  "scope",
+  "evaluation_time",
+  "evidence_refs",
+  "material_gap_result"
+]
+```
+
+**current_implementation_analogue:** mesr.core.claim.support_relation
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:59",
+  "packages/guard-core/src/generateGovernanceReport.ts:667",
+  "packages/guard-core/src/evidenceAssuranceKernel.ts:130",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** EAK has profile/review scope/conclusions; legacy allow says structurally sufficient without profile_id/claim_set_id/evaluation_time.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** REQUIRES_REPORT_MIGRATION
+
+**primary_compatibility_impact:** REQUIRES_REPORT_MIGRATION
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** EAK has profile/review scope/conclusions; legacy allow says structurally sufficient without profile_id/claim_set_id/evaluation_time. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Reject unqualified sufficiency; different profiles may have different supportability.
+
+**gate1_action:** Design opt-in versioned assurance/report projection with all four required bindings; preserve legacy JSON/phrase.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### provenance.source_declared
+
+**semantic_id:** provenance.source_declared
+
+**research_definition:** The producer names the source from which evidence was obtained.
+
+**supports**
+
+```json
+[
+  "source was declared"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "source identity verified",
+  "source authoritative",
+  "chain complete"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.provenance.producer
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:60"
+]
+```
+
+**current_behavior:** Producer identity/version and native-field provenance exist; packager versus evidence source requires explicit mapping.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Producer identity/version and native-field provenance exist; packager versus evidence source requires explicit mapping. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Named packager must not become verified issuer or complete custody chain.
+
+**gate1_action:** Align declaration-only source reference.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### provenance.source_verified
+
+**semantic_id:** provenance.source_verified
+
+**research_definition:** The source identity and binding to the evidence were verified by a named method.
+
+**supports**
+
+```json
+[
+  "source binding verified"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "source claim true",
+  "full transformation chain complete",
+  "evidence sufficient"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "provenance.source_declared"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.evidence.attestation
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:55"
+]
+```
+
+**current_behavior:** Signature/integrity contracts and local verifiers exist; source identity plus evidence binding is not uniformly verified.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Signature/integrity contracts and local verifiers exist; source identity plus evidence binding is not uniformly verified. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Valid payload hash from unverified source must not prove source identity.
+
+**gate1_action:** Test named source-binding method separately from truth.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### provenance.chain_complete
+
+**semantic_id:** provenance.chain_complete
+
+**research_definition:** Material collection, transformation, custody, and version steps are traceable for the evaluated evidence.
+
+**supports**
+
+```json
+[
+  "declared provenance chain is complete for material steps"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "semantic interpretation correct",
+  "environment continuous",
+  "claim accepted"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "provenance.source_declared"
+  ],
+  "entails": [],
+  "orthogonal_to": [
+    "evidence.integrity_verified"
+  ],
+  "adjacent_to": [
+    "mesr_assurance.replayable"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.provenance.lineage
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:62"
+]
+```
+
+**current_behavior:** Existing lineage explicitly excludes completeness; material collection/transformation/custody steps are not evaluated for completeness.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** CONFLICT
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Existing lineage explicitly excludes completeness; material collection/transformation/custody steps are not evaluated for completeness. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Missing custody/transformation step with valid refs remains incomplete.
+
+**gate1_action:** Define material-step completeness oracle.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### provenance.environment_continuous
+
+**semantic_id:** provenance.environment_continuous
+
+**research_definition:** The material runtime, policy, dependency, and authority conditions remain equivalent between evidence production and claim evaluation.
+
+**supports**
+
+```json
+[
+  "environment continuity supported"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "all future contexts equivalent",
+  "authority current unless checked",
+  "claim permanently valid"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "standing.current",
+    "authority.rebound"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63"
+]
+```
+
+**current_behavior:** Environment/revision/effect bindings exist; policy/dependency/authority continuity is not computed.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Environment/revision/effect bindings exist; policy/dependency/authority continuity is not computed. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Same tool capability with changed policy/dependency/authority must not prove continuity.
+
+**gate1_action:** Test observed and reliance contexts separately.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### outcome.observed
+
+**semantic_id:** outcome.observed
+
+**research_definition:** A post-action state or effect was observed by a named producer and method.
+
+**supports**
+
+```json
+[
+  "post-action state was observed"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "outcome caused by the action",
+  "outcome verified",
+  "outcome correct",
+  "outcome accepted"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.effect.outcome
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:51",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Outcome permits observed or asserted state, denying causation/desirability/safety; named observation method is not required.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Outcome permits observed or asserted state, denying causation/desirability/safety; named observation method is not required. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Post-action observation must not imply causation or institutional acceptance.
+
+**gate1_action:** Specify method/source-bound observed facet.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### outcome.verified
+
+**semantic_id:** outcome.verified
+
+**research_definition:** A bounded outcome claim was verified against declared criteria, method, window, and causal limitations.
+
+**supports**
+
+```json
+[
+  "outcome criteria were verified within scope"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "global correctness",
+  "desirability",
+  "institutional acceptance",
+  "absence of side effects"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [
+    "outcome.observed"
+  ],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "acceptance.decision_recorded"
+  ],
+  "adjacent_to": [
+    "verification.independent"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.effect.outcome
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:51",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts:28"
+]
+```
+
+**current_behavior:** Outcome occurrence and generic verification can compose; no criteria/window/causal-limit predicate is evaluated.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Outcome occurrence and generic verification can compose; no criteria/window/causal-limit predicate is evaluated. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Deploy success without postcondition evidence must not establish correct outcome.
+
+**gate1_action:** Test bounded postcondition verification.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### acceptance.decision_recorded
+
+**semantic_id:** acceptance.decision_recorded
+
+**research_definition:** An identifiable authority recorded an acceptance, rejection, escalation, or conditional decision over a bounded object.
+
+**supports**
+
+```json
+[
+  "acceptance decision occurred"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "acceptance authority valid",
+  "decision current",
+  "underlying claim true"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "acceptance.authority_verified"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "decision_id",
+  "subject",
+  "decision_maker_ref",
+  "decision_result",
+  "decision_time",
+  "scope"
+]
+```
+
+**current_implementation_analogue:** mesr.core.review.disposition
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:65"
+]
+```
+
+**current_behavior:** Disposition/review events exist; human_review status/notes lack exact decision-maker/object/result/time contract.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Disposition/review events exist; human_review status/notes lack exact decision-maker/object/result/time contract. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Rejected/conditional record counts as occurrence, never automatically current acceptance.
+
+**gate1_action:** Specify external decision occurrence separate from authority.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### acceptance.authority_verified
+
+**semantic_id:** acceptance.authority_verified
+
+**research_definition:** The decision maker's authority to accept the evaluated object was verified for scope and time.
+
+**supports**
+
+```json
+[
+  "acceptance authority verified"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "decision substantively correct",
+  "acceptance current",
+  "legal compliance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "acceptance.decision_recorded"
+  ],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "decision_maker_ref",
+  "authority_source_ref",
+  "scope",
+  "evaluation_time"
+]
+```
+
+**current_implementation_analogue:** mesr.core.review.review
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:64"
+]
+```
+
+**current_behavior:** Review denies applicable reviewer authority; review.authority_ref presence does not independently verify it.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Review denies applicable reviewer authority; review.authority_ref presence does not independently verify it. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Authority without decision and decision without authority must diverge.
+
+**gate1_action:** Test acceptance authority and occurrence as independent axes.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### acceptance.current
+
+**semantic_id:** acceptance.current
+
+**research_definition:** A verified acceptance decision remains applicable and unsuperseded at the evaluation time.
+
+**supports**
+
+```json
+[
+  "acceptance currently applicable"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "future applicability",
+  "technical safety",
+  "audit opinion"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "acceptance.decision_recorded",
+    "acceptance.authority_verified"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "standing.current"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "decision_ref",
+  "scope",
+  "evaluation_time",
+  "freshness_basis",
+  "supersession_check"
+]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/mesr/claimBoundaries.ts:46",
+  "packages/guard-core/src/mesr/temporalBasis.ts:9"
+]
+```
+
+**current_behavior:** CB-18 prevents approval reuse without subject/scope/authority/time; revocation/supersession/currentness is not recomputed.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** CB-18 prevents approval reuse without subject/scope/authority/time; revocation/supersession/currentness is not recomputed. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Old approval on another commit or after supersession must not imply current acceptance.
+
+**gate1_action:** Evaluate current acceptance separately over immutable record.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### standing.historical
+
+**semantic_id:** standing.historical
+
+**research_definition:** A governance state, approval, verification, or acceptance was valid at a prior time.
+
+**supports**
+
+```json
+[
+  "historical standing is established"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "current standing",
+  "current authority",
+  "current acceptance"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "standing.current"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/mesr/claimBoundaries.ts:43"
+]
+```
+
+**current_behavior:** CB-15 and time-bearing records express historical/current separation; past validity needs its own captured basis.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** PURELY_ADDITIVE
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** CB-15 and time-bearing records express historical/current separation; past validity needs its own captured basis. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Historically valid approval remains historical after revocation.
+
+**gate1_action:** Specify immutable historical-standing references.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+### standing.current
+
+**semantic_id:** standing.current
+
+**research_definition:** A prior state has been re-evaluated against freshness, supersession, revocation, and material context change.
+
+**supports**
+
+```json
+[
+  "current standing is supported"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "permanent validity",
+  "scope outside the evaluated context"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "standing.historical"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "authority.current",
+    "acceptance.current"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[]
+```
+
+**current_implementation_analogue:** mesr.core.temporal.basis
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/coreRegistry.ts:63",
+  "packages/guard-core/src/mesr/temporalBasis.ts:9"
+]
+```
+
+**current_behavior:** Temporal validator accepts supplied current/stale states without computing expiry/revocation/supersession/continuity.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** Preserve existing IDs and output. Any meaning-bearing change needs an explicit versioned migration decision.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Temporal validator accepts supplied current/stale states without computing expiry/revocation/supersession/continuity. Similar terms do not establish full meaning and boundary equality.
+
+**required_experiment:** Reliance beyond valid_until with supplied current must not count as evaluated currentness.
+
+**gate1_action:** Test current-standing evaluation, not just shape.
+
+**alias_requirement:** Keep existing mesr.core.* IDs. A partial mapping is not an equivalence alias; research ID remains a candidate mapping key.
+
+## Meta Assurance Candidates
+
+### mesr_assurance.replayable
+
+**semantic_id:** mesr_assurance.replayable
+
+**research_definition:** The same evidence, semantic registry version, module set, and deterministic method reproduce the same normalized semantics and claim boundaries.
+
+**supports**
+
+```json
+[
+  "deterministic replay succeeded"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "real-world claim true",
+  "evidence complete",
+  "external reproducibility"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [],
+  "entails": [],
+  "orthogonal_to": [
+    "evidence.sufficient",
+    "outcome.verified"
+  ],
+  "adjacent_to": [
+    "provenance.chain_complete",
+    "mesr_assurance.claim_stable"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "experiment_id",
+  "input_set_id",
+  "registry_version",
+  "module_lock",
+  "method_version",
+  "evaluation_time"
+]
+```
+
+**layer:** INTERPRETATION_ASSURANCE_METADATA
+
+**current_implementation_analogue:** Canonical snapshots and bounded replay/portability verifiers; no registered metadata ID
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/semanticSnapshot.ts",
+  "scripts/verify_mesr_runtime_portability.mjs",
+  "scripts/verify_mesr_claim_stability.mjs",
+  "scripts/verify_mesr_composition.mjs"
+]
+```
+
+**current_behavior:** semanticSnapshot serializes canonical semantic output; existing replay and composition verifiers compare bounded deterministic cases. No unified input/registry/module-lock/method/time assurance metadata record exists.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** New opt-in interpretation metadata; never evidence about the action.
+
+**primary_compatibility_impact:** PURELY_ADDITIVE
+
+**verdict:** ALIGN_AND_ADOPT
+
+**verdict_reason:** Existing executable checks are useful substrate; the repaired E3 scope and process context are not the same contract.
+
+**required_experiment:** Repeat an identical input set under exact registry, module digest/version lock and method version; require identical normalized claims/nonclaims and deterministic output digest. Change one input or module and retain distinct provenance; replay must never imply real-world truth.
+
+**gate1_action:** B09: specify a separate reproducibility record and reuse semanticSnapshot plus existing deterministic checks.
+
+**alias_requirement:** No prior metadata IDs found in baseline source. No compatibility aliases required now; archival research names remain historical.
+
+### mesr_assurance.claim_stable
+
+**semantic_id:** mesr_assurance.claim_stable
+
+**research_definition:** Vocabulary or producer representation changes do not alter the supported and unsupported claim set after valid normalization.
+
+**supports**
+
+```json
+[
+  "claim boundary remained stable in tested mappings"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "all external terms equivalent",
+  "all domains interchangeable"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "mesr_assurance.replayable"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [
+    "mesr_assurance.semantic_portable"
+  ],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "experiment_id",
+  "input_set_id",
+  "registry_version",
+  "module_lock",
+  "method_version",
+  "evaluation_time"
+]
+```
+
+**layer:** INTERPRETATION_ASSURANCE_METADATA
+
+**current_implementation_analogue:** Canonical snapshots and bounded replay/portability verifiers; no registered metadata ID
+
+**source_paths**
+
+```json
+[
+  "scripts/verify_mesr_claim_stability.mjs",
+  "scripts/verify_mesr_cross_domain.mjs",
+  "packages/guard-core/src/mesr/corePatternSignature.ts",
+  "packages/guard-core/src/mesr/semanticSnapshot.ts",
+  "packages/guard-core/src/mesr/claimBoundaries.ts"
+]
+```
+
+**current_behavior:** verify_mesr_claim_stability checks existing boundary behavior and compatibility; cross-domain fixtures share Core patterns while separating domain interpretation. Repaired E3-B absence/producer-assertion/unresolved-independence states are not accepted by the current old-state oracle.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** New opt-in interpretation metadata; never evidence about the action.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Existing executable checks are useful substrate; the repaired E3 scope and process context are not the same contract.
+
+**required_experiment:** E3-B: use the same bound Core evidence in Software Change and Cyber contrast contexts; require unchanged Core predicates/nonclaims while domain interpretations differ. Distinguish absent verification execution from producer assertion with unresolved independence. A domain cannot widen supports or remove Core nonclaims.
+
+**gate1_action:** B02/B09: freeze repaired state and cross-domain Core-stability oracle before adding interpretation metadata.
+
+**alias_requirement:** No prior metadata IDs found in baseline source. No compatibility aliases required now; archival research names remain historical.
+
+### mesr_assurance.semantic_portable
+
+**semantic_id:** mesr_assurance.semantic_portable
+
+**research_definition:** A semantic ID and its claim boundary retain meaning across validated producer, runtime, domain, and module-composition contexts.
+
+**supports**
+
+```json
+[
+  "semantic portability passed for tested contexts"
+]
+```
+
+**does_not_support**
+
+```json
+[
+  "universal interoperability",
+  "untested mappings valid"
+]
+```
+
+**relations**
+
+```json
+{
+  "refines": [],
+  "requires": [
+    "mesr_assurance.claim_stable"
+  ],
+  "entails": [],
+  "orthogonal_to": [],
+  "adjacent_to": [],
+  "conflicts_with": [],
+  "supersedes": []
+}
+```
+
+**instance_requirements**
+
+```json
+[
+  "experiment_id",
+  "input_set_id",
+  "registry_version",
+  "module_lock",
+  "method_version",
+  "evaluation_time"
+]
+```
+
+**layer:** INTERPRETATION_ASSURANCE_METADATA
+
+**current_implementation_analogue:** Canonical snapshots and bounded replay/portability verifiers; no registered metadata ID
+
+**source_paths**
+
+```json
+[
+  "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+  "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+  "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+  "scripts/verify_mesr_runtime_portability.mjs"
+]
+```
+
+**current_behavior:** Existing GitHub/Harness experiment adapters and runtime-portability verifier compare a bounded normalized claim while retaining producer provenance. Actual Harness compatibility output and repaired example.ci/example.runtime records use different contracts and are not generally accepted.
+
+**meaning_match:** PARTIAL
+
+**claim_boundary_match:** PARTIAL
+
+**compatibility_impact:** New opt-in interpretation metadata; never evidence about the action.
+
+**primary_compatibility_impact:** Not classified: classification mandatory only for ALIGN_AND_ADOPT.
+
+**verdict:** NEEDS_EXPERIMENT
+
+**verdict_reason:** Existing executable checks are useful substrate; the repaired E3 scope and process context are not the same contract.
+
+**required_experiment:** E3-A: normalize repaired CI/runtime fixtures to the same artifact/environment/constraint/claim-set-bounded verification meaning with different source provenance. Include execution success without verification as a negative. Record tested producers and mapping versions; do not claim universal interoperability.
+
+**gate1_action:** B03/B09: define fixture translation and a bounded portability record over the existing adapter interface; no live Harness adapter implementation in V8-000.
+
+**alias_requirement:** No prior metadata IDs found in baseline source. No compatibility aliases required now; archival research names remain historical.
+
+## Canonical Reason Codes
+
+### MISSING_AUTHORITY
+
+**code:** MISSING_AUTHORITY
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:39
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:150
+
+**definition:** Submitted evidence does not include authority material needed for governance interpretation.
+
+**category:** authority
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 230,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 326,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 436,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 448,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.MISSING_AUTHORITY)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 449,
+    "excerpt": "? GUARD_REASON_CODES.MISSING_AUTHORITY"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 595,
+    "excerpt": "if (hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.MISSING_AUTHORITY)) {"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 596,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.MISSING_AUTHORITY);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 230,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 37,
+    "excerpt": "binding(G.MISSING_AUTHORITY, \"mesr.core.authority.scope\", null, \"authority evidence is missing for the evaluated scope\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/validateEvidencePack.ts",
+    "line": 139,
+    "excerpt": "\"MISSING_AUTHORITY\","
+  },
+  {
+    "path": "packages/schema/evidence-schema-v1.json",
+    "line": 781,
+    "excerpt": "\"MISSING_AUTHORITY\","
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted evidence does not include authority material needed for governance interpretation."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** authorization_status is missing OR authorization_evidence is empty.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 84,
+    "excerpt": "| `MISSING_AUTHORITY` | `authority` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Submitted evidence does not include authority material needed for governance interpretation. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 38,
+    "excerpt": "| `MISSING_AUTHORITY` | `mesr.core.authority.scope` | - | authority evidence is missing for the evaluated scope | `NC-AUTH` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 326,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 436,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 448,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.MISSING_AUTHORITY)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 449,
+    "excerpt": "? GUARD_REASON_CODES.MISSING_AUTHORITY"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 595,
+    "excerpt": "if (hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.MISSING_AUTHORITY)) {"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 596,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.MISSING_AUTHORITY);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 230,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 37,
+    "excerpt": "binding(G.MISSING_AUTHORITY, \"mesr.core.authority.scope\", null, \"authority evidence is missing for the evaluated scope\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 39,
+    "excerpt": "MISSING_AUTHORITY: \"MISSING_AUTHORITY\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 150,
+    "excerpt": "MISSING_AUTHORITY: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 151,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  },
+  {
+    "path": "packages/guard-core/src/validateEvidencePack.ts",
+    "line": 139,
+    "excerpt": "\"MISSING_AUTHORITY\","
+  },
+  {
+    "path": "packages/schema/evidence-schema-v1.json",
+    "line": 781,
+    "excerpt": "\"MISSING_AUTHORITY\","
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:150",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 230,
+    "excerpt": "GUARD_REASON_CODES.MISSING_AUTHORITY,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 226,
+    "source": "  ) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.MISSING_AUTHORITY,\n      \"authority\",\n      authorizationEvidence,\n      \"Provide explicit authority evidence for the recorded workflow.\",\n    );\n  }"
+  }
+]
+```
+
+### DECLARED_AUTHORITY_ONLY
+
+**code:** DECLARED_AUTHORITY_ONLY
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:40
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:157
+
+**definition:** Authority is declared in the pack but lacks stronger supporting evidence.
+
+**category:** authority
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 241,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 450,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 451,
+    "excerpt": "? GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 241,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 38,
+    "excerpt": "binding(G.DECLARED_AUTHORITY_ONLY, \"mesr.core.authority.declared\", null, \"producer-declared authority is present\", [\"AUTH\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 25,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 183,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 235,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 47,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 100,
+    "excerpt": "- `DECLARED_AUTHORITY_ONLY` (`medium`); Authority is declared in the pack but lacks stronger supporting evidence.; recommended fix: Provide stronger authority evidence beyond declaration-only status.; evidence refs: `art_auth_pr_note`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 110,
+    "excerpt": "- `next:authority` (`clarify_authority`); owner: `owner`; priority: `high`; reason: `DECLARED_AUTHORITY_ONLY`; Clarify or strengthen the authority material for this workflow."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Authority is declared in the pack but lacks stronger supporting evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** authorization_status equals declared.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 85,
+    "excerpt": "| `DECLARED_AUTHORITY_ONLY` | `authority` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Authority is declared in the pack but lacks stronger supporting evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 39,
+    "excerpt": "| `DECLARED_AUTHORITY_ONLY` | `mesr.core.authority.declared` | - | producer-declared authority is present | `NC-AUTH` |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 138,
+    "excerpt": "DECLARED_AUTHORITY_ONLY"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 25,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 183,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 235,
+    "excerpt": "\"DECLARED_AUTHORITY_ONLY\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 47,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 100,
+    "excerpt": "- `DECLARED_AUTHORITY_ONLY` (`medium`); Authority is declared in the pack but lacks stronger supporting evidence.; recommended fix: Provide stronger authority evidence beyond declaration-only status.; evidence refs: `art_auth_pr_note`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 110,
+    "excerpt": "- `next:authority` (`clarify_authority`); owner: `owner`; priority: `high`; reason: `DECLARED_AUTHORITY_ONLY`; Clarify or strengthen the authority material for this workflow."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 450,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 451,
+    "excerpt": "? GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 241,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 38,
+    "excerpt": "binding(G.DECLARED_AUTHORITY_ONLY, \"mesr.core.authority.declared\", null, \"producer-declared authority is present\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 40,
+    "excerpt": "DECLARED_AUTHORITY_ONLY: \"DECLARED_AUTHORITY_ONLY\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 157,
+    "excerpt": "DECLARED_AUTHORITY_ONLY: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 158,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:157",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 241,
+    "excerpt": "GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 237,
+    "source": "  if (authorityStatus === \"declared\") {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.DECLARED_AUTHORITY_ONLY,\n      \"authority\",\n      authorizationEvidence,\n      \"Provide stronger authority evidence beyond declaration-only status.\",\n    );\n  }"
+  }
+]
+```
+
+### AUTHORITY_OUT_OF_SCOPE
+
+**code:** AUTHORITY_OUT_OF_SCOPE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:41
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:164
+
+**definition:** Submitted authority material does not cover the recorded workflow scope.
+
+**category:** authority
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 39,
+    "excerpt": "binding(G.AUTHORITY_OUT_OF_SCOPE, \"mesr.core.boundary.authority\", null, \"submitted authority does not cover the recorded scope\", [\"AUTH\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted authority material does not cover the recorded workflow scope."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 86,
+    "excerpt": "| `AUTHORITY_OUT_OF_SCOPE` | `authority` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Submitted authority material does not cover the recorded workflow scope. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 40,
+    "excerpt": "| `AUTHORITY_OUT_OF_SCOPE` | `mesr.core.boundary.authority` | - | submitted authority does not cover the recorded scope | `NC-AUTH` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 39,
+    "excerpt": "binding(G.AUTHORITY_OUT_OF_SCOPE, \"mesr.core.boundary.authority\", null, \"submitted authority does not cover the recorded scope\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 41,
+    "excerpt": "AUTHORITY_OUT_OF_SCOPE: \"AUTHORITY_OUT_OF_SCOPE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 164,
+    "excerpt": "AUTHORITY_OUT_OF_SCOPE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 165,
+    "excerpt": "GUARD_REASON_CODES.AUTHORITY_OUT_OF_SCOPE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:164",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### REVIEWER_MISSING
+
+**code:** REVIEWER_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:42
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:171
+
+**definition:** Expected reviewer context is absent from submitted evidence.
+
+**category:** authority
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 263,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 439,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 454,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.REVIEWER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 455,
+    "excerpt": "? GUARD_REASON_CODES.REVIEWER_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 263,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 40,
+    "excerpt": "binding(G.REVIEWER_MISSING, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"reviewer context is missing\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Expected reviewer context is absent from submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** No nonempty reviewer string.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 87,
+    "excerpt": "| `REVIEWER_MISSING` | `authority` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Expected reviewer context is absent from submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 41,
+    "excerpt": "| `REVIEWER_MISSING` | `mesr.core.review.review` | `mesr.domain.software.review.not_demonstrated` | reviewer context is missing | `NC-REVIEW` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 439,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 454,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.REVIEWER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 455,
+    "excerpt": "? GUARD_REASON_CODES.REVIEWER_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 263,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 40,
+    "excerpt": "binding(G.REVIEWER_MISSING, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"reviewer context is missing\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 42,
+    "excerpt": "REVIEWER_MISSING: \"REVIEWER_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 171,
+    "excerpt": "REVIEWER_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 172,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:171",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 263,
+    "excerpt": "GUARD_REASON_CODES.REVIEWER_MISSING,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 259,
+    "source": "  if (reviewers.length === 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.REVIEWER_MISSING,\n      \"authority\",\n      [],\n      \"Add reviewer context for the workflow.\",\n    );\n  }"
+  }
+]
+```
+
+### OWNER_MISSING
+
+**code:** OWNER_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:43
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:178
+
+**definition:** Expected ownership context is absent from submitted evidence.
+
+**category:** authority
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 252,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 438,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 452,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.OWNER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 453,
+    "excerpt": "? GUARD_REASON_CODES.OWNER_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 601,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.OWNER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 603,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.OWNER_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 252,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 41,
+    "excerpt": "binding(G.OWNER_MISSING, \"mesr.core.actor.principal\", null, \"ownership or principal context is missing\", [\"AUTH\", \"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Expected ownership context is absent from submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** owner absent/empty to coverage; normal report validation rejects empty required owner.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 88,
+    "excerpt": "| `OWNER_MISSING` | `authority` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Expected ownership context is absent from submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 42,
+    "excerpt": "| `OWNER_MISSING` | `mesr.core.actor.principal` | - | ownership/principal context is missing | `NC-AUTH`, `NC-REVIEW` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 438,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 452,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.OWNER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 453,
+    "excerpt": "? GUARD_REASON_CODES.OWNER_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 601,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.OWNER_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 603,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.OWNER_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 252,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 41,
+    "excerpt": "binding(G.OWNER_MISSING, \"mesr.core.actor.principal\", null, \"ownership or principal context is missing\", [\"AUTH\", \"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 43,
+    "excerpt": "OWNER_MISSING: \"OWNER_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 178,
+    "excerpt": "OWNER_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 179,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:178",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 252,
+    "excerpt": "GUARD_REASON_CODES.OWNER_MISSING,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 248,
+    "source": "  if (!owner) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.OWNER_MISSING,\n      \"authority\",\n      [],\n      \"Add owner context for the workflow.\",\n    );\n  }"
+  }
+]
+```
+
+### TIME_WINDOW_MISSING
+
+**code:** TIME_WINDOW_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:44
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:185
+
+**definition:** Authority evidence does not include a bounded time window.
+
+**category:** authority
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 274,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 440,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 456,
+    "excerpt": ": GUARD_REASON_CODES.TIME_WINDOW_MISSING;"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 274,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 42,
+    "excerpt": "binding(G.TIME_WINDOW_MISSING, \"mesr.core.temporal.basis\", null, \"authority time binding is missing\", [\"AUTH\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Authority evidence does not include a bounded time window."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** start_at or end_at absent.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 89,
+    "excerpt": "| `TIME_WINDOW_MISSING` | `authority` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Authority evidence does not include a bounded time window. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 43,
+    "excerpt": "| `TIME_WINDOW_MISSING` | `mesr.core.temporal.basis` | - | authority time binding is missing | `NC-AUTH` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 440,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 456,
+    "excerpt": ": GUARD_REASON_CODES.TIME_WINDOW_MISSING;"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 274,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 42,
+    "excerpt": "binding(G.TIME_WINDOW_MISSING, \"mesr.core.temporal.basis\", null, \"authority time binding is missing\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 44,
+    "excerpt": "TIME_WINDOW_MISSING: \"TIME_WINDOW_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 185,
+    "excerpt": "TIME_WINDOW_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 186,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:185",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 274,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_MISSING,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 270,
+    "source": "  if (!timeWindowStart || !timeWindowEnd) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.TIME_WINDOW_MISSING,\n      \"authority\",\n      [],\n      \"Add a bounded authority time window.\",\n    );\n  } else if ("
+  }
+]
+```
+
+### TIME_WINDOW_EXPIRED
+
+**code:** TIME_WINDOW_EXPIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:45
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:192
+
+**definition:** Authority time window is present but appears no longer current.
+
+**category:** authority
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 288,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 288,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 43,
+    "excerpt": "binding(G.TIME_WINDOW_EXPIRED, \"mesr.core.temporal.basis\", null, \"submitted authority basis is stale at evaluation time\", [\"AUTH\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Authority time window is present but appears no longer current."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** end_at precedes pack.created_at, not wall-clock/current reliance time.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "HISTORICAL STATE + CURRENT STANDING"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 90,
+    "excerpt": "| `TIME_WINDOW_EXPIRED` | `authority` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Authority time window is present but appears no longer current. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 44,
+    "excerpt": "| `TIME_WINDOW_EXPIRED` | `mesr.core.temporal.basis` | - | submitted authority basis is stale at evaluation time | `NC-AUTH` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 288,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 43,
+    "excerpt": "binding(G.TIME_WINDOW_EXPIRED, \"mesr.core.temporal.basis\", null, \"submitted authority basis is stale at evaluation time\", [\"AUTH\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 45,
+    "excerpt": "TIME_WINDOW_EXPIRED: \"TIME_WINDOW_EXPIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 192,
+    "excerpt": "TIME_WINDOW_EXPIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 193,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:192",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 288,
+    "excerpt": "GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 284,
+    "source": "  ) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.TIME_WINDOW_EXPIRED,\n      \"authority\",\n      [],\n      \"Refresh the authority time window.\",\n    );\n  }"
+  }
+]
+```
+
+### OUT_OF_SCOPE_ACTION
+
+**code:** OUT_OF_SCOPE_ACTION
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:46
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:199
+
+**definition:** An action recorded in the pack exceeds the declared scope.
+
+**category:** scope
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 343,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 343,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 44,
+    "excerpt": "binding(G.OUT_OF_SCOPE_ACTION, \"mesr.core.boundary.authority\", null, \"recorded action exceeds declared scope\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "An action recorded in the pack exceeds the declared scope."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Action target path/resource exactly matches out_of_scope.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 91,
+    "excerpt": "| `OUT_OF_SCOPE_ACTION` | `scope` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | An action recorded in the pack exceeds the declared scope. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 50,
+    "excerpt": "| `OUT_OF_SCOPE_ACTION` | `mesr.core.boundary.authority` | - | recorded action exceeds declared scope | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 343,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 44,
+    "excerpt": "binding(G.OUT_OF_SCOPE_ACTION, \"mesr.core.boundary.authority\", null, \"recorded action exceeds declared scope\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 46,
+    "excerpt": "OUT_OF_SCOPE_ACTION: \"OUT_OF_SCOPE_ACTION\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 199,
+    "excerpt": "OUT_OF_SCOPE_ACTION: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 200,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:199",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 343,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 339,
+    "source": "  if (actionsOutOfScope.length > 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.OUT_OF_SCOPE_ACTION,\n      \"scope\",\n      actionsOutOfScope,\n      \"Keep recorded actions within the declared scope.\",\n    );\n  }"
+  }
+]
+```
+
+### OUT_OF_SCOPE_RESOURCE
+
+**code:** OUT_OF_SCOPE_RESOURCE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:47
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:206
+
+**definition:** A touched resource exceeds the declared workflow scope.
+
+**category:** scope
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 45,
+    "excerpt": "binding(G.OUT_OF_SCOPE_RESOURCE, \"mesr.core.boundary.authority\", null, \"touched resource exceeds declared scope\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "A touched resource exceeds the declared workflow scope."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 92,
+    "excerpt": "| `OUT_OF_SCOPE_RESOURCE` | `scope` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | A touched resource exceeds the declared workflow scope. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 51,
+    "excerpt": "| `OUT_OF_SCOPE_RESOURCE` | `mesr.core.boundary.authority` | - | touched resource exceeds declared scope | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 45,
+    "excerpt": "binding(G.OUT_OF_SCOPE_RESOURCE, \"mesr.core.boundary.authority\", null, \"touched resource exceeds declared scope\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 47,
+    "excerpt": "OUT_OF_SCOPE_RESOURCE: \"OUT_OF_SCOPE_RESOURCE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 206,
+    "excerpt": "OUT_OF_SCOPE_RESOURCE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 207,
+    "excerpt": "GUARD_REASON_CODES.OUT_OF_SCOPE_RESOURCE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:206",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### PROTECTED_RESOURCE_TOUCHED
+
+**code:** PROTECTED_RESOURCE_TOUCHED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:48
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:213
+
+**definition:** Evidence indicates contact with a protected resource.
+
+**category:** scope
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 46,
+    "excerpt": "binding(G.PROTECTED_RESOURCE_TOUCHED, \"mesr.core.action.action\", null, \"protected-resource contact is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates contact with a protected resource."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Touched resource matches secret/credential/private/.pem/id_rsa/.env regex.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 93,
+    "excerpt": "| `PROTECTED_RESOURCE_TOUCHED` | `scope` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates contact with a protected resource. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 52,
+    "excerpt": "| `PROTECTED_RESOURCE_TOUCHED` | `mesr.core.action.action` | - | protected-resource contact is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 46,
+    "excerpt": "binding(G.PROTECTED_RESOURCE_TOUCHED, \"mesr.core.action.action\", null, \"protected-resource contact is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 48,
+    "excerpt": "PROTECTED_RESOURCE_TOUCHED: \"PROTECTED_RESOURCE_TOUCHED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 213,
+    "excerpt": "PROTECTED_RESOURCE_TOUCHED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 214,
+    "excerpt": "GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:213",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 327,
+    "excerpt": "GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 323,
+    "source": "  if (touchedProtectedResources.length > 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.PROTECTED_RESOURCE_TOUCHED,\n      \"scope\",\n      touchedProtectedResources,\n      \"Limit or justify access to protected resources.\",\n    );\n  }"
+  }
+]
+```
+
+### UNDECLARED_FILE_CHANGE
+
+**code:** UNDECLARED_FILE_CHANGE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:49
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:220
+
+**definition:** Changed files appear outside the declared file list or declared limits.
+
+**category:** scope
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 313,
+    "excerpt": "GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 313,
+    "excerpt": "GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 47,
+    "excerpt": "binding(G.UNDECLARED_FILE_CHANGE, \"mesr.core.action.action\", \"mesr.domain.software.change.undeclared_file_observed\", \"a changed file is outside the declared list or limits\", [\"AUTH\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Changed files appear outside the declared file list or declared limits."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Changed file not exactly listed in nonempty in_scope.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 94,
+    "excerpt": "| `UNDECLARED_FILE_CHANGE` | `scope` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Changed files appear outside the declared file list or declared limits. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 53,
+    "excerpt": "| `UNDECLARED_FILE_CHANGE` | `mesr.core.action.action` | `mesr.domain.software.change.undeclared_file_observed` | a changed file is outside the declared list/limits | `NC-AUTH`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 313,
+    "excerpt": "GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 47,
+    "excerpt": "binding(G.UNDECLARED_FILE_CHANGE, \"mesr.core.action.action\", \"mesr.domain.software.change.undeclared_file_observed\", \"a changed file is outside the declared list or limits\", [\"AUTH\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 49,
+    "excerpt": "UNDECLARED_FILE_CHANGE: \"UNDECLARED_FILE_CHANGE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 220,
+    "excerpt": "UNDECLARED_FILE_CHANGE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 221,
+    "excerpt": "GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:220",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 313,
+    "excerpt": "GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 309,
+    "source": "  if (changedOutsideScope.length > 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.UNDECLARED_FILE_CHANGE,\n      \"scope\",\n      changedOutsideScope,\n      \"Align the declared scope with the changed files.\",\n    );\n  }"
+  }
+]
+```
+
+### SCOPE_TOO_BROAD
+
+**code:** SCOPE_TOO_BROAD
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:50
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:227
+
+**definition:** Submitted scope is broader than the expected governance boundary.
+
+**category:** scope
+
+**severity_hint:** medium
+
+**primary_role:** NEEDS_REVIEW
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 48,
+    "excerpt": "binding(G.SCOPE_TOO_BROAD, \"mesr.core.claim.scope\", null, \"submitted scope is broader than the evaluated boundary\", [\"AUTH\", \"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted scope is broader than the expected governance boundary."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 95,
+    "excerpt": "| `SCOPE_TOO_BROAD` | `scope` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Submitted scope is broader than the expected governance boundary. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 54,
+    "excerpt": "| `SCOPE_TOO_BROAD` | `mesr.core.claim.scope` | - | submitted scope is broader than the evaluated boundary | `NC-AUTH`, `NC-REVIEW` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 48,
+    "excerpt": "binding(G.SCOPE_TOO_BROAD, \"mesr.core.claim.scope\", null, \"submitted scope is broader than the evaluated boundary\", [\"AUTH\", \"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 50,
+    "excerpt": "SCOPE_TOO_BROAD: \"SCOPE_TOO_BROAD\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 227,
+    "excerpt": "SCOPE_TOO_BROAD: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 228,
+    "excerpt": "GUARD_REASON_CODES.SCOPE_TOO_BROAD,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:227",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### SCOPE_INCOMPLETE
+
+**code:** SCOPE_INCOMPLETE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:51
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:234
+
+**definition:** Submitted scope material is incomplete for later interpretation.
+
+**category:** scope
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 49,
+    "excerpt": "binding(G.SCOPE_INCOMPLETE, \"mesr.core.claim.scope\", null, \"claim or action scope bindings are incomplete\", [\"AUTH\", \"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted scope material is incomplete for later interpretation."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 96,
+    "excerpt": "| `SCOPE_INCOMPLETE` | `scope` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Submitted scope material is incomplete for later interpretation. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 55,
+    "excerpt": "| `SCOPE_INCOMPLETE` | `mesr.core.claim.scope` | - | claim/action scope bindings are incomplete | `NC-AUTH`, `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 49,
+    "excerpt": "binding(G.SCOPE_INCOMPLETE, \"mesr.core.claim.scope\", null, \"claim or action scope bindings are incomplete\", [\"AUTH\", \"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 51,
+    "excerpt": "SCOPE_INCOMPLETE: \"SCOPE_INCOMPLETE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 234,
+    "excerpt": "SCOPE_INCOMPLETE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 235,
+    "excerpt": "GUARD_REASON_CODES.SCOPE_INCOMPLETE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:234",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### INSUFFICIENT_VERIFICATION
+
+**code:** INSUFFICIENT_VERIFICATION
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:52
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:241
+
+**definition:** Verification material is present but not strong enough for the recorded workflow.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 398,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 408,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 418,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 510,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 512,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 328,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 475,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 487,
+    "excerpt": ": GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 609,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 616,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 398,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 408,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 418,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 510,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 512,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 50,
+    "excerpt": "binding(G.INSUFFICIENT_VERIFICATION, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.insufficient\", \"available verification is insufficient for the requested claim\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 224,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 237,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 222,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 237,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Verification material is present but not strong enough for the recorded workflow.",
+  "Strengthen verification evidence for the recorded change."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** No verification entries OR selected software test/compatibility deficiencies.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 97,
+    "excerpt": "| `INSUFFICIENT_VERIFICATION` | `verification` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Verification material is present but not strong enough for the recorded workflow. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 61,
+    "excerpt": "| `INSUFFICIENT_VERIFICATION` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.insufficient` | available verification is insufficient for the requested claim | `NC-VERIFY` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 224,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 237,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 222,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 237,
+    "excerpt": "\"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 328,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 475,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 487,
+    "excerpt": ": GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 609,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 616,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 398,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 408,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 418,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 510,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 512,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 50,
+    "excerpt": "binding(G.INSUFFICIENT_VERIFICATION, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.insufficient\", \"available verification is insufficient for the requested claim\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 52,
+    "excerpt": "INSUFFICIENT_VERIFICATION: \"INSUFFICIENT_VERIFICATION\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 241,
+    "excerpt": "INSUFFICIENT_VERIFICATION: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 242,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:241",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 398,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 408,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 418,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 510,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 512,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 350,
+    "source": "  if (verificationItems.length === 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,\n      \"verification\",\n      [],\n      \"Provide verification material for the workflow.\",\n    );\n  }"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 394,
+    "source": "        \"verification\",\n        [],\n        \"Provide unit or integration test coverage for the software change.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    } else if (hasFailedUnitOrIntegration) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 404,
+    "source": "        \"verification\",\n        [],\n        \"Resolve failing tests and resubmit evidence.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    } else if (hasNotRunUnitOrIntegration || !hasPassedUnitOrIntegration) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 414,
+    "source": "        \"verification\",\n        [],\n        \"Provide successful unit or integration test evidence.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    }\n  }\n\n  const hasBuildRecord = verificationItems.some(\n    (item) => item.verification_type === \"build\","
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 506,
+    "source": "        \"verification\",\n        [],\n        \"Provide stronger compatibility verification for the dependency change.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    } else if (!hasIntegrationRecord) {\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    }\n\n    const hasMigrationNotes = hasArtifactWithDescription("
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 508,
+    "source": "        \"Provide stronger compatibility verification for the dependency change.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    } else if (!hasIntegrationRecord) {\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);\n    }\n\n    const hasMigrationNotes = hasArtifactWithDescription(\n      artifacts,\n      /(migration|upgrade)/i,"
+  }
+]
+```
+
+### TESTS_NOT_RUN
+
+**code:** TESTS_NOT_RUN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:53
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:248
+
+**definition:** Evidence indicates test activity did not occur.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 393,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 413,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 329,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 471,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 485,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.TESTS_NOT_RUN)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 486,
+    "excerpt": "? GUARD_REASON_CODES.TESTS_NOT_RUN"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 610,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.TESTS_NOT_RUN) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 617,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 393,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 413,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 51,
+    "excerpt": "binding(G.TESTS_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.test_execution_not_demonstrated\", \"test execution is not demonstrated\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 153,
+    "excerpt": "\"TESTS_NOT_RUN\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 193,
+    "excerpt": "\"TESTS_NOT_RUN\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 223,
+    "excerpt": "\"TESTS_NOT_RUN\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 236,
+    "excerpt": "\"TESTS_NOT_RUN\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 101,
+    "excerpt": "- `TESTS_NOT_RUN` (`medium`); Evidence indicates test activity did not occur.; recommended fix: Provide successful unit or integration test evidence."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 111,
+    "excerpt": "- `next:verification` (`rerun_verification`); owner: `developer`; priority: `high`; reason: `TESTS_NOT_RUN`; Strengthen verification evidence for the recorded change."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates test activity did not occur."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Ordinary ai_software_change lacks unit/integration record, has not_run, or no passed result; failed branch takes precedence.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION",
+  "ASSURANCE + REPORT WORDING"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 98,
+    "excerpt": "| `TESTS_NOT_RUN` | `verification` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Evidence indicates test execution did not occur. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 62,
+    "excerpt": "| `TESTS_NOT_RUN` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.test_execution_not_demonstrated` | test execution is not demonstrated | `NC-VERIFY` |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 145,
+    "excerpt": "TESTS_NOT_RUN"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 153,
+    "excerpt": "\"TESTS_NOT_RUN\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 193,
+    "excerpt": "\"TESTS_NOT_RUN\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 223,
+    "excerpt": "\"TESTS_NOT_RUN\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 236,
+    "excerpt": "\"TESTS_NOT_RUN\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 101,
+    "excerpt": "- `TESTS_NOT_RUN` (`medium`); Evidence indicates test activity did not occur.; recommended fix: Provide successful unit or integration test evidence."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 111,
+    "excerpt": "- `next:verification` (`rerun_verification`); owner: `developer`; priority: `high`; reason: `TESTS_NOT_RUN`; Strengthen verification evidence for the recorded change."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 329,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 471,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 485,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.TESTS_NOT_RUN)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 486,
+    "excerpt": "? GUARD_REASON_CODES.TESTS_NOT_RUN"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 610,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.TESTS_NOT_RUN) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 617,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 393,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 413,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 51,
+    "excerpt": "binding(G.TESTS_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.test_execution_not_demonstrated\", \"test execution is not demonstrated\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 53,
+    "excerpt": "TESTS_NOT_RUN: \"TESTS_NOT_RUN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 248,
+    "excerpt": "TESTS_NOT_RUN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 249,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:248",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 393,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 413,
+    "excerpt": "GUARD_REASON_CODES.TESTS_NOT_RUN,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 389,
+    "source": "    if (!hasUnitOrIntegrationRecord) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.TESTS_NOT_RUN,\n        \"verification\",\n        [],\n        \"Provide unit or integration test coverage for the software change.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 409,
+    "source": "    } else if (hasNotRunUnitOrIntegration || !hasPassedUnitOrIntegration) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.TESTS_NOT_RUN,\n        \"verification\",\n        [],\n        \"Provide successful unit or integration test evidence.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  }
+]
+```
+
+### TESTS_FAILED
+
+**code:** TESTS_FAILED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:54
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:255
+
+**definition:** Evidence indicates test activity ended unsuccessfully.
+
+**category:** verification
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 403,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 330,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 472,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 611,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.TESTS_FAILED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 618,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 403,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 52,
+    "excerpt": "binding(G.TESTS_FAILED, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.test_failure_observed\", \"submitted evidence records unsuccessful tests\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates test activity ended unsuccessfully."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Eligible ordinary software workflow has any failed unit/integration test.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 99,
+    "excerpt": "| `TESTS_FAILED` | `verification` | `high` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Evidence indicates test execution ended unsuccessfully. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 63,
+    "excerpt": "| `TESTS_FAILED` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.test_failure_observed` | submitted evidence records unsuccessful tests | `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 330,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 472,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 611,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.TESTS_FAILED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 618,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 403,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 52,
+    "excerpt": "binding(G.TESTS_FAILED, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.test_failure_observed\", \"submitted evidence records unsuccessful tests\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 54,
+    "excerpt": "TESTS_FAILED: \"TESTS_FAILED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 255,
+    "excerpt": "TESTS_FAILED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 256,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:255",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 403,
+    "excerpt": "GUARD_REASON_CODES.TESTS_FAILED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 399,
+    "source": "    } else if (hasFailedUnitOrIntegration) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.TESTS_FAILED,\n        \"verification\",\n        [],\n        \"Resolve failing tests and resubmit evidence.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  }
+]
+```
+
+### BUILD_NOT_RUN
+
+**code:** BUILD_NOT_RUN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:55
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:262
+
+**definition:** Evidence indicates build verification did not occur.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 331,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 473,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 53,
+    "excerpt": "binding(G.BUILD_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.build_execution_not_demonstrated\", \"build execution is not demonstrated\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates build verification did not occur."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Software/release/dependency workflow has no build record.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 100,
+    "excerpt": "| `BUILD_NOT_RUN` | `verification` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Evidence indicates build verification did not occur. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 64,
+    "excerpt": "| `BUILD_NOT_RUN` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.build_execution_not_demonstrated` | build execution is not demonstrated | `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 331,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 473,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 53,
+    "excerpt": "binding(G.BUILD_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.build_execution_not_demonstrated\", \"build execution is not demonstrated\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 55,
+    "excerpt": "BUILD_NOT_RUN: \"BUILD_NOT_RUN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 262,
+    "excerpt": "BUILD_NOT_RUN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 263,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:262",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 437,
+    "excerpt": "GUARD_REASON_CODES.BUILD_NOT_RUN,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 433,
+    "source": "    if (!hasBuildRecord) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.BUILD_NOT_RUN,\n        \"verification\",\n        [],\n        \"Provide build verification evidence.\",\n      );\n    } else if (hasBuildFailed || !hasBuildPassed) {"
+  }
+]
+```
+
+### BUILD_FAILED
+
+**code:** BUILD_FAILED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:56
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:269
+
+**definition:** Evidence indicates build verification ended unsuccessfully.
+
+**category:** verification
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 446,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 332,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 474,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 446,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 54,
+    "excerpt": "binding(G.BUILD_FAILED, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.build_failure_observed\", \"submitted evidence records an unsuccessful build\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates build verification ended unsuccessfully."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Eligible workflow has failed build OR a build record with no pass, including not_run/inconclusive.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION",
+  "ASSURANCE + REPORT WORDING"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 101,
+    "excerpt": "| `BUILD_FAILED` | `verification` | `high` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Evidence indicates build verification ended unsuccessfully. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 65,
+    "excerpt": "| `BUILD_FAILED` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.build_failure_observed` | submitted evidence records an unsuccessful build | `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 332,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 474,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 446,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 54,
+    "excerpt": "binding(G.BUILD_FAILED, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.build_failure_observed\", \"submitted evidence records an unsuccessful build\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 56,
+    "excerpt": "BUILD_FAILED: \"BUILD_FAILED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 269,
+    "excerpt": "BUILD_FAILED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 270,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:269",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 446,
+    "excerpt": "GUARD_REASON_CODES.BUILD_FAILED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 442,
+    "source": "    } else if (hasBuildFailed || !hasBuildPassed) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.BUILD_FAILED,\n        \"verification\",\n        [],\n        \"Provide a successful build result.\",\n      );\n    }"
+  }
+]
+```
+
+### STATIC_ANALYSIS_NOT_RUN
+
+**code:** STATIC_ANALYSIS_NOT_RUN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:57
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:276
+
+**definition:** Expected static analysis evidence is absent.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 55,
+    "excerpt": "binding(G.STATIC_ANALYSIS_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.static_analysis_not_demonstrated\", \"static-analysis execution is not demonstrated\", [\"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Expected static analysis evidence is absent."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 102,
+    "excerpt": "| `STATIC_ANALYSIS_NOT_RUN` | `verification` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Expected static analysis evidence is absent. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 66,
+    "excerpt": "| `STATIC_ANALYSIS_NOT_RUN` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.static_analysis_not_demonstrated` | static-analysis execution is not demonstrated | `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 55,
+    "excerpt": "binding(G.STATIC_ANALYSIS_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.static_analysis_not_demonstrated\", \"static-analysis execution is not demonstrated\", [\"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 57,
+    "excerpt": "STATIC_ANALYSIS_NOT_RUN: \"STATIC_ANALYSIS_NOT_RUN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 276,
+    "excerpt": "STATIC_ANALYSIS_NOT_RUN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 277,
+    "excerpt": "GUARD_REASON_CODES.STATIC_ANALYSIS_NOT_RUN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:276",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### SECURITY_SCAN_NOT_RUN
+
+**code:** SECURITY_SCAN_NOT_RUN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:58
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:283
+
+**definition:** Expected security scan evidence is absent.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 56,
+    "excerpt": "binding(G.SECURITY_SCAN_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.security_scan_not_demonstrated\", \"security-scan execution is not demonstrated\", [\"VERIFY\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Expected security scan evidence is absent."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 103,
+    "excerpt": "| `SECURITY_SCAN_NOT_RUN` | `verification` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Expected security scan evidence is absent. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 67,
+    "excerpt": "| `SECURITY_SCAN_NOT_RUN` | `mesr.core.evidence.verification` | `mesr.domain.software.verification.security_scan_not_demonstrated` | security-scan execution is not demonstrated | `NC-VERIFY`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 56,
+    "excerpt": "binding(G.SECURITY_SCAN_NOT_RUN, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.security_scan_not_demonstrated\", \"security-scan execution is not demonstrated\", [\"VERIFY\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 58,
+    "excerpt": "SECURITY_SCAN_NOT_RUN: \"SECURITY_SCAN_NOT_RUN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 283,
+    "excerpt": "SECURITY_SCAN_NOT_RUN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 284,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_SCAN_NOT_RUN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:283",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### MANUAL_REVIEW_MISSING
+
+**code:** MANUAL_REVIEW_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:59
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:290
+
+**definition:** Expected human review evidence is absent.
+
+**category:** verification
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 57,
+    "excerpt": "binding(G.MANUAL_REVIEW_MISSING, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"expected manual review evidence is missing\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Expected human review evidence is absent."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 104,
+    "excerpt": "| `MANUAL_REVIEW_MISSING` | `verification` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Expected human review evidence is absent. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 68,
+    "excerpt": "| `MANUAL_REVIEW_MISSING` | `mesr.core.review.review` | `mesr.domain.software.review.not_demonstrated` | expected manual review evidence is missing | `NC-REVIEW` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 57,
+    "excerpt": "binding(G.MANUAL_REVIEW_MISSING, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"expected manual review evidence is missing\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 59,
+    "excerpt": "MANUAL_REVIEW_MISSING: \"MANUAL_REVIEW_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 290,
+    "excerpt": "MANUAL_REVIEW_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 291,
+    "excerpt": "GUARD_REASON_CODES.MANUAL_REVIEW_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:290",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### ROLLBACK_MISSING
+
+**code:** ROLLBACK_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:60
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:297
+
+**definition:** Rollback evidence is absent for a release-oriented workflow.
+
+**category:** release_rollback
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 474,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 377,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_MISSING) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 497,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 505,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.ROLLBACK_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 506,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 626,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_MISSING) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 632,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 474,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 58,
+    "excerpt": "binding(G.ROLLBACK_MISSING, \"mesr.core.evidence.item\", \"mesr.domain.software.release.rollback_not_demonstrated\", \"rollback evidence is missing\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 139,
+    "excerpt": "\"ROLLBACK_MISSING\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 179,
+    "excerpt": "\"ROLLBACK_MISSING\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 219,
+    "excerpt": "\"ROLLBACK_MISSING\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 231,
+    "excerpt": "\"ROLLBACK_MISSING\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 100,
+    "excerpt": "- `ROLLBACK_MISSING` (`high`); Rollback evidence is absent for a release-oriented workflow.; recommended fix: Provide a passed rollback check for the release workflow."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 110,
+    "excerpt": "- `next:rollback` (`document_rollback`); owner: `operator`; priority: `high`; reason: `ROLLBACK_MISSING`; Provide rollback evidence for the release-oriented workflow."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Rollback evidence is absent for a release-oriented workflow."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Release lacks passed rollback_check and either lacks record or has not_run record.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 105,
+    "excerpt": "| `ROLLBACK_MISSING` | `release_rollback` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Rollback evidence is absent for a release-oriented workflow. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 74,
+    "excerpt": "| `ROLLBACK_MISSING` | `mesr.core.evidence.item` | `mesr.domain.software.release.rollback_not_demonstrated` | rollback evidence is missing | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 139,
+    "excerpt": "\"ROLLBACK_MISSING\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 179,
+    "excerpt": "\"ROLLBACK_MISSING\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 219,
+    "excerpt": "\"ROLLBACK_MISSING\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 231,
+    "excerpt": "\"ROLLBACK_MISSING\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 100,
+    "excerpt": "- `ROLLBACK_MISSING` (`high`); Rollback evidence is absent for a release-oriented workflow.; recommended fix: Provide a passed rollback check for the release workflow."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 110,
+    "excerpt": "- `next:rollback` (`document_rollback`); owner: `operator`; priority: `high`; reason: `ROLLBACK_MISSING`; Provide rollback evidence for the release-oriented workflow."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 377,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_MISSING) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 497,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 505,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.ROLLBACK_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 506,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 626,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_MISSING) ||"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 632,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 474,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 58,
+    "excerpt": "binding(G.ROLLBACK_MISSING, \"mesr.core.evidence.item\", \"mesr.domain.software.release.rollback_not_demonstrated\", \"rollback evidence is missing\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 60,
+    "excerpt": "ROLLBACK_MISSING: \"ROLLBACK_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 297,
+    "excerpt": "ROLLBACK_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 298,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:297",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 474,
+    "excerpt": "? GUARD_REASON_CODES.ROLLBACK_MISSING"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 470,
+    "source": "      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        !hasRollbackRecord || hasRollbackNotRun\n          ? GUARD_REASON_CODES.ROLLBACK_MISSING\n          : GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,\n        \"rollback\",\n        [],\n        \"Provide a passed rollback check for the release workflow.\",\n      );"
+  }
+]
+```
+
+### ROLLBACK_UNVERIFIED
+
+**code:** ROLLBACK_UNVERIFIED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:61
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:304
+
+**definition:** Rollback material is present but not verified strongly enough.
+
+**category:** release_rollback
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 475,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 378,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 498,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 507,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 627,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 633,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 475,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 59,
+    "excerpt": "binding(G.ROLLBACK_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.release.rollback_not_verified\", \"rollback material lacks required verification\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Rollback material is present but not verified strongly enough.",
+  "Provide rollback evidence for the release-oriented workflow."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Release has rollback record, no pass and no not_run.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "ASSURANCE + REPORT WORDING"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 106,
+    "excerpt": "| `ROLLBACK_UNVERIFIED` | `release_rollback` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Rollback material is present but not verified strongly enough. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 75,
+    "excerpt": "| `ROLLBACK_UNVERIFIED` | `mesr.core.evidence.verification` | `mesr.domain.software.release.rollback_not_verified` | rollback material lacks required verification | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 378,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 498,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 507,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 627,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 633,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 475,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 59,
+    "excerpt": "binding(G.ROLLBACK_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.release.rollback_not_verified\", \"rollback material lacks required verification\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 61,
+    "excerpt": "ROLLBACK_UNVERIFIED: \"ROLLBACK_UNVERIFIED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 304,
+    "excerpt": "ROLLBACK_UNVERIFIED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 305,
+    "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:304",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 475,
+    "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 471,
+    "source": "        missingEvidence,\n        reasonCodes,\n        !hasRollbackRecord || hasRollbackNotRun\n          ? GUARD_REASON_CODES.ROLLBACK_MISSING\n          : GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,\n        \"rollback\",\n        [],\n        \"Provide a passed rollback check for the release workflow.\",\n      );\n    }"
+  }
+]
+```
+
+### RELEASE_TARGET_UNCLEAR
+
+**code:** RELEASE_TARGET_UNCLEAR
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:62
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:311
+
+**definition:** Release target details are incomplete or unclear.
+
+**category:** release_rollback
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 60,
+    "excerpt": "binding(G.RELEASE_TARGET_UNCLEAR, \"mesr.core.claim.scope\", \"mesr.domain.software.release.target_unclear\", \"release target binding is unclear\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Release target details are incomplete or unclear."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 107,
+    "excerpt": "| `RELEASE_TARGET_UNCLEAR` | `release_rollback` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Release target details are incomplete or unclear. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 76,
+    "excerpt": "| `RELEASE_TARGET_UNCLEAR` | `mesr.core.claim.scope` | `mesr.domain.software.release.target_unclear` | release target binding is unclear | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 60,
+    "excerpt": "binding(G.RELEASE_TARGET_UNCLEAR, \"mesr.core.claim.scope\", \"mesr.domain.software.release.target_unclear\", \"release target binding is unclear\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 62,
+    "excerpt": "RELEASE_TARGET_UNCLEAR: \"RELEASE_TARGET_UNCLEAR\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 311,
+    "excerpt": "RELEASE_TARGET_UNCLEAR: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 312,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_TARGET_UNCLEAR,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:311",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### PRODUCTION_ENVIRONMENT_UNVERIFIED
+
+**code:** PRODUCTION_ENVIRONMENT_UNVERIFIED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:63
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:318
+
+**definition:** Production environment material is not sufficiently verified.
+
+**category:** release_rollback
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 61,
+    "excerpt": "binding(G.PRODUCTION_ENVIRONMENT_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.deployment.environment_not_verified\", \"production-environment claim is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Production environment material is not sufficiently verified."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 108,
+    "excerpt": "| `PRODUCTION_ENVIRONMENT_UNVERIFIED` | `release_rollback` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Production environment material is not sufficiently verified. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 77,
+    "excerpt": "| `PRODUCTION_ENVIRONMENT_UNVERIFIED` | `mesr.core.evidence.verification` | `mesr.domain.software.deployment.environment_not_verified` | production-environment claim is not sufficiently verified | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 61,
+    "excerpt": "binding(G.PRODUCTION_ENVIRONMENT_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.deployment.environment_not_verified\", \"production-environment claim is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 63,
+    "excerpt": "PRODUCTION_ENVIRONMENT_UNVERIFIED: \"PRODUCTION_ENVIRONMENT_UNVERIFIED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 318,
+    "excerpt": "PRODUCTION_ENVIRONMENT_UNVERIFIED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 319,
+    "excerpt": "GUARD_REASON_CODES.PRODUCTION_ENVIRONMENT_UNVERIFIED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:318",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### BLOCKED_ACTION_PRESENT
+
+**code:** BLOCKED_ACTION_PRESENT
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:64
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:325
+
+**definition:** A halted action appears in submitted evidence.
+
+**category:** tool_action
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 619,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 334,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 568,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 619,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 62,
+    "excerpt": "binding(G.BLOCKED_ACTION_PRESENT, \"mesr.core.action.action\", null, \"a halted or blocked action is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "A halted action appears in submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Nonempty blocked actions; critical item can drive report block.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 109,
+    "excerpt": "| `BLOCKED_ACTION_PRESENT` | `tool_action` | `medium` | `risk_summary`, `receipts`, `reports`, `next_actions` | A halted action appears in submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 83,
+    "excerpt": "| `BLOCKED_ACTION_PRESENT` | `mesr.core.action.action` | - | a halted/blocked action is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 334,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 568,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 619,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 62,
+    "excerpt": "binding(G.BLOCKED_ACTION_PRESENT, \"mesr.core.action.action\", null, \"a halted or blocked action is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 64,
+    "excerpt": "BLOCKED_ACTION_PRESENT: \"BLOCKED_ACTION_PRESENT\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 325,
+    "excerpt": "BLOCKED_ACTION_PRESENT: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 326,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:325",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 619,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 334,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 568,
+    "excerpt": "GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 615,
+    "source": "    addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);\n  }\n\n  if (blockedActions.length > 0) {\n    addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);\n  }\n\n  for (const blockedAction of blockedActions) {\n    const mappedReasonCode = mapBlockedActionReasonCode(blockedAction.reason_code);\n    if (mappedReasonCode) {"
+  }
+]
+```
+
+### DESTRUCTIVE_COMMAND_ATTEMPTED
+
+**code:** DESTRUCTIVE_COMMAND_ATTEMPTED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:65
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:332
+
+**definition:** Evidence indicates an attempted destructive command.
+
+**category:** tool_action
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[
+  "blocked_actions.reason_code:DESTRUCTIVE_COMMAND"
+]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 104,
+    "excerpt": "return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 277,
+    "excerpt": "? GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 104,
+    "excerpt": "return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 63,
+    "excerpt": "binding(G.DESTRUCTIVE_COMMAND_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a destructive command attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates an attempted destructive command."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Explicit mapping from blocked action DESTRUCTIVE_COMMAND.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 110,
+    "excerpt": "| `DESTRUCTIVE_COMMAND_ATTEMPTED` | `tool_action` | `high` | `risk_summary`, `receipts`, `reports`, `next_actions` | Evidence indicates an attempted destructive command. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 84,
+    "excerpt": "| `DESTRUCTIVE_COMMAND_ATTEMPTED` | `mesr.core.action.tool_invocation` | - | a destructive command attempt is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 277,
+    "excerpt": "? GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 104,
+    "excerpt": "return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 63,
+    "excerpt": "binding(G.DESTRUCTIVE_COMMAND_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a destructive command attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 65,
+    "excerpt": "DESTRUCTIVE_COMMAND_ATTEMPTED: \"DESTRUCTIVE_COMMAND_ATTEMPTED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 332,
+    "excerpt": "DESTRUCTIVE_COMMAND_ATTEMPTED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 333,
+    "excerpt": "GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:332",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 104,
+    "excerpt": "return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 100,
+    "source": "  value: unknown,\n): GuardReasonCode | null {\n  switch (value) {\n    case \"DESTRUCTIVE_COMMAND\":\n      return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;\n    case \"SECRET_ACCESS\":\n      return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;\n    case \"NETWORK_NOT_ALLOWED\":\n      return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;\n    default:"
+  }
+]
+```
+
+### SECRET_ACCESS_ATTEMPTED
+
+**code:** SECRET_ACCESS_ATTEMPTED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:66
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:339
+
+**definition:** Evidence indicates an attempted secret-access operation.
+
+**category:** tool_action
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[
+  "blocked_actions.reason_code:SECRET_ACCESS"
+]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 106,
+    "excerpt": "return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 279,
+    "excerpt": "? GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 106,
+    "excerpt": "return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 64,
+    "excerpt": "binding(G.SECRET_ACCESS_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a secret-access attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates an attempted secret-access operation."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Explicit mapping from blocked action SECRET_ACCESS.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 111,
+    "excerpt": "| `SECRET_ACCESS_ATTEMPTED` | `tool_action` | `high` | `risk_summary`, `receipts`, `reports`, `next_actions` | Evidence indicates an attempted secret-access operation. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 85,
+    "excerpt": "| `SECRET_ACCESS_ATTEMPTED` | `mesr.core.action.tool_invocation` | - | a secret-access attempt is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 279,
+    "excerpt": "? GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 106,
+    "excerpt": "return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 64,
+    "excerpt": "binding(G.SECRET_ACCESS_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a secret-access attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 66,
+    "excerpt": "SECRET_ACCESS_ATTEMPTED: \"SECRET_ACCESS_ATTEMPTED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 339,
+    "excerpt": "SECRET_ACCESS_ATTEMPTED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 340,
+    "excerpt": "GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:339",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 106,
+    "excerpt": "return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 102,
+    "source": "  switch (value) {\n    case \"DESTRUCTIVE_COMMAND\":\n      return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;\n    case \"SECRET_ACCESS\":\n      return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;\n    case \"NETWORK_NOT_ALLOWED\":\n      return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;\n    default:\n      return null;\n  }"
+  }
+]
+```
+
+### NETWORK_ACCESS_ATTEMPTED
+
+**code:** NETWORK_ACCESS_ATTEMPTED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:67
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:346
+
+**definition:** Evidence indicates an attempted network operation.
+
+**category:** tool_action
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[
+  "blocked_actions.reason_code:NETWORK_NOT_ALLOWED"
+]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 108,
+    "excerpt": "return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 281,
+    "excerpt": "? GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 108,
+    "excerpt": "return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 65,
+    "excerpt": "binding(G.NETWORK_ACCESS_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a network-access attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates an attempted network operation."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Explicit mapping from blocked action NETWORK_NOT_ALLOWED.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 112,
+    "excerpt": "| `NETWORK_ACCESS_ATTEMPTED` | `tool_action` | `medium` | `risk_summary`, `receipts`, `reports`, `next_actions` | Evidence indicates an attempted network operation. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 86,
+    "excerpt": "| `NETWORK_ACCESS_ATTEMPTED` | `mesr.core.action.tool_invocation` | - | a network-access attempt is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 281,
+    "excerpt": "? GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 108,
+    "excerpt": "return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 65,
+    "excerpt": "binding(G.NETWORK_ACCESS_ATTEMPTED, \"mesr.core.action.tool_invocation\", null, \"a network-access attempt is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 67,
+    "excerpt": "NETWORK_ACCESS_ATTEMPTED: \"NETWORK_ACCESS_ATTEMPTED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 346,
+    "excerpt": "NETWORK_ACCESS_ATTEMPTED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 347,
+    "excerpt": "GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:346",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 108,
+    "excerpt": "return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 104,
+    "source": "      return GUARD_REASON_CODES.DESTRUCTIVE_COMMAND_ATTEMPTED;\n    case \"SECRET_ACCESS\":\n      return GUARD_REASON_CODES.SECRET_ACCESS_ATTEMPTED;\n    case \"NETWORK_NOT_ALLOWED\":\n      return GUARD_REASON_CODES.NETWORK_ACCESS_ATTEMPTED;\n    default:\n      return null;\n  }\n}\n"
+  }
+]
+```
+
+### UNSAFE_GIT_OPERATION
+
+**code:** UNSAFE_GIT_OPERATION
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:68
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:353
+
+**definition:** Evidence indicates a Git operation with elevated safety concern.
+
+**category:** tool_action
+
+**severity_hint:** high
+
+**primary_role:** NEEDS_REVIEW
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 66,
+    "excerpt": "binding(G.UNSAFE_GIT_OPERATION, \"mesr.core.action.tool_invocation\", null, \"a Git operation with elevated concern is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates a Git operation with elevated safety concern."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 113,
+    "excerpt": "| `UNSAFE_GIT_OPERATION` | `tool_action` | `high` | `risk_summary`, `receipts`, `reports`, `next_actions` | Evidence indicates a Git operation with elevated safety concern. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 87,
+    "excerpt": "| `UNSAFE_GIT_OPERATION` | `mesr.core.action.tool_invocation` | - | a Git operation with elevated concern is recorded | `NC-AUTH`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 66,
+    "excerpt": "binding(G.UNSAFE_GIT_OPERATION, \"mesr.core.action.tool_invocation\", null, \"a Git operation with elevated concern is recorded\", [\"AUTH\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 68,
+    "excerpt": "UNSAFE_GIT_OPERATION: \"UNSAFE_GIT_OPERATION\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 353,
+    "excerpt": "UNSAFE_GIT_OPERATION: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.UNSAFE_GIT_OPERATION,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:353",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### TOOL_OUTPUT_MISSING
+
+**code:** TOOL_OUTPUT_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:69
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:360
+
+**definition:** A recorded tool interaction lacks expected output material.
+
+**category:** tool_action
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 631,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.TOOL_OUTPUT_MISSING);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 631,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.TOOL_OUTPUT_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 67,
+    "excerpt": "binding(G.TOOL_OUTPUT_MISSING, \"mesr.core.evidence.item\", null, \"expected tool-output evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "A recorded tool interaction lacks expected output material."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Tool output_summary null/empty.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 114,
+    "excerpt": "| `TOOL_OUTPUT_MISSING` | `tool_action` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | A recorded tool interaction lacks expected output material. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 88,
+    "excerpt": "| `TOOL_OUTPUT_MISSING` | `mesr.core.evidence.item` | - | expected tool-output evidence is missing | `NC-EVIDENCE`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 631,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.TOOL_OUTPUT_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 67,
+    "excerpt": "binding(G.TOOL_OUTPUT_MISSING, \"mesr.core.evidence.item\", null, \"expected tool-output evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 69,
+    "excerpt": "TOOL_OUTPUT_MISSING: \"TOOL_OUTPUT_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 360,
+    "excerpt": "TOOL_OUTPUT_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 361,
+    "excerpt": "GUARD_REASON_CODES.TOOL_OUTPUT_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:360",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 631,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.TOOL_OUTPUT_MISSING);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 627,
+    "source": "  }\n\n  for (const toolCall of toolCalls) {\n    if (!asString(toolCall.output_summary)) {\n      addUnique(reasonCodes, GUARD_REASON_CODES.TOOL_OUTPUT_MISSING);\n    }\n  }\n\n  for (const action of actions) {\n    if (action.command && Object.keys(asRecord(action.outputs)).length === 0) {"
+  }
+]
+```
+
+### COMMAND_RESULT_MISSING
+
+**code:** COMMAND_RESULT_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:70
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:367
+
+**definition:** A recorded command interaction lacks expected result material.
+
+**category:** tool_action
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 637,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.COMMAND_RESULT_MISSING);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 637,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.COMMAND_RESULT_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 68,
+    "excerpt": "binding(G.COMMAND_RESULT_MISSING, \"mesr.core.evidence.item\", null, \"expected command-result evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "A recorded command interaction lacks expected result material."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Truthy command and outputs coerces to empty record; non-object captured output can trigger.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 115,
+    "excerpt": "| `COMMAND_RESULT_MISSING` | `tool_action` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | A recorded command interaction lacks expected result material. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 89,
+    "excerpt": "| `COMMAND_RESULT_MISSING` | `mesr.core.evidence.item` | - | expected command-result evidence is missing | `NC-EVIDENCE`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 637,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.COMMAND_RESULT_MISSING);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 68,
+    "excerpt": "binding(G.COMMAND_RESULT_MISSING, \"mesr.core.evidence.item\", null, \"expected command-result evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 70,
+    "excerpt": "COMMAND_RESULT_MISSING: \"COMMAND_RESULT_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 367,
+    "excerpt": "COMMAND_RESULT_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 368,
+    "excerpt": "GUARD_REASON_CODES.COMMAND_RESULT_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:367",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 637,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.COMMAND_RESULT_MISSING);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 633,
+    "source": "  }\n\n  for (const action of actions) {\n    if (action.command && Object.keys(asRecord(action.outputs)).length === 0) {\n      addUnique(reasonCodes, GUARD_REASON_CODES.COMMAND_RESULT_MISSING);\n    }\n  }\n\n  if (!asString(provenance.source_pack_hash)) {\n    addCoverageFinding("
+  }
+]
+```
+
+### HIGH_RISK_DATA
+
+**code:** HIGH_RISK_DATA
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:71
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:374
+
+**definition:** Submitted evidence indicates interaction with high-risk data.
+
+**category:** data_security
+
+**severity_hint:** high
+
+**primary_role:** NEEDS_REVIEW
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 69,
+    "excerpt": "binding(G.HIGH_RISK_DATA, \"mesr.core.evidence.observation\", null, \"submitted evidence identifies high-risk-data interaction\", [\"AUTH\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted evidence indicates interaction with high-risk data."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 116,
+    "excerpt": "| `HIGH_RISK_DATA` | `data_security` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Submitted evidence indicates interaction with high-risk data. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 95,
+    "excerpt": "| `HIGH_RISK_DATA` | `mesr.core.evidence.observation` | - | submitted evidence identifies high-risk-data interaction | `NC-AUTH`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 69,
+    "excerpt": "binding(G.HIGH_RISK_DATA, \"mesr.core.evidence.observation\", null, \"submitted evidence identifies high-risk-data interaction\", [\"AUTH\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 71,
+    "excerpt": "HIGH_RISK_DATA: \"HIGH_RISK_DATA\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 374,
+    "excerpt": "HIGH_RISK_DATA: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 375,
+    "excerpt": "GUARD_REASON_CODES.HIGH_RISK_DATA,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:374",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### DATA_SENSITIVITY_UNKNOWN
+
+**code:** DATA_SENSITIVITY_UNKNOWN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:72
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:381
+
+**definition:** Data sensitivity context is absent or unclear.
+
+**category:** data_security
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 299,
+    "excerpt": "GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 299,
+    "excerpt": "GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 70,
+    "excerpt": "binding(G.DATA_SENSITIVITY_UNKNOWN, \"mesr.core.claim.scope\", null, \"data-sensitivity binding is unknown\", [\"EVIDENCE\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Data sensitivity context is absent or unclear."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Scope sensitivity unknown or absent to coverage.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 117,
+    "excerpt": "| `DATA_SENSITIVITY_UNKNOWN` | `data_security` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Data sensitivity context is absent or unclear. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 96,
+    "excerpt": "| `DATA_SENSITIVITY_UNKNOWN` | `mesr.core.claim.scope` | - | data-sensitivity binding is unknown | `NC-EVIDENCE`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 299,
+    "excerpt": "GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 70,
+    "excerpt": "binding(G.DATA_SENSITIVITY_UNKNOWN, \"mesr.core.claim.scope\", null, \"data-sensitivity binding is unknown\", [\"EVIDENCE\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 72,
+    "excerpt": "DATA_SENSITIVITY_UNKNOWN: \"DATA_SENSITIVITY_UNKNOWN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 381,
+    "excerpt": "DATA_SENSITIVITY_UNKNOWN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 382,
+    "excerpt": "GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:381",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 299,
+    "excerpt": "GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 295,
+    "source": "  if (dataSensitivity === \"unknown\" || !dataSensitivity) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.DATA_SENSITIVITY_UNKNOWN,\n      \"scope\",\n      [],\n      \"Declare data sensitivity for the workflow scope.\",\n    );\n  }"
+  }
+]
+```
+
+### CREDENTIAL_RISK
+
+**code:** CREDENTIAL_RISK
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:73
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:388
+
+**definition:** Evidence indicates credential-handling risk.
+
+**category:** data_security
+
+**severity_hint:** high
+
+**primary_role:** NEEDS_REVIEW
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 71,
+    "excerpt": "binding(G.CREDENTIAL_RISK, \"mesr.core.actor.identity_assertion\", null, \"credential-handling risk is recorded\", [\"AUTH\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates credential-handling risk."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 118,
+    "excerpt": "| `CREDENTIAL_RISK` | `data_security` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates credential-handling risk. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 97,
+    "excerpt": "| `CREDENTIAL_RISK` | `mesr.core.actor.identity_assertion` | - | credential-handling risk is recorded | `NC-AUTH`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 71,
+    "excerpt": "binding(G.CREDENTIAL_RISK, \"mesr.core.actor.identity_assertion\", null, \"credential-handling risk is recorded\", [\"AUTH\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 73,
+    "excerpt": "CREDENTIAL_RISK: \"CREDENTIAL_RISK\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 388,
+    "excerpt": "CREDENTIAL_RISK: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 389,
+    "excerpt": "GUARD_REASON_CODES.CREDENTIAL_RISK,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:388",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### EXFILTRATION_RISK
+
+**code:** EXFILTRATION_RISK
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:74
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:395
+
+**definition:** Evidence indicates possible exfiltration risk.
+
+**category:** data_security
+
+**severity_hint:** critical
+
+**primary_role:** NEEDS_REVIEW
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 72,
+    "excerpt": "binding(G.EXFILTRATION_RISK, \"mesr.core.evidence.observation\", null, \"evidence records possible exfiltration risk\", [\"EFFECT\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates possible exfiltration risk."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 119,
+    "excerpt": "| `EXFILTRATION_RISK` | `data_security` | `critical` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates possible exfiltration risk. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 98,
+    "excerpt": "| `EXFILTRATION_RISK` | `mesr.core.evidence.observation` | - | evidence records possible exfiltration risk | `NC-EFFECT`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 72,
+    "excerpt": "binding(G.EXFILTRATION_RISK, \"mesr.core.evidence.observation\", null, \"evidence records possible exfiltration risk\", [\"EFFECT\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 74,
+    "excerpt": "EXFILTRATION_RISK: \"EXFILTRATION_RISK\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 395,
+    "excerpt": "EXFILTRATION_RISK: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 396,
+    "excerpt": "GUARD_REASON_CODES.EXFILTRATION_RISK,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:395",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### SECURITY_PATCH_SCOPE_UNCLEAR
+
+**code:** SECURITY_PATCH_SCOPE_UNCLEAR
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:75
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:402
+
+**definition:** Security patch evidence does not define a clear remediation scope.
+
+**category:** data_security
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 73,
+    "excerpt": "binding(G.SECURITY_PATCH_SCOPE_UNCLEAR, \"mesr.core.claim.scope\", \"mesr.domain.software.change.diff_scope\", \"security-patch scope is unclear\", [\"AUTH\", \"VERIFY\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Security patch evidence does not define a clear remediation scope."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 120,
+    "excerpt": "| `SECURITY_PATCH_SCOPE_UNCLEAR` | `data_security` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Security patch evidence does not define a clear remediation scope. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 99,
+    "excerpt": "| `SECURITY_PATCH_SCOPE_UNCLEAR` | `mesr.core.claim.scope` | `mesr.domain.software.change.diff_scope` | security-patch scope is unclear | `NC-AUTH`, `NC-VERIFY`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 73,
+    "excerpt": "binding(G.SECURITY_PATCH_SCOPE_UNCLEAR, \"mesr.core.claim.scope\", \"mesr.domain.software.change.diff_scope\", \"security-patch scope is unclear\", [\"AUTH\", \"VERIFY\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 75,
+    "excerpt": "SECURITY_PATCH_SCOPE_UNCLEAR: \"SECURITY_PATCH_SCOPE_UNCLEAR\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 402,
+    "excerpt": "SECURITY_PATCH_SCOPE_UNCLEAR: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 403,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_PATCH_SCOPE_UNCLEAR,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:402",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### CYBER_AUTHORIZATION_REQUIRED
+
+**code:** CYBER_AUTHORIZATION_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:76
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:409
+
+**definition:** Cyber-oriented workflow evidence calls for stronger authorization material.
+
+**category:** data_security
+
+**severity_hint:** critical
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 535,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 642,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 349,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 441,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 446,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 447,
+    "excerpt": "? GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 642,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 535,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 74,
+    "excerpt": "binding(G.CYBER_AUTHORIZATION_REQUIRED, \"mesr.core.boundary.authority\", null, \"stronger applicable authorization evidence is required\", [\"AUTH\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Cyber-oriented workflow evidence calls for stronger authorization material."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** cyber_remediation authorization_status is not provided; no independent authority check.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 121,
+    "excerpt": "| `CYBER_AUTHORIZATION_REQUIRED` | `data_security` | `critical` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Cyber-oriented workflow evidence calls for stronger authorization material. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 100,
+    "excerpt": "| `CYBER_AUTHORIZATION_REQUIRED` | `mesr.core.boundary.authority` | - | stronger applicable authorization evidence is required | `NC-AUTH`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 349,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 441,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 446,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 447,
+    "excerpt": "? GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 642,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 535,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 74,
+    "excerpt": "binding(G.CYBER_AUTHORIZATION_REQUIRED, \"mesr.core.boundary.authority\", null, \"stronger applicable authorization evidence is required\", [\"AUTH\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 76,
+    "excerpt": "CYBER_AUTHORIZATION_REQUIRED: \"CYBER_AUTHORIZATION_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 409,
+    "excerpt": "CYBER_AUTHORIZATION_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 410,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:409",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 535,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 349,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 441,
+    "excerpt": "GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 446,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 447,
+    "excerpt": "? GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 642,
+    "excerpt": "addUnique(verdictReasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 531,
+    "source": "  if (pack.pack_type === \"cyber_remediation\" && authorityStatus !== \"provided\") {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED,\n      \"authority\",\n      authorizationEvidence,\n      \"Provide explicit authorization for the cyber-oriented workflow.\",\n    );\n  }"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 638,
+    "source": "  if (\n    pack.pack_type === \"cyber_remediation\" &&\n    authorityStatus !== \"provided\"\n  ) {\n    addUnique(verdictReasonCodes, GUARD_REASON_CODES.CYBER_AUTHORIZATION_REQUIRED);\n  }\n\n  if (reviewRequirements.some((item) => item.required)) {\n    addReasonCodes(\n      verdictReasonCodes,"
+  }
+]
+```
+
+### EVIDENCE_INCOMPLETE
+
+**code:** EVIDENCE_INCOMPLETE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:77
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:416
+
+**definition:** Submitted evidence is structurally present but incomplete for stronger interpretation.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 75,
+    "excerpt": "binding(G.EVIDENCE_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence is incomplete for the requested interpretation\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Submitted evidence is structurally present but incomplete for stronger interpretation."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 122,
+    "excerpt": "| `EVIDENCE_INCOMPLETE` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Submitted evidence is structurally present but incomplete for stronger interpretation. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 106,
+    "excerpt": "| `EVIDENCE_INCOMPLETE` | `mesr.core.evidence.item` | - | evidence is incomplete for the requested interpretation | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 75,
+    "excerpt": "binding(G.EVIDENCE_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence is incomplete for the requested interpretation\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 77,
+    "excerpt": "EVIDENCE_INCOMPLETE: \"EVIDENCE_INCOMPLETE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 416,
+    "excerpt": "EVIDENCE_INCOMPLETE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 417,
+    "excerpt": "GUARD_REASON_CODES.EVIDENCE_INCOMPLETE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:416",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### MANIFEST_INCOMPLETE
+
+**code:** MANIFEST_INCOMPLETE
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:78
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:423
+
+**definition:** Manifest completeness indicates omitted or partial evidence inventory.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 551,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 333,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 517,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 531,
+    "excerpt": ": GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 551,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 76,
+    "excerpt": "binding(G.MANIFEST_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence inventory is incomplete\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 163,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 203,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 238,
+    "excerpt": "\"MANIFEST_INCOMPLETE\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 102,
+    "excerpt": "- `MANIFEST_INCOMPLETE` (`medium`); Manifest completeness indicates omitted or partial evidence inventory.; recommended fix: Provide a complete manifest inventory for the pack."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 112,
+    "excerpt": "- `next:provenance` (`provide_provenance`); owner: `operator`; priority: `medium`; reason: `MANIFEST_INCOMPLETE`; Align the manifest, artifact, and provenance material with the report input."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 149,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 189,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 232,
+    "excerpt": "\"MANIFEST_INCOMPLETE\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 101,
+    "excerpt": "- `MANIFEST_INCOMPLETE` (`medium`); Manifest completeness indicates omitted or partial evidence inventory.; recommended fix: Provide a complete manifest inventory for the pack."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 111,
+    "excerpt": "- `next:provenance` (`provide_provenance`); owner: `operator`; priority: `medium`; reason: `MANIFEST_INCOMPLETE`; Align the manifest, artifact, and provenance material with the report input."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Manifest completeness indicates omitted or partial evidence inventory.",
+  "Align the manifest, artifact, and provenance material with the report input."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Manifest partial/incomplete/unknown OR empty files array.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 123,
+    "excerpt": "| `MANIFEST_INCOMPLETE` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Manifest completeness indicates omitted or partial evidence inventory. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 107,
+    "excerpt": "| `MANIFEST_INCOMPLETE` | `mesr.core.evidence.item` | - | evidence inventory is incomplete | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 163,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 203,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 238,
+    "excerpt": "\"MANIFEST_INCOMPLETE\","
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 102,
+    "excerpt": "- `MANIFEST_INCOMPLETE` (`medium`); Manifest completeness indicates omitted or partial evidence inventory.; recommended fix: Provide a complete manifest inventory for the pack."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 112,
+    "excerpt": "- `next:provenance` (`provide_provenance`); owner: `operator`; priority: `medium`; reason: `MANIFEST_INCOMPLETE`; Align the manifest, artifact, and provenance material with the report input."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 149,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 189,
+    "excerpt": "\"MANIFEST_INCOMPLETE\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 232,
+    "excerpt": "\"MANIFEST_INCOMPLETE\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 101,
+    "excerpt": "- `MANIFEST_INCOMPLETE` (`medium`); Manifest completeness indicates omitted or partial evidence inventory.; recommended fix: Provide a complete manifest inventory for the pack."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 111,
+    "excerpt": "- `next:provenance` (`provide_provenance`); owner: `operator`; priority: `medium`; reason: `MANIFEST_INCOMPLETE`; Align the manifest, artifact, and provenance material with the report input."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 333,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 517,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 531,
+    "excerpt": ": GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 551,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 76,
+    "excerpt": "binding(G.MANIFEST_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence inventory is incomplete\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 78,
+    "excerpt": "MANIFEST_INCOMPLETE: \"MANIFEST_INCOMPLETE\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 423,
+    "excerpt": "MANIFEST_INCOMPLETE: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 424,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:423",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 551,
+    "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 547,
+    "source": "  ) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.MANIFEST_INCOMPLETE,\n      \"manifest\",\n      [],\n      \"Provide a complete manifest inventory for the pack.\",\n    );\n  }"
+  }
+]
+```
+
+### ARTIFACT_MISSING
+
+**code:** ARTIFACT_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:79
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:430
+
+**definition:** An expected artifact is absent from submitted evidence.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 77,
+    "excerpt": "binding(G.ARTIFACT_MISSING, \"mesr.core.evidence.item\", null, \"an expected artifact is missing\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "An expected artifact is absent from submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 124,
+    "excerpt": "| `ARTIFACT_MISSING` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | An expected artifact is absent from submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 108,
+    "excerpt": "| `ARTIFACT_MISSING` | `mesr.core.evidence.item` | - | an expected artifact is missing | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 77,
+    "excerpt": "binding(G.ARTIFACT_MISSING, \"mesr.core.evidence.item\", null, \"an expected artifact is missing\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 79,
+    "excerpt": "ARTIFACT_MISSING: \"ARTIFACT_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 430,
+    "excerpt": "ARTIFACT_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 431,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:430",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### ARTIFACT_HASH_MISSING
+
+**code:** ARTIFACT_HASH_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:80
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:437
+
+**definition:** An artifact reference is present without stable hash material.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 563,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 518,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 529,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.ARTIFACT_HASH_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 530,
+    "excerpt": "? GUARD_REASON_CODES.ARTIFACT_HASH_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 563,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 78,
+    "excerpt": "binding(G.ARTIFACT_HASH_MISSING, \"mesr.core.provenance.lineage\", null, \"stable artifact-integrity binding is missing\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "An artifact reference is present without stable hash material."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Missing artifact sha256 to coverage; normal report validator rejects missing hash first.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 125,
+    "excerpt": "| `ARTIFACT_HASH_MISSING` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | An artifact reference is present without stable hash material. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 109,
+    "excerpt": "| `ARTIFACT_HASH_MISSING` | `mesr.core.provenance.lineage` | - | stable artifact-integrity binding is missing | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 518,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 529,
+    "excerpt": ": hasReasonCode(reasonCodes, GUARD_REASON_CODES.ARTIFACT_HASH_MISSING)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 530,
+    "excerpt": "? GUARD_REASON_CODES.ARTIFACT_HASH_MISSING"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 563,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 78,
+    "excerpt": "binding(G.ARTIFACT_HASH_MISSING, \"mesr.core.provenance.lineage\", null, \"stable artifact-integrity binding is missing\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 80,
+    "excerpt": "ARTIFACT_HASH_MISSING: \"ARTIFACT_HASH_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 437,
+    "excerpt": "ARTIFACT_HASH_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 438,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:437",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 563,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 559,
+    "source": "    if (!asString(artifact.sha256)) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.ARTIFACT_HASH_MISSING,\n        \"artifact\",\n        [asString(artifact.artifact_id) ?? \"artifact:unknown\"],\n        \"Add a stable artifact hash.\",\n      );\n    }"
+  }
+]
+```
+
+### ARTIFACT_REF_UNRESOLVED
+
+**code:** ARTIFACT_REF_UNRESOLVED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:81
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:444
+
+**definition:** An artifact reference cannot be resolved within submitted evidence.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 592,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 519,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 527,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 528,
+    "excerpt": "? GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 592,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 79,
+    "excerpt": "binding(G.ARTIFACT_REF_UNRESOLVED, \"mesr.core.provenance.lineage\", null, \"an artifact reference is unresolvable\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "An artifact reference cannot be resolved within submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Tool/verification/authorization ref absent from artifact IDs except art_manifest bypass.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 126,
+    "excerpt": "| `ARTIFACT_REF_UNRESOLVED` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | An artifact reference cannot be resolved within submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 110,
+    "excerpt": "| `ARTIFACT_REF_UNRESOLVED` | `mesr.core.provenance.lineage` | - | an artifact reference is unresolvable | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 519,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 527,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 528,
+    "excerpt": "? GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 592,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 79,
+    "excerpt": "binding(G.ARTIFACT_REF_UNRESOLVED, \"mesr.core.provenance.lineage\", null, \"an artifact reference is unresolvable\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 81,
+    "excerpt": "ARTIFACT_REF_UNRESOLVED: \"ARTIFACT_REF_UNRESOLVED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 444,
+    "excerpt": "ARTIFACT_REF_UNRESOLVED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 445,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:444",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 592,
+    "excerpt": "GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 588,
+    "source": "  if (unresolvedArtifactRefs.length > 0) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.ARTIFACT_REF_UNRESOLVED,\n      \"artifact\",\n      unresolvedArtifactRefs,\n      \"Align artifact references with the submitted artifact inventory.\",\n    );\n  }"
+  }
+]
+```
+
+### PROVENANCE_MISSING
+
+**code:** PROVENANCE_MISSING
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:82
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:451
+
+**definition:** Provenance material is absent from submitted evidence.
+
+**category:** evidence_integrity
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 80,
+    "excerpt": "binding(G.PROVENANCE_MISSING, \"mesr.core.provenance.lineage\", null, \"required lineage is missing\", [\"EVIDENCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Provenance material is absent from submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 127,
+    "excerpt": "| `PROVENANCE_MISSING` | `evidence_integrity` | `high` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Provenance material is absent from submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 111,
+    "excerpt": "| `PROVENANCE_MISSING` | `mesr.core.provenance.lineage` | - | required lineage is missing | `NC-EVIDENCE` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 80,
+    "excerpt": "binding(G.PROVENANCE_MISSING, \"mesr.core.provenance.lineage\", null, \"required lineage is missing\", [\"EVIDENCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 82,
+    "excerpt": "PROVENANCE_MISSING: \"PROVENANCE_MISSING\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 451,
+    "excerpt": "PROVENANCE_MISSING: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 452,
+    "excerpt": "GUARD_REASON_CODES.PROVENANCE_MISSING,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:451",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### PRODUCER_IDENTITY_UNKNOWN
+
+**code:** PRODUCER_IDENTITY_UNKNOWN
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:83
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:458
+
+**definition:** Producer identity is absent or cannot be established from submitted evidence.
+
+**category:** evidence_integrity
+
+**severity_hint:** high
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 607,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 645,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 520,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 607,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 645,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 81,
+    "excerpt": "binding(G.PRODUCER_IDENTITY_UNKNOWN, \"mesr.core.provenance.producer\", null, \"producer identity is unknown\", [\"EVIDENCE\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Producer identity is absent or cannot be established from submitted evidence."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Missing producer id/name/generated_by OR missing source_pack_hash; validator constrains normal-path reachability.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 128,
+    "excerpt": "| `PRODUCER_IDENTITY_UNKNOWN` | `evidence_integrity` | `high` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Producer identity is absent or cannot be established from submitted evidence. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 112,
+    "excerpt": "| `PRODUCER_IDENTITY_UNKNOWN` | `mesr.core.provenance.producer` | - | producer identity is unknown | `NC-EVIDENCE`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 520,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 607,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 645,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 81,
+    "excerpt": "binding(G.PRODUCER_IDENTITY_UNKNOWN, \"mesr.core.provenance.producer\", null, \"producer identity is unknown\", [\"EVIDENCE\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 83,
+    "excerpt": "PRODUCER_IDENTITY_UNKNOWN: \"PRODUCER_IDENTITY_UNKNOWN\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 458,
+    "excerpt": "PRODUCER_IDENTITY_UNKNOWN: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 459,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:458",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 607,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 645,
+    "excerpt": "GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 603,
+    "source": "  ) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,\n      \"provenance\",\n      [],\n      \"Provide stable producer identity metadata.\",\n    );\n  }"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 641,
+    "source": "  if (!asString(provenance.source_pack_hash)) {\n    addCoverageFinding(\n      missingEvidence,\n      reasonCodes,\n      GUARD_REASON_CODES.PRODUCER_IDENTITY_UNKNOWN,\n      \"provenance\",\n      [],\n      \"Provide stable source pack provenance.\",\n    );\n  }"
+  }
+]
+```
+
+### NON_DETERMINISTIC_PRODUCER
+
+**code:** NON_DETERMINISTIC_PRODUCER
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:84
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:465
+
+**definition:** Producer metadata indicates evidence generation may not be deterministic.
+
+**category:** evidence_integrity
+
+**severity_hint:** medium
+
+**primary_role:** CORE_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 615,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 615,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 82,
+    "excerpt": "binding(G.NON_DETERMINISTIC_PRODUCER, \"mesr.core.provenance.producer\", null, \"producer generation may be non-deterministic\", [\"EVIDENCE\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Producer metadata indicates evidence generation may not be deterministic."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** provenance.deterministic is not true; no replay comparison.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 129,
+    "excerpt": "| `NON_DETERMINISTIC_PRODUCER` | `evidence_integrity` | `medium` | `evidence_coverage`, `risk_summary`, `receipts`, `reports` | Producer metadata indicates evidence generation may not be deterministic. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 113,
+    "excerpt": "| `NON_DETERMINISTIC_PRODUCER` | `mesr.core.provenance.producer` | - | producer generation may be non-deterministic | `NC-EVIDENCE`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 615,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 82,
+    "excerpt": "binding(G.NON_DETERMINISTIC_PRODUCER, \"mesr.core.provenance.producer\", null, \"producer generation may be non-deterministic\", [\"EVIDENCE\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 84,
+    "excerpt": "NON_DETERMINISTIC_PRODUCER: \"NON_DETERMINISTIC_PRODUCER\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 465,
+    "excerpt": "NON_DETERMINISTIC_PRODUCER: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 466,
+    "excerpt": "GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:465",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 615,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 611,
+    "source": "    );\n  }\n\n  if (provenance.deterministic !== true) {\n    addUnique(reasonCodes, GUARD_REASON_CODES.NON_DETERMINISTIC_PRODUCER);\n  }\n\n  if (blockedActions.length > 0) {\n    addUnique(reasonCodes, GUARD_REASON_CODES.BLOCKED_ACTION_PRESENT);\n  }"
+  }
+]
+```
+
+### DEPENDENCY_CHANGE_DETECTED
+
+**code:** DEPENDENCY_CHANGE_DETECTED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:85
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:472
+
+**definition:** Evidence indicates a dependency-oriented software change.
+
+**category:** dependency_change
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 484,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 362,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED) ||"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 484,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 83,
+    "excerpt": "binding(G.DEPENDENCY_CHANGE_DETECTED, \"mesr.core.effect.state_transition\", \"mesr.domain.software.change.dependency_observed\", \"a dependency-oriented change is recorded\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 234,
+    "excerpt": "\"DEPENDENCY_CHANGE_DETECTED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates a dependency-oriented software change."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** workflow_type equals dependency_upgrade; no actual dependency diff required.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 130,
+    "excerpt": "| `DEPENDENCY_CHANGE_DETECTED` | `dependency_change` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates a dependency-oriented software change. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 119,
+    "excerpt": "| `DEPENDENCY_CHANGE_DETECTED` | `mesr.core.effect.state_transition` | `mesr.domain.software.change.dependency_observed` | a dependency-oriented change is recorded | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 234,
+    "excerpt": "\"DEPENDENCY_CHANGE_DETECTED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 362,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED) ||"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 484,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 83,
+    "excerpt": "binding(G.DEPENDENCY_CHANGE_DETECTED, \"mesr.core.effect.state_transition\", \"mesr.domain.software.change.dependency_observed\", \"a dependency-oriented change is recorded\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 85,
+    "excerpt": "DEPENDENCY_CHANGE_DETECTED: \"DEPENDENCY_CHANGE_DETECTED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 472,
+    "excerpt": "DEPENDENCY_CHANGE_DETECTED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 473,
+    "excerpt": "GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:472",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 484,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 480,
+    "source": "    }\n  }\n\n  if (workflowType === \"dependency_upgrade\") {\n    addUnique(reasonCodes, GUARD_REASON_CODES.DEPENDENCY_CHANGE_DETECTED);\n\n    const lockfileChanged = changedFiles.some((file) =>\n      /lockfile|package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock/i.test(file),\n    );\n    if (lockfileChanged) {"
+  }
+]
+```
+
+### BREAKING_CHANGE_UNVERIFIED
+
+**code:** BREAKING_CHANGE_UNVERIFIED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:86
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:479
+
+**definition:** Evidence suggests possible breaking change impact without strong verification.
+
+**category:** dependency_change
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 505,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 656,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 363,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 476,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 483,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 484,
+    "excerpt": "? GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 505,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 656,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 84,
+    "excerpt": "binding(G.BREAKING_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.breaking_impact_not_verified\", \"breaking-impact verification is missing or insufficient\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 162,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 192,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 236,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 100,
+    "excerpt": "- `BREAKING_CHANGE_UNVERIFIED` (`high`); Evidence suggests possible breaking change impact without strong verification.; recommended fix: Provide stronger compatibility verification for the dependency change."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 109,
+    "excerpt": "- `next:verification` (`rerun_verification`); owner: `developer`; priority: `high`; reason: `BREAKING_CHANGE_UNVERIFIED`; Strengthen verification evidence for the recorded change."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence suggests possible breaking change impact without strong verification."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Dependency workflow lacks integration pass OR repository.branch absent.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 131,
+    "excerpt": "| `BREAKING_CHANGE_UNVERIFIED` | `dependency_change` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence suggests possible breaking change impact without strong verification. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 120,
+    "excerpt": "| `BREAKING_CHANGE_UNVERIFIED` | `mesr.core.evidence.verification` | `mesr.domain.software.change.breaking_impact_not_verified` | breaking-impact verification is missing/insufficient | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 162,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 192,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 236,
+    "excerpt": "\"BREAKING_CHANGE_UNVERIFIED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 100,
+    "excerpt": "- `BREAKING_CHANGE_UNVERIFIED` (`high`); Evidence suggests possible breaking change impact without strong verification.; recommended fix: Provide stronger compatibility verification for the dependency change."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 109,
+    "excerpt": "- `next:verification` (`rerun_verification`); owner: `developer`; priority: `high`; reason: `BREAKING_CHANGE_UNVERIFIED`; Strengthen verification evidence for the recorded change."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 363,
+    "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 476,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 483,
+    "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 484,
+    "excerpt": "? GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 505,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 656,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 84,
+    "excerpt": "binding(G.BREAKING_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.breaking_impact_not_verified\", \"breaking-impact verification is missing or insufficient\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 86,
+    "excerpt": "BREAKING_CHANGE_UNVERIFIED: \"BREAKING_CHANGE_UNVERIFIED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 479,
+    "excerpt": "BREAKING_CHANGE_UNVERIFIED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 480,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:479",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 505,
+    "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 656,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 501,
+    "source": "    if (!hasIntegrationPassed) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,\n        \"verification\",\n        [],\n        \"Provide stronger compatibility verification for the dependency change.\",\n      );\n      addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 652,
+    "source": "  if (\n    workflowType === \"dependency_upgrade\" &&\n    !asString(repository.branch)\n  ) {\n    addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);\n  }\n\n  const completeness = computeOverallCompleteness(\n    manifestCompleteness,\n    missingEvidence.length,"
+  }
+]
+```
+
+### LOCKFILE_CHANGED
+
+**code:** LOCKFILE_CHANGED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:87
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:486
+
+**definition:** Evidence indicates lockfile material changed during the workflow.
+
+**category:** dependency_change
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 490,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.LOCKFILE_CHANGED);"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 490,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.LOCKFILE_CHANGED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 85,
+    "excerpt": "binding(G.LOCKFILE_CHANGED, \"mesr.core.effect.state_transition\", \"mesr.domain.software.change.lockfile_observed\", \"a lockfile change is recorded\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 235,
+    "excerpt": "\"LOCKFILE_CHANGED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates lockfile material changed during the workflow."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Dependency changed_files matches lockfile/package-lock.json/pnpm-lock.yaml/yarn.lock regex.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 132,
+    "excerpt": "| `LOCKFILE_CHANGED` | `dependency_change` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates lockfile material changed during the workflow. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 121,
+    "excerpt": "| `LOCKFILE_CHANGED` | `mesr.core.effect.state_transition` | `mesr.domain.software.change.lockfile_observed` | a lockfile change is recorded | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 235,
+    "excerpt": "\"LOCKFILE_CHANGED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 72,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 96,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 490,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.LOCKFILE_CHANGED);"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 85,
+    "excerpt": "binding(G.LOCKFILE_CHANGED, \"mesr.core.effect.state_transition\", \"mesr.domain.software.change.lockfile_observed\", \"a lockfile change is recorded\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 87,
+    "excerpt": "LOCKFILE_CHANGED: \"LOCKFILE_CHANGED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 486,
+    "excerpt": "LOCKFILE_CHANGED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 487,
+    "excerpt": "GUARD_REASON_CODES.LOCKFILE_CHANGED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:486",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 490,
+    "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.LOCKFILE_CHANGED);"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 486,
+    "source": "    const lockfileChanged = changedFiles.some((file) =>\n      /lockfile|package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock/i.test(file),\n    );\n    if (lockfileChanged) {\n      addUnique(reasonCodes, GUARD_REASON_CODES.LOCKFILE_CHANGED);\n    }\n\n    const hasIntegrationPassed = hasPassedVerification(\n      verificationItems,\n      \"integration_test\","
+  }
+]
+```
+
+### MIGRATION_NOT_DOCUMENTED
+
+**code:** MIGRATION_NOT_DOCUMENTED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:88
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:493
+
+**definition:** Migration-oriented evidence is expected but absent.
+
+**category:** dependency_change
+
+**severity_hint:** medium
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 523,
+    "excerpt": "GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 523,
+    "excerpt": "GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 86,
+    "excerpt": "binding(G.MIGRATION_NOT_DOCUMENTED, \"mesr.core.evidence.item\", \"mesr.domain.software.change.migration_not_documented\", \"expected migration evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Migration-oriented evidence is expected but absent."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Dependency has no artifact path/description matching migration or upgrade.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "FACT + INTERPRETATION"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 133,
+    "excerpt": "| `MIGRATION_NOT_DOCUMENTED` | `dependency_change` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Migration-oriented evidence is expected but absent. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 122,
+    "excerpt": "| `MIGRATION_NOT_DOCUMENTED` | `mesr.core.evidence.item` | `mesr.domain.software.change.migration_not_documented` | expected migration evidence is missing | `NC-EVIDENCE`, `NC-VERIFY` |"
+  },
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 523,
+    "excerpt": "GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 86,
+    "excerpt": "binding(G.MIGRATION_NOT_DOCUMENTED, \"mesr.core.evidence.item\", \"mesr.domain.software.change.migration_not_documented\", \"expected migration evidence is missing\", [\"EVIDENCE\", \"VERIFY\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 88,
+    "excerpt": "MIGRATION_NOT_DOCUMENTED: \"MIGRATION_NOT_DOCUMENTED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 493,
+    "excerpt": "MIGRATION_NOT_DOCUMENTED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 494,
+    "excerpt": "GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:493",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "line": 523,
+    "excerpt": "GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "start_line": 519,
+    "source": "    if (!hasMigrationNotes) {\n      addCoverageFinding(\n        missingEvidence,\n        reasonCodes,\n        GUARD_REASON_CODES.MIGRATION_NOT_DOCUMENTED,\n        \"verification\",\n        [],\n        \"Provide migration or upgrade notes for the dependency change.\",\n      );\n    }"
+  }
+]
+```
+
+### PUBLIC_API_CHANGE_UNVERIFIED
+
+**code:** PUBLIC_API_CHANGE_UNVERIFIED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:89
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:500
+
+**definition:** Evidence indicates public API change without strong verification.
+
+**category:** dependency_change
+
+**severity_hint:** high
+
+**primary_role:** DOMAIN_SEMANTIC
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 87,
+    "excerpt": "binding(G.PUBLIC_API_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.public_api_impact_not_verified\", \"public-API impact is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Evidence indicates public API change without strong verification."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 134,
+    "excerpt": "| `PUBLIC_API_CHANGE_UNVERIFIED` | `dependency_change` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Evidence indicates public API change without strong verification. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 123,
+    "excerpt": "| `PUBLIC_API_CHANGE_UNVERIFIED` | `mesr.core.evidence.verification` | `mesr.domain.software.change.public_api_impact_not_verified` | public-API impact is not sufficiently verified | `NC-VERIFY`, `NC-EFFECT` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 87,
+    "excerpt": "binding(G.PUBLIC_API_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.public_api_impact_not_verified\", \"public-API impact is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 89,
+    "excerpt": "PUBLIC_API_CHANGE_UNVERIFIED: \"PUBLIC_API_CHANGE_UNVERIFIED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 500,
+    "excerpt": "PUBLIC_API_CHANGE_UNVERIFIED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 501,
+    "excerpt": "GUARD_REASON_CODES.PUBLIC_API_CHANGE_UNVERIFIED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:500",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+### HUMAN_REVIEW_REQUIRED
+
+**code:** HUMAN_REVIEW_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:90
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:507
+
+**definition:** Later governance flow may call for human review.
+
+**category:** human_review
+
+**severity_hint:** medium
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 341,
+    "excerpt": "GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 341,
+    "excerpt": "GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 88,
+    "excerpt": "binding(G.HUMAN_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"human review is requested by current reasoning\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 173,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 213,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 225,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 239,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 106,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 113,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 172,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 202,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 223,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 238,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 104,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 110,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 159,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 199,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 220,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 233,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 105,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 112,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Later governance flow may call for human review.",
+  "A human review step is needed before relying on this governance report."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Selected coverage triggers: authority, test/build deficiency, incomplete manifest, blocked activity.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 135,
+    "excerpt": "| `HUMAN_REVIEW_REQUIRED` | `human_review` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Later governance flow may call for human review. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 129,
+    "excerpt": "| `HUMAN_REVIEW_REQUIRED` | `mesr.core.review.review` | - | human review is requested by current reasoning | `NC-REVIEW` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 173,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 213,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 225,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "line": 239,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DECLARED_AUTHORITY_ONLY`, `TESTS_NOT_RUN`, `INSUFFICIENT_VERIFICATION`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 106,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/ai-pr-missing-tests.md",
+    "line": 113,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 172,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 202,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 223,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 238,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 104,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 110,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 159,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 199,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 220,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 233,
+    "excerpt": "\"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 105,
+    "excerpt": "- `review:generic` for `reviewer`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 112,
+    "excerpt": "- `next:review:review:generic` (`request_review`); owner: `reviewer`; priority: `medium`; reason: `HUMAN_REVIEW_REQUIRED`; A human review step is needed before relying on this governance report."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 341,
+    "excerpt": "GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 88,
+    "excerpt": "binding(G.HUMAN_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"human review is requested by current reasoning\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 90,
+    "excerpt": "HUMAN_REVIEW_REQUIRED: \"HUMAN_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 507,
+    "excerpt": "HUMAN_REVIEW_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 508,
+    "excerpt": "GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:507",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 341,
+    "excerpt": "GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 337,
+    "source": "  if (coverage.reason_codes.some((code) => genericReviewTriggers.includes(code))) {\n    addRequirement(\n      \"review:generic\",\n      \"reviewer\",\n      GUARD_REASON_CODES.HUMAN_REVIEW_REQUIRED,\n      \"A human review step is needed before relying on this governance report.\",\n    );\n  }\n\n  if ("
+  }
+]
+```
+
+### SECURITY_REVIEW_REQUIRED
+
+**code:** SECURITY_REVIEW_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:91
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:514
+
+**definition:** Later governance flow may call for security-oriented review.
+
+**category:** human_review
+
+**severity_hint:** high
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 89,
+    "excerpt": "binding(G.SECURITY_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"security-oriented review is requested\", [\"REVIEW\", \"COMPLIANCE\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 186,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 196,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 206,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 216,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `SECURITY_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `SECURITY_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `SECURITY_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 104,
+    "excerpt": "- `review:security` for `security`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow."
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 108,
+    "excerpt": "- `next:review:review:security` (`request_review`); owner: `security`; priority: `medium`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Later governance flow may call for security-oriented review.",
+  "Security review is needed for the cyber-oriented workflow."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Cyber pack OR security_patch workflow OR cyber authorization reason; does not test review absence.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 136,
+    "excerpt": "| `SECURITY_REVIEW_REQUIRED` | `human_review` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Later governance flow may call for security-oriented review. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 130,
+    "excerpt": "| `SECURITY_REVIEW_REQUIRED` | `mesr.core.review.review` | - | security-oriented review is requested | `NC-REVIEW`, `NC-COMPLIANCE` |"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 186,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 196,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 206,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "line": 216,
+    "excerpt": "\"SECURITY_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `SECURITY_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `SECURITY_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `SECURITY_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 104,
+    "excerpt": "- `review:security` for `security`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow."
+  },
+  {
+    "path": "examples/reports/cyber-remediation-authorized-patch.md",
+    "line": 108,
+    "excerpt": "- `next:review:review:security` (`request_review`); owner: `security`; priority: `medium`; reason: `SECURITY_REVIEW_REQUIRED`; Security review is needed for the cyber-oriented workflow."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 89,
+    "excerpt": "binding(G.SECURITY_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"security-oriented review is requested\", [\"REVIEW\", \"COMPLIANCE\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 91,
+    "excerpt": "SECURITY_REVIEW_REQUIRED: \"SECURITY_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 514,
+    "excerpt": "SECURITY_REVIEW_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 515,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:514",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 354,
+    "excerpt": "GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 350,
+    "source": "  ) {\n    addRequirement(\n      \"review:security\",\n      \"security\",\n      GUARD_REASON_CODES.SECURITY_REVIEW_REQUIRED,\n      \"Security review is needed for the cyber-oriented workflow.\",\n    );\n  }\n\n  if ("
+  }
+]
+```
+
+### OWNER_REVIEW_REQUIRED
+
+**code:** OWNER_REVIEW_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:92
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:521
+
+**definition:** Later governance flow may call for owner review.
+
+**category:** human_review
+
+**severity_hint:** medium
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 369,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 397,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 369,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 397,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 90,
+    "excerpt": "binding(G.OWNER_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"owner review is requested\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 182,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 212,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 224,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 239,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 105,
+    "excerpt": "- `review:owner` for `owner`; reason: `OWNER_REVIEW_REQUIRED`; Owner review is needed for the dependency-oriented workflow."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 111,
+    "excerpt": "- `next:review:review:owner` (`request_review`); owner: `owner`; priority: `medium`; reason: `OWNER_REVIEW_REQUIRED`; Owner review is needed for the dependency-oriented workflow."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Later governance flow may call for owner review.",
+  "Owner review is needed for the dependency-oriented workflow.",
+  "Owner review is needed because owner context is absent."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Dependency/impact reason in dependency workflow OR missing owner on release/security/dependency workflow.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 137,
+    "excerpt": "| `OWNER_REVIEW_REQUIRED` | `human_review` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Later governance flow may call for owner review. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 131,
+    "excerpt": "| `OWNER_REVIEW_REQUIRED` | `mesr.core.review.review` | - | owner review is requested | `NC-REVIEW` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 182,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 212,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 224,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "line": 239,
+    "excerpt": "\"OWNER_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `DEPENDENCY_CHANGE_DETECTED`, `LOCKFILE_CHANGED`, `BREAKING_CHANGE_UNVERIFIED`, `INSUFFICIENT_VERIFICATION`, `HUMAN_REVIEW_REQUIRED`, `OWNER_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 105,
+    "excerpt": "- `review:owner` for `owner`; reason: `OWNER_REVIEW_REQUIRED`; Owner review is needed for the dependency-oriented workflow."
+  },
+  {
+    "path": "examples/reports/dependency-upgrade-breaking-change.md",
+    "line": 111,
+    "excerpt": "- `next:review:review:owner` (`request_review`); owner: `owner`; priority: `medium`; reason: `OWNER_REVIEW_REQUIRED`; Owner review is needed for the dependency-oriented workflow."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 369,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 397,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 90,
+    "excerpt": "binding(G.OWNER_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"owner review is requested\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 92,
+    "excerpt": "OWNER_REVIEW_REQUIRED: \"OWNER_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 521,
+    "excerpt": "OWNER_REVIEW_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 522,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:521",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 369,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 397,
+    "excerpt": "GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 365,
+    "source": "  ) {\n    addRequirement(\n      \"review:owner\",\n      \"owner\",\n      GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,\n      \"Owner review is needed for the dependency-oriented workflow.\",\n    );\n  }\n\n  if ("
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 393,
+    "source": "  ) {\n    addRequirement(\n      \"review:owner-missing\",\n      \"owner\",\n      GUARD_REASON_CODES.OWNER_REVIEW_REQUIRED,\n      \"Owner review is needed because owner context is absent.\",\n    );\n  }\n\n  return requirements;"
+  }
+]
+```
+
+### RELEASE_REVIEW_REQUIRED
+
+**code:** RELEASE_REVIEW_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:93
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:528
+
+**definition:** Later governance flow may call for release review.
+
+**category:** human_review
+
+**severity_hint:** high
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 384,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emitter_status:** IMPLEMENTED_TRIGGER
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 384,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 91,
+    "excerpt": "binding(G.RELEASE_REVIEW_REQUIRED, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"release-oriented review is requested\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 169,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 209,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 221,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 234,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 106,
+    "excerpt": "- `review:release` for `release`; reason: `RELEASE_REVIEW_REQUIRED`; Release review is needed before relying on this release summary."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 113,
+    "excerpt": "- `next:review:review:release` (`request_review`); owner: `release`; priority: `medium`; reason: `RELEASE_REVIEW_REQUIRED`; Release review is needed before relying on this release summary."
+  }
+]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Later governance flow may call for release review.",
+  "Release review is needed before relying on this release summary."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Release has missing/unverified rollback.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 138,
+    "excerpt": "| `RELEASE_REVIEW_REQUIRED` | `human_review` | `high` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Later governance flow may call for release review. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 132,
+    "excerpt": "| `RELEASE_REVIEW_REQUIRED` | `mesr.core.review.review` | `mesr.domain.software.review.not_demonstrated` | release-oriented review is requested | `NC-REVIEW` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 169,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 209,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 221,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "line": 234,
+    "excerpt": "\"RELEASE_REVIEW_REQUIRED\""
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 9,
+    "excerpt": "- Top reason codes: `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED`"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 21,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 81,
+    "excerpt": "| Reason codes | `ROLLBACK_MISSING`, `MANIFEST_INCOMPLETE`, `HUMAN_REVIEW_REQUIRED`, `RELEASE_REVIEW_REQUIRED` |"
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 106,
+    "excerpt": "- `review:release` for `release`; reason: `RELEASE_REVIEW_REQUIRED`; Release review is needed before relying on this release summary."
+  },
+  {
+    "path": "examples/reports/release-prep-missing-rollback.md",
+    "line": 113,
+    "excerpt": "- `next:review:review:release` (`request_review`); owner: `release`; priority: `medium`; reason: `RELEASE_REVIEW_REQUIRED`; Release review is needed before relying on this release summary."
+  },
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 384,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 91,
+    "excerpt": "binding(G.RELEASE_REVIEW_REQUIRED, \"mesr.core.review.review\", \"mesr.domain.software.review.not_demonstrated\", \"release-oriented review is requested\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 93,
+    "excerpt": "RELEASE_REVIEW_REQUIRED: \"RELEASE_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 528,
+    "excerpt": "RELEASE_REVIEW_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 529,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:528",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "line": 384,
+    "excerpt": "GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**emission_context**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/generateGovernanceReport.ts",
+    "start_line": 380,
+    "source": "  ) {\n    addRequirement(\n      \"review:release\",\n      \"release\",\n      GUARD_REASON_CODES.RELEASE_REVIEW_REQUIRED,\n      \"Release review is needed before relying on this release summary.\",\n    );\n  }\n\n  const highRiskWorkflowTypes = new Set([\"release\", \"security_patch\", \"dependency_upgrade\"]);"
+  }
+]
+```
+
+### CUSTOMER_REVIEW_REQUIRED
+
+**code:** CUSTOMER_REVIEW_REQUIRED
+
+**declaration:** packages/guard-core/src/reasonCodes.ts:94
+
+**definition_location:** packages/guard-core/src/reasonCodes.ts:535
+
+**definition:** Later governance flow may call for customer-facing review.
+
+**category:** human_review
+
+**severity_hint:** medium
+
+**primary_role:** POLICY_RESULT
+
+**aliases**
+
+```json
+[]
+```
+
+**alias_scope:** Explicit blocked-action translation only; no global canonical alias resolver.
+
+**emitters**
+
+```json
+[]
+```
+
+**emitter_status:** DECLARED_AND_BOUND_ONLY_NO_CURRENT_CORE_EMITTER_FOUND
+
+**consumers**
+
+```json
+[
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 92,
+    "excerpt": "binding(G.CUSTOMER_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"customer-facing review is requested\", [\"REVIEW\"]),"
+  }
+]
+```
+
+**fixtures**
+
+```json
+[]
+```
+
+**tests**
+
+```json
+[]
+```
+
+**report_phrases**
+
+```json
+[
+  "Later governance flow may call for customer-facing review."
+]
+```
+
+**serialized_api_exposure**
+
+```json
+[
+  "GovernanceReportModel reason-code arrays when emitted",
+  "missing_evidence / human_review_requirements / next_actions reason_code",
+  "EvidenceIndex.entries[].reason_codes",
+  "private Core package index.ts exports"
+]
+```
+
+**generic_consumers**
+
+```json
+[
+  "packages/guard-core/src/generateGovernanceReport.ts",
+  "packages/guard-core/src/generateEvidenceIndex.ts",
+  "packages/renderer-md/src/renderMarkdownReport.ts",
+  "packages/renderer-html/src/renderHtmlReport.ts",
+  "prototypes/studio/studioWorkflow.mjs"
+]
+```
+
+**current_runtime_meaning:** Declared vocabulary and mandatory MESR binding only; no current Core/report emitter found. Declaration does not prove this check executes.
+
+**compatibility_sensitivity:** Preserve serialized value, declaration/binding order and report wording; never replace with research ID.
+
+**conflations**
+
+```json
+[
+  "SEMANTIC + POLICY"
+]
+```
+
+**all_occurrences**
+
+```json
+[
+  {
+    "path": "docs/reason-codes.md",
+    "line": 139,
+    "excerpt": "| `CUSTOMER_REVIEW_REQUIRED` | `human_review` | `medium` | `risk_summary`, `review_requirements`, `receipts`, `reports`, `next_actions` | Later governance flow may call for customer-facing review. |"
+  },
+  {
+    "path": "docs/specs/mesr-reason-code-migration-v0.1.md",
+    "line": 133,
+    "excerpt": "| `CUSTOMER_REVIEW_REQUIRED` | `mesr.core.review.review` | - | customer-facing review is requested | `NC-REVIEW` |"
+  },
+  {
+    "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "line": 92,
+    "excerpt": "binding(G.CUSTOMER_REVIEW_REQUIRED, \"mesr.core.review.review\", null, \"customer-facing review is requested\", [\"REVIEW\"]),"
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 94,
+    "excerpt": "CUSTOMER_REVIEW_REQUIRED: \"CUSTOMER_REVIEW_REQUIRED\","
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 535,
+    "excerpt": "CUSTOMER_REVIEW_REQUIRED: defineReasonCode("
+  },
+  {
+    "path": "packages/guard-core/src/reasonCodes.ts",
+    "line": 536,
+    "excerpt": "GUARD_REASON_CODES.CUSTOMER_REVIEW_REQUIRED,"
+  }
+]
+```
+
+**generic_tests**
+
+```json
+[
+  {
+    "path": "scripts/verify_mesr_reason_bindings.mjs",
+    "coverage": "Dynamically checks all 56 declaration/binding entries, uniqueness, resolution, nonclaims and order; does not exercise every trigger."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_contract.mjs",
+    "coverage": "Shared parser/validator/report/render/index and canonical fixtures; not a claim of per-code branch coverage."
+  },
+  {
+    "path": "scripts/verify_outcome_foundation_negative_contract.mjs",
+    "coverage": "Invalid EvidencePack contract cases; not every reason emitter."
+  }
+]
+```
+
+**trace_scope:** All baseline tracked .ts/.mjs/.js/.json/.md/.yml/.yaml/.ps1/.py files except package-lock.json. Exact-token literal references; generic consumers/tests tracked separately. Emitters below are emission-site references, not every read in the containing function.
+
+**report_wording_sources**
+
+```json
+[
+  "packages/guard-core/src/reasonCodes.ts:535",
+  "packages/guard-core/src/inspectEvidenceCoverage.ts",
+  "packages/guard-core/src/generateGovernanceReport.ts:298",
+  "packages/guard-core/src/generateGovernanceReport.ts:405",
+  "packages/guard-core/src/generateGovernanceReport.ts:552"
+]
+```
+
+**emitter_file_occurrences**
+
+```json
+[]
+```
+
+**emission_context**
+
+```json
+[]
+```
+
+## Metadata Name Search
+
+```json
+{
+  "reconstructability.replayable": [],
+  "semantic.claim_stable": [],
+  "semantic.portable": [],
+  "mesr_assurance.replayable": [],
+  "mesr_assurance.claim_stable": [],
+  "mesr_assurance.semantic_portable": []
+}
+```
+
+## Baseline Tests
+
+```json
+[
+  {
+    "command": "node scripts/verify_mesr_registry.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR registry 30/30, boundaries 24/24, and temporal contract verified\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_mesr_reason_bindings.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR reason-code bindings 56/56 resolved with no duplicates or orphans\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_mesr_claim_stability.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR E3-C1/C2/C3/C4 claim stability and backward compatibility verified\n{\"C1\":\"identity resolved; authority_verified does_not_support via CB-05\",\"C2\":\"incomplete approval does_not_support via CB-18; fully bound review supports; execution remains not supported\",\"C3\":\"artifact_integrity supports; truth/correctness rejected by CB-09/CB-10; unrelated stronger claims indeterminate\",\"C4\":\"test-only framework mapping supports presence; certification does_not_support via CB-20; other unknown stronger claims indeterminate\"}\n",
+    "stderr": "",
+    "seconds": 0.14
+  },
+  {
+    "command": "node scripts/verify_mesr_composition.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR E3-D1/D2/D3 canonical composition and collision rejection verified\n{\"D1\":\"canonical semantic equality after Crosswalk/Profile composition\",\"D2\":\"additive Crosswalk and module order preserve canonical semantics\",\"D3\":\"three semantic overrides rejected as INVALID_MODULE with zero loaded definitions\"}\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_mesr_runtime_portability.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR E3-A1 initial two-producer runtime portability verified\n{\"classification\":{\"github_replay\":\"REAL PRODUCER SCHEMA EVIDENCE / SANITIZED\",\"harness_replay\":\"REPOSITORY-GROUNDED PRODUCER FIXTURE\",\"equality\":\"CONTROLLED EQUIVALENCE FIXTURE\"},\"controlled_snapshot_equal\":true,\"core_semantic_ids\":15,\"support_relations\":12,\"claim_boundaries\":[\"CB-01\",\"CB-06\",\"CB-09\",\"CB-22\"],\"subject_effect_bindings\":26,\"negatives\":{\"vocabulary_inflation\":\"symmetric_and_blocked\",\"integrity_inflation\":\"symmetric_and_blocked\",\"missing_evidence\":\"symmetric_indeterminate\",\"subject_mismatch\":\"symmetric_contradiction\"},\"real_replay\":{\"github\":\"normalized\",\"harness\":\"normalized\",\"same_event_claimed\":false},\"deterministic_replays_per_input\":2,\"gate_2\":\"NOT_YET\"}\n",
+    "stderr": "",
+    "seconds": 0.11
+  },
+  {
+    "command": "node scripts/verify_mesr_cross_domain.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR E3-B cross-domain interpretation verified without Core expansion\n{\"classification\":\"CONTROLLED SYNTHETIC DOMAIN EVIDENCE\",\"core_primitive_count\":{\"before\":30,\"after\":30},\"core_registry\":{\"before_sha256\":\"c7fd4a1ab76a80f06b3551e9abfba6cb0efda8b8eed9d05ccc11a04385518935\",\"after_sha256\":\"c7fd4a1ab76a80f06b3551e9abfba6cb0efda8b8eed9d05ccc11a04385518935\",\"equal\":true},\"outcomes\":{\"B1\":\"PASS\",\"B2\":\"PASS\",\"B3\":\"PASS\"},\"pattern_signatures\":{\"B1\":\"61c62069c5ab2ba0455b075bd1ef87ac943d9f511832e842bd2353df41f83cd2\",\"B2\":\"e824112fc6962bf7b114004153a023c69d177e73fdb9ef8689749f9be69a90aa\",\"B3\":\"44ddcfb0274df0fc7ef4840ffea2967278ecb05a50fa33ad97d9dc8c90bcd608\"},\"claim_boundaries\":{\"B1\":[\"CB-03\",\"CB-17\"],\"B2\":[\"CB-24\"],\"B3\":[\"CB-09\",\"CB-22\"]},\"core_expansion_pressure\":[{\"requested_semantic_concept\":\"financial mandate scope\",\"existing_core_candidate\":\"authority.scope + authority.delegation\",\"domain_binding_candidate\":\"synthetic_finance.mandate.scope\",\"core_expansion_needed\":\"NO\",\"reason\":\"Account, instrument, amount, and time remain domain scope dimensions.\"},{\"requested_semantic_concept\":\"reviewer authority\",\"existing_core_candidate\":\"review.review + authority.source/scope\",\"domain_binding_candidate\":\"synthetic_healthcare.reviewer.requirement\",\"core_expansion_needed\":\"NO\",\"reason\":\"Review occurrence and applicable authority remain separate claims.\"},{\"requested_semantic_concept\":\"meaningful oversight\",\"existing_core_candidate\":\"review.review + CB-24\",\"domain_binding_candidate\":\"review rationale/actionability bindings\",\"core_expansion_needed\":\"NO\",\"reason\":\"The existing Human-in-loop boundary prevents presence inflation.\"},{\"requested_semantic_concept\":\"epistemic reliance\",\"existing_core_candidate\":\"boundary.reliance + claim.scope + temporal.basis\",\"domain_binding_candidate\":\"synthetic_epistemic.reliance.context\",\"core_expansion_needed\":\"NO\",\"reason\":\"Missing reliance basis remains indeterminate; a future claim-boundary rule may improve specificity without a new primitive.\"},{\"requested_semantic_concept\":\"knowledge integrity\",\"existing_core_candidate\":\"evidence.item/verification + CB-09\",\"domain_binding_candidate\":\"synthetic_epistemic.artifact.knowledge_bundle\",\"core_expansion_needed\":\"NO\",\"reason\":\"Integrity and truth remain separated by the existing Core boundary.\"},{\"requested_semantic_concept\":\"state transition\",\"existing_core_candidate\":\"effect.state_transition + boundary.effect\",\"domain_binding_candidate\":\"domain state labels\",\"core_expansion_needed\":\"NO\",\"reason\":\"Operational and epistemic state values share the same transition structure.\"},{\"requested_semantic_concept\":\"delegation attenuation\",\"existing_core_candidate\":\"authority.delegation/boundary + CB-17\",\"domain_binding_candidate\":\"domain scope comparator + chain-validity binding\",\"core_expansion_needed\":\"NO\",\"reason\":\"Domain comparators decide subset/broader shape; Core records non-amplification.\"}],\"eak_engine_count\":1,\"public_surface_changed\":false,\"gate_2\":\"NOT_YET\"}\n",
+    "stderr": "",
+    "seconds": 0.09
+  },
+  {
+    "command": "node scripts/verify_mesr_apaai_crosswalk.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: MESR E3-A2 grounded APAAI semantic crosswalk verified\n{\"classification\":\"CONTROLLED SOURCE-PINNED CROSSWALK EVIDENCE\",\"source\":{\"protocol_identity\":\"APAAI Protocol v1.0 (RFC-2025-001)\",\"machine_version\":\"0.1.0\",\"commit\":\"723defe1972a7e9df19eaff7db3d5d7101297137\",\"artifact\":\"openapi.yaml\",\"sha256\":\"7af928ebf4c421a28d289585471d2407d728d1cc6d18bc1df128827ca9571bc1\",\"ambiguities_preserved\":7},\"crosswalk\":{\"module_id\":\"mesr.xw.apaai.openapi_0_1_0.e3_a2\",\"mappings\":22,\"added_semantics\":0,\"public_surface\":false,\"runtime_network\":false},\"core\":{\"primitive_count\":{\"before\":30,\"after\":30},\"registry_sha256\":{\"before\":\"c7fd4a1ab76a80f06b3551e9abfba6cb0efda8b8eed9d05ccc11a04385518935\",\"after\":\"c7fd4a1ab76a80f06b3551e9abfba6cb0efda8b8eed9d05ccc11a04385518935\",\"equal\":true},\"claim_boundary_sha256\":{\"before\":\"e6fe1f78f2107fce0bcf17385f19470381782c262dd29dd5348511397825e0e8\",\"after\":\"e6fe1f78f2107fce0bcf17385f19470381782c262dd29dd5348511397825e0e8\",\"equal\":true},\"supports_claim_equal\":true},\"equivalence\":{\"raw_equal\":false,\"provenance_equal\":false,\"canonical_semantics_equal\":true,\"semantic_snapshot_sha256\":\"899035da5d7329bf9584afe5c7b3f0b24a603ab0da41df8a15dbf3bff8e7a325\"},\"boundaries_applied\":[\"CB-01\",\"CB-18\",\"CB-19\",\"CB-20\",\"CB-22\"],\"negative_inflation_checks\":20,\"ambiguity_negative_fixtures\":5,\"deterministic_replay\":\"PASS\",\"targeted_acceptance\":{\"AC-A2-01\":\"PASS\",\"AC-A2-02\":\"PASS\",\"AC-A2-03\":\"PASS\",\"AC-A2-04\":\"PASS\",\"AC-A2-05\":\"PASS\",\"AC-A2-06\":\"PASS\",\"AC-A2-07\":\"PASS\",\"AC-A2-08\":\"PASS\",\"AC-A2-09\":\"PASS\",\"AC-A2-10\":\"PASS\",\"AC-A2-11\":\"PASS\",\"AC-A2-12\":\"PASS\",\"AC-A2-13\":\"PASS\",\"AC-A2-14\":\"PASS\",\"AC-A2-15\":\"PASS\",\"AC-A2-16\":\"PASS\",\"AC-A2-17\":\"PASS\",\"AC-A2-18\":\"PASS\"},\"regression_acceptance\":{\"AC-A2-19\":\"REQUIRES_EXTERNAL_REGRESSION_MATRIX\",\"AC-A2-20\":\"REQUIRES_EXTERNAL_REGRESSION_MATRIX\"},\"gate_2_h03\":\"SATISFIED_BY_TARGETED_EVIDENCE\",\"gate_2\":\"READY_TO_CLOSE_AFTER_REQUIRED_REGRESSIONS\"}\n",
+    "stderr": "",
+    "seconds": 0.09
+  },
+  {
+    "command": "node scripts/verify_v8_institutional_artifact_readiness.mjs",
+    "exit_code": 0,
+    "stdout": "V8 Phase 3A institutional artifact readiness: PASS\nsource case: caseC_conclusion_specific_missing_evidence (CONTROLLED_REPOSITORY_FIXTURE)\nsemantic snapshot sha256: 2abd7d1ffc3d55d4aa6067134d6a10fc3756bb3e574a91b8b83a09690e4f21db\nDeveloper/Audit semantic invariance: PASS\nprovenance chains: supported_claim, explicit_nonclaim, missing_or_indeterminate\nexternal institutional reviewer evidence: NOT RUN\nGate 3: READY FOR EXTERNAL REVIEW; PASS = NO\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_v8_runtime_compatibility.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: V8 runtime compatibility boundary verified\n{\"outcome\":\"COMPATIBLE_FOR_V8_DEVELOPMENT_ONLY\",\"declared_public_node\":\">=18\",\"current_runtime\":\"v24.15.0\",\"current_platform\":\"win32\",\"typescript_execution\":\"strip\",\"mesr_source_language\":\"TypeScript\",\"direct_execution_boundary\":\"MJS via Node native type stripping\",\"direct_mjs_to_ts_edges\":42,\"public_cli_mjs_to_ts_edges\":0,\"forbidden_ts_constructs\":0,\"platform_specific_constructs\":0}\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_evidence_assurance_kernel_poc.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: bounded evidence assurance kernel poc verified\n",
+    "stderr": "",
+    "seconds": 0.09
+  },
+  {
+    "command": "node scripts/verify_external_evidence_local_normalization_fixture.mjs",
+    "exit_code": 0,
+    "stdout": "external evidence local declarative normalization fixture verified\n",
+    "stderr": "",
+    "seconds": 0.06
+  },
+  {
+    "command": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
+    "exit_code": 0,
+    "stdout": "external evidence local assurance report fixture verified\n",
+    "stderr": "",
+    "seconds": 0.08
+  },
+  {
+    "command": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
+    "exit_code": 0,
+    "stdout": "external evidence local assurance composition verified\n",
+    "stderr": "",
+    "seconds": 0.06
+  },
+  {
+    "command": "node scripts/verify_harness_evidence_ingestion.mjs",
+    "exit_code": 0,
+    "stdout": "{\n  \"safe_fixture\": {\n    \"fixture\": \"safe\",\n    \"pack_id\": \"harness-safe-001\",\n    \"pack_type\": \"pull_request_assist\",\n    \"completed_action_count\": 2,\n    \"completed_tool_call_count\": 2,\n    \"blocked_action_count\": 0,\n    \"manifest_file_count\": 3,\n    \"manifest_completeness\": \"complete\",\n    \"consumer_side_only\": true\n  },\n  \"unsafe_fixture\": {\n    \"fixture\": \"unsafe\",\n    \"pack_id\": \"harness-unsafe-001\",\n    \"pack_type\": \"blocked_command_assist\",\n    \"completed_action_count\": 1,\n    \"completed_tool_call_count\": 1,\n    \"blocked_action_count\": 1,\n    \"manifest_file_count\": 2,\n    \"manifest_completeness\": \"partial\",\n    \"consumer_side_only\": true\n  }\n}\nPASS: harness evidence ingestion spike verified.\n",
+    "stderr": "",
+    "seconds": 0.05
+  },
+  {
+    "command": "node scripts/verify_v7_0_example_evidence_pack.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: v7.0 example evidence pack validated.\n",
+    "stderr": "",
+    "seconds": 0.03
+  },
+  {
+    "command": "node scripts/verify_governance_surface.mjs",
+    "exit_code": 0,
+    "stdout": "governance surface verified\n",
+    "stderr": "",
+    "seconds": 0.11
+  },
+  {
+    "command": "node scripts/verify_governance_consumption_profile.mjs",
+    "exit_code": 0,
+    "stdout": "governance consumption profile verified\n",
+    "stderr": "",
+    "seconds": 0.11
+  },
+  {
+    "command": "node scripts/verify_audit_permit_gate.mjs",
+    "exit_code": 0,
+    "stdout": "audit permit gate verified\n",
+    "stderr": "",
+    "seconds": 8.67
+  },
+  {
+    "command": "node scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: v7.0.1 License Hub after-purchase onboarding copy verified.\n",
+    "stderr": "",
+    "seconds": 0.05
+  },
+  {
+    "command": "node scripts/verify_v7_0_1_public_surface_consistency.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: v7.0.1 public surface consistency verified.\n",
+    "stderr": "",
+    "seconds": 0.06
+  },
+  {
+    "command": "node scripts/verify_v7_0_1_current_docs_baseline.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: v7.0.1 current docs baseline verified.\n",
+    "stderr": "",
+    "seconds": 0.03
+  },
+  {
+    "command": "node scripts/verify_v7_0_1_github_action_first_report.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: v7.0.1 GitHub Action first report verified.\n",
+    "stderr": "",
+    "seconds": 0.05
+  }
+]
+```
+
+## Automatic Allow Equivalences Added
+
+0
+
+## Runtime Behavior Changed
+
+False
+
+## Gate1 Implementation Started
+
+False
+
+## Reconciliation Outputs Committed
+
+False
+
+## Recovery Checkpoint
+
+```json
+{
+  "branch": "validation/v8-000-source-reconciliation-v0.1",
+  "head": "20aa844fe6f0239d5c0d18184cf5faffa366abf5",
+  "tracked_diff": "empty",
+  "diff_stat": "empty",
+  "diff_check_exit_code": 0,
+  "files": [
+    {
+      "path": "docs/mesr/07_IMPLEMENTATION_RECONCILIATION_MATRIX.md",
+      "classification": "PARTIAL_VALID",
+      "disposition": "Completed placeholder from retained candidate JSON."
+    },
+    {
+      "path": "docs/mesr/implementation-reconciliation.v0.1.json",
+      "classification": "PARTIAL_VALID",
+      "sha256": "e0137a55c11b3852dd895baf9fb77d21558c5764643b2301ce31ebbe4fdd0c66",
+      "disposition": "Retained 41/3 judgments and 22 baseline observations; corrected index field name and added generic tests, exact emission references, inventories and provenance."
+    },
+    {
+      "path": "scripts/_build_v8_000.py",
+      "classification": "PARTIAL_VALID",
+      "sha256": "2dcb37f7f0190e04e4511a43a3cb879c4ad366a7e8ce8fd0973b3e88ee2728d5",
+      "disposition": "Replaced duplicated authoring judgments with JSON renderer and read-only validator; --render writes matrix only."
+    }
+  ],
+  "absent": [
+    "docs/planning/13_V8_000_SOURCE_RECONCILIATION.md",
+    "docs/planning/14_SOURCE_RECONCILED_GATE1_BACKLOG.md",
+    "docs/planning/15_GATE1_READINESS_DECISION.md"
+  ],
+  "patch_digest_correction": {
+    "previous_recorded_value": "62bdd822df7d8f91890ce1c3b324a7d371fe5e0564df28a4dd19dd18c4e27ec",
+    "actual_sha256": "62bddd822df7d8f91890ce1c3b324a7d371fe5e0564df28a4dd19dd18c4e27ec",
+    "finding": "Draft transcription omitted one d (63 hex characters); saved patch bytes exactly equal git diff HEAD^ HEAD -- AGENTS.md. Corrected provenance only; patch/AGENTS unchanged."
+  },
+  "review_corrections": [
+    {
+      "semantic_id": "identity.declared",
+      "field": "claim_boundary_match",
+      "before": "PARTIAL",
+      "after": "CONFLICT",
+      "source": "packages/guard-core/src/mesr/coreRegistry.ts:38",
+      "reason": "The analogue explicitly supports verified_identity; repaired declaration-only nonclaims exclude verification. Verdict remains additive facet adoption, not mutation of the old entry."
+    }
+  ]
+}
+```
+
+## Evidence Contract Fields
+
+```json
+[
+  {
+    "field_path": "/schema_version",
+    "schema_pointer": "#/properties/schema_version",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Canonical schema version for this Guard-owned Evidence Pack contract."
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1595",
+    "context_group": "schema_version",
+    "meaning": "Producer-supplied /schema_version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/pack_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1595",
+    "context_group": "pack_id",
+    "meaning": "Producer-supplied /pack_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/pack_type",
+    "schema_pointer": "#/properties/pack_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "ai_software_change",
+        "cyber_remediation",
+        "generic_agent_workflow"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1595",
+    "context_group": "pack_type",
+    "meaning": "Producer-supplied /pack_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/created_at",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1595",
+    "context_group": "created_at",
+    "meaning": "Producer-supplied /created_at; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer",
+    "schema_pointer": "#/$defs/producer",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/producer_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/producer_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/producer_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/producer_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/producer_version",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/producer_version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/producer_type",
+    "schema_pointer": "#/$defs/producer/properties/producer_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "guard_harness",
+        "ci",
+        "ide",
+        "agent_runtime",
+        "manual_import"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/producer_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/profile",
+    "schema_pointer": "#/$defs/producer/properties/profile",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "local-dev",
+        "ci-pr",
+        "release-prep",
+        "audit-review"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/profile; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by",
+    "schema_pointer": "#/$defs/generatedBy",
+    "required_in_parent": true,
+    "constraints": {},
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by{oneOf:0}",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by{oneOf:0}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by{oneOf:1}",
+    "schema_pointer": "#/$defs/generatedBy/oneOf/1",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by{oneOf:1}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by{oneOf:1}/component",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by{oneOf:1}/component; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by{oneOf:1}/version",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by{oneOf:1}/version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/producer/generated_by{oneOf:1}/surface",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:649",
+    "context_group": "producer",
+    "meaning": "Producer-supplied /producer/generated_by{oneOf:1}/surface; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow",
+    "schema_pointer": "#/$defs/workflow",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/workflow_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/workflow_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/workflow_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/workflow_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/workflow_type",
+    "schema_pointer": "#/$defs/workflow/properties/workflow_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "pull_request",
+        "release",
+        "dependency_upgrade",
+        "infra_change",
+        "security_patch",
+        "data_operation",
+        "generic"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/workflow_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository",
+    "schema_pointer": "#/$defs/repositoryRef",
+    "required_in_parent": true,
+    "constraints": {},
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:0}",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:0}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}",
+    "schema_pointer": "#/$defs/repositoryRef/oneOf/1",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/provider",
+    "schema_pointer": "#/$defs/repositoryRef/oneOf/1/properties/provider",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "github",
+        "gitlab",
+        "bitbucket",
+        "local",
+        "unknown"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/provider; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/repo_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/repo_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/remote_url",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/remote_url; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/default_branch",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/default_branch; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/branch",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/branch; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/base_ref",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/base_ref; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/head_ref",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/head_ref; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/commit_sha",
+    "schema_pointer": "#/$defs/repositoryRef/oneOf/1/properties/commit_sha",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/commit_sha; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/repository{oneOf:1}/pr_number",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/repository{oneOf:1}/pr_number; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/workflow/environment",
+    "schema_pointer": "#/$defs/workflow/properties/environment",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "local",
+        "ci",
+        "staging",
+        "production",
+        "unknown"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:699",
+    "context_group": "workflow",
+    "meaning": "Producer-supplied /workflow/environment; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority",
+    "schema_pointer": "#/$defs/authority",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/requested_by",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/requested_by; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/owner",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/owner; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/reviewers",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/reviewers; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/reviewers/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/reviewers/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/authorization_status",
+    "schema_pointer": "#/$defs/authority/properties/authorization_status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "declared",
+        "provided",
+        "missing",
+        "out_of_scope",
+        "not_required"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/authorization_status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/authorization_evidence",
+    "schema_pointer": "#/$defs/artifactRefList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/authorization_evidence; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/authorization_evidence/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/authorization_evidence/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/allowed_actions",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/allowed_actions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/allowed_actions/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/allowed_actions/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/prohibited_actions",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/prohibited_actions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/prohibited_actions/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/prohibited_actions/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/time_window",
+    "schema_pointer": "#/$defs/authority/properties/time_window",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/time_window; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/time_window/start_at",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/time_window/start_at; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/authority/time_window/end_at",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:734",
+    "context_group": "authority",
+    "meaning": "Producer-supplied /authority/time_window/end_at; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime",
+    "schema_pointer": "#/$defs/runtime",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/runtime_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/runtime_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/runtime_type",
+    "schema_pointer": "#/$defs/runtime/properties/runtime_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "harness",
+        "ci",
+        "ide_agent",
+        "agent_runtime",
+        "manual",
+        "unknown"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/runtime_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/runtime_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/runtime_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/runtime_version",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/runtime_version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model",
+    "schema_pointer": "#/$defs/runtimeModel",
+    "required_in_parent": true,
+    "constraints": {},
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model{oneOf:0}",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model{oneOf:0}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model{oneOf:1}",
+    "schema_pointer": "#/$defs/runtimeModel/oneOf/1",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model{oneOf:1}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model{oneOf:1}/model_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model{oneOf:1}/model_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model{oneOf:1}/provider",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model{oneOf:1}/provider; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/model{oneOf:1}/model_version",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/model{oneOf:1}/model_version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools",
+    "schema_pointer": "#/$defs/runtime/properties/tools",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*",
+    "schema_pointer": "#/$defs/runtimeTool",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*/tool_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*/tool_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*/tool_type",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*/tool_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*/version",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*/version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*/operation_scope",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*/operation_scope; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/tools/*/operation_scope/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/tools/*/operation_scope/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/runtime/execution_mode",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:847",
+    "context_group": "runtime",
+    "meaning": "Producer-supplied /runtime/execution_mode; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent",
+    "schema_pointer": "#/$defs/intent",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/intent_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/intent_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/user_goal",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/user_goal; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/agent_task",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/agent_task; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/expected_outcome",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/expected_outcome; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/declared_constraints",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/declared_constraints; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/declared_constraints/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/declared_constraints/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/success_criteria",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/success_criteria; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/intent/success_criteria/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:907",
+    "context_group": "intent",
+    "meaning": "Producer-supplied /intent/success_criteria/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope",
+    "schema_pointer": "#/$defs/scope",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/in_scope",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/in_scope; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/in_scope/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/in_scope/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/out_of_scope",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/out_of_scope; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/out_of_scope/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/out_of_scope/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/touched_resources",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/touched_resources; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/touched_resources/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/touched_resources/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/changed_files",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/changed_files; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/changed_files/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/changed_files/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/scope/data_sensitivity",
+    "schema_pointer": "#/$defs/scope/properties/data_sensitivity",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "unknown"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:943",
+    "context_group": "scope",
+    "meaning": "Producer-supplied /scope/data_sensitivity; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan",
+    "schema_pointer": "#/$defs/plan",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/plan_id",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/plan_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/summary",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/summary; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/steps",
+    "schema_pointer": "#/$defs/plan/properties/steps",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/steps; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/steps/*",
+    "schema_pointer": "#/$defs/planStep",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/steps/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/steps/*/step_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/steps/*/step_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/steps/*/description",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/steps/*/description; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/plan/steps/*/status",
+    "schema_pointer": "#/$defs/planStep/properties/status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed",
+        "blocked",
+        "skipped"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:971",
+    "context_group": "plan",
+    "meaning": "Producer-supplied /plan/steps/*/status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions",
+    "schema_pointer": "#/properties/actions",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*",
+    "schema_pointer": "#/$defs/action",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/action_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/action_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/timestamp",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/timestamp; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/actor",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/actor; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/action_type",
+    "schema_pointer": "#/$defs/action/properties/action_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "read_file",
+        "write_file",
+        "run_command",
+        "call_tool",
+        "modify_code",
+        "install_dependency",
+        "network_access",
+        "git_operation",
+        "test_execution",
+        "release_operation",
+        "other"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/action_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target",
+    "schema_pointer": "#/$defs/targetRef",
+    "required_in_parent": true,
+    "constraints": {},
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target{oneOf:0}",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target{oneOf:0}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target{oneOf:1}",
+    "schema_pointer": "#/$defs/targetRef/oneOf/1",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target{oneOf:1}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target{oneOf:1}/resource",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target{oneOf:1}/resource; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target{oneOf:1}/path",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target{oneOf:1}/path; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/target{oneOf:1}/ref",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/target{oneOf:1}/ref; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/command",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/command; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/inputs",
+    "schema_pointer": "#/$defs/genericValue",
+    "required_in_parent": true,
+    "constraints": {
+      "description": "Uninterpreted captured value. Guard can inspect presence and structure later but the schema does not compute meaning here.",
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/inputs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/outputs",
+    "schema_pointer": "#/$defs/genericValue",
+    "required_in_parent": true,
+    "constraints": {
+      "description": "Uninterpreted captured value. Guard can inspect presence and structure later but the schema does not compute meaning here.",
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/outputs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/status",
+    "schema_pointer": "#/$defs/action/properties/status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "succeeded",
+        "failed",
+        "blocked",
+        "skipped"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/actions/*/related_tool_call_id",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1031",
+    "context_group": "actions",
+    "meaning": "Producer-supplied /actions/*/related_tool_call_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls",
+    "schema_pointer": "#/properties/tool_calls",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*",
+    "schema_pointer": "#/$defs/toolCall",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/tool_call_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/tool_call_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/timestamp",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/timestamp; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/tool_name",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/tool_name; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/tool_type",
+    "schema_pointer": "#/$defs/toolCall/properties/tool_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "shell",
+        "filesystem",
+        "git",
+        "scanner",
+        "test_runner",
+        "model",
+        "custom"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/tool_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/input_summary",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/input_summary; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/output_summary",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/output_summary; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/exit_code",
+    "schema_pointer": "#/$defs/toolCall/properties/exit_code",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/exit_code; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/duration_ms",
+    "schema_pointer": "#/$defs/toolCall/properties/duration_ms",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/duration_ms; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/sensitive_input_detected",
+    "schema_pointer": "#/$defs/toolCall/properties/sensitive_input_detected",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "boolean"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/sensitive_input_detected; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/artifact_refs",
+    "schema_pointer": "#/$defs/artifactRefList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/artifact_refs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/tool_calls/*/artifact_refs/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1091",
+    "context_group": "tool_calls",
+    "meaning": "Producer-supplied /tool_calls/*/artifact_refs/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions",
+    "schema_pointer": "#/properties/blocked_actions",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*",
+    "schema_pointer": "#/$defs/blockedAction",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/blocked_action_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/blocked_action_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/timestamp",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/timestamp; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/attempted_action",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/attempted_action; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/reason_code",
+    "schema_pointer": "#/$defs/blockedAction/properties/reason_code",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "PROTECTED_PATH",
+        "DESTRUCTIVE_COMMAND",
+        "SECRET_ACCESS",
+        "NETWORK_NOT_ALLOWED",
+        "OUT_OF_SCOPE",
+        "MISSING_AUTHORITY",
+        "POLICY_DENIED",
+        "UNKNOWN"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/reason_code; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/policy_ref",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/policy_ref; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/severity",
+    "schema_pointer": "#/$defs/blockedAction/properties/severity",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/severity; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/blocked_actions/*/human_review_required",
+    "schema_pointer": "#/$defs/blockedAction/properties/human_review_required",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "boolean"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1153",
+    "context_group": "blocked_actions",
+    "meaning": "Producer-supplied /blocked_actions/*/human_review_required; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts",
+    "schema_pointer": "#/properties/artifacts",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*",
+    "schema_pointer": "#/$defs/artifact",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/artifact_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/artifact_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/path",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/path; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/artifact_type",
+    "schema_pointer": "#/$defs/artifact/properties/artifact_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "source_file",
+        "diff",
+        "log",
+        "test_result",
+        "scan_result",
+        "build_output",
+        "screenshot",
+        "policy",
+        "authorization",
+        "report",
+        "other"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/artifact_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/sha256",
+    "schema_pointer": "#/$defs/sha256Hex",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/sha256; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/size_bytes",
+    "schema_pointer": "#/$defs/artifact/properties/size_bytes",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/size_bytes; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/content_type",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/content_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/artifacts/*/description",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1210",
+    "context_group": "artifacts",
+    "meaning": "Producer-supplied /artifacts/*/description; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification",
+    "schema_pointer": "#/properties/verification",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*",
+    "schema_pointer": "#/$defs/verification",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/verification_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/verification_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/verification_type",
+    "schema_pointer": "#/$defs/verification/properties/verification_type",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "unit_test",
+        "integration_test",
+        "static_analysis",
+        "security_scan",
+        "manual_review",
+        "build",
+        "rollback_check"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/verification_type; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/status",
+    "schema_pointer": "#/$defs/verification/properties/status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "not_run",
+        "inconclusive"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/command",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/command; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/artifact_refs",
+    "schema_pointer": "#/$defs/artifactRefList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/artifact_refs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/artifact_refs/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/artifact_refs/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/verification/*/coverage_note",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1256",
+    "context_group": "verification",
+    "meaning": "Producer-supplied /verification/*/coverage_note; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations",
+    "schema_pointer": "#/properties/policy_observations",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*",
+    "schema_pointer": "#/$defs/policyObservation",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/observation_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/observation_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/policy_ref",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/policy_ref; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/status",
+    "schema_pointer": "#/$defs/policyObservation/properties/status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "declared",
+        "missing",
+        "not_applicable"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/summary",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/summary; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/evidence_refs",
+    "schema_pointer": "#/$defs/artifactRefList",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/evidence_refs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/policy_observations/*/evidence_refs/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1310",
+    "context_group": "policy_observations",
+    "meaning": "Producer-supplied /policy_observations/*/evidence_refs/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review",
+    "schema_pointer": "#/$defs/humanReview",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/status",
+    "schema_pointer": "#/$defs/humanReview/properties/status",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "not_required"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/status; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/reviewers",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/reviewers; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/reviewers/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/reviewers/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/decision_note",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/decision_note; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/follow_up_actions",
+    "schema_pointer": "#/$defs/stringList",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/follow_up_actions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/human_review/follow_up_actions/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1345",
+    "context_group": "human_review",
+    "meaning": "Producer-supplied /human_review/follow_up_actions/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals",
+    "schema_pointer": "#/properties/risk_signals",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*",
+    "schema_pointer": "#/$defs/riskSignal",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/signal_id",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/signal_id; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/category",
+    "schema_pointer": "#/$defs/riskSignal/properties/category",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "authority",
+        "scope",
+        "data",
+        "security",
+        "release",
+        "dependency",
+        "rollback",
+        "evidence_integrity"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/category; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/severity",
+    "schema_pointer": "#/$defs/riskSignal/properties/severity",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/severity; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/message",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/message; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/evidence_refs",
+    "schema_pointer": "#/$defs/artifactRefList",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/evidence_refs; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/evidence_refs/*",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/evidence_refs/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/risk_signals/*/recommended_action",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1382",
+    "context_group": "risk_signals",
+    "meaning": "Producer-supplied /risk_signals/*/recommended_action; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance",
+    "schema_pointer": "#/$defs/provenance",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/source_pack_hash",
+    "schema_pointer": "#/$defs/sha256Hex",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/source_pack_hash; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_at",
+    "schema_pointer": "#/$defs/dateTimeString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_at; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by",
+    "schema_pointer": "#/$defs/generatedBy",
+    "required_in_parent": true,
+    "constraints": {},
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by{oneOf:0}",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by{oneOf:0}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by{oneOf:1}",
+    "schema_pointer": "#/$defs/generatedBy/oneOf/1",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by{oneOf:1}; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by{oneOf:1}/component",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by{oneOf:1}/component; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by{oneOf:1}/version",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by{oneOf:1}/version; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/generated_by{oneOf:1}/surface",
+    "schema_pointer": "#/$defs/nullableString",
+    "required_in_parent": false,
+    "constraints": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/generated_by{oneOf:1}/surface; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/deterministic",
+    "schema_pointer": "#/$defs/provenance/properties/deterministic",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "boolean"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/deterministic; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/provenance/redaction_applied",
+    "schema_pointer": "#/$defs/provenance/properties/redaction_applied",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "boolean"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1422",
+    "context_group": "provenance",
+    "meaning": "Producer-supplied /provenance/redaction_applied; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest",
+    "schema_pointer": "#/$defs/manifest",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/files",
+    "schema_pointer": "#/$defs/manifest/properties/files",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "array"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/files; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/files/*",
+    "schema_pointer": "#/$defs/manifestFile",
+    "required_in_parent": null,
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/files/*; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/files/*/path",
+    "schema_pointer": "#/$defs/nonEmptyString",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/files/*/path; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/files/*/sha256",
+    "schema_pointer": "#/$defs/sha256Hex",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/files/*/sha256; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/files/*/size_bytes",
+    "schema_pointer": "#/$defs/manifestFile/properties/size_bytes",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/files/*/size_bytes; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/manifest/completeness",
+    "schema_pointer": "#/$defs/manifest/properties/completeness",
+    "required_in_parent": true,
+    "constraints": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "incomplete",
+        "unknown"
+      ]
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1482",
+    "context_group": "manifest",
+    "meaning": "Producer-supplied /manifest/completeness; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  },
+  {
+    "field_path": "/extensions",
+    "schema_pointer": "#/properties/extensions",
+    "required_in_parent": false,
+    "constraints": {
+      "type": "object",
+      "description": "Reserved container for future runtime-specific fields. Runtime-specific expansion must stay inside this object rather than introducing arbitrary top-level keys.",
+      "additionalProperties": true
+    },
+    "validator": "packages/guard-core/src/validateEvidencePack.ts:1552",
+    "context_group": "extensions",
+    "meaning": "Producer-supplied /extensions; structural constraints shown here. Meaning and downstream use inherit the named Evidence Contract field family in the source inventory.",
+    "producer": "Canonical fixture or external pack submitter; parser performs no normalization.",
+    "consumer": "validateEvidencePack then field-family coverage/report/index; direct EAK caller must validate separately.",
+    "compatibility_sensitivity": "Existing closed required/type/enum/reference contract; no rename, tighter required fields or reinterpretation during V8-000."
+  }
+]
+```
+
+## Source Inventory Narrative
+
+### V8-000 Source Reconciliation
+
+This is source reconciliation, not implementation or release authorization. Current Guard source remains authoritative for behavior; the repaired Research OS supplies candidate future meanings. See the complete [matrix](../mesr/07_IMPLEMENTATION_RECONCILIATION_MATRIX.md), [machine inventory](../mesr/implementation-reconciliation.v0.1.json), [delta backlog](../planning/14_SOURCE_RECONCILED_GATE1_BACKLOG.md), and [readiness decision](../planning/15_GATE1_READINESS_DECISION.md).
+
+#### Recovery and baseline
+
+| Item | Verified state |
+|---|---|
+| Repository | `D:\AI project\mindforge-guard` |
+| Branch | `validation/v8-000-source-reconciliation-v0.1` |
+| Canonical base | `30512dff336435f8d1c1bf4b633058c374668eb8` |
+| Base ref | `validation/v8-gate-3-institutional-artifact-readiness-v0.1` |
+| HEAD / AGENTS constitutional commit | `20aa844fe6f0239d5c0d18184cf5faffa366abf5` |
+| DES closure, not imported | `b909228ac9928fbdf22bd7081532683930c4209a`; only CHANGE_LOG.md, EXTERNAL_ARCHITECTURE_SNAPSHOT_v0.1.md, FACT_CHECK_REPORT.md |
+| Preserved AGENTS patch SHA-256 | `62bddd822df7d8f91890ce1c3b324a7d371fe5e0564df28a4dd19dd18c4e27ec` |
+| Original transition | Reverse patch check proved preservation; restored AGENTS only; clean DES tree; branch created from explicit base; exact patch checked/applied; AGENTS-only commit |
+| Before original reconciliation | Clean worktree |
+| Resume checkpoint | No tracked diff; diff/stat/check empty; exactly three untracked files below |
+| Constitution | V8 section exactly once; RESEARCH_COMPRESSION and SEMANTIC_ARCHITECTURE_REPAIR PASS; V8-000 REQUIRED_NEXT; Gate 1 blocked until V8-000 pass; hard invariants intact |
+| Research | Repaired 41 Core + 3 interpretation metadata; seven typed relations; empty active stronger/weaker edges; profile-bound sufficiency requirements verified |
+
+Recovery classified all actual partial files before edits:
+
+| File | Classification | Disposition |
+|---|---|---|
+| docs/mesr/07_IMPLEMENTATION_RECONCILIATION_MATRIX.md | PARTIAL_VALID | Placeholder retained as the matrix path; completed from reviewed JSON. |
+| docs/mesr/implementation-reconciliation.v0.1.json | PARTIAL_VALID | Existing 41/3 verdicts, 56 reason traces and 22 test results retained; identity.declared boundary match corrected from PARTIAL to CONFLICT on direct source evidence; inventories and validation provenance completed. |
+| scripts/_build_v8_000.py | PARTIAL_VALID | Its writes were limited to reconciliation JSON/directories. Hard-coded manual judgments were not PASS assertions, but rebuilding would overwrite the draft and depended on temporary files. Repaired into a renderer/validator over the preserved JSON. |
+| All three planning outputs | Absent | Newly created. The rejected UI preview was not accepted repository state. |
+
+Pre-recovery SHA-256 values are retained in JSON. Final validation caught a draft patch-digest transcription error (63 hex characters, one missing d); the corrected 64-character digest above was measured from the saved patch, whose bytes exactly match `git diff HEAD^ HEAD -- AGENTS.md`. The patch and AGENTS were not changed. All 97 Research OS files were hashed before reconciliation; the recovered inventory still matched. No AGENTS edit or commit occurred on resume. No file was COMPLETE_VALID, INVALID, STALE or UNRELATED at recovery.
+
+The existing source documents already record internal Gate 1/2 progress and Phase 3A readiness. Those remain historical evidence for the implementation track. They do not bypass the repaired-baseline gate. The next backlog is a delta over that real substrate. `mesr.core.*` remains canonical; research short IDs are candidate mapping keys, not a competing registry or equivalent aliases.
+
+#### Evidence Contract
+
+Canonical schema: `packages/schema/evidence-schema-v1.json`, JSON Schema draft 2020-12, `$id=mindforge://schemas/evidence/evidence-schema-v1.json`, `schema_version=1.0.0`. `EvidencePackV1` is defined in `packages/guard-core/src/parseEvidencePack.ts:8`. The closed runtime boundary is `validateEvidencePack.ts:1595`. The JSON/matrix expand schema fields with validator locations, producer and consumer context, and compatibility sensitivity.
+
+The parser accepts JSON text, Buffer or a non-array object, checks parsing/object shape, then casts. It does not normalize producer schemas or establish conformity. Validation checks 18 required top-level fields, optional plan/policy_observations/human_review/extensions, closed nested keys, enums, timestamps, hash syntax and numeric structure. Empty arrays can produce warnings. `extensions` accepts an arbitrary object; namespacing is a documented convention, not enforced. Validation does not open artifact files, verify hash contents, authenticate principals or verify custody. Report generation performs parsing and validation before coverage. EAK accepts typed input directly; its caller is responsible for contract validation.
+
+| Field family | Current meaning, producer and consumer |
+|---|---|
+| schema_version / pack_id / pack_type / created_at | Producer contract/scenario/identity/time. Exact version and three scenario enums constrain parser consumers. Creation time is used in authority expiry comparison, not automatically current reliance time. |
+| producer | Packager id/name/version/type/profile/generated_by. Coverage checks presence; EAK attributes sources. Not verified principal or authority. |
+| workflow / repository | Declared workflow/environment and string or closed repository object, including branch/ref/commit/PR. Report summarizes it; missing branch can affect dependency reasoning. No repository lookup. |
+| authority | Requested-by/owner/reviewers/status/evidence refs/allowed and prohibited actions/time window are submitted context. `provided` is not independent verification. Coverage/review/verdict use selected fields; allowed_actions grants nothing. |
+| runtime | Declared runtime/model/tools/mode; structural context, not tool availability, invocation or authorization. |
+| intent / plan | Declared goals/task/outcome/constraints/criteria and optional planned steps. No implication that an event occurred or criteria passed. |
+| scope | Exact in/out lists, touched resources, changed files, sensitivity. Coverage uses list membership and a protected-resource regex, not a general scope/authority prover. |
+| actions | Producer act/status/time/target/command and uninterpreted input/output. Report refs, scope and command-output checks; succeeded is not correct outcome or verification pass. |
+| tool_calls | Submitted invocation summaries/exit/duration/sensitivity/artifact refs. Coverage checks output/refs. Exit zero does not establish a named verification claim. |
+| blocked_actions | Producer block/reason/severity/policy/review flag. Eight input reasons are separate from canonical report reasons. Critical recorded severity can produce report block, without executing a block. |
+| artifacts | Submitted ID/path/type/hash/size/MIME/description. Coverage resolves refs; hash syntax does not prove byte integrity. |
+| verification | Array of seven verification types and passed/failed/not_run/inconclusive, command/refs/coverage note. Report counts and coverage rules consume it. No mandatory verifier principal, independence, claim-set, environment or per-event evaluation time. |
+| policy_observations / human_review | Optional observations and pending/completed/not_required status/notes. Not institutional acceptance; completed review does not automatically clear generated review requirements. |
+| risk_signals | Submitted category/severity/message/refs/recommended action. Structurally validated; report risk aggregation mainly follows canonical reasons rather than importing producer verdicts. |
+| provenance | Supplied source_pack_hash, generated_at/by, deterministic and redaction flags. Attribution and structural validation, not demonstrated replay, truth or custody. |
+| manifest | Submitted files[path,sha256,size_bytes] and completeness label. Coverage/report consume it; Core does not independently enumerate files. |
+| extensions | Optional producer material. Does not activate MESR/EAK or grant semantic authority. New mandatory canonical facts require an explicit schema migration. |
+
+Canonical fixtures include `fixtures/ai-pr-low-risk-complete/evidence-pack.json`, missing-test/release/dependency/cyber cases, and corresponding `examples/reports`. Studio accepts external producer submissions through `prototypes/studio/studioWorkflow.mjs:213`. No generic producer-to-EvidencePackV1 normalizer exists in the parser. Consumers are coverage, report/index generation, direct internal EAK callers, Markdown/HTML renderers and Studio. Private Core `index.ts` exports parser/validator/report APIs, not MESR/EAK. The public CLI MJS path does not import MESR/EAK.
+
+#### All canonical reason codes
+
+There are **56** in `packages/guard-core/src/reasonCodes.ts:37`, with definitions and 56 corresponding MESR bindings. The matrix/JSON enumerate each definition/declaration, source occurrences, emitter/consumer, fixtures, tests, report phrases, aliases, role and serialized exposure. The recovered whole-repository literal scan uses replacement decoding for five legacy non-UTF-8 CLI files named in JSON; canonical semantic source and all new artifacts decode strictly, and no meaning is inferred from unreadable text. Literal occurrences and generic consumers/tests are distinguished: a missing literal test reference is not a claim that generic 56/56 binding verification excludes that code. Declaration/binding alone does not prove a rule executes. There are 37 implemented coverage/report trigger codes and 19 declared/bound codes without a current Core emitter.
+
+Exactly one primary role per code: 27 CORE_SEMANTIC, 18 DOMAIN_SEMANTIC, 6 POLICY_RESULT, 5 NEEDS_REVIEW, 0 REPORT_WORDING, 0 LEGACY. NEEDS_REVIEW here marks declared interpretive risk labels without a verified runtime predicate, not a fifth candidate verdict.
+
+Explicit source-vocabulary translations: DESTRUCTIVE_COMMAND -> DESTRUCTIVE_COMMAND_ATTEMPTED; SECRET_ACCESS -> SECRET_ACCESS_ATTEMPTED; NETWORK_NOT_ALLOWED -> NETWORK_ACCESS_ATTEMPTED. They are scoped blocked-action mappings, not global aliases. Other source reasons remain separate. `art_manifest` is a special artifact-ref bypass. Preserve serialized values, ordering, definitions and consumers.
+
+Confirmed conflations, not fixed:
+
+- **Fact + interpretation:** TESTS_NOT_RUN includes present nonpassing/inconclusive records; BUILD_FAILED includes build not_run/inconclusive with no pass; dependency workflow labeling triggers DEPENDENCY_CHANGE_DETECTED without a diff; migration notes are detected by path/description regex.
+- **Semantic + policy:** rollback requirement is release-specific. SECURITY_REVIEW_REQUIRED follows cyber/security workflow class even if review occurred. The research hypothesis that it proves missing review occurrence does not match current code.
+- **Policy + assurance / assurance + wording:** report allow falls through selected rules and says structurally sufficient without research sufficiency bindings.
+- **Historical + current:** TIME_WINDOW_EXPIRED compares against pack.created_at; its MESR binding wording says evaluation time. This is not a fresh reliance-time evaluation.
+- **Producer assertion + independence:** EAK has separate fields but some external-item paths infer independence from external verification status/check presence (below).
+
+#### Governance Report
+
+`reportModel.ts` defines GovernanceReportModel 1.0.0. After input validation, `generateGovernanceReport.ts:552` applies this precedence:
+
+| Verdict | Exact rule | Layer and consumer risk |
+|---|---|---|
+| block | Any blocked summary item has critical severity. | Recommendation about recorded blocked activity, displayed by renderers/Studio. No executing block. |
+| inconclusive | Otherwise manifest completeness incomplete or unknown. | Report disposition for manifest basis, not a generic MESR claim state. |
+| require_review | Otherwise selected authority/owner/test/rollback/cyber reasons or any generated required human review item. | Policy-derived recommendation; not institutional rejection or execution denial. |
+| allow | No prior branch produces verdict reasons. | Legacy report-rule fallthrough, not proof every field/claim is verified. |
+
+The allow explanation is exactly: “Authority, scope, verification, and manifest evidence are structurally sufficient.” Unselected coverage reasons may coexist with allow. Preserve `Guard allow != Runtime ALLOW != Institutional Acceptance != Execution Authorization`. Renderers copy verdict/coverage/counts; they issue no commands. Repaired E3-C's guard-legacy allow plus TESTS_NOT_RUN is a vocabulary collision fixture, not a representative generated ordinary software-change report: that reason triggers review.
+
+Coverage completeness combines manifest status and missing-evidence count. MissingEvidenceItem/HumanReviewRequirement/NextAction carry reasons, text, refs and roles. Risk severity is the maximum code severity hint: a report-priority ordering, not an evidence maturity hierarchy. `generateEvidenceIndex.ts` indexes report material. The JSON output and Markdown/HTML wording remain compatibility-sensitive.
+
+There is no Preview/Final lifecycle enum in GovernanceReportModel. Studio markdown_preview/html_preview and export readiness reflect the same generated model; “final” wording does not create authority. EAK LocalGovernanceMappingPreview is default_off=true/public_contract_changed=false. Institutional Artifact v0.1 is a separate controlled fixture/schema, not replacement report JSON or acceptance. Its Phase 3A fixture invokes MESR support evaluation, not the EAK projection. Prior fixtures/snapshots and outcome-foundation, MESR report-equality and institutional-artifact tests remain unchanged.
+
+#### EAK maturity and semantic limits
+
+**PROTOTYPE_VALIDATION_ONLY**. Kernel version is `0.1.0-poc`; it is not exported from private Core's index or the installed CLI. Inputs are EvidencePackV1 plus optional normalized records, external assurance reports and review scope. It builds production_evidence_readiness profile/families, sources, claims, observations, verification and supportability. Origin, verification, integrity, corroboration, admissibility and independence have separate fields.
+
+Family precedence: not applicable -> inadmissible; contradiction -> contradicted; missing evidence -> insufficient_evidence; supported family -> supported; otherwise unsupported. Overall results prioritize contradictions, missing evidence and admissible unsupported families. Residual uncertainty is retained separately and does not automatically veto supported. Deterministic input/result hashes establish process integrity, not truth.
+
+`buildVerifications` maps pack passed to verified, failed to partially_verified, while retaining producer-provided limitations. External-record/report loops in `buildEvidenceItems` assign independently_verified from record.status=verified or nonempty executed_checks, without comparing producer/executor/verifier principals or custody. Nonempty failed/skipped checks also satisfy the latter presence condition. Report digest presence becomes integrity bound. These are material PoC shortcuts, not independent-assurance proof.
+
+`externalEvidence/types.ts` and verificationTypes.ts describe parse/validate/verify/normalize, package/manifest/profile/request/job/result/report contracts. Local normalization/report/composition/job/idempotency/usage/adapter-selection fixtures and the Ramen v5 spike are bounded implementations. They are not a deployed service or general identity/custody verifier. `mesr/eakProjection.ts` is an internal side projection: contradicted -> contradicts; insufficient/inadmissible -> indeterminate; unsupported -> does_not_support only when a registered boundary applies, otherwise indeterminate. Legacy verdicts remain separate.
+
+#### MESR maturity and support evaluator
+
+**ACTIVE_RESEARCH + IMPLEMENTED_INTERNAL_SUBSTRATE**: 30 Core entries, 29 Software seed entries, 24 claim boundaries, 56 reason bindings, five support relations, temporal shape validation, canonical snapshots, Core pattern signatures, EAK projection, two producer adapters, module composition and bounded domain/crosswalk fixtures. ADRs 0004/0005/0006 and docs/specs/mesr-* document existing architecture.
+
+Canonical namespaces are mesr.core.*, mesr.domain.software.*, mesr.xw.*, mesr.profile.*. Lifecycle/version/supersedes/deprecated_by fields exist, but no general historical registry-version store or alias resolver implements all research supersession semantics. Baseline tracked-source searches find none of reconstructability.replayable, semantic.claim_stable, semantic.portable or the three new metadata IDs. No compatibility alias is required for those absent names; process metadata remains outside world/action semantics.
+
+The identity_assertion entry explicitly supports verified_identity, conflicting with the repaired declaration-only nonclaim; identity.declared therefore has claim_boundary_match=CONFLICT, while its ALIGN_AND_ADOPT verdict permits only a separate additive facet. The evaluator checks request.required_bindings, not an automatic union of registry required_bindings. Caller-supplied supported_claim_parts contribute positive claims. Explicit non-claims are carried in output; blocking depends on registered observed-state/claim boundaries. False and empty arrays count as present to this evaluator, while the producer projection helper treats arrays differently. Binding conformance needs negative experiments before stronger claims are adopted.
+
+#### Relations, states, sufficiency and time
+
+| Dimension | Current state | Primary migration requirement |
+|---|---|---|
+| refines/requires/entails/orthogonal_to/adjacent_to | Not first-class MesrSemanticEntry fields; binding names are not semantic prerequisite evaluation. | ADDITIVE_METADATA |
+| conflicts_with/supersedes | Fields/reference validation exist; conflict/lifecycle evaluation incomplete. | NEEDS_EXPERIMENT |
+| stronger_than/weaker_than | Current Core/Software edges empty; no active generic strength traversal. | NO_CHANGE for existing edges |
+| Verification result vs independence | Separate types; EAK shortcut conflates them. | BREAKING_IF_CHANGED for existing PoC classifications; experiment first |
+| Acceptance authority vs occurrence | Nonclaims and CB-18 separate concepts; full predicates absent. | ADDITIVE_METADATA |
+| Presence/integrity/coverage/custody/sufficiency | Partial representations; digest-presence/sufficiency shortcuts; custody absent. | NEEDS_EXPERIMENT |
+| Authority verification/currentness/scope | Source/scope/declaration/time substrate separate; presence/status is not verification. | ADDITIVE_METADATA |
+| Historical/current standing | Explicit boundary and supplied statuses, no recomputation. | NEEDS_EXPERIMENT |
+| Research short IDs / canonical IDs | Partial granularity and nonclaim overlap, not equality. | NO_CHANGE now; future proven rename would require COMPATIBILITY_ALIAS_REQUIRED |
+
+| Requested state | Existing surface | SEMANTIC_DEBT / difference |
+|---|---|---|
+| SUPPORTED | MESR supports, EAK supported | Different preconditions/evaluators; no automatic equivalence. |
+| UNSUPPORTED | MESR does_not_support, EAK unsupported | Registered prohibited inference is not proof a world proposition is false. |
+| UNRESOLVED | MESR indeterminate, EAK insufficient_evidence/uncertainty | No dedicated enum. Producer claim with missing independence currently hits CB-22 -> does_not_support. |
+| CONFLICTED | MESR contradicts, EAK contradicted | Explicit contradiction input, not general multi-source conflict resolution. |
+| STALE | temporal.basis_status=stale | Separate supplied metadata, not computed claim-support state. |
+| INCONCLUSIVE | Pack verification or report inconclusive | Different result/report contexts, not interchangeable with indeterminate. |
+
+E3-B must separate execution evidence from epistemic status of independence. Current projection can retain tests_executed/tests_passed and return does_not_support for independence. It prevents inflation but does not express repaired UNRESOLVED. Missing verification event needs a bounded search and not-evaluable independence. Do not rename old enums in place.
+
+The scoped wording search covers sufficient/complete/ready/verified/passed/approved/accepted/compliant. Material hits are legacy allow wording, coverage completeness, EAK readiness, producer result conversion, review markers and renderer counts. Future evidence.sufficient requires profile_id, claim_set_id, scope and evaluation_time (research additionally requires refs/material-gap result). Current profile/conclusions/review_scope are partial analogues; created_at/generated_at is not automatically evaluation_time. Use an opt-in versioned artifact or explicit future report migration, preserving old JSON/phrase now.
+
+Historical evidence remains immutable. Current applicability requires separate freshness/expiry/revocation/supersession/subject/environment/authority evaluation. temporalBasis.ts validates shape/status/date/provenance, not these evaluations. License expiration/revocation and governance receipt histories are separate established contracts, not a generic MESR standing evaluator. Reuse their facts only through explicit bindings; do not repurpose them.
+
+#### Software Change domain separation
+
+| Area | Current fact and interpretation | Policy result / wording | Proposed domain semantic / Core dependency |
+|---|---|---|---|
+| Tests | Unit/integration records; missing/failure/no-pass rules | Ordinary software deficiency -> review; TESTS_NOT_RUN wording is broader than absence | execution_not_demonstrated / execution absence; result_verified / scoped verification |
+| Release | Workflow and subject/release refs, not acceptance | Rollback gap -> RELEASE_REVIEW_REQUIRED | acceptance_recorded and authorization_not_demonstrated / decision vs authority |
+| Rollback | rollback_check presence/status; procedure presence not tested capability | Release requires pass; ROLLBACK_MISSING/UNVERIFIED | declared capability, absent evidence, verified rehearsal / evidence, capability, outcome |
+| Dependency | dependency_upgrade label and lockfile regex, not independently examined diff | Missing integration/migration -> review; owner review | change_observed from actual diff / action observation |
+| Security review | Cyber/security class and optional review record | Class triggers SECURITY_REVIEW_REQUIRED regardless of occurrence | recorded/not_demonstrated/result_verified separately / action vs verification |
+| Artifacts | Paths, refs, digest syntax; no canonical byte check | Ref/hash gaps affect coverage | integrity_verified / successful integrity check |
+| Ownership | Owner/reviewer strings, principal context | High-risk missing owner -> OWNER_REVIEW_REQUIRED | ownership.declared / identity declaration |
+| Authority | Producer authorization status/refs | Missing/declared review and cyber provided-status rule | release authorization evidence / current scope-bound authority |
+| Breaking change | Missing integration pass or branch, not detected break | BREAKING_CHANGE_UNVERIFIED -> review | detected analysis vs current waiver / observation vs acceptance |
+| Remediation | Cyber/security context; no general closure proof | Security/authority review | closure_verified / bounded outcome + independence |
+| Recovery | Rollback refs/checks/environment; not future effectiveness | Release review where applicable | readiness_verified / capability + environment continuity |
+
+#### Harness compatibility
+
+Additional read-only producer source: `D:\AI project\guard-native-agent-harness`, clean HEAD `8116457d2a64e45c2154d9f480e68d40937b6ab0`. Hashes of src/evidence/schema.ts and compatibility.ts are pinned. Its compatibility emitter produces the exact observed `mindforge-guard-evidence.v1 / execution_facts` form. Producer source is corroborating evidence, not authority over Guard.
+
+| Harness field | Actual canonical mismatch / future closure |
+|---|---|
+| schema_version / pack_type | Both exact values rejected. Explicit versioned adapter and evidenced scenario selection required. |
+| pack_id / created_at | Compatible scalar concepts; keep task identity and original creation time. |
+| producer.id/version/role | Missing canonical id/name/version/type/profile/generated_by; separate producer and adapter provenance. |
+| workflow task/planner/mode/count/outputs | Missing workflow id/name/type/repository/environment. Never fabricate repository/ref from labels. |
+| authority producer-only flags | Not owner/reviewers/status/evidence/action scope/time. Flags must not become provided authority. |
+| runtime workspace/evidence directory/availability/summary | Missing canonical identity/type/version/model/tools/mode. Guard availability is not authority. |
+| intent.user_prompt | Partial goal analogue; no full intent/task/outcome/constraints/criteria contract. |
+| scope local/policy/registered-tool/allowlist flags | Not path/resource/change/sensitivity scope. Local policy is not current authority. |
+| actions | Plan matching yields completed/failed/blocked/not_recorded, nullable timestamp and requested tool/input. Canonical actor/type/target/input/output and succeeded enum differ. Unmatched plan is not execution. |
+| tool_calls | Event/task IDs, object output_summary, native policy decision, risk/status differ from canonical summaries/exit/ref contract. Preserve namespaced policy observations. |
+| blocked_actions | Native request/block_reason/matched_rule lacks canonical attempted action/reason/policy/review fields. No permissive default mapping. |
+| artifacts | path/kind/producer/bytes/characters lacks ID/type/hash/size/MIME/description. Actual bytes required to compute hashes. |
+| verification | Counts/file paths object, not array of verification events. Command success cannot synthesize test PASS. |
+| risk_signals | Native signal/source/event/tool/level/rule differs from canonical signal/category/message/ref/action. |
+| provenance | Directory/source_files/local-generation flags lack canonical hash/time/determinism/redaction. Local generation is not independence or replay proof. |
+| manifest | Reference to external manifest, not files+completeness. Must materialize verified inventory with explicit omissions. |
+
+Existing ingest-summary bridge handles synthetic harness_evidence_pack_v1 and emits 0.1-preview summary, not EvidencePackV1. Phase 2 external-evidence normalizer emits typed records. MESR Harness adapter accepts pack_version=0.1 plus records/claims (harness-evidence-pack/v0.1), and emits ProducerSemanticInput. These are distinct experimental formats. There is no canonical integration for the current compatibility emitter.
+
+Classifications: **SCHEMA_COMPATIBILITY_GAP, SEMANTIC_COMPATIBILITY_GAP, PROVENANCE_GAP, ASSURANCE_INTERFACE_GAP**. It is not PURE_ADAPTER_GAP because mandatory facts and assurance bindings are missing, not just renamed. `Harness Producer compatibility != Canonical EvidencePackV1 compatibility`; `Harness ingestion bridge != Canonical Harness -> EAK -> GovernanceReport integration`.
+
+Minimum closure contract: pin producer/adapter/schema versions; retain raw bytes/digests/field provenance; map every field explicitly; preserve unavailable facts; distinguish planned/completed/verified/accepted; inventory artifact bytes/manifest; reject unsupported formats/scenarios; output canonical validation diagnostics and missing evidence; prove valid transformed input passes Guard and missing facts never become fabricated values. No adapter implemented now.
+
+#### Repaired Experiment 3 feasibility
+
+| Experiment | Current substrate | Remaining delta |
+|---|---|---|
+| E3-A | GitHub/Harness adapters, ProducerSemanticInput, MESR projection, paired normalization and distinct provenance tests | Repaired example.ci/example.runtime inputs are unsupported formats; explicit constraint/environment/claim-set coverage missing. Specify fixture normalizer/oracle; equal bounded claims, distinct provenance; Execution Success != Verification Passed. |
+| E3-B | Current domain fixtures and CB-22 | Separate no-record from producer assertion + unresolved independence; specify search boundary and dimension annotations NOT_EVALUABLE/SUPPORTED_BY_PRODUCER_ASSERTION without treating them as extra primary states. |
+| E3-C | Claim boundaries, claim-stability and grounded APAAI crosswalk | Runtime ALLOW, Guard allow and external ALLOW stay namespaced; VERIFIED/APPROVED/SAFE/ACCEPTED/COMPLIANT have zero automatic equivalences. StegVerse remains unresolved. |
+| E3-D | Existing manifest, resolver, Core/Software module, crosswalk/profile loading and deterministic composition tests | Reuse resolver. Literal core compatibility string is checked, but dependency.version is not evaluated. Duplicate/override checks exist; arbitrary claim widening is not exhaustively rejected by limited forbidden-claim list. Specify locked versions/digests and repaired negatives. |
+
+Current E3-D is in-memory composition; absence of a module distribution service is not a defect. Invalid composition returns zero semantic entries. Current diagnostic codes differ from research REJECT_*; a future fixture translation may map them without renaming contracts. Research six conceptual module classes must not overwrite four implemented semantic module types; Producer/Consumer are separate interfaces. Old E3 passes do not establish repaired E3 acceptance. No new normalizer/resolver implementation is added.
+
+#### Version baseline
+
+| Dimension | Source-supported conclusion |
+|---|---|
+| HISTORICAL_RELEASE_BASELINE | Local v6.13.0/v6.13.1/v7.0.0/v7.0.1 tags and RELEASE history; v6.13 is described there as historical lineage. Remote publication not rechecked. |
+| CURRENT_COMMERCIAL_BASELINE | AGENTS/skill v6.13 versus README/RELEASE/current product docs v7.0.1. Retain VERSION_BASELINE_AMBIGUITY; no constitutional/version normalization. |
+| CURRENT_ENGINEERING_BASELINE | Pinned 30512df + AGENTS-only 20aa844; CLI/lock 7.0.1, private Core 0.1.0, root no product version; release/ absent. |
+| INTERNAL_V8_STATE | Implemented internal substrate and prior Gate 1/2/Phase 3A validation lineage, not shipped V8; institutional external requirements unrun; repaired-track implementation not started. |
+
+#### Validation and unchanged surfaces
+
+Recovered 22 baseline verifiers passed on Node v24.15.0/Windows: registry, reason bindings, claim stability, composition, runtime portability, cross-domain, APAAI crosswalk, institutional artifact, runtime isolation, EAK PoC, three local external-evidence verifiers, Harness ingestion, v7 example pack, three core CLI checks and four v7.0.1 checks. Commands/stdout/stderr are retained in JSON. Additional recovery validation is recorded there and in the decision. Existing tests are observations, not evidence that repaired E3 passes.
+
+The non-runtime validator verifies candidate/count/verdict/classification completeness; exact Markdown rendering; reason declaration and source trace coverage; required inventories and five outputs; base/HEAD/AGENTS/patch; protected tracked tree and Research OS; allowed output paths; and no automatic ALLOW mapping additions. Mechanical checks do not replace review of manual semantic judgments.
+
+Preserved: audit output/verdict/exit and deny exit 25; permit/classify behavior; CLI/SDK/JSON/report contracts; licensing/offline authority; install/demo paths and version declarations. Work is recommendation-only, additive-only, non-executing, default-off where applicable, with no authority/control-plane/dashboard/orchestration expansion. Experiment 2B reviewer packages/questions/contracts/history remain untouched. No reconciliation artifact is committed.
+
+## Recovery Tests
+
+```json
+[
+  {
+    "command": "node scripts/verify_outcome_foundation_contract.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: outcome foundation positive contract verification passed.\n",
+    "stderr": "",
+    "seconds": 0.41
+  },
+  {
+    "command": "node scripts/verify_outcome_foundation_negative_contract.mjs",
+    "exit_code": 0,
+    "stdout": "PASS: outcome foundation negative contract verification passed.\n",
+    "stderr": "",
+    "seconds": 0.41
+  }
+]
+```
+
+## Open Blockers
+
+```json
+[
+  {
+    "id": "VERSION_BASELINE_AMBIGUITY",
+    "closure_tasks": [
+      "B00"
+    ]
+  },
+  {
+    "id": "CLAIM_STATE_AND_BINDING_DEBT",
+    "closure_tasks": [
+      "B01",
+      "B02"
+    ]
+  },
+  {
+    "id": "INDEPENDENCE_AND_INTEGRITY_DEBT",
+    "closure_tasks": [
+      "B05"
+    ]
+  },
+  {
+    "id": "PROFILE_SUFFICIENCY_REPORT_DEBT",
+    "closure_tasks": [
+      "B04",
+      "B06"
+    ]
+  },
+  {
+    "id": "HARNESS_CANONICAL_CLOSURE_DEBT",
+    "closure_tasks": [
+      "B03"
+    ]
+  },
+  {
+    "id": "TEMPORAL_AND_COMPOSITION_DEBT",
+    "closure_tasks": [
+      "B07",
+      "B08",
+      "B09"
+    ]
+  }
+]
+```
+
+## Backlog Narrative
+
+### Source-Reconciled Gate 1 Delta Backlog
+
+**PROPOSED_NOT_STARTED.** This backlog is derived from the pinned implementation, not copied from the Research OS backlog. It does not authorize implementation. The [readiness decision](../planning/15_GATE1_READINESS_DECISION.md) keeps repaired-track Gate 1 blocked. Existing internal MESR/EAK and prior Gate 1/2 validation lineage remain intact.
+
+Primary next scope: freeze the claim, state, binding and compatibility deltas needed to reuse the existing semantic substrate. AI-generated software change is the primary domain; Cyber Remediation remains a contrast. No new resolver platform, runtime integration, commercial normalization or product release belongs to this queue.
+
+#### Dependency order
+
+Preflight B00 precedes admission. Boundary phase B01 establishes canonical identity and compatibility rules; B02 defines claims/states; B03 specifies the actual Harness gap. Hardening phase B04-B08 builds on those contracts. Acceptance phase B09-B10 defines repaired E3 oracles, freezes compatibility evidence and requests a separate gate decision. These are proposed deliverables only; none is implemented by V8-000.
+
+##### B00 — Resolve commercial-baseline ownership without rewriting history
+
+- **Source dependency:** AGENTS.md and commercial-baseline skill say v6.13; README.md, RELEASE.md, current product documentation and CLI package/lock say v7.0.1; local release tags corroborate the later lineage.
+- **Why now:** VERSION_BASELINE_AMBIGUITY prevents an unambiguous public compatibility promise even though the engineering commit is pinned.
+- **Compatibility risk:** Silently upgrading constitutional scope or presenting internal V8 substrate as released behavior.
+- **Artifact:** A separately approved baseline-disposition ADR naming the authoritative commercial baseline and documenting the conflicting sources. This task does not itself edit version declarations.
+- **Acceptance criteria:** Historical release, commercial baseline, engineering baseline and internal V8 state have separate definitions and explicit owner disposition. Any later AGENTS/version edit is separately scoped. Remote release status is verified only if the decision depends on publication claims.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the proposed ADR; retain all historical declarations and tags.
+
+##### B01 — Freeze canonical IDs, typed relations and migration admission
+
+- **Source dependency:** B00; coreRegistry.ts, softwareDomainSeed.ts, types.ts, moduleManifest.ts, reasonCodeBindings.ts, existing MESR ADRs/specifications; 41+3 reconciliation rows.
+- **Why now:** The implemented 30 Core entries and 41 research predicates have different granularity and nonclaims. The implementation is already a semantic substrate, so rebuilding a second registry would create semantic drift.
+- **Compatibility risk:** Treating partial mappings as equivalent aliases; silently widening supports or narrowing nonclaims; using orthogonal dimensions as a strength ladder.
+- **Artifact:** Canonical mapping/alias admission ADR and additive relation specification. Preserve mesr.core.* IDs; distinguish refines, requires, entails, orthogonal_to, adjacent_to, conflicts_with and supersedes from existing support relations.
+- **Acceptance criteria:** Each proposed alias requires exact meaning, nonclaim, binding and version evidence. Partial rows remain mappings, not aliases. Stronger/weaker stays inactive absent a proven strict monotonic chain. A field addition has an opt-in/versioned compatibility path. authority.reachable stays deferred. The three assurance metadata IDs remain interpretation-process metadata outside action evidence.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Remove the proposed mapping/specification; no existing registry entry is renamed or removed.
+
+##### B02 — Specify Claim / Non-Claim and six-state conformance
+
+- **Source dependency:** B01; supportEvaluator.ts, claimBoundaries.ts, eakProjection.ts, evidenceAssuranceKernel.ts, producerAdapters/semanticProjection.ts; repaired E3-B.
+- **Why now:** Registry required_bindings are not automatically enforced by the evaluator; caller supplied claim parts contribute positives. CB-22 currently rejects an independence inference using does_not_support, while the repaired model requires unresolved independence alongside producer execution evidence.
+- **Compatibility risk:** In-place renaming of supports/does_not_support/indeterminate, changes to legacy EAK support statuses, and interpreting a nonclaim as proof of falsity.
+- **Artifact:** State/binding ADR and a negative-case specification for SUPPORTED, UNSUPPORTED, UNRESOLVED, CONFLICTED, STALE and INCONCLUSIVE. Keep execution, verification result and independence as separate dimensions.
+- **Acceptance criteria:** Specify no-event versus producer-pass/unresolved-independence cases; absent required registry binding despite a permissive request; false/empty-array input behavior; caller asserted positive against an explicit nonclaim; contradiction and stale historical basis. Dimension annotations NOT_EVALUABLE and SUPPORTED_BY_PRODUCER_ASSERTION are not unreviewed extra primary states. Define versioned projection before changing any old output.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw new state specifications; existing enums and evaluators remain canonical.
+
+##### B03 — Specify Harness-to-canonical closure
+
+- **Source dependency:** B01-B02; pinned Harness src/evidence/schema.ts and compatibility.ts; Guard EvidencePackV1/schema/validator; existing Harness MESR adapter, ingestion summary bridge and external-evidence normalizer.
+- **Why now:** Actual mindforge-guard-evidence.v1/execution_facts is not the adapter's pack_version/records input or canonical schema_version 1.0.0. An interface name cannot close schema, semantic, provenance and assurance gaps.
+- **Compatibility risk:** Fabricating required owner/authority/time/hash facts, coercing aggregate verification into successful verification events, or confusing producer-only flags with authority.
+- **Artifact:** A versioned adapter input/output and missing-fact contract, field provenance map and future fixture plan. No adapter implementation.
+- **Acceptance criteria:** Every required canonical field has a real source or an explicit unresolved/rejection rule; no invented facts. Identify byte/digest custody and independent checker responsibility. Preserve native event identity and time, producer provenance and command results without elevating execution success to verification pass. Specify canonical validation before EAK and an explicit report projection boundary. Keep producer compatibility distinct from canonical/EAK/report integration.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the adapter contract; actual Harness and Guard remain untouched.
+
+##### B04 — Separate reason semantics, domain interpretation and policy
+
+- **Source dependency:** B01-B02; all 56 reason declarations and bindings; inspectEvidenceCoverage.ts and generateGovernanceReport.ts; 37 implemented trigger codes and 19 declaration/binding-only codes.
+- **Why now:** TESTS_NOT_RUN is broader than absence; BUILD_FAILED includes no-pass states; SECURITY_REVIEW_REQUIRED follows workflow class; dependency and migration checks use labels/regex.
+- **Compatibility risk:** Changing serialized values/order or binding/report wording to match research terminology. Declaration-only codes must not be described as executed checks.
+- **Artifact:** Revised binding/interpretation delta specification over the existing reason-code migration document, plus source-trigger-to-domain claim/nonclaim cases.
+- **Acceptance criteria:** Preserve all 56 codes, aliases and order; separate current fact, semantic interpretation, policy result and report wording. Cover tests, release, rollback, dependency, security review, artifacts, ownership, authority, breaking change, remediation and recovery. New semantics use additive mappings; any eventual code migration requires a separate explicit contract decision.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Remove proposed additive bindings; legacy registry and reason consumers remain unchanged.
+
+##### B05 — Define independence and integrity falsification cases
+
+- **Source dependency:** B02-B03; EAK buildEvidenceItems/buildVerifications; externalEvidence types and local report/normalization fixtures; semanticProjection.ts artifact_integrity projection.
+- **Why now:** EAK treats normalized verified status or nonempty executed_checks as independently_verified; digest presence can become bound, while the producer projection can support integrity from hash/subject presence.
+- **Compatibility risk:** Tightening PoC classifications alters existing snapshots even if public CLI remains isolated. External verifier labels do not establish independent custody or successful checks.
+- **Artifact:** Independence/integrity evidence contract and falsifiable fixture specification, preserving old PoC behavior until a migration is explicitly authorized.
+- **Acceptance criteria:** Failed/skipped-only external checks, producer=verifier, absent principal/custody, digest supplied but bytes unchecked, digest mismatch and independently checked success yield distinct bounded results. Missing independence remains unresolved; result success does not imply acceptance or sufficiency.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the proposed test contract; do not relabel existing PoC fixtures.
+
+##### B06 — Define profile-bound sufficiency and report migration
+
+- **Source dependency:** B02/B04/B05; reportModel.ts, generateGovernanceReport.ts, renderer/index consumers, EAK profile/conclusion/review_scope types; evidence.sufficient reconciliation row.
+- **Why now:** Legacy allow is rule fallthrough with structural-sufficiency wording. It is not the repaired profile/claim-set/time-bounded sufficiency predicate.
+- **Compatibility risk:** REQUIRES_REPORT_MIGRATION if a new sufficiency claim is projected into the legacy report. Tighter EvidencePack fields would additionally need a separately scoped schema migration; V8-000 does neither.
+- **Artifact:** Opt-in sufficiency artifact specification and report compatibility ADR. Choose a versioned side artifact or an explicit later report migration before implementation.
+- **Acceptance criteria:** Require profile_id, claim_set_id, scope and evaluation_time, with evidence refs and material-gap result. Missing bindings remain unresolved. Preserve legacy report bytes/verdicts/reason wording, indexes, renderers, CLI/SDK and CI fixtures in the current contract. Guard allow, Runtime ALLOW and institutional acceptance remain separate. No Preview/Final authority transition is invented.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the new artifact/ADR; retain GovernanceReportModel 1.0.0 unchanged.
+
+##### B07 — Define historical/current standing evaluation
+
+- **Source dependency:** B01-B02/B05; temporalBasis.ts, CB-15/16/18, authority coverage expiry comparison and separate license/receipt histories.
+- **Why now:** Supplied current/stale labels and expiry against pack.created_at do not compute applicability at reliance time.
+- **Compatibility risk:** Reinterpreting historical TIME_WINDOW_EXPIRED or old approvals as fresh current decisions; repurposing license authority as MESR authority.
+- **Artifact:** A bounded temporal evaluation and authority rebinding specification referencing immutable historical records.
+- **Acceptance criteria:** Explicitly cover freshness, expiry, revocation, supersession, revalidation, changed subject/environment/policy/dependencies, authority rebinding and approval/review reuse. Historical validity stays historical after revocation. Absent currentness basis is unresolved, not fresh by default. No online authority/revocation service is assumed.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Remove the proposed evaluator contract; historical fixtures/records stay immutable.
+
+##### B08 — Specify composition hardening over the existing resolver
+
+- **Source dependency:** B01-B02; moduleManifest.ts and its existing resolver/composition tests; repaired E3-D.
+- **Why now:** Four module types, deterministic loading and override/cycle rejection already exist. Dependency.version is not evaluated and the forbidden-claim deny list is not an exhaustive non-widening proof.
+- **Compatibility risk:** Replacing the resolver, renaming diagnostic codes or importing six research conceptual classes as runtime module types.
+- **Artifact:** Version/digest lock and semantic compatibility specification, with translation of repaired E3-D diagnostics to current vocabulary where justified.
+- **Acceptance criteria:** Keep Core/domain_pack/crosswalk/institutional_profile loading; producers/consumers remain interfaces. Specify incompatible dependency versions, duplicate IDs, override attempts, support widening, nonclaim removal, alias cycles and deterministic failure output. Reuse zero-entry invalid composition behavior. A module distribution service is not required for this bounded test.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the hardening specification; no current resolver or module manifest changes.
+
+##### B09 — Freeze repaired Experiment 3 oracles and process metadata
+
+- **Source dependency:** B02-B08; existing producer adapters, canonical snapshots, runtime portability/domain/crosswalk/composition tests; seven repaired Research OS E3 JSON fixtures.
+- **Why now:** Existing test passes demonstrate earlier bounded contracts. Repaired example.ci/example.runtime input formats and state/diagnostic expectations are not directly consumed today.
+- **Compatibility risk:** Treating old test passes as repaired E3 acceptance; silently changing fixture meanings; treating replayability as real-world truth or universal interoperability.
+- **Artifact:** A fixture translation/oracle specification for E3-A/B/C/D and separate mesr_assurance process metadata schema proposal.
+- **Acceptance criteria:** A preserves equal bounded claims and different provenance with Execution Success != Verification Passed; B separates absent execution and unresolved independence; C adds zero automatic ALLOW/VERIFIED/APPROVED/SAFE/ACCEPTED/COMPLIANT equivalences and leaves StegVerse unresolved; D reuses existing composition with explicit version/non-widening negatives. Pin input_set_id, registry_version, module_lock, method_version and evaluation_time. Do not rewrite delivered Experiment 2B or Research OS fixtures.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw next-baseline fixture specs/metadata proposal; old tests and all delivered evidence remain unchanged.
+
+##### B10 — Review the complete delta before any implementation gate
+
+- **Source dependency:** B00-B09 accepted specifications and explicit resolution of blockers in the readiness decision.
+- **Why now:** Material semantic and compatibility choices must be reviewable before narrow changes are authorized.
+- **Compatibility risk:** Conflating a documentation/test PASS with implementation, merge or release authority.
+- **Artifact:** A gate review package with per-surface migration decisions, scoped implementation slices and required verify commands.
+- **Acceptance criteria:** Confirm audit output/verdict/exit, deny 25, permit/classify, serialized JSON/report/reasons, public Node support, licensing/offline authority, install/demo, historical fixtures and external-review freeze. Explicitly admit only bounded deltas with negative oracles and rollback. Keep unresolved debt blocked or deferred by name. No tag or release is implied.
+- **Runtime behavior changes:** NO.
+- **Reversibility:** Withdraw the gate proposal; retain this source-reconciliation baseline.
+
+#### Verify and PR path
+
+Expected future checks reuse MESR registry/binding/claim-stability/composition/runtime-portability/domain/crosswalk verifiers, EAK/local-external fixtures, outcome-foundation positive/negative checks, runtime isolation and commercial CLI smoke checks. Repaired E3 requires its own admitted oracle; existing passes alone are insufficient.
+
+After explicit blocker disposition and gate admission, propose small documentation/specification PRs in the dependency order above, then separately scoped deterministic fixtures/validators. Runtime edits require a later explicit scope and compatibility decision. Review against the pinned source and preserved invariants; merge and release remain separate actions. V8-000 creates no PR, commit, tag or release.
+
+Preserved posture: recommendation-only, additive-only, non-executing, default-off where applicable; audit output/verdict/exit unchanged; permit/classify unchanged; no authority expansion, control-plane/dashboard/orchestration drift or main-path takeover.
+
+## Decision Narrative
+
+### Gate 1 Readiness Decision — V8-000
+
+**Decision: V8_000_PASS_WITH_BLOCKERS.** Source reconciliation is complete; repaired-track Gate 1 implementation remains **BLOCKED**. This is a reviewed reconciliation conclusion, not a runtime test result or release authorization. The validator checks completeness, traceability and immutability; it cannot resolve the semantic choices below.
+
+Engineering baseline: `30512dff336435f8d1c1bf4b633058c374668eb8` plus AGENTS-only constitutional commit/HEAD `20aa844fe6f0239d5c0d18184cf5faffa366abf5`, on `validation/v8-000-source-reconciliation-v0.1`. DES closure `b909228ac9928fbdf22bd7081532683930c4209a` is not imported. AGENTS.md remains unchanged during reconciliation, including its REQUIRED_NEXT / BLOCKED_UNTIL_V8_000_PASS lines. V8-000 does not silently update constitutional status.
+
+#### Gate evaluation
+
+| Criterion | Evaluation | Source-supported disposition |
+|---|---|---|
+| Duplicate semantic systems reconciled? | YES, ownership and mapping boundaries | Current Guard remains canonical; 41 research predicates map partially to the implemented 30 Core entries. No second runtime registry or unproven equivalent alias is installed. The matrix is a review artifact. |
+| 41 Core candidates complete? | YES, 41/41 | Each has exactly one permitted verdict, source paths, meaning/nonclaim/relations, compatibility assessment, experiment and Gate 1 action. No terminology-only equality is accepted. |
+| Three metadata candidates complete? | YES, 3/3, separate | replayable aligns additively as interpretation metadata; claim_stable and semantic_portable need repaired-context experiments. Existing bounded tests do not prove universal portability or truth. |
+| Compatibility impacts known? | BOUNDED, with migration decisions pending | All 20 ALIGN_AND_ADOPT rows have exactly one primary classification. evidence.sufficient requires report migration if projected into the current report. Experimental predicates need a versioned admission decision before runtime changes. |
+| Reason-code consumers traced? | YES, 56/56 | Declaration, definition, binding, literal emission/read sites, fixtures/tests, generic consumers/tests, wording, aliases and serialized exposure recorded. 37 implemented triggers; 19 declaration/binding-only codes. |
+| Guard allow boundary safe? | PRESERVED, semantic wording debt open | Existing recommendation-only rule fallthrough is unchanged. Structural-sufficiency wording is not promoted into profile-bound assurance, Runtime ALLOW, institutional acceptance or execution authorization. |
+| Harness gap understood? | YES, field-level gap bounded | Actual execution_facts producer schema differs from canonical EvidencePackV1 and existing experimental adapter inputs. No canonical Harness-to-EAK-to-report path is claimed. Closure specification is required. |
+| Experiment 3 feasible? | YES, CONDITIONALLY | Existing adapters, evaluators, snapshots and composition can be reused. Repaired input/state/diagnostic fixtures require explicit translation and stronger negative oracles. Repaired E3 has not run or passed in Guard. |
+| Semantic debts bounded? | YES, but material blockers remain | Independence/result shortcuts, unresolved/unsupported, binding enforcement, sufficiency and currentness have named source locations and falsifiers. They are not fixed or silently accepted. |
+| Version ambiguity disposition known? | OPEN BLOCKER | VERSION_BASELINE_AMBIGUITY is retained. Engineering baseline is pinned; commercial constitutional ownership requires an explicit decision. |
+| No runtime/product changes? | YES | Only five reconciliation outputs and one non-runtime helper are added. All tracked files match constitutional HEAD; audit/permit/classify, schemas, report JSON, license/install/demo and version declarations remain unchanged. |
+| Experiment 2B untouched? | YES | Tracked historical packages/questions/contracts/review records remain byte-equivalent under the unchanged Git content baseline. No external outbound package or Research OS file is written. Research OS's 97-file hash inventory is unchanged. |
+
+#### Candidate and compatibility totals
+
+| Verdict | Core | Interpretation metadata |
+|---|---:|---:|
+| ALREADY_IMPLEMENTED | 0 | 0 |
+| ALIGN_AND_ADOPT | 19 | 1 |
+| NEEDS_EXPERIMENT | 21 | 2 |
+| REJECT_OR_DEFER | 1 | 0 |
+| Total | 41 | 3 |
+
+`authority.reachable` is deferred: no contactability/intervention/time-to-commitment predicate is implemented. This is not an invitation to add orchestration. Existing substrate is acknowledged even though no repaired candidate fully matches all meaning and claim-boundary requirements.
+
+Primary classifications below apply **only to ALIGN_AND_ADOPT**, including the separate metadata row. They describe proposed adoption paths, not changes made by V8-000. NEEDS_EXPERIMENT and REJECT_OR_DEFER retain explicit narrative risks instead of false settled migration classifications.
+
+| Primary compatibility classification | Core | Metadata | Combined |
+|---|---:|---:|---:|
+| PURELY_ADDITIVE | 18 | 1 | 19 |
+| ADDITIVE_WITH_ALIAS | 0 | 0 | 0 |
+| REQUIRES_REPORT_MIGRATION | 1 | 0 | 1 |
+| REQUIRES_SCHEMA_MIGRATION | 0 | 0 | 0 |
+| REQUIRES_REASON_CODE_MIGRATION | 0 | 0 | 0 |
+| POTENTIALLY_BREAKING | 0 | 0 | 0 |
+
+Zero settled schema/reason/breaking classifications does not imply those surfaces are risk-free. Harness closure may require a future schema decision; narrowing existing EAK/MESR classifications may break internal consumers/snapshots. PURELY_ADDITIVE means a new scoped facet/specification with current semantics preserved, not permission to change the old analogue's meaning.
+
+#### Open blockers and semantic debts
+
+| ID | Evidence and unresolved decision | Gate disposition / closure |
+|---|---|---|
+| VERSION_BASELINE_AMBIGUITY | AGENTS/skill v6.13 versus README/RELEASE/current product docs and CLI v7.0.1; local tags support later release lineage but do not decide constitutional precedence. | B00 owner disposition before repaired Gate 1 admission. No automatic version edits. |
+| CLAIM_STATE_AND_BINDING_DEBT | supportEvaluator uses request.required_bindings and caller claim parts; CB-22 returns does_not_support for producer-claim independence, not repaired UNRESOLVED. EAK/MESR/report state names are not equivalent. | B01-B02 must define versioned semantics and nonclaim/required-binding negatives before semantic implementation. |
+| INDEPENDENCE_AND_INTEGRITY_DEBT | EAK external verified status/nonempty checks can imply independent verification; digest presence can imply bound. Producer projection can infer artifact integrity from binding presence. | B05 must specify successful check, principal separation and custody basis; failed/skipped-only and unchecked-hash negatives. Preserve old PoC until a migration is admitted. |
+| PROFILE_SUFFICIENCY_REPORT_DEBT | Legacy allow wording claims structural sufficiency without profile_id, claim_set_id, scope and evaluation_time. Old report rules also collapse some verification states. | B04/B06 must separate reason/domain/policy semantics and choose opt-in artifact versus explicit report migration. No stronger meaning is attached to old allow. |
+| HARNESS_CANONICAL_CLOSURE_DEBT | Actual producer, old MESR adapter, ingest-summary bridge and canonical EvidencePackV1 use distinct contracts; mandatory facts and provenance are not all available. | B03 closure contract before any adapter/integration implementation. No fabricated canonical facts. |
+| TEMPORAL_AND_COMPOSITION_DEBT | Temporal validation accepts supplied state without recomputing applicability; resolver checks dependency presence, not dependency.version; non-widening deny list is incomplete. | B07-B09 specify reliance-time and version/claim-boundary negatives using existing substrate. No new platform or generic resolver rewrite. |
+
+These blockers are specification and migration decisions, not missing source inventory. They allow a completed reconciliation with blockers rather than an unconditional PASS. Until explicit disposition, the first proposed tasks are B00, B01 and B02, then the Harness closure specification B03; none begins in this task. See the [source-derived backlog](../planning/14_SOURCE_RECONCILED_GATE1_BACKLOG.md).
+
+#### Evidence, experiments and compatibility risk
+
+Evidence Contract remains schema_version 1.0.0, EvidencePackV1 parser plus closed validator, with 194 field/variant inventory records. EAK remains PROTOTYPE_VALIDATION_ONLY. MESR remains ACTIVE_RESEARCH + IMPLEMENTED_INTERNAL_SUBSTRATE. Harness gap classifications are SCHEMA_COMPATIBILITY_GAP, SEMANTIC_COMPATIBILITY_GAP, PROVENANCE_GAP and ASSURANCE_INTERFACE_GAP; PURE_ADAPTER_GAP alone is rejected.
+
+E3-A is feasible after a bounded fixture normalization contract preserving equal claims and distinct provenance; execution success cannot become verification pass. E3-B needs explicit absence versus producer assertion/unresolved independence. E3-C preserves zero automatic equivalences across ALLOW/VERIFIED/APPROVED/SAFE/ACCEPTED/COMPLIANT; StegVerse remains unresolved and the research allow+TESTS_NOT_RUN combination is not treated as ordinary generated report behavior. E3-D reuses manifest/composition/domain/crosswalk/profile loading and adds specified version/non-widening negatives only after admission. Existing E3-style tests are earlier-baseline observations, not repaired E3 acceptance.
+
+Top compatibility risks are silent canonical-ID aliases, narrower old nonclaims/support states, invented Harness fields, report/reason/JSON migration, and reusing stale standing as current. Public CLI/SDK/CI consumers and historical fixtures must retain their contracts. No strength ladder may rank independent evidence dimensions as generic assurance maturity.
+
+Historical baseline: local v6.13.0/v6.13.1/v7.0.0/v7.0.1 tags and release history. Commercial baseline: unresolved constitutional v6.13 versus documented v7.0.1. Engineering baseline: pinned 30512df + 20aa844; CLI/lock 7.0.1, private Core 0.1.0, root unversioned, release/ absent. Internal V8: existing research substrate and prior Gate 1/2/Phase 3A validation, not released V8; external institutional requirements unrun.
+
+#### Validation record and final file scope
+
+The retained 22 baseline verifier observations all passed on Node v24.15.0/Windows. They cover MESR registry (30), reason bindings (56), claim stability, composition, producer portability, cross-domain, APAAI crosswalk, institutional artifact readiness, runtime isolation, EAK PoC, three local external-evidence fixture suites, Harness ingestion, the v7 example pack, governance surface/consumption/audit-permit checks, and four v7.0.1 public/commercial checks. Full commands, exit codes, output and elapsed times remain in the [machine inventory](../mesr/implementation-reconciliation.v0.1.json).
+
+Recovery added successful runs of `node scripts/verify_outcome_foundation_contract.mjs` and `node scripts/verify_outcome_foundation_negative_contract.mjs`: **24 existing verifier observations total, all passed**. No runtime test was changed. Node v24 is the local internal verification environment; public Node support is unchanged.
+
+Final reconciliation verification commands:
+
+```text
+python scripts/_build_v8_000.py --render --self-test
+python scripts/_build_v8_000.py
+git status --short
+git diff --stat
+git diff --check
+git diff --name-only
+```
+
+The helper verifies 41+3 exact repaired candidate IDs/definitions/nonclaims/relations, allowed verdicts and primary impacts, complete 56-code baseline literal traces, 194 schema fields/variants, all five required outputs, exact Markdown/JSON and planning-text synchronization, pinned branch/base/HEAD/AGENTS/patch, all 97 Research hashes, unchanged Harness baseline, unchanged tracked product/Experiment 2B files, and an exact six-file untracked allowlist. Seven in-memory negative checks reject missing candidates/reasons/schema fields, a fifth verdict, missing impact, nonclaim drift and an added ALLOW equivalence. The validator does not execute a Gate 1 experiment or decide semantic correctness.
+
+Final expected and verified file scope is five RECONCILIATION_ARTIFACT files and one NON_RUNTIME_VALIDATOR, all untracked and uncommitted. There are zero UNEXPECTED files and no tracked diff. `git diff --check` is clean; the helper additionally checks untracked output whitespace and content, since Git's ordinary diff omits untracked files.
+
+| File | Classification | Recovery disposition |
+|---|---|---|
+| docs/mesr/07_IMPLEMENTATION_RECONCILIATION_MATRIX.md | RECONCILIATION_ARTIFACT | Completed existing placeholder through deterministic rendering. |
+| docs/mesr/implementation-reconciliation.v0.1.json | RECONCILIATION_ARTIFACT | Retained existing judgments and baseline tests; corrected source exposure and completed traces/inventories. |
+| docs/planning/13_V8_000_SOURCE_RECONCILIATION.md | RECONCILIATION_ARTIFACT | Newly created; rejected previous preview was absent at recovery. |
+| docs/planning/14_SOURCE_RECONCILED_GATE1_BACKLOG.md | RECONCILIATION_ARTIFACT | Newly created, proposed tasks only. |
+| docs/planning/15_GATE1_READINESS_DECISION.md | RECONCILIATION_ARTIFACT | Newly created, conditional readiness decision. |
+| scripts/_build_v8_000.py | NON_RUNTIME_VALIDATOR | Repaired existing partial helper; optional write limited to matrix. |
+
+Preserved: audit main output/verdict/exit and deny exit code 25; permit/classify behavior; recommendation-only; additive-only; non-executing; default-off where applicable; no authority expansion. No control-plane/dashboard/orchestration drift, main-path takeover, runtime/product/AGENTS/version edits, reconciliation commit, merge, tag or release.
+
+V8_000_PASS_WITH_BLOCKERS
+
+## Implementation File Inventory
+
+```json
+{
+  "mesr_source": [
+    "packages/guard-core/src/mesr/claimBoundaries.ts",
+    "packages/guard-core/src/mesr/corePatternSignature.ts",
+    "packages/guard-core/src/mesr/coreRegistry.ts",
+    "packages/guard-core/src/mesr/eakProjection.ts",
+    "packages/guard-core/src/mesr/moduleManifest.ts",
+    "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+    "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+    "packages/guard-core/src/mesr/producerAdapters/registry.ts",
+    "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+    "packages/guard-core/src/mesr/producerAdapters/types.ts",
+    "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "packages/guard-core/src/mesr/semanticSnapshot.ts",
+    "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+    "packages/guard-core/src/mesr/supportEvaluator.ts",
+    "packages/guard-core/src/mesr/temporalBasis.ts",
+    "packages/guard-core/src/mesr/types.ts"
+  ],
+  "external_evidence_source": [
+    "packages/guard-core/src/externalEvidence/localAdapterManifestSelectionFixture.mjs",
+    "packages/guard-core/src/externalEvidence/localAssuranceReportFixture.mjs",
+    "packages/guard-core/src/externalEvidence/localAssuranceReportIntegrity.mjs",
+    "packages/guard-core/src/externalEvidence/localDeclarativeNormalizationFixture.mjs",
+    "packages/guard-core/src/externalEvidence/localIdempotencyReplayFixture.mjs",
+    "packages/guard-core/src/externalEvidence/localTechnicalUsageRecordFixture.mjs",
+    "packages/guard-core/src/externalEvidence/localVerificationJobEnvelopeFixture.mjs",
+    "packages/guard-core/src/externalEvidence/minimalServiceApiTypes.ts",
+    "packages/guard-core/src/externalEvidence/referenceAdapters/ramenReceiptV5/localSpike.mjs",
+    "packages/guard-core/src/externalEvidence/registryTypes.ts",
+    "packages/guard-core/src/externalEvidence/types.ts",
+    "packages/guard-core/src/externalEvidence/verificationTypes.ts"
+  ],
+  "contract_report_render_source": [
+    "packages/renderer-html/src/index.ts",
+    "packages/renderer-html/src/renderHtmlReport.ts",
+    "packages/renderer-md/src/index.ts",
+    "packages/renderer-md/src/renderMarkdownReport.ts",
+    "packages/schema/evidence-schema-v1.json",
+    "packages/guard-core/src/parseEvidencePack.ts",
+    "packages/guard-core/src/validateEvidencePack.ts",
+    "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "packages/guard-core/src/reportModel.ts",
+    "packages/guard-core/src/generateGovernanceReport.ts",
+    "packages/guard-core/src/generateEvidenceIndex.ts",
+    "packages/guard-core/src/evidenceAssuranceKernel.ts",
+    "packages/guard-core/src/index.ts"
+  ],
+  "related_fixtures_and_experiments": [
+    "examples/reports/README.md",
+    "examples/reports/ai-pr-low-risk-complete.evidence-index.json",
+    "examples/reports/ai-pr-low-risk-complete.html",
+    "examples/reports/ai-pr-low-risk-complete.md",
+    "examples/reports/ai-pr-missing-tests.evidence-index.json",
+    "examples/reports/ai-pr-missing-tests.html",
+    "examples/reports/ai-pr-missing-tests.md",
+    "examples/reports/cyber-remediation-authorized-patch.evidence-index.json",
+    "examples/reports/cyber-remediation-authorized-patch.html",
+    "examples/reports/cyber-remediation-authorized-patch.md",
+    "examples/reports/dependency-upgrade-breaking-change.evidence-index.json",
+    "examples/reports/dependency-upgrade-breaking-change.html",
+    "examples/reports/dependency-upgrade-breaking-change.md",
+    "examples/reports/release-prep-missing-rollback.evidence-index.json",
+    "examples/reports/release-prep-missing-rollback.html",
+    "examples/reports/release-prep-missing-rollback.md",
+    "examples/reports/single-agent-governance-report-readable.md",
+    "experiments/harness-evidence-ingestion/normalize-harness-ingest-summary.mjs",
+    "experiments/harness-phase-2-external-evidence/README.md",
+    "experiments/harness-phase-2-external-evidence/artifacts/evidence-type-contract-validation-summary.json",
+    "experiments/harness-phase-2-external-evidence/artifacts/normalized-evidence-pack-generated.json",
+    "experiments/harness-phase-2-external-evidence/artifacts/normalized-evidence-pack-sample.json",
+    "experiments/harness-phase-2-external-evidence/artifacts/review-report-generated.md",
+    "experiments/harness-phase-2-external-evidence/artifacts/reviewer-packet-generated.md",
+    "experiments/harness-phase-2-external-evidence/artifacts/sample-review-report-section.md",
+    "experiments/harness-phase-2-external-evidence/evidence-type-contract.mjs",
+    "experiments/harness-phase-2-external-evidence/fixtures/agent-workflow-artifact.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/blocked-action.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/command-result.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/external-signed-receipt-ramen-example.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/invalid/forbidden-authority-claim.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/invalid/insufficient-evidence-type-coverage.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/invalid/invalid-assurance-status.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/invalid/malformed-external-signed-receipt.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/invalid/missing-record-type.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/mixed-evidence-pack.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/policy-finding.json",
+    "experiments/harness-phase-2-external-evidence/fixtures/tool-call-trace.json",
+    "experiments/harness-phase-2-external-evidence/normalize-evidence-pack.mjs",
+    "experiments/harness-phase-2-external-evidence/render-review-report.mjs",
+    "experiments/harness-phase-2-external-evidence/render-reviewer-packet.mjs",
+    "experiments/harness-phase-2-external-evidence/snapshots/evidence-type-contract-validation-summary.snapshot.json",
+    "experiments/harness-phase-2-external-evidence/snapshots/normalized-evidence-pack.snapshot.json",
+    "experiments/harness-phase-2-external-evidence/snapshots/review-report.snapshot.md",
+    "fixtures/README.md",
+    "fixtures/admissibility/admissibility-boundary.constructible-grounded.valid.json",
+    "fixtures/admissibility/admissibility-boundary.partial-basis.valid.json",
+    "fixtures/ai-pr-low-risk-complete/evidence-pack.json",
+    "fixtures/ai-pr-missing-tests/evidence-pack.json",
+    "fixtures/authority/authority-boundary.inside-scope.valid.json",
+    "fixtures/authority/authority-boundary.outside-scope.valid.json",
+    "fixtures/authority_drift/authority-drift.actor-drift.invalidates.valid.json",
+    "fixtures/authority_drift/authority-drift.evidence-decay.unknown.valid.json",
+    "fixtures/authority_drift/authority-drift.outside-scope.non-authority.valid.json",
+    "fixtures/authority_drift/authority-drift.scope-drift.invalidates.valid.json",
+    "fixtures/authority_drift/authority-drift.stable-execution.valid.json",
+    "fixtures/cyber-remediation-authorized-patch/evidence-pack.json",
+    "fixtures/dependency-upgrade-breaking-change/evidence-pack.json",
+    "fixtures/grounding/grounding-boundary.grounded.valid.json",
+    "fixtures/grounding/grounding-boundary.partially-grounded.valid.json",
+    "fixtures/guardrail_mapping/symbolic-guardrail-mapping.cases.valid.json",
+    "fixtures/harness_evidence_ingestion_spike/safe/artifacts/diff/controller.patch",
+    "fixtures/harness_evidence_ingestion_spike/safe/evidence-pack.json",
+    "fixtures/harness_evidence_ingestion_spike/unsafe/artifacts/notes/blocked-attempt.md",
+    "fixtures/harness_evidence_ingestion_spike/unsafe/evidence-pack.json",
+    "fixtures/procedural_artifact_receipt/procedural-artifact-patch-receipt.cases.valid.json",
+    "fixtures/procedural_lineage_trajectory/procedural-lineage-trajectory.cases.valid.json",
+    "fixtures/release-prep-missing-rollback/evidence-pack.json",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_parser_preview/limitation_recommended_missing_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_parser_preview/malformed_json_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_field_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_parser_preview/missing_required_file_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_parser_preview/valid_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_preview/limitation_optional_missing_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_preview/missing_required_field_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_preview/missing_required_file_pack/tools.yaml",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/action-boundary.yaml",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/agent-profile.json",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/data-sources.yaml",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/evidence/run-record.json",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/evidence/sample-output.json",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/manifest.json",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/review-standards.md",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/snapshot.json",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/task-scope.md",
+    "fixtures/single_agent_governance_pack_preview/valid_minimal_pack/tools.yaml",
+    "fixtures/single_agent_governance_report/insufficient_evidence.json",
+    "fixtures/single_agent_governance_report/needs_human_review.json",
+    "fixtures/single_agent_governance_report/out_of_scope.json",
+    "fixtures/single_agent_governance_report/ready_for_review.json",
+    "fixtures/single_agent_governance_report/unknown.json",
+    "fixtures/transition_validity/execution-bound-transition-validity.cases.valid.json"
+  ],
+  "baseline_verifiers": [
+    "scripts/verify_mesr_registry.mjs",
+    "scripts/verify_mesr_reason_bindings.mjs",
+    "scripts/verify_mesr_claim_stability.mjs",
+    "scripts/verify_mesr_composition.mjs",
+    "scripts/verify_mesr_runtime_portability.mjs",
+    "scripts/verify_mesr_cross_domain.mjs",
+    "scripts/verify_mesr_apaai_crosswalk.mjs",
+    "scripts/verify_v8_institutional_artifact_readiness.mjs",
+    "scripts/verify_v8_runtime_compatibility.mjs",
+    "scripts/verify_evidence_assurance_kernel_poc.mjs",
+    "scripts/verify_external_evidence_local_normalization_fixture.mjs",
+    "scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
+    "scripts/verify_external_evidence_local_assurance_composition.mjs",
+    "scripts/verify_harness_evidence_ingestion.mjs",
+    "scripts/verify_v7_0_example_evidence_pack.mjs",
+    "scripts/verify_governance_surface.mjs",
+    "scripts/verify_governance_consumption_profile.mjs",
+    "scripts/verify_audit_permit_gate.mjs",
+    "scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs",
+    "scripts/verify_v7_0_1_public_surface_consistency.mjs",
+    "scripts/verify_v7_0_1_current_docs_baseline.mjs",
+    "scripts/verify_v7_0_1_github_action_first_report.mjs",
+    "scripts/verify_outcome_foundation_contract.mjs",
+    "scripts/verify_outcome_foundation_negative_contract.mjs"
+  ]
+}
+```
+
+## Wording Audit
+
+```json
+{
+  "scope": [
+    "packages/guard-core/src/reportModel.ts",
+    "packages/guard-core/src/generateGovernanceReport.ts",
+    "packages/guard-core/src/inspectEvidenceCoverage.ts",
+    "packages/guard-core/src/evidenceAssuranceKernel.ts",
+    "packages/guard-core/src/mesr/claimBoundaries.ts",
+    "packages/guard-core/src/mesr/corePatternSignature.ts",
+    "packages/guard-core/src/mesr/coreRegistry.ts",
+    "packages/guard-core/src/mesr/eakProjection.ts",
+    "packages/guard-core/src/mesr/moduleManifest.ts",
+    "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+    "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+    "packages/guard-core/src/mesr/producerAdapters/registry.ts",
+    "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+    "packages/guard-core/src/mesr/producerAdapters/types.ts",
+    "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+    "packages/guard-core/src/mesr/semanticSnapshot.ts",
+    "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+    "packages/guard-core/src/mesr/supportEvaluator.ts",
+    "packages/guard-core/src/mesr/temporalBasis.ts",
+    "packages/guard-core/src/mesr/types.ts",
+    "packages/renderer-html/src/index.ts",
+    "packages/renderer-html/src/renderHtmlReport.ts",
+    "packages/renderer-md/src/index.ts",
+    "packages/renderer-md/src/renderMarkdownReport.ts"
+  ],
+  "interpretation": "Lexical source locations, not automatic semantic equivalences. Material sufficiency/state/time findings are assessed in the source inventory narrative.",
+  "terms": {
+    "sufficient": [
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 328,
+        "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 475,
+        "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 487,
+        "excerpt": ": GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 609,
+        "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION) ||"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 616,
+        "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 667,
+        "excerpt": "explanation: \"Authority, scope, verification, and manifest evidence are structurally sufficient.\","
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 354,
+        "excerpt": "GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 398,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 408,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 418,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 510,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 512,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.INSUFFICIENT_VERIFICATION);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 40,
+        "excerpt": "INSUFFICIENT_EVIDENCE: \"insufficient_evidence\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1632,
+        "excerpt": "status = KERNEL_FINDING_STATUS_VALUES.INSUFFICIENT_EVIDENCE;"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1664,
+        "excerpt": "overallStatus = KERNEL_FINDING_STATUS_VALUES.INSUFFICIENT_EVIDENCE;"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 36,
+        "excerpt": "boundary(\"CB-08\", \"Trace captured\", \"trace_captured\", \"evidence_sufficient\", [\"claim\", \"trace_scope_and_completeness\", \"subject_time_binding\", \"provenance\"], \"A tool trace exists, so the workflow is fully evidenced.\", \"The trace is complete for a bounded claim and combined with required artifacts.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 39,
+        "excerpt": "boundary(\"CB-11\", \"Evidence present\", \"evidence_present\", \"evidence_sufficient\", [\"claim_specific_required_evidence\", \"scope\", \"quality\", \"admissibility\", \"time\"], \"A test report exists, so release evidence is sufficient.\", \"The report covers the bound candidate and all claim-specific requirements.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/eakProjection.ts",
+        "line": 41,
+        "excerpt": "supportability.supportability === KERNEL_FINDING_STATUS_VALUES.INSUFFICIENT_EVIDENCE ||"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/eakProjection.ts",
+        "line": 45,
+        "excerpt": "return { ...evaluated, relation: \"indeterminate\", rationale_code: \"EAK_BASIS_INSUFFICIENT_OR_INADMISSIBLE\" };"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 10,
+        "excerpt": "EVIDENCE: [\"evidence_sufficient\", \"artifact_truth\", \"claim_correctness\", \"execution_authorized\"],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 50,
+        "excerpt": "binding(G.INSUFFICIENT_VERIFICATION, \"mesr.core.evidence.verification\", \"mesr.domain.software.verification.insufficient\", \"available verification is insufficient for the requested claim\", [\"VERIFY\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 61,
+        "excerpt": "binding(G.PRODUCTION_ENVIRONMENT_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.deployment.environment_not_verified\", \"production-environment claim is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 84,
+        "excerpt": "binding(G.BREAKING_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.breaking_impact_not_verified\", \"breaking-impact verification is missing or insufficient\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 87,
+        "excerpt": "binding(G.PUBLIC_API_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.public_api_impact_not_verified\", \"public-API impact is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 33,
+        "excerpt": "softwareEntry(\"mesr.domain.software.verification.insufficient\", \"Available software verification is insufficient for the requested bounded claim.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 44,
+        "excerpt": "softwareEntry(\"mesr.domain.software.deployment.environment_not_verified\", \"Production-environment claim is not sufficiently verified.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 47,
+        "excerpt": "softwareEntry(\"mesr.domain.software.change.breaking_impact_not_verified\", \"Breaking-impact verification is missing or insufficient.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 50,
+        "excerpt": "softwareEntry(\"mesr.domain.software.change.public_api_impact_not_verified\", \"Public-API impact is not sufficiently verified.\"),"
+      }
+    ],
+    "complete": [
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 29,
+        "excerpt": "export const REPORT_COMPLETENESS_VALUES = {"
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 30,
+        "excerpt": "COMPLETE: \"complete\","
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 32,
+        "excerpt": "INCOMPLETE: \"incomplete\","
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 36,
+        "excerpt": "export type ReportCompletenessValue ="
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 37,
+        "excerpt": "(typeof REPORT_COMPLETENESS_VALUES)[keyof typeof REPORT_COMPLETENESS_VALUES];"
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 191,
+        "excerpt": "completeness: ReportCompletenessValue;"
+      },
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 192,
+        "excerpt": "manifest_completeness: ReportCompletenessValue;"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 333,
+        "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 517,
+        "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 531,
+        "excerpt": ": GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 583,
+        "excerpt": "coverage.manifest_completeness === \"incomplete\" ||"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 584,
+        "excerpt": "coverage.manifest_completeness === \"unknown\""
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 590,
+        "excerpt": "explanation: \"Manifest completeness is not strong enough for a final governance summary.\","
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 775,
+        "excerpt": "completeness: coverage.completeness,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 776,
+        "excerpt": "manifest_completeness: coverage.manifest_completeness,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 9,
+        "excerpt": "REPORT_COMPLETENESS_VALUES,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 12,
+        "excerpt": "type ReportCompletenessValue,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 16,
+        "excerpt": "completeness: ReportCompletenessValue;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 17,
+        "excerpt": "manifest_completeness: ReportCompletenessValue;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 86,
+        "excerpt": "function normalizeManifestCompleteness(value: unknown): ReportCompletenessValue {"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 88,
+        "excerpt": "value === REPORT_COMPLETENESS_VALUES.COMPLETE ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 89,
+        "excerpt": "value === REPORT_COMPLETENESS_VALUES.PARTIAL ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 90,
+        "excerpt": "value === REPORT_COMPLETENESS_VALUES.INCOMPLETE ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 91,
+        "excerpt": "value === REPORT_COMPLETENESS_VALUES.UNKNOWN"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 96,
+        "excerpt": "return REPORT_COMPLETENESS_VALUES.UNKNOWN;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 148,
+        "excerpt": "function computeOverallCompleteness("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 149,
+        "excerpt": "manifestCompleteness: ReportCompletenessValue,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 151,
+        "excerpt": "): ReportCompletenessValue {"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 153,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.UNKNOWN ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 154,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.INCOMPLETE"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 156,
+        "excerpt": "return manifestCompleteness;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 160,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.PARTIAL ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 163,
+        "excerpt": "return REPORT_COMPLETENESS_VALUES.PARTIAL;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 166,
+        "excerpt": "return REPORT_COMPLETENESS_VALUES.COMPLETE;"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 216,
+        "excerpt": "const manifestCompleteness = normalizeManifestCompleteness(manifest.completeness);"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 543,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.PARTIAL ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 544,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.INCOMPLETE ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 545,
+        "excerpt": "manifestCompleteness === REPORT_COMPLETENESS_VALUES.UNKNOWN ||"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 551,
+        "excerpt": "GUARD_REASON_CODES.MANIFEST_INCOMPLETE,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 554,
+        "excerpt": "\"Provide a complete manifest inventory for the pack.\","
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 659,
+        "excerpt": "const completeness = computeOverallCompleteness("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 660,
+        "excerpt": "manifestCompleteness,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 665,
+        "excerpt": "completeness,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 666,
+        "excerpt": "manifest_completeness: manifestCompleteness,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1310,
+        "excerpt": "? \"authority material is structurally incomplete for bounded interpretation\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1503,
+        "excerpt": "? \"provenance or integrity binding is structurally incomplete\""
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 30,
+        "excerpt": "boundary(\"CB-02\", \"Assessment completed/passed\", \"assessment_passed\", \"authority_verified\", [\"applicable_authority_source\", \"authority_scope\"], \"A risk assessment passes, so execution is treated as authorized.\", \"Assessment and applicable external authority are evaluated as distinct claims.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 36,
+        "excerpt": "boundary(\"CB-08\", \"Trace captured\", \"trace_captured\", \"evidence_sufficient\", [\"claim\", \"trace_scope_and_completeness\", \"subject_time_binding\", \"provenance\"], \"A tool trace exists, so the workflow is fully evidenced.\", \"The trace is complete for a bounded claim and combined with required artifacts.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 40,
+        "excerpt": "boundary(\"CB-12\", \"Evidence complete against inventory\", \"evidence_inventory_complete\", \"claim_correctness\", [\"property_specific_verification\", \"acceptance_criteria\"], \"Every manifest item exists, so the change is correct.\", \"Complete inventory plus bound verification supports only the checked property.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 47,
+        "excerpt": "boundary(\"CB-19\", \"Policy match recorded\", \"policy_match_recorded\", \"legally_compliant\", [\"authoritative_legal_interpretation\", \"jurisdiction\", \"current_law_or_policy\", \"complete_facts\"], \"A rule identifier matches, so the action is legally compliant.\", \"An accountable external owner makes a separate determination.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 44,
+        "excerpt": "coreEntry(\"mesr.core.action.action\", \"Bounded act proposed, attempted, observed, or completed.\", [\"actor\", \"target\", \"action_type\", \"time\", \"provenance\"], [\"action_state_within_captured_bounds\"], [\"authorization\", \"correct_outcome\", \"causal_attribution\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 48,
+        "excerpt": "coreEntry(\"mesr.core.boundary.effect\", \"Limit of effects attributable to a bounded action or transition.\", [\"action\", \"target\", \"before_state\", \"after_state\", \"provenance\"], [\"bounded_effect_claim\"], [\"outcome_correctness\", \"complete_side_effect_absence\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 52,
+        "excerpt": "coreEntry(\"mesr.core.effect.state_transition\", \"Bound movement from one identified state to another.\", [\"from_state\", \"to_state\", \"boundary\", \"time\", \"provenance\"], [\"transition_occurrence\"], [\"authority\", \"correctness\", \"completeness\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 62,
+        "excerpt": "coreEntry(\"mesr.core.provenance.lineage\", \"Ordered source and transformation history of an artifact or semantic result.\", [\"source_refs\", \"transformations\", \"versions\", \"times\"], [\"traceable_lineage\"], [\"truth\", \"completeness\", \"authority\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/moduleManifest.ts",
+        "line": 97,
+        "excerpt": "if (mapping.provenance.length === 0 || mapping.limitations.length === 0) addIssue(issues, \"INCOMPLETE_MAPPING_PROVENANCE\", manifest, \"mappings\", mapping.external_concept);"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+        "line": 121,
+        "excerpt": "controlled ? verification.completed_at : record.completed_at,"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+        "line": 160,
+        "excerpt": "addProvenance(provenance, schemaVersion, \"verification.observed_at\", path(\"/verification/completed_at\", \"/completed_at\"), verificationObservedAt);"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 49,
+        "excerpt": "binding(G.SCOPE_INCOMPLETE, \"mesr.core.claim.scope\", null, \"claim or action scope bindings are incomplete\", [\"AUTH\", \"EVIDENCE\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 75,
+        "excerpt": "binding(G.EVIDENCE_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence is incomplete for the requested interpretation\", [\"EVIDENCE\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 76,
+        "excerpt": "binding(G.MANIFEST_INCOMPLETE, \"mesr.core.evidence.item\", null, \"evidence inventory is incomplete\", [\"EVIDENCE\"]),"
+      },
+      {
+        "path": "packages/renderer-html/src/renderHtmlReport.ts",
+        "line": 99,
+        "excerpt": "`<p>The current verdict is ${renderInlineCode(report.verdict.value)} with evidence completeness ${renderInlineCode(report.evidence_coverage.completeness)}, ${escapeHtml(String(report.evidence_coverage.missing_evidence_count))} missing evidence item(s), and ${escapeHtml(String(report.human_review_requirements.length))} human review requirement(s).</p>`,"
+      },
+      {
+        "path": "packages/renderer-html/src/renderHtmlReport.ts",
+        "line": 161,
+        "excerpt": "{ field: \"Completeness\", value: renderInlineCode(report.evidence_coverage.completeness) },"
+      },
+      {
+        "path": "packages/renderer-html/src/renderHtmlReport.ts",
+        "line": 162,
+        "excerpt": "{ field: \"Manifest completeness\", value: renderInlineCode(report.evidence_coverage.manifest_completeness) },"
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 105,
+        "excerpt": "`The current verdict is ${asInlineCode(report.verdict.value)} with evidence completeness ${asInlineCode(report.evidence_coverage.completeness)}, ${report.evidence_coverage.missing_evidence_count} missing evidence item(s), and ${report.human_review_requirements.length} human review requirement(s).`,"
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 238,
+        "excerpt": "field: \"Completeness\","
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 239,
+        "excerpt": "value: asInlineCode(report.evidence_coverage.completeness),"
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 242,
+        "excerpt": "field: \"Manifest completeness\","
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 243,
+        "excerpt": "value: asInlineCode(report.evidence_coverage.manifest_completeness),"
+      }
+    ],
+    "ready": [],
+    "verified": [
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 363,
+        "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 378,
+        "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 476,
+        "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 483,
+        "excerpt": "hasReasonCode(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED)"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 484,
+        "excerpt": "? GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 498,
+        "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 507,
+        "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 627,
+        "excerpt": "hasReasonCode(coverage.reason_codes, GUARD_REASON_CODES.ROLLBACK_UNVERIFIED)"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 633,
+        "excerpt": "GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 475,
+        "excerpt": ": GUARD_REASON_CODES.ROLLBACK_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 505,
+        "excerpt": "GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 656,
+        "excerpt": "addUnique(reasonCodes, GUARD_REASON_CODES.BREAKING_CHANGE_UNVERIFIED);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 66,
+        "excerpt": "NOT_VERIFIED: \"not_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 67,
+        "excerpt": "PARTIALLY_VERIFIED: \"partially_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 68,
+        "excerpt": "VERIFIED: \"verified\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 97,
+        "excerpt": "INDEPENDENTLY_VERIFIED: \"independently_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 700,
+        "excerpt": "for (const claim of report.verified_claims) {"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 761,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 763,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 764,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.NOT_VERIFIED;"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 787,
+        "excerpt": "const verifiedChecks = report.executed_checks.filter("
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 788,
+        "excerpt": "(entry) => entry.status === \"verified\" || entry.status === \"partially_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 790,
+        "excerpt": "if (verifiedChecks.length === 0) {"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 797,
+        "excerpt": "status: verifiedChecks.every((entry) => entry.status === \"verified\")"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 798,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 799,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 811,
+        "excerpt": "...verifiedChecks.flatMap((entry) => entry.evidence_refs ?? []),"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 862,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 863,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 887,
+        "excerpt": "verification_posture: VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 910,
+        "excerpt": "verification_posture: VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 937,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 938,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 965,
+        "excerpt": "verification_posture: VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 997,
+        "excerpt": "verification_posture: VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1021,
+        "excerpt": "verification_posture: VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1048,
+        "excerpt": "record.verification.status === \"verified\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1049,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1050,
+        "excerpt": ": record.verification.status === \"partially_verified\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1051,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1052,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1065,
+        "excerpt": "record.verification.status === \"verified\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1066,
+        "excerpt": "? INDEPENDENCE_POSTURE_VALUES.INDEPENDENTLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1093,
+        "excerpt": "...report.verified_claims.flatMap((entry) => entry.evidence_refs ?? []),"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1097,
+        "excerpt": "report.executed_checks.some((entry) => entry.status === \"verified\")"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1098,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1099,
+        "excerpt": ": report.executed_checks.some((entry) => entry.status === \"partially_verified\")"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1100,
+        "excerpt": "? VERIFICATION_POSTURE_VALUES.PARTIALLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1101,
+        "excerpt": ": VERIFICATION_POSTURE_VALUES.NOT_VERIFIED,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1109,
+        "excerpt": "? INDEPENDENCE_POSTURE_VALUES.INDEPENDENTLY_VERIFIED"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1122,
+        "excerpt": "const claim = report.verified_claims.find((entry) => entry.claim_type === claimType);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1258,
+        "excerpt": "integrityStatus === \"verified\" &&"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1259,
+        "excerpt": "report.verified_claims.length === 0"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1314,
+        "excerpt": "? \"authority remains declared-only and is not independently verified\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1427,
+        "excerpt": "report.verified_claims.length > 0,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1489,
+        "excerpt": "const integrityVerifiedRuntime = normalizedRecords.some((record) =>"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1506,
+        "excerpt": "integrityVerifiedRuntime"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1513,
+        "excerpt": ".filter((report) => report.verified_claims.some((claim) => claim.claim_type === \"outcome_verification\"))"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1514,
+        "excerpt": ".flatMap((report) => report.verified_claims.flatMap((claim) => claim.evidence_refs ?? []));"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 29,
+        "excerpt": "boundary(\"CB-01\", \"Evidence present\", \"evidence_present\", \"authority_verified\", [\"authority_source\", \"principal\", \"action\", \"target\", \"scope\", \"valid_time\", \"provenance\"], \"A signed log exists, so the actor is assumed authorized.\", \"A separate current delegation explicitly binds actor, action, target, and time.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 30,
+        "excerpt": "boundary(\"CB-02\", \"Assessment completed/passed\", \"assessment_passed\", \"authority_verified\", [\"applicable_authority_source\", \"authority_scope\"], \"A risk assessment passes, so execution is treated as authorized.\", \"Assessment and applicable external authority are evaluated as distinct claims.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 31,
+        "excerpt": "boundary(\"CB-03\", \"Resource or system access\", \"resource_access\", \"authority_verified\", [\"permission_source\", \"intended_action\", \"scope\", \"constraints\", \"valid_time\"], \"A token can write a repository, so every write is authorized.\", \"IAM evidence separately binds the exact path, action, and time.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 32,
+        "excerpt": "boundary(\"CB-04\", \"Capability available\", \"capability_available\", \"authority_verified\", [\"applicable_authorization\", \"capability\", \"target\"], \"A runtime has a deploy tool, so deployment is authorized.\", \"A current scoped authority record separately covers deployment.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 33,
+        "excerpt": "boundary(\"CB-05\", \"Verified identity\", \"identity_verified\", \"authority_verified\", [\"authority_source\", \"delegation_or_scope\", \"valid_time\", \"subject_binding\"], \"Authentication proves the caller may approve a release.\", \"Verified identity plus current code-owner delegation permits separate authority evaluation.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 35,
+        "excerpt": "boundary(\"CB-07\", \"Observation recorded\", \"observation_recorded\", \"verification\", [\"verifier\", \"method\", \"checked_property\", \"subject\", \"scope\", \"time\", \"limitations\"], \"A producer log says a test passed, so it is independently verified.\", \"A separate verifier replays the bound artifact and records method and limitations.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 37,
+        "excerpt": "boundary(\"CB-09\", \"Integrity verified\", \"artifact_integrity\", \"artifact_truth\", [\"claim_content_verification\", \"source_reliability\", \"required_corroboration\"], \"SHA-256 matches, so the artifact contents are true.\", \"Hash preservation and separate content verification support distinct claims.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 38,
+        "excerpt": "boundary(\"CB-10\", \"Artifact authenticity verified\", \"signature_verified\", \"claim_correctness\", [\"issuer_scope\", \"claim_verification\", \"subject_time_binding\"], \"A valid signature makes every signed assertion correct.\", \"Signature authenticates the issuer while an independent check evaluates correctness.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 45,
+        "excerpt": "boundary(\"CB-17\", \"Delegation exists\", \"delegation_exists\", \"authority_amplified\", [\"delegator_delegable_scope\", \"delegate_scope\", \"constraints\", \"chain_validity\"], \"Read authority is delegated and treated as read/write authority.\", \"Delegate scope is no broader than a verified delegable source.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 50,
+        "excerpt": "boundary(\"CB-22\", \"Producer claim present\", \"producer_claim_present\", \"independent_verification\", [\"separate_verifier_identity\", \"method\", \"source_separation\", \"limitations\"], \"CI metadata contains verified=true, so it is independently verified.\", \"A separate verifier checks the underlying artifact.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 36,
+        "excerpt": "coreEntry(\"mesr.core.actor.principal\", \"Entity on whose behalf an action or claim is represented.\", [\"principal_id\", \"provenance\"], [\"principal_identity_reference\"], [\"verified_identity\", \"authority\", \"approval\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 38,
+        "excerpt": "coreEntry(\"mesr.core.actor.identity_assertion\", \"Assertion binding an identifier or credential to an actor.\", [\"actor\", \"credential_or_source\", \"observed_or_verified_time\"], [\"identity_assertion_presence\", \"verified_identity\"], [\"verified_authority\", \"delegation\", \"current_standing\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 42,
+        "excerpt": "coreEntry(\"mesr.core.authority.declared\", \"Producer-supplied authority assertion without independent authority verification.\", [\"producer\", \"subject\", \"scope\", \"asserted_time\"], [\"declared_authority\"], [\"verified_authority\", \"current_authority\", \"execution_authorization\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 55,
+        "excerpt": "coreEntry(\"mesr.core.evidence.attestation\", \"Signed or attributable assertion by an identified attester.\", [\"attester\", \"subject\", \"assertion\", \"time\", \"provenance\"], [\"attributable_assertion\", \"authenticity_when_verified\"], [\"claim_correctness\", \"authority_without_separate_binding\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 56,
+        "excerpt": "coreEntry(\"mesr.core.evidence.verification\", \"Bounded act that checks a stated property using an identified method and verifier.\", [\"verifier\", \"method\", \"subject\", \"scope\", \"verified_at\", \"result\", \"limitations\"], [\"checked_property_within_scope\"], [\"approval\", \"execution_authority\", \"untested_properties\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+        "line": 63,
+        "excerpt": "coreEntry(\"mesr.core.temporal.basis\", \"Evaluation of whether evidence remains a valid basis at reliance time.\", [\"produced_observed_or_verified_time\", \"basis_valid_at\", \"expiry_revocation_or_supersession_refs\"], [\"controlled_basis_status\"], [\"timeless_validity\", \"authority_by_itself\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 166,
+        "excerpt": "\"authority_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 245,
+        "excerpt": "\"authority_verified\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 8,
+        "excerpt": "AUTH: [\"authority_verified\", \"authority_current\", \"execution_authorized\", \"action_approved\"],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 11,
+        "excerpt": "REVIEW: [\"reviewer_authority_verified\", \"applicable_approval\", \"execution_authorized\", \"legally_compliant\"],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 59,
+        "excerpt": "binding(G.ROLLBACK_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.release.rollback_not_verified\", \"rollback material lacks required verification\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 61,
+        "excerpt": "binding(G.PRODUCTION_ENVIRONMENT_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.deployment.environment_not_verified\", \"production-environment claim is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 84,
+        "excerpt": "binding(G.BREAKING_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.breaking_impact_not_verified\", \"breaking-impact verification is missing or insufficient\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 87,
+        "excerpt": "binding(G.PUBLIC_API_CHANGE_UNVERIFIED, \"mesr.core.evidence.verification\", \"mesr.domain.software.change.public_api_impact_not_verified\", \"public-API impact is not sufficiently verified\", [\"VERIFY\", \"EFFECT\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 32,
+        "excerpt": "softwareEntry(\"mesr.domain.software.verification.subject_equals_execution_subject\", \"Equality check between reviewed or verified subject and executed or deployed subject.\", [\"review_subject_identity\", \"execution_subject_identity\", \"comparison_method\", \"time\"]),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 42,
+        "excerpt": "softwareEntry(\"mesr.domain.software.release.rollback_not_verified\", \"Rollback material lacks required verification.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 44,
+        "excerpt": "softwareEntry(\"mesr.domain.software.deployment.environment_not_verified\", \"Production-environment claim is not sufficiently verified.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 47,
+        "excerpt": "softwareEntry(\"mesr.domain.software.change.breaking_impact_not_verified\", \"Breaking-impact verification is missing or insufficient.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 50,
+        "excerpt": "softwareEntry(\"mesr.domain.software.change.public_api_impact_not_verified\", \"Public-API impact is not sufficiently verified.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/temporalBasis.ts",
+        "line": 11,
+        "excerpt": "const timestampFields = [\"observed_at\", \"verified_at\", \"valid_from\", \"valid_until\", \"basis_valid_at\"] as const;"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/types.ts",
+        "line": 85,
+        "excerpt": "verified_at: string | null;"
+      }
+    ],
+    "passed": [
+      {
+        "path": "packages/guard-core/src/reportModel.ts",
+        "line": 228,
+        "excerpt": "passed_count: number;"
+      },
+      {
+        "path": "packages/guard-core/src/generateGovernanceReport.ts",
+        "line": 810,
+        "excerpt": "passed_count: verificationItems.filter((item) => item.status === \"passed\").length,"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 114,
+        "excerpt": "function hasPassedVerification("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 120,
+        "excerpt": "item.verification_type === verificationType && item.status === \"passed\","
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 365,
+        "excerpt": "const hasPassedUnitOrIntegration = verificationItems.some("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 369,
+        "excerpt": "item.status === \"passed\","
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 409,
+        "excerpt": "} else if (hasNotRunUnitOrIntegration || !hasPassedUnitOrIntegration) {"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 425,
+        "excerpt": "const hasBuildPassed = hasPassedVerification(verificationItems, \"build\");"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 442,
+        "excerpt": "} else if (hasBuildFailed || !hasBuildPassed) {"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 458,
+        "excerpt": "const hasPassedRollback = hasPassedVerification("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 469,
+        "excerpt": "if (!hasPassedRollback) {"
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 478,
+        "excerpt": "\"Provide a passed rollback check for the release workflow.\","
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 493,
+        "excerpt": "const hasIntegrationPassed = hasPassedVerification("
+      },
+      {
+        "path": "packages/guard-core/src/inspectEvidenceCoverage.ts",
+        "line": 501,
+        "excerpt": "if (!hasIntegrationPassed) {"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 760,
+        "excerpt": "asString(item.status) === \"passed\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 934,
+        "excerpt": "hasVerificationStatus(asArray<UnknownRecord>(pack.verification), \"build\", [\"passed\"]) &&"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 935,
+        "excerpt": "(hasVerificationStatus(asArray<UnknownRecord>(pack.verification), \"unit_test\", [\"passed\"]) ||"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 936,
+        "excerpt": "hasVerificationStatus(asArray<UnknownRecord>(pack.verification), \"integration_test\", [\"passed\"]))"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1120,
+        "excerpt": "): { outcome: \"passed\" | \"failed\" | null; evidence_refs: string[]; summary: string | null } {"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1128,
+        "excerpt": "if (normalizedSummary.includes(\"passed\") || normalizedSummary.includes(\"success\")) {"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1130,
+        "excerpt": "outcome: \"passed\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1183,
+        "excerpt": "const packBuildPassed = hasVerificationStatus(verificationItems, \"build\", [\"passed\"]);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1185,
+        "excerpt": "const packTestsPassed ="
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1186,
+        "excerpt": "hasVerificationStatus(verificationItems, \"unit_test\", [\"passed\"]) ||"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1187,
+        "excerpt": "hasVerificationStatus(verificationItems, \"integration_test\", [\"passed\"]);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1191,
+        "excerpt": "const packRollbackPassed = hasVerificationStatus(verificationItems, \"rollback_check\", [\"passed\"]);"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1198,
+        "excerpt": "((packBuildPassed && externalBuildOutcome.outcome === \"failed\") ||"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1199,
+        "excerpt": "(packBuildFailed && externalBuildOutcome.outcome === \"passed\"))"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1205,
+        "excerpt": "left_summary: packBuildPassed ? \"pack reports build passed\" : \"pack reports build failed\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1216,
+        "excerpt": "((packTestsPassed && externalTestOutcome.outcome === \"failed\") ||"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1217,
+        "excerpt": "(packTestsFailed && externalTestOutcome.outcome === \"passed\"))"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1223,
+        "excerpt": "left_summary: packTestsPassed ? \"pack reports tests passed\" : \"pack reports tests failed\","
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1234,
+        "excerpt": "((packRollbackPassed && externalRollbackOutcome.outcome === \"failed\") ||"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1235,
+        "excerpt": "(packRollbackFailed && externalRollbackOutcome.outcome === \"passed\"))"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1241,
+        "excerpt": "left_summary: packRollbackPassed"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1242,
+        "excerpt": "? \"pack reports rollback passed\""
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1386,
+        "excerpt": "const passed = packBuildPassed && packTestsPassed;"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1389,
+        "excerpt": "supported: passed && !base.contradictory,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1394,
+        "excerpt": "refs.length > 0 && !passed && !base.contradictory"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1398,
+        "excerpt": "passed && reports.length === 0"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1466,
+        "excerpt": "const rollbackPassed = packRollbackPassed && !base.contradictory;"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1472,
+        "excerpt": ": rollbackPassed,"
+      },
+      {
+        "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+        "line": 1479,
+        "excerpt": "!rollbackPassed"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 30,
+        "excerpt": "boundary(\"CB-02\", \"Assessment completed/passed\", \"assessment_passed\", \"authority_verified\", [\"applicable_authority_source\", \"authority_scope\"], \"A risk assessment passes, so execution is treated as authorized.\", \"Assessment and applicable external authority are evaluated as distinct claims.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 34,
+        "excerpt": "boundary(\"CB-06\", \"Verification passed\", \"verification_passed\", \"execution_authorized\", [\"external_decision_owner\", \"applicable_permission\", \"execution_boundary\"], \"Tests pass, so Guard authorizes merge or deploy.\", \"An external system may decide using tests and separately established authority.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 35,
+        "excerpt": "boundary(\"CB-07\", \"Observation recorded\", \"observation_recorded\", \"verification\", [\"verifier\", \"method\", \"checked_property\", \"subject\", \"scope\", \"time\", \"limitations\"], \"A producer log says a test passed, so it is independently verified.\", \"A separate verifier replays the bound artifact and records method and limitations.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+        "line": 45,
+        "excerpt": "function resultValue(value: unknown): \"passed\" | \"failed\" | null {"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+        "line": 46,
+        "excerpt": "if (value === \"passed\" || value === \"success\") return \"passed\";"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+        "line": 75,
+        "excerpt": "function resultClaim(claim: LocatedClaim | null): \"passed\" | \"failed\" | null {"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+        "line": 76,
+        "excerpt": "if (claim?.value === \"passed\") return \"passed\";"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 109,
+        "excerpt": "\"tests_passed\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 119,
+        "excerpt": "input.verification.executed === true && input.verification.result === \"passed\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 120,
+        "excerpt": "input.verification.result === \"passed\" ? [\"verification_passed\"] : [],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/semanticProjection.ts",
+        "line": 179,
+        "excerpt": "input.verification.result === \"passed\" ? [\"verification_passed\"] : [],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/types.ts",
+        "line": 56,
+        "excerpt": "result: \"passed\" | \"failed\" | null;"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 9,
+        "excerpt": "VERIFY: [\"verification_passed\", \"change_correct\", \"execution_authorized\", \"outcome_safe\"],"
+      },
+      {
+        "path": "packages/renderer-html/src/renderHtmlReport.ts",
+        "line": 200,
+        "excerpt": "{ field: \"Passed count\", value: escapeHtml(String(report.verification_summary.passed_count)) },"
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 323,
+        "excerpt": "field: \"Passed count\","
+      },
+      {
+        "path": "packages/renderer-md/src/renderMarkdownReport.ts",
+        "line": 324,
+        "excerpt": "value: String(report.verification_summary.passed_count),"
+      }
+    ],
+    "approved": [
+      {
+        "path": "packages/guard-core/src/mesr/moduleManifest.ts",
+        "line": 83,
+        "excerpt": "if (entry.supports.some((claim) => [\"execution_authorized\", \"action_approved\", \"certified\", \"legally_compliant\"].includes(claim))) {"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/githubActionsAdapter.ts",
+        "line": 239,
+        "excerpt": "approval_record_present: workflowConclusion === \"approved\" || asString(review.conclusion) === \"approved\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/producerAdapters/harnessAdapter.ts",
+        "line": 259,
+        "excerpt": "approval_record_present: approvalRecord?.value === \"approved\","
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 8,
+        "excerpt": "AUTH: [\"authority_verified\", \"authority_current\", \"execution_authorized\", \"action_approved\"],"
+      }
+    ],
+    "accepted": [
+      {
+        "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+        "line": 29,
+        "excerpt": "softwareEntry(\"mesr.domain.software.release.identity\", \"Immutable identity of an accepted or released revision or artifact.\", [\"candidate_or_accepted_commit\", \"artifact_digest_or_tag\", \"provenance\"]),"
+      }
+    ],
+    "compliant": [
+      {
+        "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+        "line": 47,
+        "excerpt": "boundary(\"CB-19\", \"Policy match recorded\", \"policy_match_recorded\", \"legally_compliant\", [\"authoritative_legal_interpretation\", \"jurisdiction\", \"current_law_or_policy\", \"complete_facts\"], \"A rule identifier matches, so the action is legally compliant.\", \"An accountable external owner makes a separate determination.\"),"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/moduleManifest.ts",
+        "line": 83,
+        "excerpt": "if (entry.supports.some((claim) => [\"execution_authorized\", \"action_approved\", \"certified\", \"legally_compliant\"].includes(claim))) {"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 11,
+        "excerpt": "REVIEW: [\"reviewer_authority_verified\", \"applicable_approval\", \"execution_authorized\", \"legally_compliant\"],"
+      },
+      {
+        "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+        "line": 13,
+        "excerpt": "COMPLIANCE: [\"legally_compliant\", \"certified\", \"safe\", \"execution_authorized\"],"
+      }
+    ]
+  }
+}
+```
+
+## Validation Scope
+
+```json
+{
+  "existing_verifier_observations": 24,
+  "candidate_core": 41,
+  "candidate_metadata": 3,
+  "canonical_reasons": 56,
+  "schema_field_variants": 194,
+  "research_files": 97,
+  "required_artifacts": 5,
+  "permitted_nonruntime_helpers": 1,
+  "unexpected_files": 0,
+  "manual_judgments": "Reviewed source assessments; mechanical validator does not decide semantic truth or admit Gate 1."
+}
+```
+
+## Trace Decoding
+
+```json
+{
+  "encoding": "UTF-8 with BOM handling; replacement decoding only for the baseline whole-repository literal scan, matching the recovered trace. Canonical semantic source, JSON and outputs decode strictly.",
+  "legacy_non_utf8_files": [
+    "packages/guard/src/hooks/hook_config.mjs",
+    "packages/guard/src/runtime/association/correlate.mjs",
+    "packages/guard/src/runtime/drift/driftExport.mjs",
+    "packages/guard/src/runtime/drift/driftStatus.mjs",
+    "packages/guard/src/runtime/drift/status.mjs"
+  ],
+  "limitation": "ASCII canonical reason tokens are searchable; no meaning is inferred from undecodable legacy text. Files remain untouched."
+}
+```
