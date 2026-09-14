@@ -67,6 +67,223 @@ Guard does not become:
 - an agent builder
 - an IAM replacement
 
+## V8 semantic-foundation strategic context
+
+The current released/commercial baseline remains governed by the sections above.
+
+The V8 workstream is an additive research-and-architecture track and must not be treated as already released product behavior unless separately implemented, verified, and released.
+
+### Long-term architecture direction
+
+The long-term architecture direction is to evolve Guard toward an independent Evidence Assurance Infrastructure for consequential AI actions.
+
+The intended strategic control point is:
+
+**Evidence Semantic Control Point**
+
+Guard should make consequential AI actions increasingly:
+
+- provable
+- semantically bounded
+- cross-system understandable
+- independently reviewable
+- institutionally adoptable
+
+This direction does not authorize Guard to become an execution authority, runtime control plane, orchestrator, security firewall, general-purpose GRC system, IAM/KYA issuer, audit firm, certification authority, or autonomous acceptance authority.
+
+### Core architecture separation
+
+The V8 semantic-foundation architecture uses the following separation:
+
+- **Evidence Contract = Syntax**
+  Defines how governance evidence is represented.
+
+- **MESR = Semantics**
+  Defines what evidence means, what claims it supports, and what claims it does not support.
+
+- **EAK = Assurance**
+  Evaluates which bounded claims are legitimately supportable from the available evidence and semantic basis.
+
+- **Governance Report / Institutional Decision Artifact = Institutional Communication**
+  Projects bounded assurance results into traceable, reviewable institutional artifacts without creating execution authority.
+
+The intended architecture sequence is:
+
+```text
+Producer / Runtime
+→ Evidence Contract
+→ MESR
+→ EAK
+→ Governance Report / Institutional Decision Artifact
+→ Institutional Consumer
+```
+
+### Semantic control invariant
+
+The governing invariant for composable semantic architecture is:
+
+> Core defines meaning. Modules extend context. No module may silently redefine evidence.
+
+The composable direction is:
+
+```text
+Stable Core
++ Additive Modules
++ Strict Semantic Contracts
++ Composable Deployment
+```
+
+Domain Packs, Crosswalks, Institutional Profiles, and Producers may add context, specialization, mappings, or projections, but they must not silently widen Core claims, remove Core non-claims, or redefine canonical Core semantics.
+
+### Critical claim-boundary invariants
+
+Agents must preserve at least the following distinctions unless a later validated architecture decision explicitly changes them:
+
+- Identity != Authority
+- Access != Authority
+- Capability != Authority
+- Authority != Commitment
+- Tool Call Observed != Action Succeeded
+- Action Succeeded != Outcome Correct
+- Execution Succeeded != Verification Passed
+- Evidence Present != Evidence Sufficient
+- Observation != Verification
+- Producer Verification != Independent Verification
+- Verification Passed != Acceptance
+- Acceptance Authority != Acceptance Decision Occurred
+- Historical Standing != Current Standing
+- Runtime ALLOW != Safe
+- Runtime ALLOW != Institutional Acceptance
+- Guard `allow` != Execution Authorization
+- Evidence Sufficiency != Audit Opinion
+- Replayability != Real-world Truth
+- Semantic Portability != Universal Interoperability
+
+When a claim is not supported by available evidence, the implementation should prefer an explicit bounded unresolved/inconclusive posture over semantic inflation.
+
+### V8.0 semantic-foundation scope
+
+V8.0 is a **Semantic Foundation Release**, not a feature-expansion release.
+
+Primary scope:
+
+- MESR Core
+- Semantic ID architecture
+- Claim / Non-Claim model
+- semantic versioning and supersession
+- compatibility-preserving reason-code bindings
+- Software Change Domain Pack
+- Cyber Remediation contrast skeleton
+- EAK semantic binding
+- Governance Report semantic provenance
+- module manifest and compatibility invariants
+- Experiment 3 semantic portability/composition tests
+
+Primary domain wedge remains:
+
+**AI-generated software change governance**
+
+Cyber Remediation is a contrast domain for semantic portability and composition testing, not a separate broad security-product expansion.
+
+Finance, Healthcare, HR, Procurement, Industrial/OT, broad connector programs, marketplaces, large Studio redesigns, and probabilistic semantic reasoning remain out of scope unless separately re-entered through validated evidence and an explicit roadmap decision.
+
+### Current V8 gate
+
+Current architecture status:
+
+```text
+RESEARCH_COMPRESSION = PASS
+SEMANTIC_ARCHITECTURE_REPAIR = PASS
+V8_000_SOURCE_RECONCILIATION = REQUIRED_NEXT
+GATE_1_IMPLEMENTATION = BLOCKED_UNTIL_V8_000_PASS
+```
+
+Research-derived semantic artifacts are candidates, not a second canonical implementation.
+
+Before Gate 1 implementation, V8-000 must reconcile the repaired Research Semantic Baseline against the actual current Guard source repository, including:
+
+- Evidence Contract schema and behavior
+- canonical reason codes and consumers
+- Governance Report semantics
+- current MESR/EAK implementation
+- fixtures and tests
+- aliases and compatibility constraints
+
+Every research semantic candidate must receive exactly one implementation verdict:
+
+- `ALREADY_IMPLEMENTED`
+- `ALIGN_AND_ADOPT`
+- `NEEDS_EXPERIMENT`
+- `REJECT_OR_DEFER`
+
+No ambiguous fifth category should be introduced.
+
+### External-review freeze
+
+Already-delivered Experiment 2B external-review artifacts are frozen historical evidence.
+
+Do not rewrite or silently update:
+
+- reviewer packages
+- reviewer questions
+- acceptance contracts
+- historical review records
+- delivered evidence baselines
+
+New V8/MESR/EAK concepts belong to the next architecture baseline.
+
+Reviewer feedback should enter through:
+
+```text
+Reviewer Response
+→ Verbatim Capture
+→ Claim Extraction
+→ Agreement / Challenge / Ambiguity
+→ Architecture Impact
+```
+
+Historical review evidence must remain immutable even when current architecture evolves.
+
+### Research-to-product discipline
+
+External research must not be converted directly into product requirements.
+
+Required progression:
+
+```text
+Research Signal
+→ Guard Interpretation
+→ Architecture Hypothesis
+→ Experiment / Fixture
+→ Validated Architecture Decision
+→ Product Backlog
+```
+
+Prefer falsifiable experiments, deterministic fixtures, explicit provenance, and bounded claim/non-claim semantics over concept accumulation.
+
+### V8 implementation discipline
+
+For the semantic-foundation track, prefer in this order:
+
+1. documentation / ADRs
+2. schemas and specifications
+3. deterministic analysis or validation scripts
+4. fixtures and negative tests
+5. additive compatibility mappings
+6. narrowly scoped runtime changes only after the relevant gate is passed
+
+Do not silently break:
+
+- Evidence Contract compatibility
+- established reason-code behavior
+- Governance Report serialized output
+- CLI / SDK consumers
+- historical fixtures
+- external-review evidence
+- released commercial behavior
+
+The V8 semantic-foundation track must strengthen evidence meaning and claim-boundary stability without causing authority expansion, runtime takeover, or control-plane drift.
+
 ## Hard invariants
 
 The following invariants must be preserved unless the user explicitly states otherwise:
