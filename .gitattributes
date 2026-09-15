@@ -5,3 +5,29 @@
 *.json text eol=lf
 *.md   text eol=lf
 *.sh   text eol=lf
+
+# B09 frozen validation evidence: exact byte identity is intentional.
+# Disable Git EOL normalization only for these explicit evidence paths.
+# Preserve the manifest too; it excludes itself only to avoid a circular hash.
+# Retain frozen CRLF and six known blank-at-EOF sequences; other checks remain.
+# These storage rules do not change runtime/product behavior.
+/docs/experiments/experiment-3-repaired-acceptance-v0.2.md -text whitespace=cr-at-eol
+/docs/planning/18_B09_REPAIRED_EXPERIMENT_3_DECISION.md -text whitespace=cr-at-eol
+/docs/planning/19_B09_IMPLEMENTATION_GAP_LEDGER.md -text whitespace=cr-at-eol
+/docs/validation/v8-b09-repaired-experiment-3-results-v0.1.md -text whitespace=cr-at-eol
+/scripts/b09/author-fixtures.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/scripts/b09/input-admission.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/scripts/b09/reference.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/scripts/b09/runtime-observer.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/scripts/verify_v8_b09_acceptance_resume.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/scripts/verify_v8_b09_repaired_experiment_3.mjs -text whitespace=cr-at-eol,-blank-at-eof
+/tests/fixtures/experiment-3-repaired/acceptance-results.v0.2.json -text
+/tests/fixtures/experiment-3-repaired/admission-hardening.v0.1.json -text whitespace=cr-at-eol
+/tests/fixtures/experiment-3-repaired/basis.v0.2.json -text
+/tests/fixtures/experiment-3-repaired/cases.v0.2.json -text
+/tests/fixtures/experiment-3-repaired/oracle.v0.2.json -text
+/tests/fixtures/experiment-3-repaired/recovery-checkpoint.v0.1.json -text whitespace=cr-at-eol
+/tests/fixtures/experiment-3-repaired/replay.v0.2.json -text whitespace=cr-at-eol
+/tests/fixtures/experiment-3-repaired/results.v0.2.json -text
+/tests/fixtures/experiment-3-repaired/runtime-observation-baseline.v0.2.json -text whitespace=cr-at-eol
+/tests/fixtures/experiment-3-repaired/freeze.v0.2.json -text whitespace=cr-at-eol
