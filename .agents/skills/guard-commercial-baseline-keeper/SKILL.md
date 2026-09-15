@@ -1,6 +1,6 @@
 ---
 name: guard-commercial-baseline-keeper
-description: Use this skill whenever a task touches README, pricing, editions, install instructions, license setup, release assets, demo paths, website copy, docs/product/current, or other user-facing commercial documentation. This skill protects the current v6.13 commercial baseline, prevents future roadmap capabilities from being described as shipped, and requires additive-only changes plus boundary review before finalizing a commercial-facing PR.
+description: Use this skill whenever a task touches README, pricing, editions, install instructions, license setup, release assets, demo paths, website copy, docs/product/current, or other user-facing commercial documentation. This skill protects the current v7.0.1 commercial baseline, prevents future roadmap capabilities from being described as shipped, and requires additive-only changes plus boundary review before finalizing a commercial-facing PR.
 ---
 
 # Guard Commercial Baseline Keeper
@@ -51,14 +51,21 @@ Protect the current stable commercial baseline while allowing only bounded, addi
 
 ## Baseline that must be preserved
 
-Treat `v6.13` as the current stable commercial user-facing baseline.
+Treat `v7.0.1` as the current public/commercial baseline.
 
-Treat `v6.14+` as an additive evolution track only.
-Do not describe `v6.14+` roadmap capabilities as currently available unless they are separately implemented and released.
+- `PREVIOUS_COMMERCIAL_BASELINE = v6.13.1`: previous commercial baseline and tagged historical release reference.
+- `TAGGED_RELEASE_LINEAGE = v6.13.0 -> v6.13.1 -> v7.0.0 -> v7.0.1`.
+- `INTERNAL_PRODUCTIZATION_LINEAGE = v6.14-v6.22`: source and deterministic verification assets landed on main; these are not nine standalone tagged commercial releases.
+- `PACKAGE_PUBLICATION_HISTORY_v6_14_TO_v6_22 = NOT_VERIFIED`.
+- Internal V8 remains unreleased architecture / research / validation; internal V8 is not released V8.
 
-## Future/additive areas that must stay future-scoped
+Use [ADR 0009](../../../docs/adr/0009-commercial-baseline-ownership-and-version-dimensions.md) and [Version lineage and capability status](../../../docs/product/current/version-lineage-and-capability-status.md) for current version ownership. Source existence, verified mainline, tagged lineage, and independent package publication are separate facts.
 
-Unless separately implemented and released, keep the following in roadmap, next-version, planning, or future-boundary areas:
+`v7.0` / `v7.0.1` narrowed and consolidated internal assets. Do not promote every preview semantic into current public capability. Preserve historical candidate and release wording in its original context; update only stale current-state guidance.
+
+## Areas that must retain their documented release scope
+
+Unless separately implemented and released, keep the following bounded to their documented internal, preview, planning, or future scope:
 
 - Authority / Intent Boundary
 - Admissibility
@@ -67,7 +74,7 @@ Unless separately implemented and released, keep the following in roadmap, next-
 - Graph-aware Governance
 - Enterprise Runtime Governance
 
-Do not present these as current README, pricing, edition, install, license, demo, website, or release-delivery capabilities.
+Do not present the full internal semantics as current README, pricing, edition, install, license, demo, website, or release-delivery capabilities. Only the documented released, narrowed surface may support current commercial claims.
 
 ## Surfaces that must not drift
 

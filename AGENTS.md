@@ -19,7 +19,7 @@ Guard is a deterministic execution/governance layer with bounded, inspectable, a
 ## Current roadmap posture
 
 The current line is the single-agent verifiable governance productization path.
-Completed work up to `v6.6.0` should be treated as the baseline for the next productization steps.
+Completed governance work remains part of the engineering foundation; current version ownership follows the reconciled model below.
 The active development posture is:
 
 - preserve the already completed governance object chain
@@ -31,10 +31,25 @@ The active development posture is:
 
 ## Commercial baseline and roadmap boundary
 
-The current stable commercial user-facing baseline is `v6.13`.
-Treat `v6.14+` as an additive evolution track, not as a currently available capability set.
+The current public/commercial baseline is `v7.0.1`.
 
-Preserve the current `v6.13` commercial surface unless a later change is separately implemented and released:
+```text
+TAGGED_RELEASE_LINEAGE = v6.13.0 -> v6.13.1 -> v7.0.0 -> v7.0.1
+PREVIOUS_COMMERCIAL_BASELINE = v6.13.1
+INTERNAL_PRODUCTIZATION_LINEAGE = v6.14-v6.22
+CURRENT_PUBLIC_COMMERCIAL_BASELINE = v7.0.1
+INTERNAL_V8 = unreleased architecture / research / validation
+PACKAGE_PUBLICATION_HISTORY_v6_14_TO_v6_22 = NOT_VERIFIED
+```
+
+`v6.13.1` is the previous commercial baseline and a tagged historical release reference.
+`v6.14-v6.22` source and deterministic verification assets entered main as engineering/productization work; they did not form nine standalone tagged commercial releases. Source existence and verified mainline do not establish standalone release or independent package publication.
+
+`v7.0` / `v7.0.1` consolidated and narrowed those assets into bounded product surfaces. Do not infer that every internal preview semantic is a public capability. Internal V8 is not released V8.
+
+Current version authority: [ADR 0009](docs/adr/0009-commercial-baseline-ownership-and-version-dimensions.md) and [Version lineage and capability status](docs/product/current/version-lineage-and-capability-status.md). Historical candidate, release, V8-000, Phase A/B and external-review evidence retain their original context.
+
+Preserve the current `v7.0.1` commercial surface unless a later change is separately implemented and released:
 
 - CLI outputs unchanged unless explicitly scoped
 - JSON contracts unchanged unless explicitly scoped
@@ -43,7 +58,7 @@ Preserve the current `v6.13` commercial surface unless a later change is separat
 - install instructions unchanged unless explicitly scoped
 - demo paths unchanged unless explicitly scoped
 
-The following areas are future/additive only unless separately implemented and released:
+The following areas must remain bounded to their documented internal, preview, or future scope unless separately implemented and released; their names alone do not establish public availability:
 
 - Authority / Intent Boundary
 - Admissibility

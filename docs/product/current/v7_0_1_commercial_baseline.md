@@ -67,6 +67,12 @@ Enterprise keeps the same bounded runtime posture:
 - no blocking system
 - no deployment-control authority
 
+## Version Ownership
+
+The previous commercial baseline is `v6.13.1`. The `v6.14-v6.22` internal productization lineage is distinct from tagged commercial releases; Internal V8 remains unreleased architecture / research / validation.
+
+See [Version lineage and capability status](./version-lineage-and-capability-status.md) for the canonical taxonomy, bounded capability disposition, and package-publication evidence gap.
+
 ## Related References
 
 - [Trust FAQ](./trust-faq.md)

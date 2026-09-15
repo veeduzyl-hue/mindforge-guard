@@ -1,5 +1,7 @@
 # v7.0 Release Notes Candidate
 
+> **HISTORICAL_CANDIDATE_STATE**: This document reflects the pre-v7.0-release state and must not be used as current commercial baseline authority. The original candidate text below is preserved. See [current version lineage](../product/current/version-lineage-and-capability-status.md).
+
 ## Status
 
 - v7.0 release notes candidate
