@@ -1,0 +1,104 @@
+{
+  "schema_version": "b09-freeze/0.2",
+  "oracle_version": "0.2.0",
+  "semantic_oracle_revision_on_resume": false,
+  "head": "d3f959593aba6fba8fd51851190e03e2bd975ad0",
+  "canonicalization": "SHA-256 over exact file bytes; manifest excludes itself to avoid circular digest.",
+  "files": [
+    {
+      "path": "docs/experiments/experiment-3-repaired-acceptance-v0.2.md",
+      "sha256": "ce4ef4f4867119a485151e159e3cda7b941f9cd952d67b063cdff5d65e163c02",
+      "size_bytes": 8575
+    },
+    {
+      "path": "docs/planning/18_B09_REPAIRED_EXPERIMENT_3_DECISION.md",
+      "sha256": "197ff8a47b2f38e0f15e144ca2164f8570d3970390b048551992109bad9ff285",
+      "size_bytes": 4895
+    },
+    {
+      "path": "docs/planning/19_B09_IMPLEMENTATION_GAP_LEDGER.md",
+      "sha256": "0e1e3a023ae4d73390bed3324955fd55b8c7ad3060d4d440c52a1f2755950c10",
+      "size_bytes": 10871
+    },
+    {
+      "path": "docs/validation/v8-b09-repaired-experiment-3-results-v0.1.md",
+      "sha256": "22dc59330e09c1fda9f68989d385b5f88111e893db10baf08d58e8ef579a997c",
+      "size_bytes": 28795
+    },
+    {
+      "path": "scripts/b09/author-fixtures.mjs",
+      "sha256": "a6393d7141683563843620775da4681323b1b30427ed61cddee5140f01f66266",
+      "size_bytes": 36020
+    },
+    {
+      "path": "scripts/b09/input-admission.mjs",
+      "sha256": "28cdfb2cf7b2b9586e0809d84ec79512ab2da7e21d58fd7e47a63f87cebcdf0a",
+      "size_bytes": 9424
+    },
+    {
+      "path": "scripts/b09/reference.mjs",
+      "sha256": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11",
+      "size_bytes": 21490
+    },
+    {
+      "path": "scripts/b09/runtime-observer.mjs",
+      "sha256": "32ed6a6e38e437f5782ae431f9c74d49e0b5d966e396f8ab7ff6e92606b5b70c",
+      "size_bytes": 5474
+    },
+    {
+      "path": "scripts/verify_v8_b09_acceptance_resume.mjs",
+      "sha256": "2578634bdf32afd5661b5de757133da905309e2d4ad8370d4dc20001478c37fc",
+      "size_bytes": 8215
+    },
+    {
+      "path": "scripts/verify_v8_b09_repaired_experiment_3.mjs",
+      "sha256": "85388c6447083d7b5a6fd2b073ce898b675f1a24b5bd994cec2fa19b3eadecdc",
+      "size_bytes": 11750
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/acceptance-results.v0.2.json",
+      "sha256": "49bd7526ba3092f02c0255970aa01723b771d492e57428f9a4aac0268fe69560",
+      "size_bytes": 684106
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/admission-hardening.v0.1.json",
+      "sha256": "d39affa5646de8b3b647840dc8f46a2fce2a12b479d905e83385877de9e8e781",
+      "size_bytes": 23703
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/basis.v0.2.json",
+      "sha256": "4e7942cf893946c499646ae5435fc991f7c82fe2aae78ad22892f45e98faadc3",
+      "size_bytes": 146337
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/cases.v0.2.json",
+      "sha256": "ea700128e400ec09aa08a360a2122be9750be8d5046d75af1eca3dfcb8339901",
+      "size_bytes": 5744883
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/oracle.v0.2.json",
+      "sha256": "6dbc01d9650d45a03c0f8319eaecc994b34eae6d0f4885cdac971e6a32ab5c88",
+      "size_bytes": 246778
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/recovery-checkpoint.v0.1.json",
+      "sha256": "6fece3b12f64a8599f774fcf7f74774f833012185413935dbb49eb905104cf4b",
+      "size_bytes": 2709
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/replay.v0.2.json",
+      "sha256": "aa7e3e46348de377fc4c2fc8bce70dc4c548971badc83e5ec5db0bdb784aab64",
+      "size_bytes": 2131
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/results.v0.2.json",
+      "sha256": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade",
+      "size_bytes": 8210290
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/runtime-observation-baseline.v0.2.json",
+      "sha256": "caac4bc469c5bef7cf6fe87681c42178b18248803b1f5399cbe8a579172d5be9",
+      "size_bytes": 741338
+    }
+  ]
+}

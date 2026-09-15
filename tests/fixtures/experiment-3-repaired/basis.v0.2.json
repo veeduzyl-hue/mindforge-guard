@@ -1,0 +1,4643 @@
+{
+  "input_set_id": "b09-repaired-e3/0.2.0",
+  "oracle_version": "0.2.0",
+  "entries": [
+    {
+      "semantic_id": "mesr.core.actor.principal",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Entity on whose behalf an action or claim is represented.",
+      "status": "active",
+      "supports": [
+        "principal_identity_reference"
+      ],
+      "does_not_support": [
+        "verified_identity",
+        "authority",
+        "approval"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "principal_id",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.actor.actor",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Entity that performed or is reported to have performed an action.",
+      "status": "active",
+      "supports": [
+        "actor_attribution"
+      ],
+      "does_not_support": [
+        "principal_equivalence",
+        "authority",
+        "intent_correctness"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "actor_id",
+        "subject",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.actor.identity_assertion",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Assertion binding an identifier or credential to an actor.",
+      "status": "active",
+      "supports": [
+        "identity_assertion_presence",
+        "verified_identity"
+      ],
+      "does_not_support": [
+        "verified_authority",
+        "delegation",
+        "current_standing"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "actor",
+        "credential_or_source",
+        "observed_or_verified_time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.authority.source",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Identified source from which an authority claim originates.",
+      "status": "active",
+      "supports": [
+        "authority_source_attribution"
+      ],
+      "does_not_support": [
+        "source_validity",
+        "applicable_authority",
+        "execution_permission"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "source_identity",
+        "subject",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.authority.scope",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Bounded actions, targets, resources, and constraints to which authority evidence refers.",
+      "status": "active",
+      "supports": [
+        "scope_bounded_authority_claim"
+      ],
+      "does_not_support": [
+        "broader_authority",
+        "current_authority_without_temporal_basis"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "subject",
+        "action",
+        "target",
+        "scope",
+        "valid_time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.authority.delegation",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Recorded transfer of bounded authority from a source to a delegate.",
+      "status": "active",
+      "supports": [
+        "delegation_occurrence",
+        "bounded_delegation_scope"
+      ],
+      "does_not_support": [
+        "authority_amplification",
+        "transitive_delegation",
+        "execution_permission"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "delegator",
+        "delegate",
+        "scope",
+        "valid_time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.authority.declared",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Producer-supplied authority assertion without independent authority verification.",
+      "status": "active",
+      "supports": [
+        "declared_authority"
+      ],
+      "does_not_support": [
+        "verified_authority",
+        "current_authority",
+        "execution_authorization"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "producer",
+        "subject",
+        "scope",
+        "asserted_time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.intent.intent",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Declared objective associated with a subject or proposed action.",
+      "status": "active",
+      "supports": [
+        "intent_declaration"
+      ],
+      "does_not_support": [
+        "action_occurrence",
+        "outcome",
+        "authority"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "declaring_actor",
+        "subject",
+        "scope",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.action.action",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Bounded act proposed, attempted, observed, or completed.",
+      "status": "active",
+      "supports": [
+        "action_state_within_captured_bounds"
+      ],
+      "does_not_support": [
+        "authorization",
+        "correct_outcome",
+        "causal_attribution"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "actor",
+        "target",
+        "action_type",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.action.tool_invocation",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Invocation or attempted invocation of a named tool.",
+      "status": "active",
+      "supports": [
+        "invocation_occurrence",
+        "invocation_status"
+      ],
+      "does_not_support": [
+        "tool_output_truth",
+        "authorization",
+        "safe_effect"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "actor",
+        "tool",
+        "inputs_or_ref",
+        "status",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.boundary.authority",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Limit within which an authority claim may be evaluated.",
+      "status": "active",
+      "supports": [
+        "authority_boundary_match"
+      ],
+      "does_not_support": [
+        "authority_validity",
+        "approval"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "subject",
+        "allowed_action",
+        "target_or_scope",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.boundary.execution",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Limit between evidence interpretation and an external execution decision.",
+      "status": "active",
+      "supports": [
+        "assurance_execution_separation"
+      ],
+      "does_not_support": [
+        "execution_permission",
+        "execution_control"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "evaluated_claim",
+        "external_decision_owner"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.boundary.effect",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Limit of effects attributable to a bounded action or transition.",
+      "status": "active",
+      "supports": [
+        "bounded_effect_claim"
+      ],
+      "does_not_support": [
+        "outcome_correctness",
+        "complete_side_effect_absence"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "action",
+        "target",
+        "before_state",
+        "after_state",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.boundary.reliance",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Context and time in which an institution relies on evidence.",
+      "status": "active",
+      "supports": [
+        "reliance_basis_evaluation"
+      ],
+      "does_not_support": [
+        "timeless_validity",
+        "universal_applicability"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "relying_party_or_context",
+        "basis_valid_at",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.effect.effect",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Observed or asserted change associated with an action.",
+      "status": "active",
+      "supports": [
+        "bounded_effect_occurrence"
+      ],
+      "does_not_support": [
+        "causation",
+        "correctness",
+        "safety"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "action_ref",
+        "affected_subject",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.effect.outcome",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Result state observed or asserted after an action or transition.",
+      "status": "active",
+      "supports": [
+        "outcome_occurrence"
+      ],
+      "does_not_support": [
+        "causal_attribution",
+        "desired_outcome",
+        "safety"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "subject",
+        "state",
+        "observation_time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.effect.state_transition",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Bound movement from one identified state to another.",
+      "status": "active",
+      "supports": [
+        "transition_occurrence"
+      ],
+      "does_not_support": [
+        "authority",
+        "correctness",
+        "completeness"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "from_state",
+        "to_state",
+        "boundary",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.evidence.item",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Addressable artifact or record offered as evidence.",
+      "status": "active",
+      "supports": [
+        "evidence_presence",
+        "bounded_content"
+      ],
+      "does_not_support": [
+        "evidence_sufficiency",
+        "artifact_truth",
+        "authority"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "evidence_id_or_ref",
+        "producer_or_source",
+        "subject",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.evidence.observation",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Recorded observation made by an identified source or method.",
+      "status": "active",
+      "supports": [
+        "observation_occurrence",
+        "observation_content"
+      ],
+      "does_not_support": [
+        "independent_verification",
+        "truth_beyond_method"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "observer_or_source",
+        "subject",
+        "method",
+        "observed_time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.evidence.attestation",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Signed or attributable assertion by an identified attester.",
+      "status": "active",
+      "supports": [
+        "attributable_assertion",
+        "authenticity_when_verified"
+      ],
+      "does_not_support": [
+        "claim_correctness",
+        "authority_without_separate_binding"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "attester",
+        "subject",
+        "assertion",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.evidence.verification",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Bounded act that checks a stated property using an identified method and verifier.",
+      "status": "active",
+      "supports": [
+        "checked_property_within_scope"
+      ],
+      "does_not_support": [
+        "approval",
+        "execution_authority",
+        "untested_properties"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "verifier",
+        "method",
+        "subject",
+        "scope",
+        "verified_at",
+        "result",
+        "limitations"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.claim.claim",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Evaluated proposition with an explicit subject and boundaries.",
+      "status": "active",
+      "supports": [
+        "claim_identity"
+      ],
+      "does_not_support": [
+        "claim_truth_without_evidence",
+        "claim_support_without_evidence"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "claim_id",
+        "subject",
+        "predicate",
+        "scope",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.claim.scope",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Subject, scope, time, and provenance boundary of a claim.",
+      "status": "active",
+      "supports": [
+        "bounded_applicability"
+      ],
+      "does_not_support": [
+        "transfer_to_another_subject",
+        "transfer_to_another_scope",
+        "transfer_to_another_time"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "subject",
+        "scope",
+        "valid_or_reliance_time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.claim.support_relation",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Relation between bound evidence and a bound claim.",
+      "status": "active",
+      "supports": [
+        "controlled_support_relation"
+      ],
+      "does_not_support": [
+        "governance_disposition",
+        "execution_permission"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "evidence_refs",
+        "claim_ref",
+        "evaluator_and_version",
+        "rationale"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.provenance.producer",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Entity or process that emitted or packaged evidence.",
+      "status": "active",
+      "supports": [
+        "production_attribution"
+      ],
+      "does_not_support": [
+        "independent_verification",
+        "issuer_trust"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "producer_identity_and_version",
+        "output_ref",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.provenance.verifier",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Entity or process that performed a bounded verification.",
+      "status": "active",
+      "supports": [
+        "verification_attribution"
+      ],
+      "does_not_support": [
+        "independence_without_producer_separation"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "verifier_identity_and_version",
+        "method",
+        "subject",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.provenance.lineage",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Ordered source and transformation history of an artifact or semantic result.",
+      "status": "active",
+      "supports": [
+        "traceable_lineage"
+      ],
+      "does_not_support": [
+        "truth",
+        "completeness",
+        "authority"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "source_refs",
+        "transformations",
+        "versions",
+        "times"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.temporal.basis",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Evaluation of whether evidence remains a valid basis at reliance time.",
+      "status": "active",
+      "supports": [
+        "controlled_basis_status"
+      ],
+      "does_not_support": [
+        "timeless_validity",
+        "authority_by_itself"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "produced_observed_or_verified_time",
+        "basis_valid_at",
+        "expiry_revocation_or_supersession_refs"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.review.review",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "Human or institutional review event over a bound subject.",
+      "status": "active",
+      "supports": [
+        "review_occurrence"
+      ],
+      "does_not_support": [
+        "applicable_reviewer_authority",
+        "approval",
+        "execution_permission"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "reviewer",
+        "subject_hash_or_ref",
+        "scope",
+        "time",
+        "provenance"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    },
+    {
+      "semantic_id": "mesr.core.review.disposition",
+      "namespace": "mesr.core",
+      "version": "0.1.0",
+      "definition": "External or Guard report expression about a reviewed evidence state, retaining residual uncertainty.",
+      "status": "active",
+      "supports": [
+        "bounded_disposition_record"
+      ],
+      "does_not_support": [
+        "semantic_truth",
+        "execution_authority",
+        "certification"
+      ],
+      "stronger_than": [],
+      "weaker_than": [],
+      "conflicts_with": [],
+      "required_bindings": [
+        "review_or_evaluation_ref",
+        "decision_or_rationale_ref",
+        "owner",
+        "time"
+      ],
+      "provenance": [
+        "docs/specs/mesr-core-v0.1.md"
+      ],
+      "supersedes": [],
+      "deprecated_by": null
+    }
+  ],
+  "boundaries": [
+    {
+      "boundary_id": "CB-01",
+      "evidence_or_state": "Evidence present",
+      "evidence_or_state_id": "evidence_present",
+      "does_not_support": "authority_verified",
+      "required_additional_bindings": [
+        "authority_source",
+        "principal",
+        "action",
+        "target",
+        "scope",
+        "valid_time",
+        "provenance"
+      ],
+      "example": "A signed log exists, so the actor is assumed authorized.",
+      "counterexample": "A separate current delegation explicitly binds actor, action, target, and time.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-02",
+      "evidence_or_state": "Assessment completed/passed",
+      "evidence_or_state_id": "assessment_passed",
+      "does_not_support": "authority_verified",
+      "required_additional_bindings": [
+        "applicable_authority_source",
+        "authority_scope"
+      ],
+      "example": "A risk assessment passes, so execution is treated as authorized.",
+      "counterexample": "Assessment and applicable external authority are evaluated as distinct claims.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-03",
+      "evidence_or_state": "Resource or system access",
+      "evidence_or_state_id": "resource_access",
+      "does_not_support": "authority_verified",
+      "required_additional_bindings": [
+        "permission_source",
+        "intended_action",
+        "scope",
+        "constraints",
+        "valid_time"
+      ],
+      "example": "A token can write a repository, so every write is authorized.",
+      "counterexample": "IAM evidence separately binds the exact path, action, and time.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-04",
+      "evidence_or_state": "Capability available",
+      "evidence_or_state_id": "capability_available",
+      "does_not_support": "authority_verified",
+      "required_additional_bindings": [
+        "applicable_authorization",
+        "capability",
+        "target"
+      ],
+      "example": "A runtime has a deploy tool, so deployment is authorized.",
+      "counterexample": "A current scoped authority record separately covers deployment.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-05",
+      "evidence_or_state": "Verified identity",
+      "evidence_or_state_id": "identity_verified",
+      "does_not_support": "authority_verified",
+      "required_additional_bindings": [
+        "authority_source",
+        "delegation_or_scope",
+        "valid_time",
+        "subject_binding"
+      ],
+      "example": "Authentication proves the caller may approve a release.",
+      "counterexample": "Verified identity plus current code-owner delegation permits separate authority evaluation.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-06",
+      "evidence_or_state": "Verification passed",
+      "evidence_or_state_id": "verification_passed",
+      "does_not_support": "execution_authorized",
+      "required_additional_bindings": [
+        "external_decision_owner",
+        "applicable_permission",
+        "execution_boundary"
+      ],
+      "example": "Tests pass, so Guard authorizes merge or deploy.",
+      "counterexample": "An external system may decide using tests and separately established authority.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-07",
+      "evidence_or_state": "Observation recorded",
+      "evidence_or_state_id": "observation_recorded",
+      "does_not_support": "verification",
+      "required_additional_bindings": [
+        "verifier",
+        "method",
+        "checked_property",
+        "subject",
+        "scope",
+        "time",
+        "limitations"
+      ],
+      "example": "A producer log says a test passed, so it is independently verified.",
+      "counterexample": "A separate verifier replays the bound artifact and records method and limitations.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-08",
+      "evidence_or_state": "Trace captured",
+      "evidence_or_state_id": "trace_captured",
+      "does_not_support": "evidence_sufficient",
+      "required_additional_bindings": [
+        "claim",
+        "trace_scope_and_completeness",
+        "subject_time_binding",
+        "provenance"
+      ],
+      "example": "A tool trace exists, so the workflow is fully evidenced.",
+      "counterexample": "The trace is complete for a bounded claim and combined with required artifacts.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-09",
+      "evidence_or_state": "Integrity verified",
+      "evidence_or_state_id": "artifact_integrity",
+      "does_not_support": "artifact_truth",
+      "required_additional_bindings": [
+        "claim_content_verification",
+        "source_reliability",
+        "required_corroboration"
+      ],
+      "example": "SHA-256 matches, so the artifact contents are true.",
+      "counterexample": "Hash preservation and separate content verification support distinct claims.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-10",
+      "evidence_or_state": "Artifact authenticity verified",
+      "evidence_or_state_id": "signature_verified",
+      "does_not_support": "claim_correctness",
+      "required_additional_bindings": [
+        "issuer_scope",
+        "claim_verification",
+        "subject_time_binding"
+      ],
+      "example": "A valid signature makes every signed assertion correct.",
+      "counterexample": "Signature authenticates the issuer while an independent check evaluates correctness.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-11",
+      "evidence_or_state": "Evidence present",
+      "evidence_or_state_id": "evidence_present",
+      "does_not_support": "evidence_sufficient",
+      "required_additional_bindings": [
+        "claim_specific_required_evidence",
+        "scope",
+        "quality",
+        "admissibility",
+        "time"
+      ],
+      "example": "A test report exists, so release evidence is sufficient.",
+      "counterexample": "The report covers the bound candidate and all claim-specific requirements.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-12",
+      "evidence_or_state": "Evidence complete against inventory",
+      "evidence_or_state_id": "evidence_inventory_complete",
+      "does_not_support": "claim_correctness",
+      "required_additional_bindings": [
+        "property_specific_verification",
+        "acceptance_criteria"
+      ],
+      "example": "Every manifest item exists, so the change is correct.",
+      "counterexample": "Complete inventory plus bound verification supports only the checked property.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-13",
+      "evidence_or_state": "Execution occurred/succeeded",
+      "evidence_or_state_id": "execution_succeeded",
+      "does_not_support": "outcome_correct",
+      "required_additional_bindings": [
+        "expected_outcome",
+        "post_state_observation",
+        "causal_binding",
+        "subject_binding"
+      ],
+      "example": "Deployment returned success, so production behavior is correct.",
+      "counterexample": "Bound health observations verify specified postconditions.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-14",
+      "evidence_or_state": "Outcome occurred",
+      "evidence_or_state_id": "outcome_occurred",
+      "does_not_support": "causal_attribution",
+      "required_additional_bindings": [
+        "candidate_cause",
+        "temporal_ordering",
+        "controls_or_corroboration",
+        "alternative_cause_treatment"
+      ],
+      "example": "Error rate fell after deployment, so deployment caused it.",
+      "counterexample": "A bounded experiment may separately support attribution.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-15",
+      "evidence_or_state": "Historical evidence was valid",
+      "evidence_or_state_id": "historical_evidence_valid",
+      "does_not_support": "current_standing",
+      "required_additional_bindings": [
+        "basis_valid_at",
+        "expiry",
+        "revocation",
+        "supersession",
+        "current_subject"
+      ],
+      "example": "A credential was valid last week, so it is valid now.",
+      "counterexample": "Revocation and expiry sources resolve to current at reliance time.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-16",
+      "evidence_or_state": "Capability continuity",
+      "evidence_or_state_id": "capability_continuity",
+      "does_not_support": "authority_continuity",
+      "required_additional_bindings": [
+        "prior_authority",
+        "current_authority",
+        "unchanged_subject_scope_time",
+        "revocation_check"
+      ],
+      "example": "The same tools remain available, so authority remains valid.",
+      "counterexample": "Current authority is independently re-evaluated.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-17",
+      "evidence_or_state": "Delegation exists",
+      "evidence_or_state_id": "delegation_exists",
+      "does_not_support": "authority_amplified",
+      "required_additional_bindings": [
+        "delegator_delegable_scope",
+        "delegate_scope",
+        "constraints",
+        "chain_validity"
+      ],
+      "example": "Read authority is delegated and treated as read/write authority.",
+      "counterexample": "Delegate scope is no broader than a verified delegable source.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-18",
+      "evidence_or_state": "Approval record exists",
+      "evidence_or_state_id": "approval_record_exists",
+      "does_not_support": "applicable_review_exists",
+      "required_additional_bindings": [
+        "subject",
+        "scope",
+        "authority",
+        "time"
+      ],
+      "example": "An old approval note is applied to a different commit.",
+      "counterexample": "Approval binds the same commit, scope, authorized reviewer, and current time.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-19",
+      "evidence_or_state": "Policy match recorded",
+      "evidence_or_state_id": "policy_match_recorded",
+      "does_not_support": "legally_compliant",
+      "required_additional_bindings": [
+        "authoritative_legal_interpretation",
+        "jurisdiction",
+        "current_law_or_policy",
+        "complete_facts"
+      ],
+      "example": "A rule identifier matches, so the action is legally compliant.",
+      "counterexample": "An accountable external owner makes a separate determination.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-20",
+      "evidence_or_state": "Framework mapping exists",
+      "evidence_or_state_id": "framework_mapping_present",
+      "does_not_support": "certified",
+      "required_additional_bindings": [
+        "framework_and_version",
+        "control_evidence",
+        "authorized_assessor_or_certifier",
+        "certification_scope"
+      ],
+      "example": "Framework controls are mapped, so the system is certified.",
+      "counterexample": "An authorized external body may issue a separate certification.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-21",
+      "evidence_or_state": "Decision divergence observed",
+      "evidence_or_state_id": "decision_divergence_observed",
+      "does_not_support": "decision_error",
+      "required_additional_bindings": [
+        "normative_comparator",
+        "applicable_scope",
+        "criterion_violation_evidence"
+      ],
+      "example": "Human and Guard results differ, so one is wrong.",
+      "counterexample": "A bound rule and facts may establish contradiction.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-22",
+      "evidence_or_state": "Producer claim present",
+      "evidence_or_state_id": "producer_claim_present",
+      "does_not_support": "independent_verification",
+      "required_additional_bindings": [
+        "separate_verifier_identity",
+        "method",
+        "source_separation",
+        "limitations"
+      ],
+      "example": "CI metadata contains verified=true, so it is independently verified.",
+      "counterexample": "A separate verifier checks the underlying artifact.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-23",
+      "evidence_or_state": "Control present",
+      "evidence_or_state_id": "control_present",
+      "does_not_support": "control_effective",
+      "required_additional_bindings": [
+        "operating_period",
+        "test_method",
+        "coverage",
+        "observed_outcomes",
+        "limitations"
+      ],
+      "example": "A rollback script exists, so rollback is effective.",
+      "counterexample": "A recovery exercise verifies it against the candidate environment.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    },
+    {
+      "boundary_id": "CB-24",
+      "evidence_or_state": "Human-in-loop present",
+      "evidence_or_state_id": "human_in_loop_present",
+      "does_not_support": "meaningful_oversight",
+      "required_additional_bindings": [
+        "reviewer_authority",
+        "information_access",
+        "time",
+        "actionability",
+        "recorded_rationale"
+      ],
+      "example": "A reviewer name exists, so oversight was meaningful.",
+      "counterexample": "An authorized reviewer inspected the bound subject and could intervene.",
+      "relation": "does_not_support",
+      "compatible_core_version": "0.1.0",
+      "provenance": [
+        "docs/specs/mesr-claim-boundary-registry-v0.1.md"
+      ]
+    }
+  ],
+  "reason_bindings": [
+    {
+      "reason_code": "MISSING_AUTHORITY",
+      "core_semantic_id": "mesr.core.authority.scope",
+      "domain_semantic_id": null,
+      "supported_claim": "authority evidence is missing for the evaluated scope",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "DECLARED_AUTHORITY_ONLY",
+      "core_semantic_id": "mesr.core.authority.declared",
+      "domain_semantic_id": null,
+      "supported_claim": "producer-declared authority is present",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "AUTHORITY_OUT_OF_SCOPE",
+      "core_semantic_id": "mesr.core.boundary.authority",
+      "domain_semantic_id": null,
+      "supported_claim": "submitted authority does not cover the recorded scope",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "REVIEWER_MISSING",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": "mesr.domain.software.review.not_demonstrated",
+      "supported_claim": "reviewer context is missing",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "OWNER_MISSING",
+      "core_semantic_id": "mesr.core.actor.principal",
+      "domain_semantic_id": null,
+      "supported_claim": "ownership or principal context is missing",
+      "explicit_non_claims": [
+        "action_approved",
+        "applicable_approval",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "TIME_WINDOW_MISSING",
+      "core_semantic_id": "mesr.core.temporal.basis",
+      "domain_semantic_id": null,
+      "supported_claim": "authority time binding is missing",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "TIME_WINDOW_EXPIRED",
+      "core_semantic_id": "mesr.core.temporal.basis",
+      "domain_semantic_id": null,
+      "supported_claim": "submitted authority basis is stale at evaluation time",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "OUT_OF_SCOPE_ACTION",
+      "core_semantic_id": "mesr.core.boundary.authority",
+      "domain_semantic_id": null,
+      "supported_claim": "recorded action exceeds declared scope",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "OUT_OF_SCOPE_RESOURCE",
+      "core_semantic_id": "mesr.core.boundary.authority",
+      "domain_semantic_id": null,
+      "supported_claim": "touched resource exceeds declared scope",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "PROTECTED_RESOURCE_TOUCHED",
+      "core_semantic_id": "mesr.core.action.action",
+      "domain_semantic_id": null,
+      "supported_claim": "protected-resource contact is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "UNDECLARED_FILE_CHANGE",
+      "core_semantic_id": "mesr.core.action.action",
+      "domain_semantic_id": "mesr.domain.software.change.undeclared_file_observed",
+      "supported_claim": "a changed file is outside the declared list or limits",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SCOPE_TOO_BROAD",
+      "core_semantic_id": "mesr.core.claim.scope",
+      "domain_semantic_id": null,
+      "supported_claim": "submitted scope is broader than the evaluated boundary",
+      "explicit_non_claims": [
+        "action_approved",
+        "applicable_approval",
+        "authority_current",
+        "authority_verified",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SCOPE_INCOMPLETE",
+      "core_semantic_id": "mesr.core.claim.scope",
+      "domain_semantic_id": null,
+      "supported_claim": "claim or action scope bindings are incomplete",
+      "explicit_non_claims": [
+        "action_approved",
+        "artifact_truth",
+        "authority_current",
+        "authority_verified",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "INSUFFICIENT_VERIFICATION",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.insufficient",
+      "supported_claim": "available verification is insufficient for the requested claim",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "TESTS_NOT_RUN",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.test_execution_not_demonstrated",
+      "supported_claim": "test execution is not demonstrated",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "TESTS_FAILED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.test_failure_observed",
+      "supported_claim": "submitted evidence records unsuccessful tests",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "BUILD_NOT_RUN",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.build_execution_not_demonstrated",
+      "supported_claim": "build execution is not demonstrated",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "BUILD_FAILED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.build_failure_observed",
+      "supported_claim": "submitted evidence records an unsuccessful build",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "STATIC_ANALYSIS_NOT_RUN",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.static_analysis_not_demonstrated",
+      "supported_claim": "static-analysis execution is not demonstrated",
+      "explicit_non_claims": [
+        "change_correct",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SECURITY_SCAN_NOT_RUN",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.verification.security_scan_not_demonstrated",
+      "supported_claim": "security-scan execution is not demonstrated",
+      "explicit_non_claims": [
+        "certified",
+        "change_correct",
+        "execution_authorized",
+        "legally_compliant",
+        "outcome_safe",
+        "safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "MANUAL_REVIEW_MISSING",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": "mesr.domain.software.review.not_demonstrated",
+      "supported_claim": "expected manual review evidence is missing",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "ROLLBACK_MISSING",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": "mesr.domain.software.release.rollback_not_demonstrated",
+      "supported_claim": "rollback evidence is missing",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "ROLLBACK_UNVERIFIED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.release.rollback_not_verified",
+      "supported_claim": "rollback material lacks required verification",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "RELEASE_TARGET_UNCLEAR",
+      "core_semantic_id": "mesr.core.claim.scope",
+      "domain_semantic_id": "mesr.domain.software.release.target_unclear",
+      "supported_claim": "release target binding is unclear",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "PRODUCTION_ENVIRONMENT_UNVERIFIED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.deployment.environment_not_verified",
+      "supported_claim": "production-environment claim is not sufficiently verified",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "BLOCKED_ACTION_PRESENT",
+      "core_semantic_id": "mesr.core.action.action",
+      "domain_semantic_id": null,
+      "supported_claim": "a halted or blocked action is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "DESTRUCTIVE_COMMAND_ATTEMPTED",
+      "core_semantic_id": "mesr.core.action.tool_invocation",
+      "domain_semantic_id": null,
+      "supported_claim": "a destructive command attempt is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SECRET_ACCESS_ATTEMPTED",
+      "core_semantic_id": "mesr.core.action.tool_invocation",
+      "domain_semantic_id": null,
+      "supported_claim": "a secret-access attempt is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "NETWORK_ACCESS_ATTEMPTED",
+      "core_semantic_id": "mesr.core.action.tool_invocation",
+      "domain_semantic_id": null,
+      "supported_claim": "a network-access attempt is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "UNSAFE_GIT_OPERATION",
+      "core_semantic_id": "mesr.core.action.tool_invocation",
+      "domain_semantic_id": null,
+      "supported_claim": "a Git operation with elevated concern is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "causal_attribution",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "TOOL_OUTPUT_MISSING",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": null,
+      "supported_claim": "expected tool-output evidence is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "change_correct",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "COMMAND_RESULT_MISSING",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": null,
+      "supported_claim": "expected command-result evidence is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "change_correct",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "HIGH_RISK_DATA",
+      "core_semantic_id": "mesr.core.evidence.observation",
+      "domain_semantic_id": null,
+      "supported_claim": "submitted evidence identifies high-risk-data interaction",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "certified",
+        "execution_authorized",
+        "legally_compliant",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "DATA_SENSITIVITY_UNKNOWN",
+      "core_semantic_id": "mesr.core.claim.scope",
+      "domain_semantic_id": null,
+      "supported_claim": "data-sensitivity binding is unknown",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "certified",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "legally_compliant",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "CREDENTIAL_RISK",
+      "core_semantic_id": "mesr.core.actor.identity_assertion",
+      "domain_semantic_id": null,
+      "supported_claim": "credential-handling risk is recorded",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "certified",
+        "execution_authorized",
+        "legally_compliant",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "EXFILTRATION_RISK",
+      "core_semantic_id": "mesr.core.evidence.observation",
+      "domain_semantic_id": null,
+      "supported_claim": "evidence records possible exfiltration risk",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "certified",
+        "execution_authorized",
+        "legally_compliant",
+        "outcome_correct",
+        "outcome_safe",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SECURITY_PATCH_SCOPE_UNCLEAR",
+      "core_semantic_id": "mesr.core.claim.scope",
+      "domain_semantic_id": "mesr.domain.software.change.diff_scope",
+      "supported_claim": "security-patch scope is unclear",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "certified",
+        "change_correct",
+        "execution_authorized",
+        "legally_compliant",
+        "outcome_safe",
+        "safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "CYBER_AUTHORIZATION_REQUIRED",
+      "core_semantic_id": "mesr.core.boundary.authority",
+      "domain_semantic_id": null,
+      "supported_claim": "stronger applicable authorization evidence is required",
+      "explicit_non_claims": [
+        "action_approved",
+        "authority_current",
+        "authority_verified",
+        "certified",
+        "execution_authorized",
+        "legally_compliant",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "EVIDENCE_INCOMPLETE",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": null,
+      "supported_claim": "evidence is incomplete for the requested interpretation",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "MANIFEST_INCOMPLETE",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": null,
+      "supported_claim": "evidence inventory is incomplete",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "ARTIFACT_MISSING",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": null,
+      "supported_claim": "an expected artifact is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "ARTIFACT_HASH_MISSING",
+      "core_semantic_id": "mesr.core.provenance.lineage",
+      "domain_semantic_id": null,
+      "supported_claim": "stable artifact-integrity binding is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "ARTIFACT_REF_UNRESOLVED",
+      "core_semantic_id": "mesr.core.provenance.lineage",
+      "domain_semantic_id": null,
+      "supported_claim": "an artifact reference is unresolvable",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "PROVENANCE_MISSING",
+      "core_semantic_id": "mesr.core.provenance.lineage",
+      "domain_semantic_id": null,
+      "supported_claim": "required lineage is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "PRODUCER_IDENTITY_UNKNOWN",
+      "core_semantic_id": "mesr.core.provenance.producer",
+      "domain_semantic_id": null,
+      "supported_claim": "producer identity is unknown",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "change_correct",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "NON_DETERMINISTIC_PRODUCER",
+      "core_semantic_id": "mesr.core.provenance.producer",
+      "domain_semantic_id": null,
+      "supported_claim": "producer generation may be non-deterministic",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "change_correct",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "DEPENDENCY_CHANGE_DETECTED",
+      "core_semantic_id": "mesr.core.effect.state_transition",
+      "domain_semantic_id": "mesr.domain.software.change.dependency_observed",
+      "supported_claim": "a dependency-oriented change is recorded",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "BREAKING_CHANGE_UNVERIFIED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.change.breaking_impact_not_verified",
+      "supported_claim": "breaking-impact verification is missing or insufficient",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "LOCKFILE_CHANGED",
+      "core_semantic_id": "mesr.core.effect.state_transition",
+      "domain_semantic_id": "mesr.domain.software.change.lockfile_observed",
+      "supported_claim": "a lockfile change is recorded",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "MIGRATION_NOT_DOCUMENTED",
+      "core_semantic_id": "mesr.core.evidence.item",
+      "domain_semantic_id": "mesr.domain.software.change.migration_not_documented",
+      "supported_claim": "expected migration evidence is missing",
+      "explicit_non_claims": [
+        "artifact_truth",
+        "change_correct",
+        "claim_correctness",
+        "evidence_sufficient",
+        "execution_authorized",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "PUBLIC_API_CHANGE_UNVERIFIED",
+      "core_semantic_id": "mesr.core.evidence.verification",
+      "domain_semantic_id": "mesr.domain.software.change.public_api_impact_not_verified",
+      "supported_claim": "public-API impact is not sufficiently verified",
+      "explicit_non_claims": [
+        "causal_attribution",
+        "change_correct",
+        "execution_authorized",
+        "outcome_correct",
+        "outcome_safe",
+        "verification_passed"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "HUMAN_REVIEW_REQUIRED",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": null,
+      "supported_claim": "human review is requested by current reasoning",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "SECURITY_REVIEW_REQUIRED",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": null,
+      "supported_claim": "security-oriented review is requested",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "certified",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified",
+        "safe"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "OWNER_REVIEW_REQUIRED",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": null,
+      "supported_claim": "owner review is requested",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "RELEASE_REVIEW_REQUIRED",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": "mesr.domain.software.review.not_demonstrated",
+      "supported_claim": "release-oriented review is requested",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    },
+    {
+      "reason_code": "CUSTOMER_REVIEW_REQUIRED",
+      "core_semantic_id": "mesr.core.review.review",
+      "domain_semantic_id": null,
+      "supported_claim": "customer-facing review is requested",
+      "explicit_non_claims": [
+        "applicable_approval",
+        "execution_authorized",
+        "legally_compliant",
+        "reviewer_authority_verified"
+      ],
+      "binding_status": "active",
+      "required": true
+    }
+  ],
+  "modules": [
+    {
+      "module_id": "mesr.core",
+      "module_type": "core",
+      "version": "0.1.0",
+      "semantic_namespace": "mesr.core",
+      "core_compatibility": ">=0.1.0 <0.2.0",
+      "dependencies": [],
+      "added_semantics": [
+        {
+          "semantic_id": "mesr.core.actor.principal",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Entity on whose behalf an action or claim is represented.",
+          "status": "active",
+          "supports": [
+            "principal_identity_reference"
+          ],
+          "does_not_support": [
+            "verified_identity",
+            "authority",
+            "approval"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "principal_id",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.actor.actor",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Entity that performed or is reported to have performed an action.",
+          "status": "active",
+          "supports": [
+            "actor_attribution"
+          ],
+          "does_not_support": [
+            "principal_equivalence",
+            "authority",
+            "intent_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "actor_id",
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.actor.identity_assertion",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Assertion binding an identifier or credential to an actor.",
+          "status": "active",
+          "supports": [
+            "identity_assertion_presence",
+            "verified_identity"
+          ],
+          "does_not_support": [
+            "verified_authority",
+            "delegation",
+            "current_standing"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "actor",
+            "credential_or_source",
+            "observed_or_verified_time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.authority.source",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Identified source from which an authority claim originates.",
+          "status": "active",
+          "supports": [
+            "authority_source_attribution"
+          ],
+          "does_not_support": [
+            "source_validity",
+            "applicable_authority",
+            "execution_permission"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "source_identity",
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.authority.scope",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Bounded actions, targets, resources, and constraints to which authority evidence refers.",
+          "status": "active",
+          "supports": [
+            "scope_bounded_authority_claim"
+          ],
+          "does_not_support": [
+            "broader_authority",
+            "current_authority_without_temporal_basis"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "action",
+            "target",
+            "scope",
+            "valid_time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.authority.delegation",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Recorded transfer of bounded authority from a source to a delegate.",
+          "status": "active",
+          "supports": [
+            "delegation_occurrence",
+            "bounded_delegation_scope"
+          ],
+          "does_not_support": [
+            "authority_amplification",
+            "transitive_delegation",
+            "execution_permission"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "delegator",
+            "delegate",
+            "scope",
+            "valid_time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.authority.declared",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Producer-supplied authority assertion without independent authority verification.",
+          "status": "active",
+          "supports": [
+            "declared_authority"
+          ],
+          "does_not_support": [
+            "verified_authority",
+            "current_authority",
+            "execution_authorization"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "producer",
+            "subject",
+            "scope",
+            "asserted_time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.intent.intent",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Declared objective associated with a subject or proposed action.",
+          "status": "active",
+          "supports": [
+            "intent_declaration"
+          ],
+          "does_not_support": [
+            "action_occurrence",
+            "outcome",
+            "authority"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "declaring_actor",
+            "subject",
+            "scope",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.action.action",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Bounded act proposed, attempted, observed, or completed.",
+          "status": "active",
+          "supports": [
+            "action_state_within_captured_bounds"
+          ],
+          "does_not_support": [
+            "authorization",
+            "correct_outcome",
+            "causal_attribution"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "actor",
+            "target",
+            "action_type",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.action.tool_invocation",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Invocation or attempted invocation of a named tool.",
+          "status": "active",
+          "supports": [
+            "invocation_occurrence",
+            "invocation_status"
+          ],
+          "does_not_support": [
+            "tool_output_truth",
+            "authorization",
+            "safe_effect"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "actor",
+            "tool",
+            "inputs_or_ref",
+            "status",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.boundary.authority",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Limit within which an authority claim may be evaluated.",
+          "status": "active",
+          "supports": [
+            "authority_boundary_match"
+          ],
+          "does_not_support": [
+            "authority_validity",
+            "approval"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "allowed_action",
+            "target_or_scope",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.boundary.execution",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Limit between evidence interpretation and an external execution decision.",
+          "status": "active",
+          "supports": [
+            "assurance_execution_separation"
+          ],
+          "does_not_support": [
+            "execution_permission",
+            "execution_control"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "evaluated_claim",
+            "external_decision_owner"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.boundary.effect",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Limit of effects attributable to a bounded action or transition.",
+          "status": "active",
+          "supports": [
+            "bounded_effect_claim"
+          ],
+          "does_not_support": [
+            "outcome_correctness",
+            "complete_side_effect_absence"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "action",
+            "target",
+            "before_state",
+            "after_state",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.boundary.reliance",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Context and time in which an institution relies on evidence.",
+          "status": "active",
+          "supports": [
+            "reliance_basis_evaluation"
+          ],
+          "does_not_support": [
+            "timeless_validity",
+            "universal_applicability"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "relying_party_or_context",
+            "basis_valid_at",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.effect.effect",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Observed or asserted change associated with an action.",
+          "status": "active",
+          "supports": [
+            "bounded_effect_occurrence"
+          ],
+          "does_not_support": [
+            "causation",
+            "correctness",
+            "safety"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "action_ref",
+            "affected_subject",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.effect.outcome",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Result state observed or asserted after an action or transition.",
+          "status": "active",
+          "supports": [
+            "outcome_occurrence"
+          ],
+          "does_not_support": [
+            "causal_attribution",
+            "desired_outcome",
+            "safety"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "state",
+            "observation_time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.effect.state_transition",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Bound movement from one identified state to another.",
+          "status": "active",
+          "supports": [
+            "transition_occurrence"
+          ],
+          "does_not_support": [
+            "authority",
+            "correctness",
+            "completeness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "from_state",
+            "to_state",
+            "boundary",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.evidence.item",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Addressable artifact or record offered as evidence.",
+          "status": "active",
+          "supports": [
+            "evidence_presence",
+            "bounded_content"
+          ],
+          "does_not_support": [
+            "evidence_sufficiency",
+            "artifact_truth",
+            "authority"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "evidence_id_or_ref",
+            "producer_or_source",
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.evidence.observation",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Recorded observation made by an identified source or method.",
+          "status": "active",
+          "supports": [
+            "observation_occurrence",
+            "observation_content"
+          ],
+          "does_not_support": [
+            "independent_verification",
+            "truth_beyond_method"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "observer_or_source",
+            "subject",
+            "method",
+            "observed_time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.evidence.attestation",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Signed or attributable assertion by an identified attester.",
+          "status": "active",
+          "supports": [
+            "attributable_assertion",
+            "authenticity_when_verified"
+          ],
+          "does_not_support": [
+            "claim_correctness",
+            "authority_without_separate_binding"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "attester",
+            "subject",
+            "assertion",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.evidence.verification",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Bounded act that checks a stated property using an identified method and verifier.",
+          "status": "active",
+          "supports": [
+            "checked_property_within_scope"
+          ],
+          "does_not_support": [
+            "approval",
+            "execution_authority",
+            "untested_properties"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "verifier",
+            "method",
+            "subject",
+            "scope",
+            "verified_at",
+            "result",
+            "limitations"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.claim.claim",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Evaluated proposition with an explicit subject and boundaries.",
+          "status": "active",
+          "supports": [
+            "claim_identity"
+          ],
+          "does_not_support": [
+            "claim_truth_without_evidence",
+            "claim_support_without_evidence"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "claim_id",
+            "subject",
+            "predicate",
+            "scope",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.claim.scope",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Subject, scope, time, and provenance boundary of a claim.",
+          "status": "active",
+          "supports": [
+            "bounded_applicability"
+          ],
+          "does_not_support": [
+            "transfer_to_another_subject",
+            "transfer_to_another_scope",
+            "transfer_to_another_time"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "scope",
+            "valid_or_reliance_time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.claim.support_relation",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Relation between bound evidence and a bound claim.",
+          "status": "active",
+          "supports": [
+            "controlled_support_relation"
+          ],
+          "does_not_support": [
+            "governance_disposition",
+            "execution_permission"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "evidence_refs",
+            "claim_ref",
+            "evaluator_and_version",
+            "rationale"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.provenance.producer",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Entity or process that emitted or packaged evidence.",
+          "status": "active",
+          "supports": [
+            "production_attribution"
+          ],
+          "does_not_support": [
+            "independent_verification",
+            "issuer_trust"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "producer_identity_and_version",
+            "output_ref",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.provenance.verifier",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Entity or process that performed a bounded verification.",
+          "status": "active",
+          "supports": [
+            "verification_attribution"
+          ],
+          "does_not_support": [
+            "independence_without_producer_separation"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "verifier_identity_and_version",
+            "method",
+            "subject",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.provenance.lineage",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Ordered source and transformation history of an artifact or semantic result.",
+          "status": "active",
+          "supports": [
+            "traceable_lineage"
+          ],
+          "does_not_support": [
+            "truth",
+            "completeness",
+            "authority"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "source_refs",
+            "transformations",
+            "versions",
+            "times"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.temporal.basis",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Evaluation of whether evidence remains a valid basis at reliance time.",
+          "status": "active",
+          "supports": [
+            "controlled_basis_status"
+          ],
+          "does_not_support": [
+            "timeless_validity",
+            "authority_by_itself"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "produced_observed_or_verified_time",
+            "basis_valid_at",
+            "expiry_revocation_or_supersession_refs"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.review.review",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "Human or institutional review event over a bound subject.",
+          "status": "active",
+          "supports": [
+            "review_occurrence"
+          ],
+          "does_not_support": [
+            "applicable_reviewer_authority",
+            "approval",
+            "execution_permission"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "reviewer",
+            "subject_hash_or_ref",
+            "scope",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.core.review.disposition",
+          "namespace": "mesr.core",
+          "version": "0.1.0",
+          "definition": "External or Guard report expression about a reviewed evidence state, retaining residual uncertainty.",
+          "status": "active",
+          "supports": [
+            "bounded_disposition_record"
+          ],
+          "does_not_support": [
+            "semantic_truth",
+            "execution_authority",
+            "certification"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "review_or_evaluation_ref",
+            "decision_or_rationale_ref",
+            "owner",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-core-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        }
+      ],
+      "mappings": [],
+      "external_references": [],
+      "prohibited_overrides": [],
+      "conformance_requirements": [
+        "semantic_non_interference",
+        "deterministic_resolution",
+        "explicit_provenance",
+        "no_execution_authority"
+      ]
+    },
+    {
+      "module_id": "mesr.module.software.v0_1",
+      "module_type": "domain_pack",
+      "version": "0.1.0",
+      "semantic_namespace": "mesr.domain.software",
+      "core_compatibility": ">=0.1.0 <0.2.0",
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0"
+        }
+      ],
+      "added_semantics": [
+        {
+          "semantic_id": "mesr.domain.software.change.subject",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Bounded software change under review.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.subject.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "repository",
+            "base_ref",
+            "candidate_ref",
+            "diff_scope",
+            "subject_hash"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.base_commit",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Revision against which the candidate is compared.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.base_commit.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "repository",
+            "immutable_commit_id",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.candidate_commit",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Candidate revision proposed for review.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.candidate_commit.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "repository",
+            "immutable_commit_id",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.diff_scope",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Files, paths, and change set between base and candidate.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.diff_scope.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "base",
+            "candidate",
+            "canonical_diff_identity"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.authority.code_owner",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Evidence of applicable code-owner authority.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.authority.code_owner.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "actor",
+            "repository_or_path",
+            "action",
+            "source",
+            "valid_time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.test_evidence",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Test execution evidence bound to a candidate.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.test_evidence.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "candidate_or_subject_hash",
+            "command_or_suite",
+            "result",
+            "producer_or_verifier",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.review.binding",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Review event bound to an exact software subject.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.review.binding.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "reviewer",
+            "reviewer_authority_ref",
+            "subject_hash",
+            "scope",
+            "time",
+            "rationale_ref"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.release.identity",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Immutable identity of an accepted or released revision or artifact.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.release.identity.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "candidate_or_accepted_commit",
+            "artifact_digest_or_tag",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.deployment.effect",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Observed deployment transition for a release identity.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.deployment.effect.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "release_identity",
+            "environment",
+            "before_state",
+            "after_state",
+            "time",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.rollback.reference",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Addressable rollback or recovery material.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.rollback.reference.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "release_identity_or_environment",
+            "reference_or_digest",
+            "valid_time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.subject_equals_execution_subject",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Equality check between reviewed or verified subject and executed or deployed subject.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.subject_equals_execution_subject.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "review_subject_identity",
+            "execution_subject_identity",
+            "comparison_method",
+            "time"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.insufficient",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Available software verification is insufficient for the requested bounded claim.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.insufficient.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.test_execution_not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Test execution is not demonstrated by submitted evidence.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.test_execution_not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.test_failure_observed",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Submitted evidence records unsuccessful tests.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.test_failure_observed.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.build_execution_not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Build execution is not demonstrated by submitted evidence.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.build_execution_not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.build_failure_observed",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Submitted evidence records an unsuccessful build.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.build_failure_observed.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.static_analysis_not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Static-analysis execution is not demonstrated by submitted evidence.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.static_analysis_not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.verification.security_scan_not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Security-scan execution is not demonstrated by submitted evidence.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.verification.security_scan_not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.review.not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Expected software review evidence is not demonstrated.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.review.not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.release.rollback_not_demonstrated",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Rollback evidence is not demonstrated.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.release.rollback_not_demonstrated.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.release.rollback_not_verified",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Rollback material lacks required verification.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.release.rollback_not_verified.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.release.target_unclear",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Release target binding is unclear.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.release.target_unclear.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.deployment.environment_not_verified",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Production-environment claim is not sufficiently verified.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.deployment.environment_not_verified.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.undeclared_file_observed",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "A changed file is outside the declared list or limits.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.undeclared_file_observed.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.dependency_observed",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "A dependency-oriented change is recorded.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.dependency_observed.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.breaking_impact_not_verified",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Breaking-impact verification is missing or insufficient.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.breaking_impact_not_verified.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.lockfile_observed",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "A lockfile change is recorded.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.lockfile_observed.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.migration_not_documented",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Expected migration evidence is missing.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.migration_not_documented.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        },
+        {
+          "semantic_id": "mesr.domain.software.change.public_api_impact_not_verified",
+          "namespace": "mesr.domain.software",
+          "version": "0.1.0",
+          "definition": "Public-API impact is not sufficiently verified.",
+          "status": "active",
+          "supports": [
+            "mesr.domain.software.change.public_api_impact_not_verified.observed"
+          ],
+          "does_not_support": [
+            "execution_authorized",
+            "outcome_safe",
+            "claim_correctness"
+          ],
+          "stronger_than": [],
+          "weaker_than": [],
+          "conflicts_with": [],
+          "required_bindings": [
+            "subject",
+            "provenance"
+          ],
+          "provenance": [
+            "docs/specs/mesr-software-change-domain-pack-v0.1.md"
+          ],
+          "supersedes": [],
+          "deprecated_by": null
+        }
+      ],
+      "mappings": [],
+      "external_references": [],
+      "prohibited_overrides": [
+        "mesr.core.*",
+        "core.required_bindings",
+        "core.support_relations",
+        "core.does_not_support"
+      ],
+      "conformance_requirements": [
+        "semantic_non_interference",
+        "deterministic_resolution",
+        "explicit_provenance",
+        "no_execution_authority"
+      ]
+    },
+    {
+      "module_id": "mesr.xw.test_nist_like.v0_1",
+      "module_type": "crosswalk",
+      "version": "0.1.0",
+      "semantic_namespace": "mesr.xw.test_nist_like",
+      "core_compatibility": ">=0.1.0 <0.2.0",
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0"
+        },
+        {
+          "module_id": "mesr.module.software.v0_1",
+          "version": "0.1.0"
+        }
+      ],
+      "added_semantics": [],
+      "mappings": [
+        {
+          "external_concept": "test_control_mapped",
+          "target_semantic_id": "mesr.core.claim.scope",
+          "mapping_relation": "maps_to",
+          "source_version": "test-only-v0.1",
+          "provenance": [
+            "fixture:mesr.xw.test_nist_like.v0_1"
+          ],
+          "limitations": [
+            "test-only vocabulary mapping; no normative or authority claim"
+          ]
+        }
+      ],
+      "external_references": [
+        "test-only://test_nist_like/v0.1"
+      ],
+      "prohibited_overrides": [
+        "mesr.core.*",
+        "core.required_bindings",
+        "core.support_relations",
+        "core.does_not_support"
+      ],
+      "conformance_requirements": [
+        "semantic_non_interference",
+        "deterministic_resolution",
+        "explicit_provenance",
+        "no_execution_authority"
+      ]
+    },
+    {
+      "module_id": "mesr.profile.test_audit.v0_1",
+      "module_type": "institutional_profile",
+      "version": "0.1.0",
+      "semantic_namespace": "mesr.profile.test_audit",
+      "core_compatibility": ">=0.1.0 <0.2.0",
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0"
+        }
+      ],
+      "added_semantics": [],
+      "mappings": [],
+      "external_references": [],
+      "prohibited_overrides": [
+        "mesr.core.*",
+        "core.required_bindings",
+        "core.support_relations",
+        "core.does_not_support"
+      ],
+      "conformance_requirements": [
+        "semantic_non_interference",
+        "deterministic_resolution",
+        "explicit_provenance",
+        "no_execution_authority"
+      ],
+      "presentation": {
+        "audience": "test auditor",
+        "label": "Test-only assurance presentation",
+        "grouping": [
+          "identity",
+          "integrity",
+          "review"
+        ]
+      }
+    }
+  ],
+  "registry": {
+    "version": "0.1.0",
+    "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+  },
+  "context_versions": {
+    "mesr.xw.test_nist_like.v0_1": {
+      "core": "0.1.0",
+      "software": "0.1.0",
+      "crosswalk": "0.1.0"
+    },
+    "mesr.profile.test_audit.v0_1": {
+      "core": "0.1.0",
+      "software": "0.1.0",
+      "crosswalk": "0.1.0"
+    }
+  },
+  "admission_basis": {
+    "id": "b09-test-admission/0.2.0",
+    "issuer": "B09 fixture author",
+    "authority": "FINITE_TEST_ONLY_NOT_PRODUCT_ADMISSION",
+    "source": "B01/B08 and frozen Phase2A manifests",
+    "module_digests": [
+      {
+        "module_id": "mesr.core",
+        "digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+      },
+      {
+        "module_id": "mesr.module.software.v0_1",
+        "digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348"
+      },
+      {
+        "module_id": "mesr.xw.test_nist_like.v0_1",
+        "digest": "7928b9cb916d2475411861ede93f0d7b799173bd2001c6e439a8b8ec3cc24045"
+      },
+      {
+        "module_id": "mesr.profile.test_audit.v0_1",
+        "digest": "73d5748a8dfa52c7fcfad06ddd631acde1a9db0161b5e9fe1805ec397d046c7a"
+      }
+    ],
+    "proof": "Exact existing entry/support/nonclaim/binding inventory; maps_to only; presentation only; finite base-claim/predicate noninterference probes"
+  },
+  "method_digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11",
+  "method_version": "0.2.0",
+  "canonicalization": "JSON keys code-point sorted; arrays preserved; UTF-8; no BOM/whitespace; finite JSON only",
+  "runtime": {
+    "node": "v24.15.0",
+    "mesr": "0.1.0",
+    "eak": "0.1.0-poc",
+    "report": "1.0.0"
+  },
+  "binding_predicates": {
+    "principal_id": "nonempty_reference",
+    "provenance": "nonempty_reference",
+    "actor_id": "nonempty_reference",
+    "subject": "nonempty_reference",
+    "actor": "nonempty_reference",
+    "credential_or_source": "nonempty_reference",
+    "observed_or_verified_time": "nonempty_reference",
+    "source_identity": "nonempty_reference",
+    "action": "nonempty_reference",
+    "target": "nonempty_reference",
+    "scope": "nonempty_reference",
+    "valid_time": "nonempty_reference",
+    "delegator": "nonempty_reference",
+    "delegate": "nonempty_reference",
+    "producer": "nonempty_reference",
+    "asserted_time": "nonempty_reference",
+    "declaring_actor": "nonempty_reference",
+    "time": "nonempty_reference",
+    "action_type": "nonempty_reference",
+    "tool": "nonempty_reference",
+    "inputs_or_ref": "nonempty_reference",
+    "status": "nonempty_reference",
+    "allowed_action": "nonempty_reference",
+    "target_or_scope": "nonempty_reference",
+    "evaluated_claim": "nonempty_reference",
+    "external_decision_owner": "nonempty_reference",
+    "before_state": "nonempty_reference",
+    "after_state": "nonempty_reference",
+    "relying_party_or_context": "nonempty_reference",
+    "basis_valid_at": "nonempty_reference",
+    "action_ref": "nonempty_reference",
+    "affected_subject": "nonempty_reference",
+    "state": "nonempty_reference",
+    "observation_time": "nonempty_reference",
+    "from_state": "nonempty_reference",
+    "to_state": "nonempty_reference",
+    "boundary": "nonempty_reference",
+    "evidence_id_or_ref": "nonempty_reference",
+    "producer_or_source": "nonempty_reference",
+    "observer_or_source": "nonempty_reference",
+    "method": "nonempty_reference",
+    "observed_time": "nonempty_reference",
+    "attester": "nonempty_reference",
+    "assertion": "nonempty_reference",
+    "verifier": "nonempty_reference",
+    "verified_at": "nonempty_reference",
+    "result": "nonempty_reference",
+    "limitations": "nonempty_reference",
+    "claim_id": "nonempty_reference",
+    "predicate": "nonempty_reference",
+    "valid_or_reliance_time": "nonempty_reference",
+    "evidence_refs": "nonempty_array",
+    "claim_ref": "nonempty_reference",
+    "evaluator_and_version": "nonempty_reference",
+    "rationale": "nonempty_reference",
+    "producer_identity_and_version": "nonempty_reference",
+    "output_ref": "nonempty_reference",
+    "verifier_identity_and_version": "nonempty_reference",
+    "source_refs": "nonempty_reference",
+    "transformations": "nonempty_reference",
+    "versions": "nonempty_reference",
+    "times": "nonempty_reference",
+    "produced_observed_or_verified_time": "nonempty_reference",
+    "expiry_revocation_or_supersession_refs": "nonempty_reference",
+    "reviewer": "nonempty_reference",
+    "subject_hash_or_ref": "nonempty_reference",
+    "review_or_evaluation_ref": "nonempty_reference",
+    "decision_or_rationale_ref": "nonempty_reference",
+    "owner": "nonempty_reference",
+    "verification_executed": "true",
+    "witnesses": "nonempty_array"
+  },
+  "sufficiency_profile": {
+    "id": "b09-assurance-profile",
+    "version": "0.1.0",
+    "digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+    "requirements": [
+      "tests"
+    ]
+  },
+  "claim_set": {
+    "id": "b09-claim-set",
+    "version": "0.1.0",
+    "digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+    "claims": [
+      "verification.passed"
+    ]
+  },
+  "module_lock": [
+    {
+      "module_id": "mesr.core",
+      "version": "0.1.0",
+      "byte_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c",
+      "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c",
+      "byte_length": 15897,
+      "dependencies": []
+    },
+    {
+      "module_id": "mesr.module.software.v0_1",
+      "version": "0.1.0",
+      "byte_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348",
+      "content_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348",
+      "byte_length": 17467,
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0",
+          "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+        }
+      ]
+    },
+    {
+      "module_id": "mesr.xw.test_nist_like.v0_1",
+      "version": "0.1.0",
+      "byte_digest": "7928b9cb916d2475411861ede93f0d7b799173bd2001c6e439a8b8ec3cc24045",
+      "content_digest": "7928b9cb916d2475411861ede93f0d7b799173bd2001c6e439a8b8ec3cc24045",
+      "byte_length": 912,
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0",
+          "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+        },
+        {
+          "module_id": "mesr.module.software.v0_1",
+          "version": "0.1.0",
+          "content_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348"
+        }
+      ]
+    },
+    {
+      "module_id": "mesr.profile.test_audit.v0_1",
+      "version": "0.1.0",
+      "byte_digest": "73d5748a8dfa52c7fcfad06ddd631acde1a9db0161b5e9fe1805ec397d046c7a",
+      "content_digest": "73d5748a8dfa52c7fcfad06ddd631acde1a9db0161b5e9fe1805ec397d046c7a",
+      "byte_length": 681,
+      "dependencies": [
+        {
+          "module_id": "mesr.core",
+          "version": "0.1.0",
+          "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+        }
+      ]
+    }
+  ],
+  "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+  "legacy_report_control": {
+    "ok": true,
+    "report": {
+      "report_id": "governance-report:epk_ai_pr_low_risk_complete_001:1.0.0",
+      "report_schema_version": "1.0.0",
+      "generated_at": "2026-06-23T19:47:15Z",
+      "source_pack_id": "epk_ai_pr_low_risk_complete_001",
+      "source_schema_version": "1.0.0",
+      "workflow_summary": {
+        "workflow_id": "wf_ai_pr_low_risk_complete_001",
+        "workflow_name": "small utility fix pull request",
+        "workflow_type": "pull_request",
+        "pack_type": "ai_software_change",
+        "environment": "ci",
+        "repository": {
+          "provider": "github",
+          "repo_name": "mindforge-labs/synthetic-utils-service",
+          "remote_url": "https://github.com/mindforge-labs/synthetic-utils-service.git",
+          "default_branch": "main",
+          "branch": "feature/slugify-trim-fix",
+          "base_ref": "main",
+          "head_ref": "feature/slugify-trim-fix",
+          "commit_sha": "1111111111111111111111111111111111111111",
+          "pr_number": "1842"
+        }
+      },
+      "verdict": {
+        "value": "allow",
+        "reason_codes": [],
+        "explanation": "Authority, scope, verification, and manifest evidence are structurally sufficient.",
+        "confidence": "high"
+      },
+      "authority_summary": {
+        "authorization_status": "provided",
+        "requested_by": "developer.synthetic",
+        "owner": "team.synthetic-platform",
+        "reviewers": [
+          "reviewer.codeowner",
+          "reviewer.qa"
+        ],
+        "time_window": {
+          "start_at": "2026-06-23T19:00:00Z",
+          "end_at": "2026-06-23T21:00:00Z"
+        },
+        "reason_codes": []
+      },
+      "scope_summary": {
+        "in_scope_count": 2,
+        "out_of_scope_count": 3,
+        "touched_resource_count": 2,
+        "changed_file_count": 2,
+        "data_sensitivity": "low",
+        "reason_codes": []
+      },
+      "evidence_coverage": {
+        "completeness": "complete",
+        "manifest_completeness": "complete",
+        "artifact_count": 5,
+        "action_count": 3,
+        "tool_call_count": 3,
+        "verification_count": 2,
+        "blocked_action_count": 0,
+        "missing_evidence_count": 0,
+        "reason_codes": []
+      },
+      "risk_summary": {
+        "max_severity": "none",
+        "risk_count": 0,
+        "risk_categories": [],
+        "reason_codes": []
+      },
+      "blocked_actions_summary": {
+        "count": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "items": [],
+        "reason_codes": []
+      },
+      "verification_summary": {
+        "total_count": 2,
+        "passed_count": 2,
+        "failed_count": 0,
+        "not_run_count": 0,
+        "inconclusive_count": 0,
+        "reason_codes": []
+      },
+      "missing_evidence": [],
+      "human_review_requirements": [],
+      "next_actions": [],
+      "evidence_refs": [
+        {
+          "ref_id": "pack:epk_ai_pr_low_risk_complete_001",
+          "source": "pack",
+          "path": "evidence-pack.json",
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "submitted evidence pack"
+        },
+        {
+          "ref_id": "art_auth_pr_ticket",
+          "source": "artifact",
+          "path": "artifacts/authority/pr-1842-ticket.json",
+          "artifact_id": "art_auth_pr_ticket",
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "synthetic pull request authorization ticket"
+        },
+        {
+          "ref_id": "art_auth_review_scope",
+          "source": "artifact",
+          "path": "artifacts/authority/review-scope.md",
+          "artifact_id": "art_auth_review_scope",
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "synthetic review scope note"
+        },
+        {
+          "ref_id": "art_pr_diff",
+          "source": "artifact",
+          "path": "artifacts/diff/pr-1842.patch",
+          "artifact_id": "art_pr_diff",
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "synthetic pull request diff"
+        },
+        {
+          "ref_id": "art_unit_test_log",
+          "source": "artifact",
+          "path": "artifacts/logs/unit-test.log",
+          "artifact_id": "art_unit_test_log",
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "synthetic unit test execution log"
+        },
+        {
+          "ref_id": "art_build_log",
+          "source": "artifact",
+          "path": "artifacts/logs/build.log",
+          "artifact_id": "art_build_log",
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "synthetic build output log"
+        },
+        {
+          "ref_id": "act_ai_pr_low_risk_complete_001",
+          "source": "action",
+          "path": "src/utils/slugify.ts",
+          "artifact_id": null,
+          "action_id": "act_ai_pr_low_risk_complete_001",
+          "tool_call_id": "tc_ai_pr_low_risk_complete_fs_001",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "read_file"
+        },
+        {
+          "ref_id": "act_ai_pr_low_risk_complete_002",
+          "source": "action",
+          "path": "src/utils/slugify.ts",
+          "artifact_id": null,
+          "action_id": "act_ai_pr_low_risk_complete_002",
+          "tool_call_id": "tc_ai_pr_low_risk_complete_fs_002",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "modify_code"
+        },
+        {
+          "ref_id": "act_ai_pr_low_risk_complete_003",
+          "source": "action",
+          "path": "tests/utils/slugify.test.ts",
+          "artifact_id": null,
+          "action_id": "act_ai_pr_low_risk_complete_003",
+          "tool_call_id": "tc_ai_pr_low_risk_complete_test_001",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "test_execution"
+        },
+        {
+          "ref_id": "tc_ai_pr_low_risk_complete_fs_001",
+          "source": "tool_call",
+          "path": null,
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": "tc_ai_pr_low_risk_complete_fs_001",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "returned file contents for utility inspection"
+        },
+        {
+          "ref_id": "tc_ai_pr_low_risk_complete_fs_002",
+          "source": "tool_call",
+          "path": null,
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": "tc_ai_pr_low_risk_complete_fs_002",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "updated source and test files in workspace"
+        },
+        {
+          "ref_id": "tc_ai_pr_low_risk_complete_test_001",
+          "source": "tool_call",
+          "path": null,
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": "tc_ai_pr_low_risk_complete_test_001",
+          "verification_id": null,
+          "blocked_action_id": null,
+          "description": "unit tests passed and build completed successfully"
+        },
+        {
+          "ref_id": "ver_ai_pr_low_risk_complete_001",
+          "source": "verification",
+          "path": null,
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": "ver_ai_pr_low_risk_complete_001",
+          "blocked_action_id": null,
+          "description": "utility-specific tests executed for changed function"
+        },
+        {
+          "ref_id": "ver_ai_pr_low_risk_complete_002",
+          "source": "verification",
+          "path": null,
+          "artifact_id": null,
+          "action_id": null,
+          "tool_call_id": null,
+          "verification_id": "ver_ai_pr_low_risk_complete_002",
+          "blocked_action_id": null,
+          "description": "repository build completed in CI"
+        }
+      ],
+      "reason_codes": [],
+      "provenance": {
+        "generated_by": "guard-core-report-service",
+        "generator_version": "1.0.0",
+        "deterministic": true,
+        "source_pack_hash": "1234123412341234123412341234123412341234123412341234123412341234",
+        "reason_code_version": "1.0.0"
+      }
+    },
+    "warnings": [
+      {
+        "code": "EMPTY_BLOCKED_ACTIONS",
+        "path": "$.blocked_actions",
+        "message": "blocked_actions is empty."
+      },
+      {
+        "code": "EMPTY_RISK_SIGNALS",
+        "path": "$.risk_signals",
+        "message": "risk_signals is empty."
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "path": "docs/adapters/harness-canonical-field-provenance-map-v0.1.md",
+      "digest": "fcf4a1b3643a06f20f1d4388c59e2f62423079c1336910aa4f7e39e5cf10ffe0"
+    },
+    {
+      "path": "docs/adr/0010-mesr-canonical-id-relation-and-admission-contract.md",
+      "digest": "6ff26fa827194f98b7ddea6fc97aea3b2b92502b448febadf599fec315d00310"
+    },
+    {
+      "path": "docs/adr/0011-mesr-claim-nonclaim-state-and-binding-contract.md",
+      "digest": "2b12c78cde5138d9ccd1206fed42f2b2e19c0cd8b872ff90b5ffccc4168b26a2"
+    },
+    {
+      "path": "docs/adr/0012-reason-semantic-domain-policy-separation-contract.md",
+      "digest": "22f82dfe88aed6f893981f090aaf592e29838510b189126c3f939e3504631ace"
+    },
+    {
+      "path": "docs/adr/0013-independent-verification-and-integrity-evidence-contract.md",
+      "digest": "2f744081fab81adc968a9647a556984dda09a2b42e8b8515ae62a075db6dc9b8"
+    },
+    {
+      "path": "docs/adr/0014-profile-bound-evidence-sufficiency-and-report-boundary.md",
+      "digest": "1c89d7ba966aa04e03323c56dd7632b3428086b745f363c4fc1ffe3f79067c48"
+    },
+    {
+      "path": "docs/adr/0015-historical-current-standing-and-reliance-time-contract.md",
+      "digest": "2d9fd3126cbfaf86a47ec8df22199bf0a740f25afcf013dc175904cd44fb4eb0"
+    },
+    {
+      "path": "docs/adr/0016-mesr-module-version-lock-and-noninterference-contract.md",
+      "digest": "28488378a64b6afe674500c766f98c98422438f93233f808e3994583b988addf"
+    },
+    {
+      "path": "docs/architecture/evidence-sufficiency-side-artifact-v0.1.md",
+      "digest": "fef77019884b36f316068e4a793ceccd3b5fb52269e6c509f8a067ee98583e6b"
+    },
+    {
+      "path": "docs/architecture/harness-to-canonical-evidencepackv1-closure-v0.1.md",
+      "digest": "ef69b97732689038490ace035c67b8f531171e43d075a30cbd95c20bc6588774"
+    },
+    {
+      "path": "docs/mesr/implementation-reconciliation.v0.1.json",
+      "digest": "bb9f2629aaa1fa047cbe7448f084dba2568a972b90bf750cdb052831dd175411"
+    },
+    {
+      "path": "docs/mesr/reason-code-semantic-delta-v0.1.md",
+      "digest": "8157ffe48add5efff18e28bb835792f4bdff2555d80e1987a087cb4493c28693"
+    },
+    {
+      "path": "docs/planning/13_V8_000_SOURCE_RECONCILIATION.md",
+      "digest": "6c3340d9d6e2778f025a6e049e84dc200ca9c9eb1468f22accc67c09df4e9a77"
+    },
+    {
+      "path": "docs/validation/experiment-3-semantic-portability-and-composition-v0.1.md",
+      "digest": "45d36743644f7d0cfecb73447ff0bec9657eedf28cb13a025c951c1fbda26c01"
+    },
+    {
+      "path": "docs/validation/v8-b02-claim-state-negative-cases-v0.1.md",
+      "digest": "7a2698deafb19c8ff3d202f4cda427d9625d6ce320952254df5b44f3c81b8984"
+    },
+    {
+      "path": "docs/validation/v8-b05-independence-integrity-falsifiers-v0.1.md",
+      "digest": "a3e52e155dc4c481817a80979b077824011115d7fc55287ded59cbf57ade8e5a"
+    },
+    {
+      "path": "docs/validation/v8-b07-temporal-standing-cases-v0.1.md",
+      "digest": "d31972fea91ebbf82e99ad282c71058f82d282151123b6faa69544d4d2d1af28"
+    },
+    {
+      "path": "docs/validation/v8-b08-composition-hardening-cases-v0.1.md",
+      "digest": "100e31ebb834395eaaab9b7f054c25d072f0a88af32b887d5aba088376d396ce"
+    },
+    {
+      "path": "fixtures/ai-pr-low-risk-complete/evidence-pack.json",
+      "digest": "ede74f7d9cea212416646a27f5f9bbfc7d8ea1401bf227aa9256213e92828007"
+    },
+    {
+      "path": "packages/guard-core/src/evidenceAssuranceKernel.ts",
+      "digest": "0b7f6c2052b8e7fdebec8b3abfbdeaf0a69c62d427c221c96541f5af6dfd0edd"
+    },
+    {
+      "path": "packages/guard-core/src/generateGovernanceReport.ts",
+      "digest": "95247bd5e50136cb1b5fece20b3f8ee1375af94dd9b68a8c4f2d1b1d37bfbdf9"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/claimBoundaries.ts",
+      "digest": "1553a37b2f7af353e4647d6009fa2d1b9b50cc89f22cfe728cdd51552cd03454"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/corePatternSignature.ts",
+      "digest": "cd3955c0a2faabb0a231b6bb5ee8d438c733c0b67bff7839a362e6c4189231a2"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/coreRegistry.ts",
+      "digest": "8982d4355ecca8f0d3a5b59c7d4be1c7488f82098e3d97c710135dcbc8dc51d5"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/eakProjection.ts",
+      "digest": "32b1c3839e050800ac1230c04f4dd3c06440cc9c626e68a4f08c07d1f251dfc0"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/moduleManifest.ts",
+      "digest": "45aa69385ae32149c63753b7f1a76bec45d7a820beb441119fe7e7973f2fc191"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/reasonCodeBindings.ts",
+      "digest": "9855632dce020713d4ff6859594d603a061f7d0d7303f4d6076353fbb1324828"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/semanticSnapshot.ts",
+      "digest": "037b3464651116022ee4f1b9b6c1472e38f26bdc3b7922a62d21a814ee42f455"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/softwareDomainSeed.ts",
+      "digest": "cb6ba396e112d1a4580980fc4109cdfc612c93f689018a2301cbdde53e0c880e"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/supportEvaluator.ts",
+      "digest": "2841616bb1f20e630a3bfe43debad2527d79410c7b54ae724cff0fd4b63b44b1"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/temporalBasis.ts",
+      "digest": "9ffe4471a3a31e35e7ee65dd011daaff3baff49290609254f015e5ffc24d445e"
+    },
+    {
+      "path": "packages/guard-core/src/mesr/types.ts",
+      "digest": "26f694c046f51476c01c090b2e8ae1670fdf24be0fc40d7726451c30f52da7cc"
+    },
+    {
+      "path": "packages/guard-core/src/reasonCodes.ts",
+      "digest": "d24ad17e1c50552f18f2508f589f3c594c0ddb77f41ae05a8977adae257e8198"
+    },
+    {
+      "path": "packages/guard-core/src/reportModel.ts",
+      "digest": "1aeac46d08bae242da7995dbcf2f2b6f2e38dd6f89749b5c6cf47b67f6b2e64b"
+    },
+    {
+      "path": "packages/schema/evidence-schema-v1.json",
+      "digest": "a5d7bafc4534ae8c42c2959eeb009038c2514bcd2120179b1a6fe128f12a24f1"
+    },
+    {
+      "path": "scripts/fixtures/evidence_assurance_experiment_0_cases.mjs",
+      "digest": "70a68ce681a32735e76bfefcdfb5a5722cc5abf449b29555317cb612ae70b7b5"
+    },
+    {
+      "path": "scripts/fixtures/mesr_e3_a1_runtime_portability_fixtures.mjs",
+      "digest": "cb54d51c2bc39a1503059aa05cbe2320d44d847f14025565a8fc3b008458c21c"
+    },
+    {
+      "path": "scripts/fixtures/mesr_experiment_3_phase2a_fixtures.mjs",
+      "digest": "e96c167c6c43a0f8ae83f5b5c0f92a8ba8d25ca220bc671636de8d000d90f3ac"
+    },
+    {
+      "path": "scripts/fixtures/mesr_experiment_3_phase2c_fixtures.mjs",
+      "digest": "fca3ee2258211bf30e1ab0f8f62fb3376bbda30c29644e3ed92d76e83dc200c1"
+    }
+  ]
+}

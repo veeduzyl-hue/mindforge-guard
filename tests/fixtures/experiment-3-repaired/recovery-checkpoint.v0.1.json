@@ -1,0 +1,63 @@
+{
+  "head": "d3f959593aba6fba8fd51851190e03e2bd975ad0",
+  "phase_b_commit": "20a89e95c38d251f3812b76130b991501409a9ad",
+  "branch": "validation/v8-b09-repaired-experiment-3-acceptance-v0.1",
+  "files": [
+    {
+      "path": "scripts/b09/author-fixtures.mjs",
+      "sha256": "a6393d7141683563843620775da4681323b1b30427ed61cddee5140f01f66266",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "scripts/b09/reference.mjs",
+      "sha256": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11",
+      "classification": "PARTIAL_VALID",
+      "disposition": "Preserve original bytes; add admission boundary"
+    },
+    {
+      "path": "scripts/b09/runtime-observer.mjs",
+      "sha256": "32ed6a6e38e437f5782ae431f9c74d49e0b5d966e396f8ab7ff6e92606b5b70c",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "scripts/verify_v8_b09_repaired_experiment_3.mjs",
+      "sha256": "85388c6447083d7b5a6fd2b073ce898b675f1a24b5bd994cec2fa19b3eadecdc",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/basis.v0.2.json",
+      "sha256": "4e7942cf893946c499646ae5435fc991f7c82fe2aae78ad22892f45e98faadc3",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/cases.v0.2.json",
+      "sha256": "ea700128e400ec09aa08a360a2122be9750be8d5046d75af1eca3dfcb8339901",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/oracle.v0.2.json",
+      "sha256": "6dbc01d9650d45a03c0f8319eaecc994b34eae6d0f4885cdac971e6a32ab5c88",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/results.v0.2.json",
+      "sha256": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade",
+      "classification": "COMPLETE_VALID",
+      "disposition": "Preserve original bytes"
+    },
+    {
+      "path": "tests/fixtures/experiment-3-repaired/runtime-observation-baseline.v0.2.json",
+      "sha256": "ef30cd98aa9e7dfc494fcfd31cb7d178708eeab23a5b6ecec2d75ec961e49d6d",
+      "classification": "PARTIAL_VALID",
+      "disposition": "Enrich observed-record metadata; retain all original case hashes"
+    }
+  ],
+  "base_case_count": 172,
+  "prior_result_hash": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade"
+}

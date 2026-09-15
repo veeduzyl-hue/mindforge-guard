@@ -1,0 +1,66 @@
+{
+  "schema_version": "b09-replay/0.2",
+  "runs": [
+    {
+      "run": 1,
+      "base_result_hash": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade",
+      "result_hash": "49bd7526ba3092f02c0255970aa01723b771d492e57428f9a4aac0268fe69560",
+      "counts": {
+        "total": 207,
+        "base_cases": 172,
+        "hardening_cases": 35,
+        "PASS": 207,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIPPED": 0,
+        "core_noninterference_probes": 603
+      },
+      "commands": [
+        "node scripts/verify_v8_b09_repaired_experiment_3.mjs",
+        "node scripts/verify_v8_b09_acceptance_resume.mjs"
+      ]
+    },
+    {
+      "run": 2,
+      "base_result_hash": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade",
+      "result_hash": "49bd7526ba3092f02c0255970aa01723b771d492e57428f9a4aac0268fe69560",
+      "counts": {
+        "total": 207,
+        "base_cases": 172,
+        "hardening_cases": 35,
+        "PASS": 207,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIPPED": 0,
+        "core_noninterference_probes": 603
+      },
+      "commands": [
+        "node scripts/verify_v8_b09_repaired_experiment_3.mjs",
+        "node scripts/verify_v8_b09_acceptance_resume.mjs"
+      ]
+    },
+    {
+      "run": 3,
+      "base_result_hash": "4d6f9317647bc2681254e5090ee8a445bab5aab478fdd33b77e13060b1624ade",
+      "result_hash": "49bd7526ba3092f02c0255970aa01723b771d492e57428f9a4aac0268fe69560",
+      "counts": {
+        "total": 207,
+        "base_cases": 172,
+        "hardening_cases": 35,
+        "PASS": 207,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIPPED": 0,
+        "core_noninterference_probes": 603
+      },
+      "commands": [
+        "node scripts/verify_v8_b09_repaired_experiment_3.mjs",
+        "node scripts/verify_v8_b09_acceptance_resume.mjs"
+      ]
+    }
+  ],
+  "determinism": "PASS",
+  "clock_reads": 0,
+  "network_calls": 0,
+  "permutations": "Module reversal/rotations, relation/lock ordering, claim request and set-valued reference ordering; event order preserved by contract."
+}

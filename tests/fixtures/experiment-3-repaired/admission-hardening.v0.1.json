@@ -1,0 +1,715 @@
+{
+  "schema_version": "b09-admission-hardening/0.1",
+  "base_fixture_sha256": "ea700128e400ec09aa08a360a2122be9750be8d5046d75af1eca3dfcb8339901",
+  "oracle_semantics_changed": false,
+  "cases": [
+    {
+      "case_id": "H01",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [],
+          "value": null
+        }
+      ],
+      "input_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H02",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "365f10ccd16db386961962eed2aca56be820db675079783978d30ff3afe7a407",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H03",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "bindings"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "07192630a619b4e162157f8668b646e0799a939ff08fe0e4964ddb56cdf86f0c",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H04",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "events"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "bc3a6c65182f81950caa1d8b66f812a514b6dffe4530f8e76aad16c8d1c036dd",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H05",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "events",
+            0
+          ],
+          "value": null
+        }
+      ],
+      "input_sha256": "06bf1b38191f70fc7c75616c70bcc5eb3aa2772272f9f79af15d61c0f23daba2",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H06",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "events",
+            0,
+            "output_ref"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "8d892eaa0b2d63cea23fd889339b67a8f5f52ecbae700974db171966bbe247b4",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H07",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "evidence_ledger",
+            "fixture:test-output"
+          ],
+          "value": true
+        }
+      ],
+      "input_sha256": "d66783a6457212ee1ebaf907e660f1996d29e5fbb57b23e53177dca07d78fdf6",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H08",
+      "base_case_id": "S04",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "bindings",
+            "evidence_refs"
+          ],
+          "value": false
+        }
+      ],
+      "input_sha256": "1351c06da03ae404782a4188819ea32d804c24dc9b196668caa02967e34a6a0f",
+      "expected": {
+        "state": "UNRESOLVED",
+        "missing_binding": "evidence_refs"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H09",
+      "base_case_id": "I10",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "custody"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "2cf5bc67ce8be80174226ca1194b4c4757a083762f7fd5159a8b91ef233646cc",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H10",
+      "base_case_id": "I10",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "separation"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "51b729af59ef6abf94d2c7ad48d9dfdea3f0f21faa87551714bd46d8bc69b2c1",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H11",
+      "base_case_id": "T02.before",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "temporal",
+            "snapshot",
+            "complete"
+          ],
+          "value": "yes"
+        }
+      ],
+      "input_sha256": "ba1489ab7d1b5514e4632b8b9bd7d27a8489cb5fc61d2cb72644de297beace23",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H12",
+      "base_case_id": "T02.before",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "temporal",
+            "continuity",
+            "subject"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "30a223d6e3a4dc8f1711855ceed2090517bf529bd811e4eabd9a70dc2e411671",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H13",
+      "base_case_id": "T02.before",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "remove",
+          "path": [
+            "temporal",
+            "effective_until"
+          ]
+        }
+      ],
+      "input_sha256": "5b0f60236685a448c498dc2df9e8df41a6a889fc404abd193be185aaf620bfc8",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H14",
+      "base_case_id": "I10",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "integrity",
+            "bytes_base64"
+          ],
+          "value": "%%%"
+        }
+      ],
+      "input_sha256": "e2f29747fc665cc2d5082324255a72bd66e5a1e782d919787285a157a6fb8028",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H15",
+      "base_case_id": "I10",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "integrity",
+            "bytes_base64"
+          ],
+          "value": 123
+        }
+      ],
+      "input_sha256": "d7e8fbe02bbf39b193fb9a650b7d531e83f50b74892471f8d6310525c7144084",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H16",
+      "base_case_id": "S04",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "sufficiency",
+            "evidence_refs"
+          ],
+          "value": false
+        }
+      ],
+      "input_sha256": "d064e883a9c3df7425f6aa041e68ffebca26ebd25666a40b324b7b0acf6b5b59",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H17",
+      "base_case_id": "S04",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "sufficiency",
+            "atomic_results"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "7b48dcc5665432c5763867b42a5cabee6ca7da696d6605f6d10ec60a24568980",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H18",
+      "base_case_id": "S04",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "sufficiency",
+            "requirements"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "4460d17d502bae093d1ffde041a49ee6d3e04c36e4a8aee9615842d38165137a",
+      "expected": {
+        "state": "UNRESOLVED",
+        "missing_binding": "sufficiency.requirement.tests"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H19",
+      "base_case_id": "S04",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "sufficiency",
+            "atomic_results",
+            0,
+            "state"
+          ],
+          "value": "APPROVED"
+        }
+      ],
+      "input_sha256": "3529c3fcb6cca2d395100bad18b3ad006ae8b1fc642aab2d08214ab8f67c18fa",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H20",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests",
+            0,
+            "required_bindings"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "6c1205808ece2e4af8118646f21be84743f8a56000705e5c95e7a241fb0aac74",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H21",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests",
+            0,
+            "path"
+          ],
+          "value": "arbitrary_world_proof"
+        }
+      ],
+      "input_sha256": "e2a29e243815777472f2c5ff06d7ac1ce0685603b34cd09bf087761ebffc3fc0",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H22",
+      "base_case_id": "C01",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "lock"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "e2bef2c07547d919abb74be246629ac22ebdbe2fd60a35d93c05deee1a61276d",
+      "expected": {
+        "status": "INVALID_COMPOSITION"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H23",
+      "base_case_id": "C01",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "raw_manifests",
+            "mesr.core"
+          ],
+          "value": "{invalid"
+        }
+      ],
+      "input_sha256": "8fb20ef36a0e309a6f4a80c74c0d35543926d52e5b83307f4250d17b9ac40852",
+      "expected": {
+        "status": "INVALID_COMPOSITION"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H24",
+      "base_case_id": "C01",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "relations"
+          ],
+          "value": [
+            null
+          ]
+        }
+      ],
+      "input_sha256": "6874ec29f96a7ff64312f37639689103d37a4927362861cf62cee9798fefcdff",
+      "expected": {
+        "status": "INVALID_COMPOSITION"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H25",
+      "base_case_id": "C01",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "modules",
+            1,
+            "added_semantics",
+            0,
+            "supports"
+          ],
+          "value": [
+            null
+          ]
+        }
+      ],
+      "input_sha256": "6bb06b32db119dc32ba55d388d1055ecd46d9ce0967dc08b2d0c414de38b2f74",
+      "expected": {
+        "status": "INVALID_COMPOSITION"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H26",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests",
+            0,
+            "semantic_ids"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "87fe4b9c72fe153ae1ad1955e97c6b2d59902421c53337fefa641943b073dff2",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H27",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests",
+            0
+          ],
+          "value": null
+        }
+      ],
+      "input_sha256": "b117eefec2a81c06ba4e6ba5c6c91540839dd1c9b4f7ade2e53007ac177cd92a",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H28",
+      "base_case_id": "N08",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "predicates",
+            "verification_executed"
+          ],
+          "value": "presence"
+        }
+      ],
+      "input_sha256": "97358e3e3f408731593c00a3fc2f2c1193fd45de73a928b877aa9d30afe9e9eb",
+      "expected": {
+        "state": "UNRESOLVED",
+        "missing_binding": "verification_executed"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H29",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "method"
+          ],
+          "value": null
+        }
+      ],
+      "input_sha256": "d7ef1adfab3097fe01b9efcb38c61bb532d2d5f6e6468f7eaaa60fb33128bb43",
+      "expected": {
+        "state": "UNRESOLVED",
+        "missing_binding": "method"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H30",
+      "base_case_id": "I10",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "custody",
+            "sole_producer_control"
+          ],
+          "value": "false"
+        }
+      ],
+      "input_sha256": "be7e716657089b61381d527ed9e5777ad22ce5b4b4eb816bd48d2fc48052b8fc",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H31",
+      "base_case_id": "C01",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "modules",
+            3,
+            "module_type"
+          ],
+          "value": "producer"
+        }
+      ],
+      "input_sha256": "a6057570f48938f920b61b4d2925239aa8eb7fb33473432e3eeeedf4c191767e",
+      "expected": {
+        "status": "INVALID_COMPOSITION"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H32",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "events"
+          ],
+          "value": []
+        }
+      ],
+      "input_sha256": "1b365380ed9d5fb6dc301754520dee434dc9d7dd43239ac1b0941f0f2b98ee47",
+      "expected": {
+        "state": "UNRESOLVED",
+        "missing_binding": "verification_event"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H33",
+      "base_case_id": "T15",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "acceptance_authority"
+          ],
+          "value": {}
+        }
+      ],
+      "input_sha256": "a4c46bf08d6c2eb726a58155fdcb03650c60288e1a1dcc0a8a7794137b2ec132",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H34",
+      "base_case_id": "T02.before",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "temporal",
+            "historical_support"
+          ],
+          "value": "true"
+        }
+      ],
+      "input_sha256": "a89f3436e4194109bd6939b3d5cb0d9acb6324e6faa3b2d5534dcc8e9d107780",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    },
+    {
+      "case_id": "H35",
+      "base_case_id": "N12.complete",
+      "contract_basis": "B02 value predicates; B05 attributable evidence; B06 closed artifact shape; B07 explicit temporal basis; B08 shape-before-typed-resolver; B09 resume sections 2-3",
+      "mutations": [
+        {
+          "op": "replace",
+          "path": [
+            "requests",
+            0,
+            "semantic_version"
+          ],
+          "value": false
+        }
+      ],
+      "input_sha256": "6e3eb7caa999cd4c19b359751ae98653bf596fde0d87a24afe31800326f48957",
+      "expected": {
+        "status": "REJECTED"
+      },
+      "current_runtime_expected_to_conform": false
+    }
+  ]
+}
