@@ -216,7 +216,7 @@ if (before) {
   });
   checkControl("public-source-and-import-isolation", () => {
     const owned = [...productPaths, "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", fixturePath, resultPath, "docs/validation/v8-gate1-t1-01-evidence-v0.1.md"];
-    owned.push(...t102Paths);
+    owned.push(...t102Paths, "docs/validation/v8-gate1-t1-02-post-commit-verifier-closure-v0.1.md");
     const changed = execFileSync("git", ["diff", "--name-only", baseline.pre_change_head], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
     assert.ok(changed.every(path => owned.includes(path)), "Protected baseline files changed: " + changed.filter(path => !owned.includes(path)).join(", "));
     const tracked = execFileSync("git", ["ls-files", "-z", "packages"], { encoding: "utf8", maxBuffer: 5_000_000 }).split("\0").filter(p => /\.(?:mjs|cjs|js|ts|json)$/.test(p));
@@ -263,7 +263,7 @@ async function runRequirementsTask() {
 
 async function verifyRequirementsAfter({ rows, core, trust, t102CaseIds, controlPath, outputPath, productPath, legacy }) {
   const baseline = readJson(controlPath);
-  assert.equal(head, baseline.pre_change_head);
+  execFileSync("git", ["merge-base", "--is-ancestor", baseline.pre_change_head, head]);
   assert.equal(digest(fs.readFileSync(controlPath)), "2e0edbf7952d17bd27b8716f94b4cb0df039eed05d4313a0241300b419efccf7", "Original before capture changed");
   assert.equal(digest(legacy), baseline.legacy_sha256);
   assert.equal(digest(core), baseline.core_input_sha256);
@@ -423,15 +423,41 @@ async function verifyRequirementsAfter({ rows, core, trust, t102CaseIds, control
 
 // Exact task-scope protection includes untracked files and committed T1-01 byte pins.
 function assertTaskScope() {
-  assert.equal(head, "7726fc7f58305e59ea7359d9658494b7695bfa4d");
-  const changed = execFileSync("git", ["diff", "--name-only", head], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
-  const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
-  const check = paths => assert.ok(paths.every(path => t102Paths.includes(path)), "Outside T1-02 allowlist: " + paths.filter(path => !t102Paths.includes(path)).join(", "));
-  check([...changed, ...untracked]);
-  for (const extra of ["README.md", "packages/guard-core/src/reasonCodes.ts", "unrelated/other.ts"]) assert.throws(() => check([...changed, extra]));
-  const oldPaths = execFileSync("git", ["show", "--format=", "--name-only", head], { encoding: "utf8" }).trim().split("\n");
+  const t101 = "7726fc7f58305e59ea7359d9658494b7695bfa4d";
+  const t102 = "c5a66b50cefc39002dea190af078a49a7c47e3d4";
+  const closurePaths = ["scripts/verify_v8_gate1_product_conformance.mjs", "docs/validation/v8-gate1-t1-02-post-commit-verifier-closure-v0.1.md"];
+  const git = (...args) => execFileSync("git", args, { encoding: "utf8", stdio: "pipe" }).trim();
+  const list = value => value.split("\n").filter(Boolean);
+  const isAncestor = (anchor, current) => {
+    try { git("cat-file", "-e", anchor + "^{commit}"); git("merge-base", "--is-ancestor", anchor, current); return true; }
+    catch { return false; }
+  };
+  const validate = (task, anchors, current, committed, pending, ancestor) => {
+    assert.ok(Object.hasOwn(anchors, task), "Unknown task");
+    assert.ok(anchors[task] && ancestor(anchors[task], current), "Missing/non-ancestor accepted task anchor");
+    assert.ok(ancestor(t102, current), "T1-02 preservation anchor missing from ancestry");
+    for (const path of [...committed, ...pending]) assert.ok(closurePaths.includes(path), "Outside verifier closure allowlist: " + path);
+  };
+  const anchors = { "T1-01": t101, "T1-02": t102 };
+  const changed = list(git("diff", "--name-only", head));
+  const untracked = list(git("ls-files", "--others", "--exclude-standard"));
+  // Inspect every intervening commit, including reverted changes, as well as net bytes.
+  const committed = list(git("log", "--format=", "--name-only", t102 + ".." + head));
+  validate(args[1], anchors, head, committed, [...changed, ...untracked], isAncestor);
+  for (const extra of ["README.md", "packages/guard-core/src/reasonCodes.ts", "unrelated/other.ts"]) assert.throws(() => validate(args[1], anchors, head, committed, [...changed, extra], isAncestor));
+  assert.throws(() => validate("UNKNOWN_TASK", anchors, head, [], [], isAncestor));
+  assert.throws(() => validate("T1-02", {}, head, [], [], isAncestor));
+  assert.throws(() => validate("T1-02", { "T1-02": "0".repeat(40) }, head, [], [], isAncestor));
+  assert.throws(() => validate("T1-02", anchors, t101, [], [], isAncestor));
+  assert.throws(() => validate("T1-02", anchors, head, ["README.md"], [], isAncestor));
+  validate("T1-02", anchors, "synthetic-authorized-descendant", closurePaths, [], (anchor, current) => [t101, t102].includes(anchor) && current === "synthetic-authorized-descendant");
+  const oldPaths = list(git("show", "--format=", "--name-only", t101));
   assert.equal(oldPaths.length, 9);
-  for (const path of oldPaths.filter(path => !t102Paths.includes(path))) assert.deepEqual(fs.readFileSync(path), execFileSync("git", ["cat-file", "blob", head + ":" + path], { maxBuffer: 2_000_000 }), "Frozen T1-01 bytes: " + path);
+  for (const path of [...new Set([...oldPaths, ...t102Paths])].filter(path => !closurePaths.includes(path))) {
+    const preserved = execFileSync("git", ["cat-file", "blob", t102 + ":" + path], { maxBuffer: 2_000_000 });
+    assert.deepEqual(fs.readFileSync(path), preserved, "Frozen T1-01/T1-02 worktree bytes: " + path);
+    assert.deepEqual(execFileSync("git", ["cat-file", "blob", head + ":" + path], { maxBuffer: 2_000_000 }), preserved, "Frozen T1-01/T1-02 committed bytes: " + path);
+  }
   for (const path of [...productPaths, "packages/guard-core/src/mesr/repaired/requirements.ts"].filter(path => fs.existsSync(path))) {
     const source = fs.readFileSync(path, "utf8");
     for (const match of source.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g)) assert.ok(!/scripts|fixtures|gate1|b09/.test(match[1]), "Test dependency: " + path);
