@@ -55,3 +55,82 @@ export function compareAll(rows, outputs, expected) {
   assert.deepEqual(Object.keys(outputs), caseIds, "Dropped/duplicate/unmatched result inventory");
   return rows.map(row => ({ case_id: row.case_id, ...compare(row, outputs[row.case_id], expected[row.case_id]) }));
 }
+
+// T1-02 comparisons own requirement/nonclaim facets, never six-state selection.
+export function compareRequirements(rows, outputs, expected, ids) {
+  assert.deepEqual(rows.map(row => row.case_id), ids);
+  assert.deepEqual(Object.keys(outputs), ids, "Dropped/duplicate/unmatched T1-02 results");
+  const item = ["evidence_id_or_ref", "producer_or_source", "provenance", "subject"];
+  const verification = ["evidence_refs", "limitations", "method", "result", "scope", "subject", "verified_at", "verifier"];
+  const observation = ["checked_property", "limitations", "method", "observed_time", "observer_or_source", "scope", "subject", "time", "verifier"];
+  const assertions = [];
+  for (const row of rows) {
+    const result = outputs[row.case_id];
+    assert.equal(result.status, "COLLECTED", row.case_id);
+    assert.equal(result.state_evaluation, "PENDING_STATE_EVALUATION");
+    assert.equal(result.semantic_composition, "WITHHELD");
+    assert.equal(result.input_digest, digest(row.input));
+    assert.equal(result.claims.length, row.input.requests.length);
+    const oracle = expected[row.case_id];
+    for (const claim of result.claims) {
+      assert.ok(!Object.hasOwn(claim, "state"));
+      assert.equal(claim.state_evaluation, "PENDING_STATE_EVALUATION");
+      const request = row.input.requests.find(r => r.path === claim.path && r.claim === claim.claim);
+      assert.ok(request);
+      let required = row.case_id === "H08" ? ["claim_id", "evidence_refs", "predicate", "scope", "subject", "time"]
+        : claim.path === "observation_inference" ? observation : claim.path === "generic" ? item : verification;
+      required = [...new Set([...required, ...request.required_bindings])].sort();
+      assert.deepEqual(claim.effective_requirements, required, row.case_id + ": exact binding union");
+      assert.deepEqual(claim.bindings.map(r => r.binding), required);
+      for (const binding of claim.bindings) {
+        assert.equal(binding.present, Object.hasOwn(row.input.bindings, binding.binding));
+        if (binding.present) assert.deepEqual(binding.value, row.input.bindings[binding.binding]);
+        assert.ok(binding.predicates.length > 0 && binding.origins.length > 0);
+        assert.equal(binding.association.subject, row.input.subject);
+        assert.equal(binding.association.scope, row.input.scope);
+        assert.equal(binding.association.evaluation_time, row.input.bindings.evaluation_time);
+        assert.ok(binding.association.source_ref);
+        for (const predicate of binding.predicates) {
+          const name = binding.binding === "evidence_refs" || binding.binding === "witnesses" ? "nonempty_array"
+            : binding.binding === "verification_executed" ? "true" : "nonempty_reference";
+          assert.equal(predicate.predicate, name);
+          assert.equal(predicate.defined, true);
+          assert.equal(predicate.present, binding.present);
+          const v = row.input.bindings[binding.binding];
+          const valid = name === "true" ? v === true : name === "nonempty_array" ? Array.isArray(v) && v.length > 0 && v.every(x => typeof x === "string" && x.trim().length > 0) : typeof v === "string" && v.trim().length > 0;
+          assert.equal(predicate.satisfied, binding.present && valid);
+        }
+      }
+      let missing = [], nonclaims, prohibited = false;
+      if (oracle?.claims) {
+        const wanted = oracle.claims.find(r => r.path === claim.path && r.claim === claim.claim);
+        assert.ok(wanted, "Missing original oracle assertion");
+        missing = wanted.missing_bindings;
+        nonclaims = wanted.nonclaims;
+        prohibited = wanted.diagnostics.includes("INFERENCE_PROHIBITED");
+        // B09 selects prohibition first. Collection also retains CB-07's missing
+        // checked_property requirement; this does not rewrite that state oracle.
+        if (claim.path === "observation_inference") missing = [...new Set([...missing, "checked_property"])].sort();
+      } else if (oracle?.missing_binding) {
+        missing = [oracle.missing_binding];
+        nonclaims = row.case_id === "H08" ? ["claim_support_without_evidence", "claim_truth_without_evidence"] : ["approval", "execution_authority", "untested_properties"];
+      } else {
+        assert.ok(row.case_id.startsWith("control."));
+        nonclaims = ["artifact_truth", "authority", "evidence_sufficiency"];
+      }
+      assert.deepEqual(claim.missing_bindings, missing, row.case_id + ": missing bindings");
+      for (const binding of claim.bindings) assert.equal(binding.satisfied, !missing.includes(binding.binding), row.case_id + ": binding satisfaction");
+      assert.ok(claim.nonclaim_provenance.every(n => typeof n.canonical_nonclaim === "string" && n.canonical_nonclaim.length > 0));
+      assert.deepEqual(claim.nonclaims, nonclaims, row.case_id + ": nonclaims");
+      assert.equal(claim.excluded_inferences.length > 0, prohibited);
+      assert.deepEqual(claim.diagnostics, [...missing.map(key => "MISSING:" + key), ...(prohibited ? ["INFERENCE_PROHIBITED"] : [])].sort());
+      assert.deepEqual(claim.unresolved_identities, row.case_id === "N09" ? [{ semantic_id: "mesr.core.unknown", requested_version: "0.1.0" }] : []);
+      assert.deepEqual(claim.caller_assertions.supported_claim_parts, row.input.caller_supported_claim_parts ?? []);
+      assert.deepEqual(claim.caller_assertions.predicate_hints, row.input.predicates ?? {});
+      assert.ok(claim.nonclaim_provenance.every(n => n.path === claim.path && n.source_ref));
+    }
+    assertions.push({ case_id: row.case_id, asserted: ["exact effective requirements", "binding values/predicates/provenance", "missing bindings", "nonclaims/exclusions", "unresolved identities", "state/composition withheld"],
+      comparison: "EXPECTED_GAP_CLOSED", pending: ["T1-03 six-state selection", "T1-04 semantic composition", ...(["N18", "I10.unresolved_ref", "H29", "H08"].includes(row.case_id) ? ["Tranche 2 specialized proof evaluation"] : [])] });
+  }
+  return assertions;
+}

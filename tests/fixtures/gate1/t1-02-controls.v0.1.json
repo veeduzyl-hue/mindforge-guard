@@ -1,0 +1,3680 @@
+{
+  "version": "gate1-t1-02-controls/0.1",
+  "task_id": "T1-02",
+  "pre_change_head": "7726fc7f58305e59ea7359d9658494b7695bfa4d",
+  "oracle_hash": "6dbc01d9650d45a03c0f8319eaecc994b34eae6d0f4885cdac971e6a32ab5c88",
+  "core_input_sha256": "235a157ecf44a6a66b82bda04e961565c435d8add43351c71c7a590950531096",
+  "trust_sha256": "a9647633d08836e2e666d87926472d7a03258b7b18725235e6b573d24a108a7e",
+  "BEFORE_CONFORMS": 0,
+  "BEFORE_PARTIAL": 0,
+  "BEFORE_EXPECTED_GAP": 13,
+  "BEFORE_NOT_APPLICABLE": 0,
+  "observations": [
+    {
+      "case_id": "N03",
+      "input_sha256": "3a2b2528eb786533eb69e1ac66fb901bb928609729c3390e9d1d5baa8bcd44a9",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "generic",
+            "claim": "evidence_presence",
+            "semantic_ids": [
+              "mesr.core.evidence.item"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N04",
+      "input_sha256": "5061a260a8aed600ca940f8340001cad06accd4332b7388cf56a714290c9a356",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "generic",
+            "claim": "evidence_sufficiency",
+            "semantic_ids": [
+              "mesr.core.evidence.item"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow",
+        "caller_supported_claim_parts": [
+          "evidence_sufficiency"
+        ]
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N07",
+      "input_sha256": "3573813fd04f7c49f39c0199bc419af390eb2f1fd3cc46868b850ffbe3ad15ce",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": [
+              "witnesses"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N08",
+      "input_sha256": "5f9865c19cc500545296dd03dade81e48b63de38b632290f47ecc5218a820c6b",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": false
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": [
+              "verification_executed"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N09",
+      "input_sha256": "98a4f5c2cc4d5dbbe3290656a478e9d8c8d82cb70546d7da41b057a06b88e27a",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification",
+              "mesr.core.unknown"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "REJECTED",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [
+          {
+            "rule_id": "LOCK_BASIS_UNRESOLVED",
+            "subject": "request",
+            "field": "semantic_identity",
+            "related_id": "mesr.core.unknown",
+            "detail": "LOCK_BASIS_UNRESOLVED"
+          }
+        ],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N08.predicate_override",
+      "input_sha256": "97358e3e3f408731593c00a3fc2f2c1193fd45de73a928b877aa9d30afe9e9eb",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": false
+        },
+        "predicates": {
+          "verification_executed": "presence",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": [
+              "verification_executed"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "I10.unresolved_ref",
+      "input_sha256": "39b2b4efdefb503830a907cb49b74c1a437670d3bbe30db7c42c4e8638c7ce5d",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "N18",
+      "input_sha256": "38af68069619aada3b51267e5993b46f5ff5e442cce51146e813a707af40cf54",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "observation_inference",
+            "claim": "verification.independent",
+            "semantic_ids": [
+              "mesr.core.evidence.observation"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          },
+          {
+            "path": "independence",
+            "claim": "verification.independent",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "H08",
+      "input_sha256": "1351c06da03ae404782a4188819ea32d804c24dc9b196668caa02967e34a6a0f",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": false,
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "sufficiency",
+            "claim": "evidence.sufficient",
+            "semantic_ids": [
+              "mesr.core.claim.claim"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "H28",
+      "input_sha256": "97358e3e3f408731593c00a3fc2f2c1193fd45de73a928b877aa9d30afe9e9eb",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": false
+        },
+        "predicates": {
+          "verification_executed": "presence",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": [
+              "verification_executed"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "H29",
+      "input_sha256": "d7ef1adfab3097fe01b9efcb38c61bb532d2d5f6e6468f7eaaa60fb33128bb43",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": null,
+        "requests": [
+          {
+            "path": "pass",
+            "claim": "verification.passed",
+            "semantic_ids": [
+              "mesr.core.evidence.verification"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "inconclusive"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "control.generic",
+      "input_sha256": "81643e2b397c19508c09a2225ed544e7efad10cea93b90a5e83de4a3c7df4a42",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "generic",
+            "claim": "evidence_presence",
+            "semantic_ids": [
+              "mesr.core.evidence.item"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": []
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    },
+    {
+      "case_id": "control.caller_added",
+      "input_sha256": "8d2c1312c78ca1c4df4c67148c4303901d42ddfaf8e25616b1f2480692466c69",
+      "input": {
+        "kind": "claims",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "subject": "repo:fixture@revision-b",
+        "revision": "revision-b",
+        "scope": "src/change.ts",
+        "event_id": "check:1",
+        "event_time": "2026-09-15T10:00:00Z",
+        "producer": "ci:fixture",
+        "bindings": {
+          "action": "fixture:action",
+          "action_ref": "fixture:action_ref",
+          "action_type": "fixture:action_type",
+          "actor": "fixture:actor",
+          "actor_id": "fixture:actor_id",
+          "affected_subject": "fixture:affected_subject",
+          "after_state": "fixture:after_state",
+          "allowed_action": "fixture:allowed_action",
+          "asserted_time": "fixture:asserted_time",
+          "assertion": "fixture:assertion",
+          "attester": "fixture:attester",
+          "basis_valid_at": "fixture:basis_valid_at",
+          "before_state": "fixture:before_state",
+          "boundary": "fixture:boundary",
+          "claim_id": "fixture:claim_id",
+          "claim_ref": "fixture:claim_ref",
+          "credential_or_source": "fixture:credential_or_source",
+          "decision_or_rationale_ref": "fixture:decision_or_rationale_ref",
+          "declaring_actor": "fixture:declaring_actor",
+          "delegate": "fixture:delegate",
+          "delegator": "fixture:delegator",
+          "evaluated_claim": "fixture:evaluated_claim",
+          "evaluator_and_version": "fixture:evaluator_and_version",
+          "evidence_id_or_ref": "fixture:evidence_id_or_ref",
+          "evidence_refs": [
+            "fixture:change",
+            "fixture:test-output"
+          ],
+          "expiry_revocation_or_supersession_refs": "fixture:expiry_revocation_or_supersession_refs",
+          "external_decision_owner": "fixture:external_decision_owner",
+          "from_state": "fixture:from_state",
+          "inputs_or_ref": "fixture:inputs_or_ref",
+          "limitations": "fixture:limitations",
+          "method": "fixture:method",
+          "observation_time": "fixture:observation_time",
+          "observed_or_verified_time": "fixture:observed_or_verified_time",
+          "observed_time": "fixture:observed_time",
+          "observer_or_source": "fixture:observer_or_source",
+          "output_ref": "fixture:output_ref",
+          "owner": "fixture:owner",
+          "predicate": "fixture:predicate",
+          "principal_id": "fixture:principal_id",
+          "produced_observed_or_verified_time": "fixture:produced_observed_or_verified_time",
+          "producer": "fixture:producer",
+          "producer_identity_and_version": "fixture:producer_identity_and_version",
+          "producer_or_source": "fixture:producer_or_source",
+          "provenance": "fixture:provenance",
+          "rationale": "fixture:rationale",
+          "relying_party_or_context": "fixture:relying_party_or_context",
+          "result": "fixture:result",
+          "review_or_evaluation_ref": "fixture:review_or_evaluation_ref",
+          "reviewer": "fixture:reviewer",
+          "scope": "src/change.ts",
+          "source_identity": "fixture:source_identity",
+          "source_refs": "fixture:source_refs",
+          "state": "fixture:state",
+          "status": "fixture:status",
+          "subject": "repo:fixture@revision-b",
+          "subject_hash_or_ref": "fixture:subject_hash_or_ref",
+          "target": "fixture:target",
+          "target_or_scope": "fixture:target_or_scope",
+          "time": "fixture:time",
+          "times": "fixture:times",
+          "to_state": "fixture:to_state",
+          "tool": "fixture:tool",
+          "transformations": "fixture:transformations",
+          "valid_or_reliance_time": "fixture:valid_or_reliance_time",
+          "valid_time": "fixture:valid_time",
+          "verified_at": "fixture:verified_at",
+          "verifier": "fixture:verifier",
+          "verifier_identity_and_version": "fixture:verifier_identity_and_version",
+          "versions": "fixture:versions",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "witnesses": [
+            "fixture:witness"
+          ],
+          "verification_executed": true
+        },
+        "predicates": {
+          "verification_executed": "true",
+          "witnesses": "nonempty"
+        },
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8"
+        },
+        "module_lock_digest": "b640069f599d37d8976161aefe080b8a8c364e405427f0affec713d6655fd819",
+        "method": {
+          "id": "b09-reference",
+          "version": "0.2.0",
+          "digest": "6a2991a6b3a09c4d21d95c7b966e2c953400da01a202ee6179d671ca896a0d11"
+        },
+        "requests": [
+          {
+            "path": "generic",
+            "claim": "evidence_presence",
+            "semantic_ids": [
+              "mesr.core.evidence.item"
+            ],
+            "semantic_version": "0.1.0",
+            "required_bindings": [
+              "witnesses"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "kind": "verification",
+            "event_id": "check:1",
+            "producer": "ci:fixture",
+            "verifier": "producer-check-runner",
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "property": "unit-tests",
+            "method": "bounded-check",
+            "method_version": "0.1.0",
+            "time": "2026-09-15T10:00:00Z",
+            "input_ref": "fixture:change",
+            "output_ref": "fixture:test-output",
+            "criterion": "exit=0 and assertions=3",
+            "result": "passed"
+          }
+        ],
+        "evidence_ledger": {
+          "fixture:change": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "revision": "revision-b",
+            "content": "- old\n+ repaired bounded change",
+            "producer": "ci:fixture"
+          },
+          "fixture:test-output": {
+            "subject": "repo:fixture@revision-b",
+            "scope": "src/change.ts",
+            "event_id": "check:1",
+            "time": "2026-09-15T10:00:00Z",
+            "assertions": 3,
+            "exit_code": 0,
+            "producer": "ci:fixture"
+          }
+        },
+        "producer_principal": "principal:producer",
+        "executor_principal": "principal:executor",
+        "verifier_principal": "principal:independent",
+        "separation": {
+          "policy": "fixture:separation/0.1.0",
+          "producer_control": "org:producer",
+          "verifier_control": "org:review",
+          "evidence_ref": "fixture:control-register"
+        },
+        "custody": {
+          "sole_producer_control": false,
+          "criterion": "fixture:custody/0.1.0",
+          "transfers": [
+            "fixture:collection",
+            "fixture:sealed-copy"
+          ],
+          "source_ref": "fixture:custody-record"
+        },
+        "integrity": {
+          "bytes_base64": "QjA5IGV4YWN0IHJhdyBieXRlcw0K",
+          "expected_digest": "e9c19dae118b2e8faf6d1e27929a34123ea00095d3486b2dfe5ff93b49e0f77b",
+          "expected_source": "fixture:expected-manifest",
+          "comparison_event": "fixture:comparison",
+          "checker": "fixture:checker/0.1.0",
+          "time": "2026-09-15T10:00:00Z",
+          "byte_domain": "raw",
+          "expected_domain": "raw"
+        },
+        "temporal": {
+          "historical_support": true,
+          "reliance_time": "2026-09-15T10:00:00Z",
+          "effective_from": "2026-09-14T00:00:00Z",
+          "effective_until": "2026-09-16T00:00:00Z",
+          "interval_rule": "[from,until)",
+          "observed_at": "2026-09-15T09:00:00Z",
+          "continuity": {
+            "subject": "same",
+            "scope": "same",
+            "environment": "same",
+            "policy": "same",
+            "dependency": "same",
+            "authority": "same"
+          },
+          "snapshot": {
+            "complete": true,
+            "horizon": "2026-09-16T00:00:00Z",
+            "publisher": "fixture:status-authority",
+            "source_ref": "fixture:offline-snapshot"
+          },
+          "continuity_result": "decided",
+          "status_records": []
+        },
+        "historical_basis": {
+          "ref": "fixture:historical",
+          "digest": "44c259109f5274dd8e1eb65103b6864e2ef2d3ecb56cdc88cdb7a8f42a1f9f4d",
+          "state": "SUPPORTED",
+          "time": "2026-09-14T10:00:00Z"
+        },
+        "sufficiency": {
+          "profile_id": "b09-assurance-profile",
+          "profile_version": "0.1.0",
+          "profile_digest": "ff9bacb1fca222eab95424562f1dcd0817445490d5c72511011e353914d18081",
+          "claim_set_id": "b09-claim-set",
+          "claim_set_version": "0.1.0",
+          "claim_set_digest": "a27532d8d4443b83b4e346650971f708240e5a8d2db3ad532b86281ed92eec8a",
+          "scope": "src/change.ts",
+          "evaluation_time": "2026-09-15T10:00:00Z",
+          "evidence_refs": [
+            "fixture:test-output"
+          ],
+          "material_gap_result": "no_material_gap",
+          "criterion_ref": "fixture:materiality/0.1.0",
+          "requirements": [
+            "tests"
+          ],
+          "evaluated_requirements": [
+            "tests"
+          ],
+          "atomic_results": [
+            {
+              "claim": "verification.passed",
+              "state": "SUPPORTED"
+            }
+          ]
+        },
+        "authority_rebinding": {
+          "source_ref": "fixture:authority",
+          "principal": "principal:review",
+          "scope": "src/change.ts",
+          "subject": "repo:fixture@revision-b",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_authority": {
+          "source_ref": "fixture:decision-authority",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "acceptance_event": {
+          "source_ref": "fixture:acceptance",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "evidence_present": true,
+        "positive_evidence": {
+          "ref": "fixture:claim",
+          "subject": "repo:fixture@revision-b",
+          "scope": "src/change.ts",
+          "time": "2026-09-15T10:00:00Z"
+        },
+        "legacy_report": "allow"
+      },
+      "classification": "BEFORE_EXPECTED_GAP",
+      "basis": "T1-02 private requirement API absent at recorded HEAD",
+      "admission_observation": {
+        "contract_version": "mesr-canonical-admission/0.1",
+        "status": "CHECKED_INPUT_SHAPE",
+        "semantic_composition": "WITHHELD",
+        "semantic_entries": [],
+        "mappings": [],
+        "profiles": [],
+        "claims": [],
+        "diagnostics": [],
+        "input_issues": [],
+        "checked_basis": null
+      },
+      "pending": "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods"
+    }
+  ],
+  "legacy_sha256": "fb9bb16f9abe4cf1482c5afda42594a149cf3dd5e5f6836475484fcab9612357",
+  "frozen_files": 19
+}

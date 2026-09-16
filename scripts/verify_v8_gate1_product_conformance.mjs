@@ -15,23 +15,21 @@ import { GUARD_REASON_CODES } from "../packages/guard-core/src/reasonCodes.ts";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 const args = process.argv.slice(2);
-assert.equal(args[0], "--task"); assert.equal(args[1], "T1-01", "Only T1-01 is implemented");
+assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02"].includes(args[1]));
 assert.ok(args.slice(2).every(arg => ["--before", "--record"].includes(arg)));
 const before = args.includes("--before"), record = args.includes("--record");
 const fixturePath = "tests/fixtures/gate1/t1-01-controls.v0.1.json";
 const resultPath = "tests/fixtures/gate1/t1-01-results.v0.1.json";
 const productPaths = ["admission.ts", "contracts.ts", "canonicalBytes.ts"].map(p => "packages/guard-core/src/mesr/repaired/" + p);
+const t102Paths = ["packages/guard-core/src/mesr/repaired/requirements.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-02-controls.v0.1.json", "tests/fixtures/gate1/t1-02-results.v0.1.json", "docs/validation/v8-gate1-t1-02-evidence-v0.1.md"];
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+assertTaskScope();
 const pins = readJson(frozenDir + "freeze.v0.2.json");
 for (const pin of pins.files) {
   const bytes = fs.readFileSync(pin.path);
   assert.equal(digest(bytes), pin.sha256, "Frozen worktree bytes: " + pin.path);
   assert.equal(digest(execFileSync("git", ["cat-file", "blob", head + ":" + pin.path], { maxBuffer: 20_000_000 })), pin.sha256, "Frozen Git bytes: " + pin.path);
 }
-const rows = loadInputs(), expected = expectations(), trust = testTrust();
-const oracle = readJson(frozenDir + "oracle.v0.2.json");
-for (const row of rows.filter(row => row.case_id.startsWith("C"))) assert.equal(digest(row.input), oracle.fixture_input_digests[row.case_id]);
-
 function legacyControls() {
   const allow = readJson("fixtures/ai-pr-low-risk-complete/evidence-pack.json");
   const review = readJson("fixtures/ai-pr-missing-tests/evidence-pack.json");
@@ -53,6 +51,12 @@ function legacyControls() {
   for (const row of invalidResults) assert.equal(row.validated.ok, false);
   return { outputs, invalid: invalidResults, invalid_json: parseEvidencePack("{invalid"), reason_values: Object.values(GUARD_REASON_CODES) };
 }
+
+if (args[1] === "T1-02") { await runRequirementsTask(); } else {
+const rows = loadInputs(), expected = expectations(), trust = testTrust();
+const oracle = readJson(frozenDir + "oracle.v0.2.json");
+for (const row of rows.filter(row => row.case_id.startsWith("C"))) assert.equal(digest(row.input), oracle.fixture_input_digests[row.case_id]);
+
 const legacy = legacyControls();
 if (before) {
   assert.ok(productPaths.every(path => !fs.existsSync(path)), "Capture must precede runtime implementation");
@@ -212,6 +216,7 @@ if (before) {
   });
   checkControl("public-source-and-import-isolation", () => {
     const owned = [...productPaths, "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", fixturePath, resultPath, "docs/validation/v8-gate1-t1-01-evidence-v0.1.md"];
+    owned.push(...t102Paths);
     const changed = execFileSync("git", ["diff", "--name-only", baseline.pre_change_head], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
     assert.ok(changed.every(path => owned.includes(path)), "Protected baseline files changed: " + changed.filter(path => !owned.includes(path)).join(", "));
     const tracked = execFileSync("git", ["ls-files", "-z", "packages"], { encoding: "utf8", maxBuffer: 5_000_000 }).split("\0").filter(p => /\.(?:mjs|cjs|js|ts|json)$/.test(p));
@@ -224,4 +229,211 @@ if (before) {
   const result = { version: "gate1-t1-01-results/0.1", task_id: "T1-01", gap_ids: ["G08"], recovery: baseline.recovery, before_after: beforeAfter, execution_counts: { PASS: rows.length, FAIL: 0, ERROR: 0 }, later_semantic_obligations_status: "WITHHELD_FOR_LATER_TASK", pre_change_head: head, post_change_head: null, worktree_state: "UNCOMMITTED", oracle_hash: baseline.oracle_hash, baseline_hash: digest(fs.readFileSync(fixturePath)), trust_digest: digest(trust), source_hashes: Object.fromEntries([...productPaths, "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs"].map(path => [path, digest(fs.readFileSync(path))])), outputs, assertions, supplemental_controls: supplemental, harness_falsifiers: ["corrupted expectation", "dropped result", "false positive", "dropped binding input"], replay_hashes: replayHashes, comparison_unit: "T1-01 owned obligation slice; never whole-case semantic conformance", counts: comparisonCounts, legacy_byte_equality: true, freeze_blobs: pins.files.length };
   if (record) fs.writeFileSync(resultPath, JSON.stringify(result, null, 2) + "\n");
   console.log(JSON.stringify({ phase: "after", cases: rows.length, ...result.counts, result_hash: digest(result), replay_hashes: replayHashes, legacy_byte_equality: true }));
+}
+
+}
+
+async function runRequirementsTask() {
+  const { loadRequirementInputs, requirementCoreInput, t102CaseIds } = await import("./gate1/b09-product-inputs.mjs");
+  const rows = loadRequirementInputs(), core = requirementCoreInput(), trust = testTrust();
+  assert.deepEqual(rows.map(row => row.case_id), t102CaseIds);
+  const controlPath = "tests/fixtures/gate1/t1-02-controls.v0.1.json";
+  const outputPath = "tests/fixtures/gate1/t1-02-results.v0.1.json";
+  const productPath = "packages/guard-core/src/mesr/repaired/requirements.ts";
+  const { inspectCanonicalAdmission } = await import("../packages/guard-core/src/mesr/repaired/admission.ts");
+  assert.equal(inspectCanonicalAdmission(core, trust).status, "CHECKED_BASIS");
+  const legacy = legacyControls();
+  assert.equal(JSON.stringify(legacy), JSON.stringify(readJson("tests/fixtures/gate1/t1-01-controls.v0.1.json").legacy));
+  if (before) {
+    assert.ok(!fs.existsSync(productPath), "Before capture must precede implementation");
+    assert.ok(!fs.existsSync(controlPath), "Never overwrite before observations");
+    const observations = rows.map(row => ({ case_id: row.case_id, input_sha256: digest(row.input), input: row.input,
+      classification: "BEFORE_EXPECTED_GAP", basis: "T1-02 private requirement API absent at recorded HEAD",
+      admission_observation: inspectCanonicalAdmission(row.input, trust), pending: "T1-03 states; T1-04 composition; applicable Tranche 2 proof methods" }));
+    const baseline = { version: "gate1-t1-02-controls/0.1", task_id: "T1-02", pre_change_head: head,
+      oracle_hash: digest(fs.readFileSync(frozenDir + "oracle.v0.2.json")), core_input_sha256: digest(core), trust_sha256: digest(trust),
+      BEFORE_CONFORMS: 0, BEFORE_PARTIAL: 0, BEFORE_EXPECTED_GAP: rows.length, BEFORE_NOT_APPLICABLE: 0,
+      observations, legacy_sha256: digest(legacy), frozen_files: pins.files.length };
+    fs.writeFileSync(controlPath, JSON.stringify(baseline, null, 2) + "\n");
+    console.log(JSON.stringify({ task: "T1-02", phase: "before", cases: rows.length, BEFORE_CONFORMS: 0, BEFORE_PARTIAL: 0, BEFORE_EXPECTED_GAP: rows.length, BEFORE_NOT_APPLICABLE: 0, frozen_files: pins.files.length }));
+    return;
+  }
+  await verifyRequirementsAfter({ rows, core, trust, t102CaseIds, controlPath, outputPath, productPath, legacy });
+}
+
+async function verifyRequirementsAfter({ rows, core, trust, t102CaseIds, controlPath, outputPath, productPath, legacy }) {
+  const baseline = readJson(controlPath);
+  assert.equal(head, baseline.pre_change_head);
+  assert.equal(digest(fs.readFileSync(controlPath)), "2e0edbf7952d17bd27b8716f94b4cb0df039eed05d4313a0241300b419efccf7", "Original before capture changed");
+  assert.equal(digest(legacy), baseline.legacy_sha256);
+  assert.equal(digest(core), baseline.core_input_sha256);
+  assert.equal(digest(trust), baseline.trust_sha256);
+  assert.equal(digest(fs.readFileSync(frozenDir + "oracle.v0.2.json")), baseline.oracle_hash);
+  assert.deepEqual(baseline.observations.map(r => r.case_id), t102CaseIds);
+  for (const row of rows) {
+    const original = baseline.observations.find(r => r.case_id === row.case_id);
+    assert.deepEqual(row.input, original.input);
+    assert.equal(digest(row.input), original.input_sha256);
+    assert.equal(original.classification, "BEFORE_EXPECTED_GAP");
+  }
+  const { collectBindingRequirements, inspectBindingValue } = await import("../packages/guard-core/src/mesr/repaired/requirements.ts");
+  const { compareRequirements } = await import("./gate1/b09-product-compare.mjs");
+  const oracle = readJson(frozenDir + "oracle.v0.2.json");
+  const hardening = readJson(frozenDir + "admission-hardening.v0.1.json");
+  const expected = Object.fromEntries(rows.map(row => [row.case_id, row.case_id.startsWith("H") ? hardening.cases.find(h => h.case_id === row.case_id).expected : oracle.cases[row.case_id] ?? null]));
+  const original = digest({ rows, core, trust });
+  const run = () => Object.fromEntries(rows.map(row => [row.case_id, collectBindingRequirements(row.input, core, trust)]));
+  const outputs = run();
+  const assertions = compareRequirements(rows, outputs, expected, t102CaseIds);
+  const replayHashes = [digest(outputs), digest(run()), digest(run())];
+  assert.equal(new Set(replayHashes).size, 1);
+  assert.equal(digest({ rows, core, trust }), original);
+  const controls = [];
+  let controlObservations = [];
+  const check = (name, fn) => { controlObservations = []; fn(); controls.push({ name, result: "PASS", product_observations: controlObservations }); };
+  const input = id => structuredClone(rows.find(r => r.case_id === id).input);
+  const evaluate = (source, contexts = []) => {
+    const result = collectBindingRequirements(source, core, trust, contexts);
+    controlObservations.push({ input_sha256: result.input_digest, contexts: structuredClone(contexts), result });
+    return result;
+  };
+  const generic = () => input("control.generic");
+  const context = requirements => ({ path: "generic", subject: generic().subject, scope: generic().scope, evaluation_time: generic().bindings.evaluation_time, source_ref: "control:independent-obligation-declaration", requirements });
+  check("null-whitespace-zero-false-cannot-satisfy-reference", () => {
+    for (const value of [null, "", "  ", 0, false, [], {}]) {
+      const source = generic(); source.bindings.subject = value;
+      const result = evaluate(source).claims[0]; assert.ok(result.missing_bindings.includes("subject"));
+      const binding = result.bindings.find(b => b.binding === "subject"); assert.equal(binding.present, true); assert.deepEqual(binding.value, value);
+    }
+    const source = generic(); delete source.bindings.subject;
+    const binding = evaluate(source).claims[0].bindings.find(b => b.binding === "subject"); assert.equal(binding.present, false); assert.ok(!Object.hasOwn(binding, "value"));
+  });
+  check("boolean-false-zero-empty-explicit-predicates", () => {
+    for (const [predicate, value] of [["boolean", false], ["nonnegative_integer", 0], ["reference_array_allow_empty", []]]) {
+      const source = generic(); source.bindings.additional = value;
+      const result = evaluate(source, [context([{ binding: "additional", predicate }])]).claims[0];
+      assert.deepEqual(result.missing_bindings, []); const binding = result.bindings.find(b => b.binding === "additional"); assert.equal(binding.satisfied, true); assert.deepEqual(binding.value, value);
+    }
+    assert.equal(inspectBindingValue("true", true, false).satisfied, false);
+    assert.equal(inspectBindingValue("nonnegative_integer", true, -1).satisfied, false);
+    assert.equal(inspectBindingValue("nonnegative_integer", true, 0.5).satisfied, false);
+  });
+  check("witness-members-have-value-predicates", () => {
+    for (const value of [[], [""], ["  "], [false], [0], [null]]) { const source = input("control.caller_added"); source.bindings.witnesses = value; assert.ok(evaluate(source).claims[0].missing_bindings.includes("witnesses")); }
+  });
+  check("unknown-predicate-and-caller-hint-not-proof", () => {
+    const source = generic(); source.requests[0].required_bindings = ["unregistered"]; source.bindings.unregistered = "present"; source.predicates.unregistered = "nonempty_reference";
+    const result = evaluate(source).claims[0]; assert.ok(result.missing_bindings.includes("unregistered"));
+    const predicate = result.bindings.find(b => b.binding === "unregistered").predicates[0]; assert.equal(predicate.defined, false); assert.equal(predicate.satisfied, false);
+    assert.ok(evaluate(generic(), [context([{ binding: "additional", predicate: "unknown" }])]).claims[0].missing_bindings.includes("additional"));
+  });
+  check("context-union-cannot-weaken-core", () => {
+    const source = generic(); source.bindings.subject = false;
+    const result = evaluate(source, [context([{ binding: "subject", predicate: "boolean" }, { binding: "witnesses", predicate: "nonempty_array" }])]).claims[0];
+    assert.ok(result.effective_requirements.includes("witnesses")); assert.ok(result.missing_bindings.includes("subject"));
+    assert.ok(result.bindings.find(b => b.binding === "subject").predicates.some(p => p.predicate === "nonempty_reference"));
+    const bad = context([]); bad.subject = "different"; assert.equal(evaluate(generic(), [bad]).status, "REJECTED");
+  });
+  check("registry-boundary-caller-context-union", () => {
+    const source = generic(); source.requests[0].claim = "evidence_sufficient"; source.requests[0].observed_state_ids = ["evidence_present"]; source.requests[0].required_bindings = ["witnesses"];
+    const result = evaluate(source, [context([{ binding: "verification_executed", predicate: "boolean" }])]).claims[0];
+    assert.deepEqual(result.effective_requirements, ["admissibility", "claim_specific_required_evidence", "evidence_id_or_ref", "producer_or_source", "provenance", "quality", "scope", "subject", "time", "verification_executed", "witnesses"]);
+    assert.ok(result.excluded_inferences.some(n => n.source_ref === "Core:CB-11"));
+    delete source.requests[0].observed_state_ids;
+    assert.deepEqual(evaluate(source, [context([{ binding: "verification_executed", predicate: "boolean" }])]).claims[0].effective_requirements, result.effective_requirements, "Caller omission cannot remove anchored Core boundary obligations");
+    source.bindings.verification_executed = false;
+    assert.ok(evaluate(source, [context([{ binding: "verification_executed", predicate: "boolean" }])]).claims[0].missing_bindings.includes("verification_executed"));
+  });
+  check("duplicate-requirements-retain-every-source", () => {
+    const source = generic(); source.requests[0].required_bindings = ["subject", "subject"];
+    const a = context([{ binding: "subject", predicate: "nonempty_reference" }, { binding: "subject", predicate: "nonempty_reference" }]);
+    const b = { ...structuredClone(a), source_ref: "control:second-source" };
+    const r = evaluate(source, [a, a, b]).claims[0];
+    assert.equal(r.effective_requirements.filter(x => x === "subject").length, 1);
+    const binding = r.bindings.find(x => x.binding === "subject");
+    assert.ok(binding.origins.includes("caller:generic") && binding.origins.includes(a.source_ref) && binding.origins.includes(b.source_ref));
+    assert.equal(binding.origins.length, new Set(binding.origins).size);
+    assert.equal(binding.predicates.length, new Set(binding.predicates.map(p => p.predicate + ":" + p.source_ref)).size);
+  });
+  check("unknown-version-retained", () => { const source = generic(); source.requests[0].semantic_version = "9.9.9"; const r = evaluate(source).claims[0]; assert.equal(r.unresolved_identities.length, 1); assert.ok(r.missing_bindings.includes("semantic_identity")); });
+  check("separate-paths-never-cancel-nonclaims", () => {
+    const result = outputs.N18; const observed = result.claims.find(c => c.path === "observation_inference"), verified = result.claims.find(c => c.path === "independence");
+    assert.ok(observed.excluded_inferences.length); assert.equal(verified.excluded_inferences.length, 0); assert.deepEqual(verified.missing_bindings, []);
+    for (const request of input("N18").requests) { const source = input("N18"); source.requests = [request]; assert.deepEqual(evaluate(source).claims[0], result.claims.find(r => r.path === request.path)); }
+  });
+  check("evidence-reference-subject-scope-resolution", () => {
+    for (const key of ["subject", "scope"]) { const source = input("I10.unresolved_ref"); source.evidence_ledger["fixture:change"][key] = "different"; assert.ok(evaluate(source).claims[0].missing_bindings.includes("evidence_ref:fixture:change")); }
+  });
+  check("method-null-retained-as-missing", () => { assert.ok(outputs.H29.claims[0].missing_bindings.includes("method")); });
+  check("identity-lock-and-composition-boundary", () => {
+    const bad = structuredClone(core); bad.lock[0].content_digest = "0".repeat(64); assert.equal(collectBindingRequirements(generic(), bad, trust).status, "REJECTED");
+    assert.equal(collectBindingRequirements(generic(), loadInputs()[0].input, trust).status, "REJECTED");
+    assert.equal(collectBindingRequirements(generic(), { status: "CHECKED_BASIS" }, trust).status, "REJECTED");
+    const source = generic(); source.registry.digest = "0".repeat(64); assert.equal(evaluate(source).status, "REJECTED");
+  });
+  check("malformed-and-nonjson-fail-closed", () => {
+    for (const value of [null, {}, [], { kind: "claims", requests: [] }]) assert.equal(evaluate(value).status, "REJECTED");
+    const source = generic(); source.bindings.invalid = NaN; assert.equal(evaluate(source).status, "REJECTED");
+    const duplicate = generic(); duplicate.requests.push(structuredClone(duplicate.requests[0])); assert.equal(evaluate(duplicate).status, "REJECTED");
+  });
+  check("permutation-immutability-and-no-input-mutation", () => {
+    const source = input("N18"); source.requests.reverse(); source.requests.forEach(r => r.semantic_ids.reverse());
+    const result = evaluate(source); assert.deepEqual(result.claims, outputs.N18.claims);
+    assert.throws(() => { result.claims[0].nonclaims.pop(); }, TypeError);
+    const a = context([{ binding: "witnesses", predicate: "nonempty_array" }]), b = context([{ binding: "verification_executed", predicate: "true" }]);
+    assert.deepEqual(evaluate(generic(), [a, b]).claims, evaluate(generic(), [b, a]).claims);
+  });
+  check("harness-corrupted-oracle-fails", () => { const corrupt = structuredClone(expected); corrupt.N03.claims[0].missing_bindings = []; assert.throws(() => compareRequirements(rows, outputs, corrupt, t102CaseIds)); });
+  check("harness-omission-and-false-positive-fail", () => {
+    const omitted = { ...outputs }; delete omitted.N09; assert.throws(() => compareRequirements(rows, omitted, expected, t102CaseIds));
+    const falsePositive = structuredClone(outputs); falsePositive.N08.claims[0].missing_bindings = []; assert.throws(() => compareRequirements(rows, falsePositive, expected, t102CaseIds));
+  });
+  check("harness-dropped-binding-input-fails", () => {
+    const changed = structuredClone(rows); delete changed.find(r => r.case_id === "control.generic").input.bindings.subject;
+    const bad = Object.fromEntries(changed.map(r => [r.case_id, evaluate(r.input)])); assert.throws(() => compareRequirements(changed, bad, expected, t102CaseIds));
+  });
+  check("original-core-nonclaim-and-missing-association-retained", () => {
+    const n = outputs.N18.claims.find(c => c.path === "observation_inference").nonclaim_provenance.find(n => n.source_ref === "Core:CB-07");
+    assert.equal(n.canonical_nonclaim, "verification");
+    const source = generic(); delete source.bindings.evaluation_time;
+    const r = evaluate(source).claims[0]; assert.ok(r.missing_bindings.includes("evaluation_time")); assert.equal(r.provenance.evaluation_time, null);
+  });
+  check("unordered-requirements-and-multiple-anchor-provenance", () => {
+    const source = generic(); source.requests[0].semantic_ids.push("mesr.core.actor.actor"); source.requests[0].required_bindings = ["witnesses", "subject", "witnesses"];
+    const first = evaluate(source).claims;
+    source.requests[0].semantic_ids.reverse(); source.requests[0].required_bindings.reverse();
+    assert.equal(JSON.stringify(evaluate(source).claims), JSON.stringify(first));
+    const binding = first[0].bindings.find(b => b.binding === "subject");
+    assert.ok(binding.origins.some(o => o.startsWith("mesr.core.actor.actor@")) && binding.origins.some(o => o.startsWith("mesr.core.evidence.item@")) && binding.origins.includes("caller:generic"));
+  });
+  check("n18-additional-diagnostic-never-hides-oracle-obligations", () => {
+    const corrupt = structuredClone(expected); corrupt.N18.claims.find(c => c.path === "observation_inference").missing_bindings.push("corrupted-required-binding");
+    assert.throws(() => compareRequirements(rows, outputs, corrupt, t102CaseIds));
+  });
+  const result = { version: "gate1-t1-02-results/0.1", task_id: "T1-02", pre_change_head: head, post_change_head: null, worktree_state: "UNCOMMITTED",
+    oracle_hash: baseline.oracle_hash, before_sha256: digest(fs.readFileSync(controlPath)), core_input_sha256: digest(core), trust_sha256: digest(trust),
+    source_hashes: Object.fromEntries([productPath, "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs"].map(p => [p, digest(fs.readFileSync(p))])),
+    outputs, assertions, supplemental_controls: controls, replay_hashes: replayHashes,
+    counts: { EXPECTED_GAP_CLOSED: rows.length, PARTIAL_CONFORMANCE_IMPROVED: 0, UNCHANGED_CONFORMING: 0, UNCHANGED_EXPECTED_GAP: 0, NEW_REGRESSION: 0 },
+    before_after: assertions.map(a => ({ ...a, before: "EXPECTED_GAP", after: "CONFORMS_TODAY", unit: "task-owned requirement/nonclaim slice only" })),
+    legacy_byte_equality: true, frozen_files: pins.files.length, semantic_composition: "WITHHELD_FOR_T1_04", state_evaluation: "PENDING_STATE_EVALUATION" };
+  if (record) fs.writeFileSync(outputPath, JSON.stringify(result, null, 2) + "\n");
+  console.log(JSON.stringify({ task: "T1-02", phase: "after", cases: rows.length, controls: controls.length, ...result.counts, replay_hashes: replayHashes }));
+}
+
+// Exact task-scope protection includes untracked files and committed T1-01 byte pins.
+function assertTaskScope() {
+  assert.equal(head, "7726fc7f58305e59ea7359d9658494b7695bfa4d");
+  const changed = execFileSync("git", ["diff", "--name-only", head], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
+  const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
+  const check = paths => assert.ok(paths.every(path => t102Paths.includes(path)), "Outside T1-02 allowlist: " + paths.filter(path => !t102Paths.includes(path)).join(", "));
+  check([...changed, ...untracked]);
+  for (const extra of ["README.md", "packages/guard-core/src/reasonCodes.ts", "unrelated/other.ts"]) assert.throws(() => check([...changed, extra]));
+  const oldPaths = execFileSync("git", ["show", "--format=", "--name-only", head], { encoding: "utf8" }).trim().split("\n");
+  assert.equal(oldPaths.length, 9);
+  for (const path of oldPaths.filter(path => !t102Paths.includes(path))) assert.deepEqual(fs.readFileSync(path), execFileSync("git", ["cat-file", "blob", head + ":" + path], { maxBuffer: 2_000_000 }), "Frozen T1-01 bytes: " + path);
+  for (const path of [...productPaths, "packages/guard-core/src/mesr/repaired/requirements.ts"].filter(path => fs.existsSync(path))) {
+    const source = fs.readFileSync(path, "utf8");
+    for (const match of source.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g)) assert.ok(!/scripts|fixtures|gate1|b09/.test(match[1]), "Test dependency: " + path);
+  }
 }

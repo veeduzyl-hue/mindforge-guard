@@ -55,3 +55,30 @@ export function testTrust() {
     request_paths: ["pass", "occurred", "independence", "producer_inference", "observation_inference", "integrity", "custody", "sufficiency", "current", "authority", "old_authority_inference", "acceptance", "decision", "action", "presence", "generic", "weakening_inference", "collision"],
   };
 }
+
+// T1-02 translation preserves original claim inputs and exact H mutations.
+export const t102CaseIds = ["N03", "N04", "N07", "N08", "N09", "N08.predicate_override", "I10.unresolved_ref", "N18", "H08", "H28", "H29", "control.generic", "control.caller_added"];
+export function loadRequirementInputs() {
+  const fixtures = readJson(frozenDir + "cases.v0.2.json");
+  const h = loadInputs();
+  const rows = t102CaseIds.filter(id => !id.startsWith("control.")).map(id => {
+    const found = (id.startsWith("H") ? h : fixtures).filter(row => row.case_id === id);
+    if (found.length !== 1) throw new Error("Missing/duplicate T1-02 input: " + id);
+    return { case_id: id, input: structuredClone(found[0].input) };
+  });
+  const positive = structuredClone(fixtures.find(row => row.case_id === "N04").input);
+  positive.requests[0].claim = "evidence_presence";
+  delete positive.caller_supported_claim_parts;
+  rows.push({ case_id: "control.generic", input: positive });
+  const added = structuredClone(positive);
+  added.requests[0].required_bindings = ["witnesses"];
+  rows.push({ case_id: "control.caller_added", input: added });
+  return rows;
+}
+export function requirementCoreInput() {
+  const input = structuredClone(loadInputs().find(row => row.case_id === "C01").input);
+  input.modules = input.modules.filter(row => row.module_id === "mesr.core");
+  input.lock = input.lock.filter(row => row.module_id === "mesr.core");
+  input.raw_manifests = { "mesr.core": input.raw_manifests["mesr.core"] };
+  return input;
+}
