@@ -1,0 +1,3069 @@
+{
+  "version": "gate1-t1-01-results/0.1",
+  "task_id": "T1-01",
+  "gap_ids": [
+    "G08"
+  ],
+  "recovery": {
+    "classification": "PARTIAL_VALID_METADATA_COMPLETED",
+    "original_file_sha256": "5120b8544c22972bd41a9d267bdef65e247136469270591fb277db5e7d6aec09",
+    "original_keys": [
+      "version",
+      "pre_change_head",
+      "oracle_hash",
+      "trust_digest",
+      "observations",
+      "legacy"
+    ],
+    "preserved_capture_digest": "a9fa614326c9a34a34f1bc7f82859c3f9ae6093bcf9fa79a7c2fdd6bf2bd5711",
+    "prior_result_sha256": "f0847bf37bf957090f1b3d49c957e8cb727a7e8da22c490fcae4a97a7a783460",
+    "prior_product_outputs_digest": "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648",
+    "prior_source_hashes": {
+      "packages/guard-core/src/mesr/repaired/admission.ts": "1a6d7ecbeaa5ca2fe48d262ddba1d0d89410c409ab93dd7fa2fc917e8443d37c",
+      "packages/guard-core/src/mesr/repaired/contracts.ts": "8130f8452f58c5dea089ceabcaf5c448dfe6972436b501ed2abf4aac598fe7d4",
+      "packages/guard-core/src/mesr/repaired/canonicalBytes.ts": "b20ca04e8dd68edcc90276dc0a50cceecb64b0f4162ef115dc0e488773461a5c",
+      "scripts/verify_v8_gate1_product_conformance.mjs": "5a6d7eb03b2f0ba0b9197d2189154cdd14ccdc6a47a28299d20c40d8069d3137",
+      "scripts/gate1/b09-product-inputs.mjs": "8a8762b64ba30c3472323784568837d8e44c3be4d7cfb82b63cb5f1e29aa2f12",
+      "scripts/gate1/b09-product-compare.mjs": "304e7dc94368e27638b02c7922a20598f28cdf732249b46c73d41ca371dfff51"
+    },
+    "prior_replay_hashes": [
+      "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648",
+      "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648",
+      "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648"
+    ],
+    "scope": "Add metadata only. Original pre-change observations, legacy serialized bytes, oracle/trust pins and pre-change HEAD preserved."
+  },
+  "before_after": [
+    {
+      "case_id": "C01",
+      "obligation": [
+        "identity/lock admission",
+        "attribution",
+        "composition withheld"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C01",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C02",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C02",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C05",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C05",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C06.registry",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C06.registry",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C07",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C07",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C20.producer",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C20.producer",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C20.consumer",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C20.consumer",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C20.malformed",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C20.malformed",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C21.>=0.1.0",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C21.>=0.1.0",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C21.latest",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C21.latest",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C21.0.1.0-rc.1",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C21.0.1.0-rc.1",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C21.01.1.0",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C21.01.1.0",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C22.array",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C22.array",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C22.raw",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C22.raw",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "C27",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.C27",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ]
+    },
+    {
+      "case_id": "H01",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H01",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H02",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H02",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H03",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H03",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H04",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H04",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H05",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H05",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H06",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H06",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H07",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H07",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H08",
+      "obligation": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H08",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing evidence_refs"
+      ]
+    },
+    {
+      "case_id": "H09",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H09",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H10",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H10",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H11",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H11",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H12",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H12",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H13",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H13",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H14",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H14",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H15",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H15",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H16",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H16",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H17",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H17",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H18",
+      "obligation": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H18",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing sufficiency.requirement.tests"
+      ]
+    },
+    {
+      "case_id": "H19",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H19",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H20",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H20",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H21",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H21",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H22",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H22",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H23",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H23",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H24",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H24",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H25",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H25",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H26",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H26",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H27",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H27",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H28",
+      "obligation": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H28",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing verification_executed"
+      ]
+    },
+    {
+      "case_id": "H29",
+      "obligation": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H29",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing method"
+      ]
+    },
+    {
+      "case_id": "H30",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H30",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H31",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H31",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H32",
+      "obligation": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H32",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing verification_event"
+      ]
+    },
+    {
+      "case_id": "H33",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H33",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H34",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H34",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    },
+    {
+      "case_id": "H35",
+      "obligation": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "before": "EXPECTED_GAP",
+      "before_basis": "T1-01 private API absent",
+      "after": "CONFORMS_TODAY",
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "product_result_ref": "outputs.H35",
+      "semantic_composition": "WITHHELD",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+      "pending": []
+    }
+  ],
+  "execution_counts": {
+    "PASS": 50,
+    "FAIL": 0,
+    "ERROR": 0
+  },
+  "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK",
+  "pre_change_head": "dbdb14ed9cf2f1b7e293f44bf9df1007f8ae15fc",
+  "post_change_head": null,
+  "worktree_state": "UNCOMMITTED",
+  "oracle_hash": "6dbc01d9650d45a03c0f8319eaecc994b34eae6d0f4885cdac971e6a32ab5c88",
+  "baseline_hash": "08ae91fc35c07a66b0cde60822c8449984283f5ef5007b1bd62554bdd2819616",
+  "trust_digest": "a9647633d08836e2e666d87926472d7a03258b7b18725235e6b573d24a108a7e",
+  "source_hashes": {
+    "packages/guard-core/src/mesr/repaired/admission.ts": "1a6d7ecbeaa5ca2fe48d262ddba1d0d89410c409ab93dd7fa2fc917e8443d37c",
+    "packages/guard-core/src/mesr/repaired/contracts.ts": "8130f8452f58c5dea089ceabcaf5c448dfe6972436b501ed2abf4aac598fe7d4",
+    "packages/guard-core/src/mesr/repaired/canonicalBytes.ts": "b20ca04e8dd68edcc90276dc0a50cceecb64b0f4162ef115dc0e488773461a5c",
+    "scripts/verify_v8_gate1_product_conformance.mjs": "e686db7706e6ae93fd39b5079756c829e63ff1e0d5c82f496488b7da34eb2e76",
+    "scripts/gate1/b09-product-inputs.mjs": "8a8762b64ba30c3472323784568837d8e44c3be4d7cfb82b63cb5f1e29aa2f12",
+    "scripts/gate1/b09-product-compare.mjs": "304e7dc94368e27638b02c7922a20598f28cdf732249b46c73d41ca371dfff51"
+  },
+  "outputs": {
+    "C01": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_BASIS",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": {
+        "contract_version": "mesr-composition-lock/0.1",
+        "input_set_id": "b09-repaired-e3/0.2.0",
+        "registry": {
+          "version": "0.1.0",
+          "digest": "c22b5c135187b8d2cd0062619fbfc585e7a3aeede1fa416c9624c0ccc9c41bb8",
+          "canonicalization_method": "json-codepoint-utf8/0.1",
+          "versioned_inventory_digest": "b3f39bda10afcc9e660304c904c3a1fce071036a38188b7069f8b275f23159f4",
+          "core": {
+            "module_id": "mesr.core",
+            "version": "0.1.0",
+            "digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+          }
+        },
+        "modules": [
+          {
+            "module_id": "mesr.core",
+            "module_type": "core",
+            "version": "0.1.0",
+            "namespace": "mesr.core",
+            "manifest_byte_ref": "raw_manifests.mesr.core",
+            "representation": "supplied JSON text; UTF-8",
+            "byte_length": 15897,
+            "byte_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c",
+            "semantic_content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c",
+            "dependencies": [],
+            "compatibility_basis_ref": "tests/fixtures/experiment-3-repaired/basis.v0.2.json#admission_basis",
+            "entries": [
+              {
+                "semantic_id": "mesr.core.actor.principal",
+                "version": "0.1.0",
+                "digest": "332808ceaffbed5de8c362acd69fae873db575d3ca960da9fdf3a610a916cb62"
+              },
+              {
+                "semantic_id": "mesr.core.actor.actor",
+                "version": "0.1.0",
+                "digest": "d400ee8e07b5e1669fa0fa6f17e0ab23a6b27796107874ddf1391c673c86af9e"
+              },
+              {
+                "semantic_id": "mesr.core.actor.identity_assertion",
+                "version": "0.1.0",
+                "digest": "836bf2e6a236fed8a2d188f55132d55e122830ce54fb1138d3c73f31c42d4f5a"
+              },
+              {
+                "semantic_id": "mesr.core.authority.source",
+                "version": "0.1.0",
+                "digest": "793801a9b5c9656f4d9e0b2b2678386cec4a375ae8da0d89a9ce03e8a5407cc4"
+              },
+              {
+                "semantic_id": "mesr.core.authority.scope",
+                "version": "0.1.0",
+                "digest": "4bf8edc66b8a799dca6ed0132382b649724b8938f97af4d251f842018c6609bd"
+              },
+              {
+                "semantic_id": "mesr.core.authority.delegation",
+                "version": "0.1.0",
+                "digest": "d6dc920c1f720f3b6fcae287ee061a920acf2c0607edd8a3d3a9fc35ef2c46cd"
+              },
+              {
+                "semantic_id": "mesr.core.authority.declared",
+                "version": "0.1.0",
+                "digest": "24f627f86a9141aa0a7774ea427a13248edc221b5382c2afaf81f53f76e3ca43"
+              },
+              {
+                "semantic_id": "mesr.core.intent.intent",
+                "version": "0.1.0",
+                "digest": "f1dd649e1e7d0cf4cc3a5f31863392504769577b69033923f59ac8b2dee5cf36"
+              },
+              {
+                "semantic_id": "mesr.core.action.action",
+                "version": "0.1.0",
+                "digest": "81b21aa31435b0c89222b44cdf2d7d9baf279cf7095cd765f2cb0d4410cf0716"
+              },
+              {
+                "semantic_id": "mesr.core.action.tool_invocation",
+                "version": "0.1.0",
+                "digest": "70b8e6e9f36539bf8c9f2ba05f28962eac903ade91a76dd3487e973d4e9c463b"
+              },
+              {
+                "semantic_id": "mesr.core.boundary.authority",
+                "version": "0.1.0",
+                "digest": "f0f4df56e4f2f958243a7920b331880d505a53b84c4ab90ab01e37580a4251f6"
+              },
+              {
+                "semantic_id": "mesr.core.boundary.execution",
+                "version": "0.1.0",
+                "digest": "202f353da90b985258265f57ee20cccb020f06ad8e3af3eb1b831c2fbe716717"
+              },
+              {
+                "semantic_id": "mesr.core.boundary.effect",
+                "version": "0.1.0",
+                "digest": "7cb08a50117d48a4b5e32b62b9b7ee3ea0ee696a99363d3e62666960aa126f5c"
+              },
+              {
+                "semantic_id": "mesr.core.boundary.reliance",
+                "version": "0.1.0",
+                "digest": "6a88684e69e08eaabf2460f7df5ff5fd8d8d64e469e891393578dd837f47092b"
+              },
+              {
+                "semantic_id": "mesr.core.effect.effect",
+                "version": "0.1.0",
+                "digest": "ab80d5930bcb6d8b06a37ae4142f01357ec438e7a37beb66b175d178d720b42e"
+              },
+              {
+                "semantic_id": "mesr.core.effect.outcome",
+                "version": "0.1.0",
+                "digest": "5a7635cd2075e8d12c1756b0488516b9a28b58fce9f49aaeaa775827949050bf"
+              },
+              {
+                "semantic_id": "mesr.core.effect.state_transition",
+                "version": "0.1.0",
+                "digest": "f14746ac39758ae8f0777a174fac9be862f26d86b7ef5a46a9724c660d6b024a"
+              },
+              {
+                "semantic_id": "mesr.core.evidence.item",
+                "version": "0.1.0",
+                "digest": "732ee611ec1710c3860dc954f80dd791c3e0188d60b31330a434c16b53356ce0"
+              },
+              {
+                "semantic_id": "mesr.core.evidence.observation",
+                "version": "0.1.0",
+                "digest": "6ab020858ad5a606075d90c517b23c280935ffa233c8cf8c1ff91b0a29481ee2"
+              },
+              {
+                "semantic_id": "mesr.core.evidence.attestation",
+                "version": "0.1.0",
+                "digest": "54ff8b0726c32bd58af5b922741edde52909bc1700cbb6a1d3fd4bdf74134e28"
+              },
+              {
+                "semantic_id": "mesr.core.evidence.verification",
+                "version": "0.1.0",
+                "digest": "e1f7ab0a345698fde0d37b55a905ab249a0b1402317efd195041043c2bb5e2a5"
+              },
+              {
+                "semantic_id": "mesr.core.claim.claim",
+                "version": "0.1.0",
+                "digest": "839d8b89b8eb79abea1001ef523b7c8e614206be47b158f5dc55b65eec13a28b"
+              },
+              {
+                "semantic_id": "mesr.core.claim.scope",
+                "version": "0.1.0",
+                "digest": "7963c8114339335da7a7029e1a412ce288df63345025486507390d9abaab8b12"
+              },
+              {
+                "semantic_id": "mesr.core.claim.support_relation",
+                "version": "0.1.0",
+                "digest": "03947315f2b880e2915a237c6bd57b84aec9ac056fe8edc7d36ecdadac2ffdf3"
+              },
+              {
+                "semantic_id": "mesr.core.provenance.producer",
+                "version": "0.1.0",
+                "digest": "6be00da914702ba7e6e75afc25d07e1eeafe01126914e70900cff91790d121c2"
+              },
+              {
+                "semantic_id": "mesr.core.provenance.verifier",
+                "version": "0.1.0",
+                "digest": "bc8f281b38ee98cdaab2e59498aca8106aaa32b9f4b327d79e9ff277ae6ae7ee"
+              },
+              {
+                "semantic_id": "mesr.core.provenance.lineage",
+                "version": "0.1.0",
+                "digest": "a4198aa793c9cbfb66ace0f8a4af3bc7028d451315ad4eaf49f9ceeae42058bd"
+              },
+              {
+                "semantic_id": "mesr.core.temporal.basis",
+                "version": "0.1.0",
+                "digest": "3c43ab3f7e0b0cebddc71a64114b6b0a748a3518b44b0f1fe85ba85864c614f4"
+              },
+              {
+                "semantic_id": "mesr.core.review.review",
+                "version": "0.1.0",
+                "digest": "3fb68ce24e35d2446243ec14caaef95e859f242150a318e58b3035398e0a6f62"
+              },
+              {
+                "semantic_id": "mesr.core.review.disposition",
+                "version": "0.1.0",
+                "digest": "d87c69d2bdf6716a01c29c9d65fcb0f30dd030cc31e6125d88a0e3a638b131ec"
+              }
+            ]
+          },
+          {
+            "module_id": "mesr.module.software.v0_1",
+            "module_type": "domain_pack",
+            "version": "0.1.0",
+            "namespace": "mesr.domain.software",
+            "manifest_byte_ref": "raw_manifests.mesr.module.software.v0_1",
+            "representation": "supplied JSON text; UTF-8",
+            "byte_length": 17467,
+            "byte_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348",
+            "semantic_content_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348",
+            "dependencies": [
+              {
+                "module_id": "mesr.core",
+                "version": "0.1.0",
+                "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+              }
+            ],
+            "compatibility_basis_ref": "tests/fixtures/experiment-3-repaired/basis.v0.2.json#admission_basis",
+            "entries": [
+              {
+                "semantic_id": "mesr.domain.software.change.subject",
+                "version": "0.1.0",
+                "digest": "e0f3874c9223408215c2759a74fe16d64541d8e5e56e02519ef1a0b7e6adc33b"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.base_commit",
+                "version": "0.1.0",
+                "digest": "10eeeacafb9e7345cbb7cc59f3b1cba674d7c85567a1d23647bf029a5d15f7b1"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.candidate_commit",
+                "version": "0.1.0",
+                "digest": "78fc3df8cbbc46ba1dad07539ea0f14d0e5c395cbd0006dc9718846b9293d42b"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.diff_scope",
+                "version": "0.1.0",
+                "digest": "e3c6479f869881b185fafac65622d3311cad713476d23812b1e71b08f7f50e84"
+              },
+              {
+                "semantic_id": "mesr.domain.software.authority.code_owner",
+                "version": "0.1.0",
+                "digest": "ecaf84d93ec7e97ec2382349163c4dd6dc6655fa73e996d64acccbfd938866ab"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.test_evidence",
+                "version": "0.1.0",
+                "digest": "e8d67a38b45c618fd47c56bb7d19ea0f74c667c6cd403f1951f5b0ffd533f787"
+              },
+              {
+                "semantic_id": "mesr.domain.software.review.binding",
+                "version": "0.1.0",
+                "digest": "2da4812ce48f40640e966a065f8cf9f9ffbcdb2088cc774de99ff3c6a6281e68"
+              },
+              {
+                "semantic_id": "mesr.domain.software.release.identity",
+                "version": "0.1.0",
+                "digest": "2cf7c04fd4ad9eebd9299293987bb25f0625ee83c68a385e351024450ba53052"
+              },
+              {
+                "semantic_id": "mesr.domain.software.deployment.effect",
+                "version": "0.1.0",
+                "digest": "a8fd9729194623a46ccdbbb994fc17a20f2970e8d157a3f9f624c78acb3f0f99"
+              },
+              {
+                "semantic_id": "mesr.domain.software.rollback.reference",
+                "version": "0.1.0",
+                "digest": "78c28aec08a8a38ac5a1b51a629cc546dd26a2a9081829a4db062a7b27b71343"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.subject_equals_execution_subject",
+                "version": "0.1.0",
+                "digest": "241105106bae5ed6c4e40a2526f29719d5013890f5da334e30caca7919618dbe"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.insufficient",
+                "version": "0.1.0",
+                "digest": "f3e406d158dce59d94aa51ddf1d31a27e38c8127079d1fe6ffa29048d2ebef3e"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.test_execution_not_demonstrated",
+                "version": "0.1.0",
+                "digest": "6d1d6fb8bab241655b3e64c99f90f1d9dc014af2cafea8bffe90550516ec8334"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.test_failure_observed",
+                "version": "0.1.0",
+                "digest": "f4f8f7736fe518f89507be39f6078a10f3d950cd1c3c7babf94523215d5a5b0c"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.build_execution_not_demonstrated",
+                "version": "0.1.0",
+                "digest": "35e44ad2a7a20c73dabe0b1dfac81e288a5946fc8d22320764a4101b7b1cac0d"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.build_failure_observed",
+                "version": "0.1.0",
+                "digest": "335d9e83aa9190fbfc9ffafecaa4876a6ae6c0dd7fdbf1bbc2a0dc80ae4c7830"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.static_analysis_not_demonstrated",
+                "version": "0.1.0",
+                "digest": "74d1b6e9731396b1bb92fe5d78aa01319f83213722ce58450ba3717f8cc52381"
+              },
+              {
+                "semantic_id": "mesr.domain.software.verification.security_scan_not_demonstrated",
+                "version": "0.1.0",
+                "digest": "3c7498d11745d71d8adc9439ff56e22142ab340576e25b5f9215313f70c85744"
+              },
+              {
+                "semantic_id": "mesr.domain.software.review.not_demonstrated",
+                "version": "0.1.0",
+                "digest": "ba7f95c8e5e55171ae1092c6fb94a35f7190db9c30affa2c890eeab6a916aa28"
+              },
+              {
+                "semantic_id": "mesr.domain.software.release.rollback_not_demonstrated",
+                "version": "0.1.0",
+                "digest": "570f9afac48d69e9f12ae46e43d972adead998372e517af0abcee7b13af08f6e"
+              },
+              {
+                "semantic_id": "mesr.domain.software.release.rollback_not_verified",
+                "version": "0.1.0",
+                "digest": "321fc533516e5a92488b02ecec58f5f51b9b6dffcfe5f9a4c20bcc10c5cf5094"
+              },
+              {
+                "semantic_id": "mesr.domain.software.release.target_unclear",
+                "version": "0.1.0",
+                "digest": "515fb2595decfa6d704fc395c1bba95b393bd22e6d5f911133931bab5ab4313a"
+              },
+              {
+                "semantic_id": "mesr.domain.software.deployment.environment_not_verified",
+                "version": "0.1.0",
+                "digest": "15782152d2926e21216ba10487b8b82d51ad3d1b17be88b7cf5d5a9ad328c5ef"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.undeclared_file_observed",
+                "version": "0.1.0",
+                "digest": "cb1cfccd1141c17b0e264f6d43640b155042afa038751165ada987ff8017ecf5"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.dependency_observed",
+                "version": "0.1.0",
+                "digest": "79ec9ec67168a03a7a02779f86c94dc31ca476cc035249575284d60a9ce37d1b"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.breaking_impact_not_verified",
+                "version": "0.1.0",
+                "digest": "feb6691653c5dd65c2483cbd3a05400993b903446539088429350e2e6c2533e1"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.lockfile_observed",
+                "version": "0.1.0",
+                "digest": "f0c330e1b5fa1fbc2bc56d7cb9e1e55e6f46e87f69c149c25959f3d7b8aa205a"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.migration_not_documented",
+                "version": "0.1.0",
+                "digest": "4d9acdcf2366abf38fba1a2a42a74987a81b0c7bd688263f908e96159b49c3f7"
+              },
+              {
+                "semantic_id": "mesr.domain.software.change.public_api_impact_not_verified",
+                "version": "0.1.0",
+                "digest": "7894d12efc2d217160181f15f797ed4ac01f6c6cbd52cf2d1d81dfabe45b9c05"
+              }
+            ]
+          },
+          {
+            "module_id": "mesr.xw.test_nist_like.v0_1",
+            "module_type": "crosswalk",
+            "version": "0.1.0",
+            "namespace": "mesr.xw.test_nist_like",
+            "manifest_byte_ref": "raw_manifests.mesr.xw.test_nist_like.v0_1",
+            "representation": "supplied JSON text; UTF-8",
+            "byte_length": 912,
+            "byte_digest": "7928b9cb916d2475411861ede93f0d7b799173bd2001c6e439a8b8ec3cc24045",
+            "semantic_content_digest": "7928b9cb916d2475411861ede93f0d7b799173bd2001c6e439a8b8ec3cc24045",
+            "dependencies": [
+              {
+                "module_id": "mesr.core",
+                "version": "0.1.0",
+                "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+              },
+              {
+                "module_id": "mesr.module.software.v0_1",
+                "version": "0.1.0",
+                "content_digest": "ad8d5c7e19fdd834348470d0e35f0f3eac66eadaac0a4a85b42dbfe1af5aa348"
+              }
+            ],
+            "compatibility_basis_ref": "tests/fixtures/experiment-3-repaired/basis.v0.2.json#admission_basis",
+            "entries": []
+          },
+          {
+            "module_id": "mesr.profile.test_audit.v0_1",
+            "module_type": "institutional_profile",
+            "version": "0.1.0",
+            "namespace": "mesr.profile.test_audit",
+            "manifest_byte_ref": "raw_manifests.mesr.profile.test_audit.v0_1",
+            "representation": "supplied JSON text; UTF-8",
+            "byte_length": 681,
+            "byte_digest": "73d5748a8dfa52c7fcfad06ddd631acde1a9db0161b5e9fe1805ec397d046c7a",
+            "semantic_content_digest": "73d5748a8dfa52c7fcfad06ddd631acde1a9db0161b5e9fe1805ec397d046c7a",
+            "dependencies": [
+              {
+                "module_id": "mesr.core",
+                "version": "0.1.0",
+                "content_digest": "5f60269cf65dbe9dc87c5038cb64dad6e6b0fe641fd950e65724c0964c9d3b6c"
+              }
+            ],
+            "compatibility_basis_ref": "tests/fixtures/experiment-3-repaired/basis.v0.2.json#admission_basis",
+            "entries": []
+          }
+        ],
+        "relation_ledger_ref": {
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "supplied": true,
+          "evaluated": false
+        },
+        "admission_basis_refs": [
+          {
+            "id": "b09-test-admission/0.2.0",
+            "issuer": "B09 fixture author",
+            "authority": "FINITE_TEST_ONLY_NOT_PRODUCT_ADMISSION",
+            "source": "B01/B08 and frozen Phase2A manifests",
+            "ref": "tests/fixtures/experiment-3-repaired/basis.v0.2.json#admission_basis",
+            "digest": "0b8f7127ce6cb9615b53bb8eaff7aa24a05e221fb5d56c1b7ae648ae6733918a"
+          }
+        ],
+        "validation_method": "json-codepoint-utf8/0.1"
+      }
+    },
+    "C02": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_DUPLICATE_MODULE_ID",
+          "subject": "mesr.profile.test_audit.v0_1",
+          "field": "module_id",
+          "related_id": "",
+          "detail": "LOCK_DUPLICATE_MODULE_ID"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C05": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_DEPENDENCY_VERSION_MISMATCH",
+          "subject": "mesr.module.software.v0_1",
+          "field": "dependencies",
+          "related_id": "mesr.core",
+          "detail": "LOCK_DEPENDENCY_VERSION_MISMATCH"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C06.registry": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_REGISTRY_MISMATCH",
+          "subject": "registry",
+          "field": "registry",
+          "related_id": "",
+          "detail": "LOCK_REGISTRY_MISMATCH"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C07": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_CONTENT_MISMATCH",
+          "subject": "mesr.module.software.v0_1",
+          "field": "lock",
+          "related_id": "",
+          "detail": "LOCK_CONTENT_MISMATCH"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C20.producer": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "modules"
+        }
+      ],
+      "checked_basis": null
+    },
+    "C20.consumer": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "modules"
+        }
+      ],
+      "checked_basis": null
+    },
+    "C20.malformed": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "modules"
+        }
+      ],
+      "checked_basis": null
+    },
+    "C21.>=0.1.0": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "mesr.module.software.v0_1",
+          "field": "dependencies.version",
+          "related_id": ">=0.1.0",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C21.latest": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "mesr.module.software.v0_1",
+          "field": "dependencies.version",
+          "related_id": "latest",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C21.0.1.0-rc.1": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "mesr.module.software.v0_1",
+          "field": "dependencies.version",
+          "related_id": "0.1.0-rc.1",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C21.01.1.0": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "mesr.module.software.v0_1",
+          "field": "dependencies.version",
+          "related_id": "01.1.0",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C22.array": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_CONTENT_MISMATCH",
+          "subject": "mesr.module.software.v0_1",
+          "field": "lock",
+          "related_id": "",
+          "detail": "LOCK_CONTENT_MISMATCH"
+        },
+        {
+          "rule_id": "LOCK_CONTENT_MISMATCH",
+          "subject": "mesr.xw.test_nist_like.v0_1",
+          "field": "dependencies.digest",
+          "related_id": "mesr.module.software.v0_1",
+          "detail": "LOCK_CONTENT_MISMATCH"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C22.raw": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_CONTENT_MISMATCH",
+          "subject": "mesr.module.software.v0_1",
+          "field": "lock",
+          "related_id": "",
+          "detail": "LOCK_CONTENT_MISMATCH"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "C27": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_NONINTERFERENCE_UNPROVEN",
+          "subject": "composition",
+          "field": "admission_basis",
+          "related_id": "",
+          "detail": "LOCK_NONINTERFERENCE_UNPROVEN"
+        }
+      ],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H01": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "$"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H02": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H03": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "bindings"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H04": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "events"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H05": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "events"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H06": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "events"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H07": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "evidence_ledger"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H08": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_INPUT_SHAPE",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H09": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "custody"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H10": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "separation"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H11": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "temporal"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H12": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "temporal"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H13": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "temporal"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H14": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "integrity"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H15": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "integrity"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H16": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "sufficiency"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H17": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "sufficiency.atomic_results"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H18": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_INPUT_SHAPE",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H19": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "sufficiency"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H20": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H21": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H22": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "lock"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H23": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_MANIFEST_JSON",
+          "field": "raw_manifests.mesr.core"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H24": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "relations"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H25": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "modules"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H26": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H27": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H28": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_INPUT_SHAPE",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H29": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_INPUT_SHAPE",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H30": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "custody"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H31": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [
+        {
+          "rule_id": "LOCK_BASIS_UNRESOLVED",
+          "subject": "composition",
+          "field": "shape",
+          "related_id": "",
+          "detail": "LOCK_BASIS_UNRESOLVED"
+        }
+      ],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "modules"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H32": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "CHECKED_INPUT_SHAPE",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [],
+      "checked_basis": null
+    },
+    "H33": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "acceptance_authority"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H34": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "temporal"
+        }
+      ],
+      "checked_basis": null
+    },
+    "H35": {
+      "contract_version": "mesr-canonical-admission/0.1",
+      "status": "REJECTED",
+      "semantic_composition": "WITHHELD",
+      "semantic_entries": [],
+      "mappings": [],
+      "profiles": [],
+      "claims": [],
+      "diagnostics": [],
+      "input_issues": [
+        {
+          "code": "INVALID_INPUT_SHAPE",
+          "field": "requests"
+        }
+      ],
+      "checked_basis": null
+    }
+  },
+  "assertions": [
+    {
+      "case_id": "C01",
+      "asserted": [
+        "identity/lock admission",
+        "attribution",
+        "composition withheld"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C02",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C05",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C06.registry",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C07",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C20.producer",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C20.consumer",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C20.malformed",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C21.>=0.1.0",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C21.latest",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C21.0.1.0-rc.1",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C21.01.1.0",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C22.array",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C22.raw",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "C27",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "all oracle diagnostic fields"
+      ],
+      "pending": [
+        "T1-04: complete semantic composition/noninterference"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H01",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H02",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H03",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H04",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H05",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H06",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H07",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H08",
+      "asserted": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing evidence_refs"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H09",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H10",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H11",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H12",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H13",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H14",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H15",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H16",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H17",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H18",
+      "asserted": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing sufficiency.requirement.tests"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H19",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H20",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H21",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H22",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H23",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H24",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H25",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H26",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H27",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H28",
+      "asserted": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing verification_executed"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H29",
+      "asserted": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing method"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H30",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H31",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H32",
+      "asserted": [
+        "structural admission only",
+        "no claim evaluation"
+      ],
+      "pending": [
+        "T1-02/T1-03/Tranche 2: UNRESOLVED; missing verification_event"
+      ],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H33",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H34",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    },
+    {
+      "case_id": "H35",
+      "asserted": [
+        "rejection",
+        "zero admitted outputs",
+        "structural issues"
+      ],
+      "pending": [],
+      "comparison": "EXPECTED_GAP_CLOSED",
+      "scope": "T1-01 owned assertions only",
+      "later_semantic_obligations_status": "WITHHELD_FOR_LATER_TASK"
+    }
+  ],
+  "supplemental_controls": [
+    {
+      "id": "unknown-module-id",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unknown-registry-version",
+      "outcome": "PASS"
+    },
+    {
+      "id": "self-rewritten-registry",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unknown-closed-field",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unsupported-module-version",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unsupported-lock-field",
+      "outcome": "PASS"
+    },
+    {
+      "id": "missing-manifest",
+      "outcome": "PASS"
+    },
+    {
+      "id": "extra-manifest",
+      "outcome": "PASS"
+    },
+    {
+      "id": "missing-lock",
+      "outcome": "PASS"
+    },
+    {
+      "id": "extra-lock",
+      "outcome": "PASS"
+    },
+    {
+      "id": "missing-core",
+      "outcome": "PASS"
+    },
+    {
+      "id": "empty-composition",
+      "outcome": "PASS"
+    },
+    {
+      "id": "invalid-byte-length",
+      "outcome": "PASS"
+    },
+    {
+      "id": "duplicate-decoded-json-key",
+      "outcome": "PASS"
+    },
+    {
+      "id": "duplicate-nested-json-key",
+      "outcome": "PASS"
+    },
+    {
+      "id": "nonfinite-raw-json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "raw-utf8-bom",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unpaired-raw-surrogate",
+      "outcome": "PASS"
+    },
+    {
+      "id": "rewritten-content-and-lock",
+      "outcome": "PASS"
+    },
+    {
+      "id": "self-rewritten-proof",
+      "outcome": "PASS"
+    },
+    {
+      "id": "wrong-independent-proof-pin",
+      "outcome": "PASS"
+    },
+    {
+      "id": "non-json-value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "non-json-getter",
+      "outcome": "PASS"
+    },
+    {
+      "id": "non-json-cycle",
+      "outcome": "PASS"
+    },
+    {
+      "id": "non-json-prototype",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unknown-claim-identity",
+      "outcome": "PASS"
+    },
+    {
+      "id": "exact-raw-format-with-separate-byte-lock",
+      "outcome": "PASS"
+    },
+    {
+      "id": "core-only-explicit-basis",
+      "outcome": "PASS"
+    },
+    {
+      "id": "unicode-codepoint-and-integer-key-order",
+      "outcome": "PASS"
+    },
+    {
+      "id": "strict-json-parser-controls",
+      "outcome": "PASS"
+    },
+    {
+      "id": "permutation-and-return-isolation",
+      "outcome": "PASS"
+    },
+    {
+      "id": "windows-regex-helper-equivalence",
+      "outcome": "PASS"
+    },
+    {
+      "id": "public-source-and-import-isolation",
+      "outcome": "PASS"
+    }
+  ],
+  "harness_falsifiers": [
+    "corrupted expectation",
+    "dropped result",
+    "false positive",
+    "dropped binding input"
+  ],
+  "replay_hashes": [
+    "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648",
+    "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648",
+    "ee0099cad7efc4f01b2c9c70c00c302e2377efc712fd2e5f46afe114b989e648"
+  ],
+  "comparison_unit": "T1-01 owned obligation slice; never whole-case semantic conformance",
+  "counts": {
+    "EXPECTED_GAP_CLOSED": 50,
+    "PARTIAL_CONFORMANCE_IMPROVED": 0,
+    "UNCHANGED_CONFORMING": 0,
+    "UNCHANGED_EXPECTED_GAP": 0,
+    "NEW_REGRESSION": 0
+  },
+  "legacy_byte_equality": true,
+  "freeze_blobs": 19
+}
