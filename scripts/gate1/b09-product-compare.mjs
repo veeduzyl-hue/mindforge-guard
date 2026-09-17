@@ -134,3 +134,32 @@ export function compareRequirements(rows, outputs, expected, ids) {
   }
   return assertions;
 }
+
+// T1-03 owns selection and preserves the collector. Specialized proof methods
+// remain separately named; these rows are partial, never whole-case PASS.
+export function compareStateResults(rows, outputs, oracle, baseline) {
+  const pending = { "N06b:current": { gap: "G07 explicit interval evaluation", state: "STALE", missing: "currentness" }, "N14:decision": { gap: "G03/institutional occurrence evidence", state: "SUPPORTED", missing: "institutional_evidence_basis" }, "N18:independence": { gap: "G05 independent checking", state: "SUPPORTED", missing: "independent_verification_basis" } };
+  assert.deepEqual(Object.keys(outputs), rows.map(r => r.case_id));
+  assert.deepEqual(rows.map(r => r.case_id), baseline.observations.map(r => r.case_id));
+  return rows.map(row => {
+    const output = outputs[row.case_id], expected = oracle.cases[row.case_id];
+    assert.ok(expected && output && output.status === "EVALUATED", row.case_id);
+    assert.equal(output.claims.length, expected.claims.length, row.case_id + " omitted claim");
+    const fields = [];
+    for (const want of expected.claims) {
+      const matches = output.claims.filter(c => c.path === want.path && c.claim === want.claim);
+      assert.equal(matches.length, 1, row.case_id + ":" + want.path);
+      const got = matches[0], original = baseline.observations.find(r => r.case_id === row.case_id).collection.claims.find(c => c.path === want.path && c.claim === want.claim);
+      assert.deepEqual(got.collection, original, "T1-02 collection drift");
+      const withheld = pending[row.case_id + ":" + want.path];
+      if (!withheld) assert.equal(got.state, want.state, row.case_id + ":" + want.path);
+      else { assert.equal(want.state, withheld.state, "Withheld frozen expectation changed"); assert.equal(got.state, "UNRESOLVED"); assert.ok(got.missing_bindings.includes(withheld.missing), "Missing explicit later-proof obligation"); }
+      for (const name of want.missing_bindings) assert.ok(got.missing_bindings.includes(name), row.case_id + " missing diagnostic " + name);
+      for (const name of want.nonclaims) assert.ok(got.nonclaims.includes(name), row.case_id + " missing nonclaim " + name);
+      for (const name of want.diagnostics.filter(d => !withheld || d !== "APPLICABILITY_LOST")) assert.ok(got.diagnostics.includes(name), row.case_id + " missing diagnostic " + name);
+      assert.equal(got.world_falsity_asserted, false);
+      fields.push({ path: want.path, claim: want.claim, expected_state: want.state, observed_state: got.state, selector_assertions: "PASS", pending_specialized_proof: withheld?.gap ?? null });
+    }
+    return { case_id: row.case_id, fields, classification: fields.some(f => f.pending_specialized_proof) ? "PARTIAL_CONFORMANCE_IMPROVED" : "EXPECTED_GAP_CLOSED", unit: "task-owned selector slice; specialized semantics not claimed" };
+  });
+}

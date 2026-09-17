@@ -82,3 +82,10 @@ export function requirementCoreInput() {
   input.raw_manifests = { "mesr.core": input.raw_manifests["mesr.core"] };
   return input;
 }
+
+// T1-03 passes frozen N/E3-C inputs unchanged; no expected states enter input.
+export function loadStateInputs() {
+  const rows = readJson(frozenDir + "cases.v0.2.json").filter(row => row.case_id.startsWith("N") || row.case_id.startsWith("E3-C."));
+  if (new Set(rows.map(row => row.case_id)).size !== rows.length) throw new Error("Duplicate T1-03 cases");
+  return structuredClone(rows.map(({ case_id, input }) => ({ case_id, input })));
+}
