@@ -24,7 +24,7 @@ const productPaths = ["admission.ts", "contracts.ts", "canonicalBytes.ts"].map(p
 const t102Paths = ["packages/guard-core/src/mesr/repaired/requirements.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-02-controls.v0.1.json", "tests/fixtures/gate1/t1-02-results.v0.1.json", "docs/validation/v8-gate1-t1-02-evidence-v0.1.md"];
 const t103Paths = ["packages/guard-core/src/mesr/repaired/claimState.ts", "packages/guard-core/src/mesr/repaired/evaluateClaim.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-03-controls.v0.1.json", "tests/fixtures/gate1/t1-03-results.v0.1.json", "docs/validation/v8-gate1-t1-03-evidence-v0.1.md"];
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-assertTaskScope();
+const taskScope = assertTaskScope();
 const pins = readJson(frozenDir + "freeze.v0.2.json");
 for (const pin of pins.files) {
   const bytes = fs.readFileSync(pin.path);
@@ -216,8 +216,8 @@ if (before) {
     }
   });
   checkControl("public-source-and-import-isolation", () => {
-    const owned = [...productPaths, "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", fixturePath, resultPath, "docs/validation/v8-gate1-t1-01-evidence-v0.1.md"];
-    owned.push(...t102Paths, ...t103Paths, "docs/validation/v8-gate1-t1-02-post-commit-verifier-closure-v0.1.md");
+    // Reuse only paths whose commit attribution or current pending scope passed the entry guard.
+    const owned = taskScope.validatedPaths;
     const changed = execFileSync("git", ["diff", "--name-only", baseline.pre_change_head], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
     assert.ok(changed.every(path => owned.includes(path)), "Protected baseline files changed: " + changed.filter(path => !owned.includes(path)).join(", "));
     const tracked = execFileSync("git", ["ls-files", "-z", "packages"], { encoding: "utf8", maxBuffer: 5_000_000 }).split("\0").filter(p => /\.(?:mjs|cjs|js|ts|json)$/.test(p));
@@ -429,14 +429,15 @@ function assertTaskScope() {
   const closure = "2b0e9facb48795533ad96545e318c54ce535515b";
   const t103 = "ff263558cf45d4ad3d42b98e1f983b9f89b1a883";
   const base = "dbdb14ed9cf2f1b7e293f44bf9df1007f8ae15fc";
+  const initialClosure = "12d5529b608b13c2c518005721d60d558c9804ea";
   const verifierPath = "scripts/verify_v8_gate1_product_conformance.mjs";
   const closurePaths = [verifierPath, "docs/validation/v8-gate1-t1-02-post-commit-verifier-closure-v0.1.md"];
   const repairPaths = [verifierPath, "docs/validation/v8-gate1-t1-03-post-commit-verifier-closure-v0.1.md"];
   // Only these two digest declarations are normalized, avoiding a self-referential commit pin.
   // A future closure is admitted by exact content, parent, subject and complete path set once.
-  const closureVerifierSha256 = "454fe8856bd25a71d1e51299d72245ca648669949539ed3a4258a58b008e0f25";
-  const closureEvidenceSha256 = "734d579224aa690e61fab1cfb1551c2d4db82b6c668fca1e1df49056ebc21b41";
-  const closureSubject = "test(v8): preserve task-attributed Gate1 lineage validation";
+  const closureVerifierSha256 = "290e69204d2404767fcbde923acad03bc5208763e3486791687928443adf8f43";
+  const closureEvidenceSha256 = "a14fa6b5a7910d60099bc11b4c1dbf16448a04049ddaacc4ad604f426e594c47";
+  const closureSubject = "test(v8): complete task-attributed Gate1 history validation";
   const normalizedVerifier = text => text.replace(/^  const closure(?:Verifier|Evidence)Sha256 = "[0-9a-f]{64}";$/gm, line => line.replace(/"[0-9a-f]{64}"/, '"<PIN>"'));
   const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", stdio: "pipe", maxBuffer: 30_000_000 }).trim();
   const blob = (commit, path) => execFileSync("git", ["cat-file", "blob", commit + ":" + path], { maxBuffer: 30_000_000 });
@@ -451,7 +452,8 @@ function assertTaskScope() {
     { id: "T1-01", commit: t101, parent: base, paths: t101Paths, heading: "Exact allowed_file_paths" },
     { id: "T1-02", commit: t102, parent: t101, paths: t102Paths, heading: "Frozen exact file allowlist" },
     { id: "T1-02-CLOSURE", commit: closure, parent: t102, paths: closurePaths },
-    { id: "T1-03", commit: t103, parent: closure, paths: t103Paths, heading: "Exact file allowlist" }
+    { id: "T1-03", commit: t103, parent: closure, paths: t103Paths, heading: "Exact file allowlist" },
+    { id: "T1-03-CLOSURE-INITIAL", commit: initialClosure, parent: t103, paths: repairPaths }
   ];
   const anchors = { "T1-01": t101, "T1-02": t102, "T1-03": t103 };
   const inventory = commit => ({ commit, parents: list(git("show", "-s", "--format=%P", commit).replaceAll(" ", "\n")),
@@ -476,6 +478,7 @@ function assertTaskScope() {
       assert.ok(isAncestor(anchor, current), "Missing/non-ancestor accepted task anchor: " + id);
     }
     assert.ok(isAncestor(closure, current), "Missing/non-ancestor accepted closure anchor");
+    assert.ok(isAncestor(initialClosure, current), "Missing/non-ancestor initial T1-03 closure anchor");
     assert.ok(history.length === accepted.length || history.length === accepted.length + 1, "Unaccepted intervening commit count");
     for (let i = 0; i < accepted.length; i++) {
       const spec = accepted[i], actual = history[i];
@@ -486,7 +489,7 @@ function assertTaskScope() {
     }
     if (history.length > accepted.length) {
       const actual = history.at(-1);
-      assert.deepEqual(actual.parents, [t103], "Closure must be the sole direct child of T1-03");
+      assert.deepEqual(actual.parents, [initialClosure], "Follow-up closure must be the sole direct child of the pinned initial closure");
       assert.equal(actual.subject, closureSubject, "Unaccepted closure subject");
       assert.deepEqual(sorted(actual.paths), sorted(repairPaths), "Outside accepted closure history");
       validateClosureContent(blob(actual.commit, verifierPath).toString("utf8"), blob(actual.commit, repairPaths[1]));
@@ -516,13 +519,26 @@ function assertTaskScope() {
     const altered = structuredClone(history); altered.splice(3, 0, { commit: "unaccepted", parents: [closure], paths: ["README.md"], subject: "unrelated" });
     validate(args[1], anchors, head, altered, []);
   }, /Unaccepted intervening/);
-  reject("unaccepted-descendant", () => validate(args[1], anchors, head, [...history.slice(0, 4), { commit: "unaccepted", parents: [t103], paths: ["README.md"], subject: closureSubject }], []), /Outside accepted closure history/);
+  reject("unaccepted-descendant", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [initialClosure], paths: ["README.md"], subject: closureSubject }], []), /Outside accepted closure history/);
   reject("extra-empty-descendant", () => validate(args[1], anchors, head, [...history, ...history.slice(0, 2)], []), /Unaccepted intervening commit count/);
   for (const path of ["README.md", "packages/guard-core/src/reasonCodes.ts", t103Paths[0], t103Paths[5], t103Paths[7]]) {
     reject("unauthorized-pending-" + path, () => validate(args[1], anchors, head, history, [...pending, path]), /Outside current verifier-closure allowlist/);
   }
   reject("tampered-task-allowlist", () => validate(args[1], anchors, head, history, [], { ...declared, "T1-03": [...declared["T1-03"], "README.md"] }), /Tampered accepted task allowlist/);
   reject("dropped-task-allowlist-path", () => validate(args[1], anchors, head, history, [], { ...declared, "T1-03": declared["T1-03"].slice(1) }), /Tampered accepted task allowlist/);
+  reject("historical-evidence-wrong-task", () => {
+    const altered = structuredClone(history); altered[1].paths.push(t103Paths[7]);
+    validate(args[1], anchors, head, altered, []);
+  }, /Outside accepted task history: T1-02/);
+  reject("historical-evidence-wrong-closure", () => {
+    const altered = structuredClone(history); altered[2].paths.push(t103Paths[7]);
+    validate(args[1], anchors, head, altered, []);
+  }, /Outside accepted task history: T1-02-CLOSURE/);
+  reject("second-closure-extra-path", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [initialClosure], paths: [...repairPaths, "README.md"], subject: closureSubject }], []), /Outside accepted closure history/);
+  reject("unaccepted-same-path-commit", () => {
+    const altered = structuredClone(history); altered[4].commit = "unaccepted";
+    validate(args[1], anchors, head, altered, []);
+  }, /Unaccepted intervening commit/);
   const approvedVerifier = fs.readFileSync(verifierPath, "utf8"), approvedEvidence = fs.readFileSync(repairPaths[1]);
   pass("exact-closure-content", () => validateClosureContent(approvedVerifier, approvedEvidence));
   reject("closure-verifier-content-tamper", () => validateClosureContent(approvedVerifier + "\n// unaccepted\n", approvedEvidence), /Unaccepted closure verifier content/);
@@ -530,7 +546,7 @@ function assertTaskScope() {
   reject("closure-verifier-pin-tamper", () => validateClosureContent(approvedVerifier.replace('const closureVerifierSha256 = "' + closureVerifierSha256, 'const closureVerifierSha256 = "' + "0".repeat(64)), approvedEvidence), /Closure verifier pin changed/);
   reject("closure-evidence-pin-tamper", () => validateClosureContent(approvedVerifier.replace('const closureEvidenceSha256 = "' + closureEvidenceSha256, 'const closureEvidenceSha256 = "' + "0".repeat(64)), approvedEvidence), /Closure evidence pin changed/);
   // Freeze all accepted artifacts at the last semantic task; only the verifier may change in this closure.
-  for (const path of [...new Set(accepted.flatMap(item => item.paths))].filter(path => path !== verifierPath)) {
+  for (const path of [...new Set(accepted.flatMap(item => item.paths))].filter(path => !repairPaths.includes(path))) {
     const preserved = blob(t103, path);
     assert.deepEqual(fs.readFileSync(path), preserved, "Frozen T1-01/T1-02/T1-03 worktree bytes: " + path);
     assert.deepEqual(blob(head, path), preserved, "Frozen T1-01/T1-02/T1-03 committed bytes: " + path);
@@ -540,6 +556,7 @@ function assertTaskScope() {
     for (const match of source.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g)) assert.ok(!/scripts|fixtures|gate1|b09/.test(match[1]), "Test dependency: " + path);
   }
   console.log(JSON.stringify({ verifier_lineage_guard: "STRICT", scope: "T1-03-POST-COMMIT-CLOSURE", historical_commits: history.length, controls }));
+  return Object.freeze({ validatedPaths: Object.freeze([...new Set([...history.flatMap(item => item.paths), ...pending])]) });
 }
 
 async function runStateTask() {
