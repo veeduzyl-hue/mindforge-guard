@@ -434,7 +434,15 @@ function assertTaskScope() {
   const t103 = "ff263558cf45d4ad3d42b98e1f983b9f89b1a883";
   const base = "dbdb14ed9cf2f1b7e293f44bf9df1007f8ae15fc";
   const initialClosure = "12d5529b608b13c2c518005721d60d558c9804ea";
+  const t104 = "14ffe82625313f75076d8dcc39950770523c128e";
   const verifierPath = "scripts/verify_v8_gate1_product_conformance.mjs";
+  const t104ClosurePaths = [verifierPath, "docs/validation/v8-gate1-t1-04-post-commit-verifier-closure-v0.1.md"];
+  const t104ClosureSubject = "test(v8): register accepted T1-04 lineage";
+  // Admit exactly one closure by parent, subject, exact paths and pinned content.
+  // Normalize only these two declarations to avoid a self-referential digest.
+  const t104ClosureVerifierSha256 = "2ea770c095b4668fa54076b752e8eb762beed0f05c932a1d281d64e305225a60";
+  const t104ClosureEvidenceSha256 = "322376787ece2b7c321c93d3822bb8aa0278ccf8d6f537add8ef1f04ad53f7cf";
+  const normalizedT104Verifier = text => text.replace(/^  const t104Closure(?:Verifier|Evidence)Sha256 = "[0-9a-f]{64}";$/gm, line => line.replace(/"[0-9a-f]{64}"/, '"<PIN>"'));
   const closurePaths = [verifierPath, "docs/validation/v8-gate1-t1-02-post-commit-verifier-closure-v0.1.md"];
   const repairPaths = [verifierPath, "docs/validation/v8-gate1-t1-03-post-commit-verifier-closure-v0.1.md"];
   // Only these two digest declarations are normalized, avoiding a self-referential commit pin.
@@ -444,7 +452,7 @@ function assertTaskScope() {
   const closureSubject = "test(v8): complete task-attributed Gate1 history validation";
   const normalizedVerifier = text => text.replace(/^  const closure(?:Verifier|Evidence)Sha256 = "[0-9a-f]{64}";$/gm, line => line.replace(/"[0-9a-f]{64}"/, '"<PIN>"'));
   const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", stdio: "pipe", maxBuffer: 30_000_000 }).trim();
-  const blob = (commit, path) => execFileSync("git", ["cat-file", "blob", commit + ":" + path], { maxBuffer: 30_000_000 });
+  const blob = (commit, path) => execFileSync("git", ["cat-file", "blob", commit + ":" + path], { maxBuffer: 128_000_000 });
   const list = value => value.split("\n").filter(Boolean);
   const sorted = paths => [...paths].sort();
   const isAncestor = (anchor, current) => {
@@ -457,9 +465,11 @@ function assertTaskScope() {
     { id: "T1-02", commit: t102, parent: t101, paths: t102Paths, heading: "Frozen exact file allowlist" },
     { id: "T1-02-CLOSURE", commit: closure, parent: t102, paths: closurePaths },
     { id: "T1-03", commit: t103, parent: closure, paths: t103Paths, heading: "Exact file allowlist" },
-    { id: "T1-03-CLOSURE-INITIAL", commit: initialClosure, parent: t103, paths: repairPaths }
+    { id: "T1-03-CLOSURE-INITIAL", commit: initialClosure, parent: t103, paths: repairPaths },
+    { id: "T1-03-CLOSURE-FINAL", commit: t104Anchor, parent: initialClosure, paths: repairPaths },
+    { id: "T1-04", commit: t104, parent: t104Anchor, paths: t104Paths, heading: "Exact seven-path allowlist" }
   ];
-  const anchors = { "T1-01": t101, "T1-02": t102, "T1-03": t103, "T1-04": t104Anchor };
+  const anchors = { "T1-01": t101, "T1-02": t102, "T1-03": t103, "T1-04": t104 };
   const inventory = commit => ({ commit, parents: list(git("show", "-s", "--format=%P", commit).replaceAll(" ", "\n")),
     paths: list(git("diff-tree", "--no-commit-id", "--name-only", "--no-renames", "-r", commit)), subject: git("show", "-s", "--format=%s", commit) });
   const declared = Object.fromEntries(accepted.map(item => {
@@ -474,6 +484,12 @@ function assertTaskScope() {
     assert.ok(verifier.includes('const closureVerifierSha256 = "' + closureVerifierSha256 + '";'), "Closure verifier pin changed");
     assert.ok(verifier.includes('const closureEvidenceSha256 = "' + closureEvidenceSha256 + '";'), "Closure evidence pin changed");
     assert.equal(digest(evidence), closureEvidenceSha256, "Unaccepted closure evidence content");
+  };
+  const validateT104ClosureContent = (verifier, evidence) => {
+    assert.equal(digest(normalizedT104Verifier(verifier)), t104ClosureVerifierSha256, "Unaccepted T1-04 closure verifier content");
+    assert.ok(verifier.includes('const t104ClosureVerifierSha256 = "' + t104ClosureVerifierSha256 + '";'), "T1-04 closure verifier pin changed");
+    assert.ok(verifier.includes('const t104ClosureEvidenceSha256 = "' + t104ClosureEvidenceSha256 + '";'), "T1-04 closure evidence pin changed");
+    assert.equal(digest(evidence), t104ClosureEvidenceSha256, "Unaccepted T1-04 closure evidence content");
   };
   const validate = (task, suppliedAnchors, current, history, pending, allowlists = declared) => {
     assert.ok(Object.hasOwn(anchors, task), "Unknown task");
@@ -493,17 +509,16 @@ function assertTaskScope() {
     }
     if (history.length > accepted.length) {
       const actual = history.at(-1);
-      assert.deepEqual(actual.parents, [initialClosure], "Follow-up closure must be the sole direct child of the pinned initial closure");
-      assert.equal(actual.subject, closureSubject, "Unaccepted closure subject");
-      assert.deepEqual(sorted(actual.paths), sorted(repairPaths), "Outside accepted closure history");
-      validateClosureContent(blob(actual.commit, verifierPath).toString("utf8"), blob(actual.commit, repairPaths[1]));
+      assert.deepEqual(actual.parents, [t104], "Follow-up closure must be the sole direct child of accepted T1-04");
+      assert.equal(actual.subject, t104ClosureSubject, "Unaccepted closure subject");
+      assert.deepEqual(sorted(actual.paths), sorted(t104ClosurePaths), "Outside accepted closure history");
+      validateT104ClosureContent(blob(actual.commit, verifierPath).toString("utf8"), blob(actual.commit, t104ClosurePaths[1]));
     }
-    assert.equal(current, t104Anchor, "T1-04 requires its exact accepted pre-change HEAD");
+    assert.equal(current, history.at(-1).commit, "HEAD must be the last attributed commit");
     assert.deepEqual(sorted(allowlists["T1-04"] ?? []), sorted(t104Paths), "Tampered accepted task allowlist: T1-04");
-    for (const path of pending) assert.ok(t104Paths.includes(path), "Outside current verifier-closure allowlist / T1-04 scope: " + path);
+    for (const path of pending) assert.ok(t104ClosurePaths.includes(path), "Outside current verifier-closure allowlist: " + path);
   };
-  declared["T1-04"] = [...t104Paths];
-  assert.equal(git("branch", "--show-current"), "feat/v8-gate1-tranche1-t1-04-v0.1", "T1-04 branch mismatch");
+  assert.ok(["feat/v8-gate1-tranche1-t1-04-v0.1", "validation/v8-gate1-tranche1-formal-closure-v0.1"].includes(git("branch", "--show-current")), "T1-04 branch mismatch");
   const history = list(git("rev-list", "--reverse", "--topo-order", base + ".." + head)).map(inventory);
   const pending = [...list(git("diff", "--name-only", "--no-renames", head)), ...list(git("ls-files", "--others", "--exclude-standard"))];
   validate(args[1], anchors, head, history, pending);
@@ -527,7 +542,7 @@ function assertTaskScope() {
     const altered = structuredClone(history); altered.splice(3, 0, { commit: "unaccepted", parents: [closure], paths: ["README.md"], subject: "unrelated" });
     validate(args[1], anchors, head, altered, []);
   }, /Unaccepted intervening/);
-  reject("unaccepted-descendant", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [initialClosure], paths: ["README.md"], subject: closureSubject }], []), /Outside accepted closure history/);
+  reject("unaccepted-descendant", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [t104], paths: ["README.md"], subject: t104ClosureSubject }], []), /Outside accepted closure history/);
   reject("extra-empty-descendant", () => validate(args[1], anchors, head, [...history, ...history.slice(0, 2)], []), /Unaccepted intervening commit count/);
   for (const path of ["README.md", "packages/guard-core/src/reasonCodes.ts", t103Paths[0], t103Paths[5], t103Paths[7]]) {
     reject("unauthorized-pending-" + path, () => validate(args[1], anchors, head, history, [...pending, path]), /Outside current verifier-closure allowlist/);
@@ -542,7 +557,7 @@ function assertTaskScope() {
     const altered = structuredClone(history); altered[2].paths.push(t103Paths[7]);
     validate(args[1], anchors, head, altered, []);
   }, /Outside accepted task history: T1-02-CLOSURE/);
-  reject("second-closure-extra-path", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [initialClosure], paths: [...repairPaths, "README.md"], subject: closureSubject }], []), /Outside accepted closure history/);
+  reject("second-closure-extra-path", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [t104], paths: [...t104ClosurePaths, "README.md"], subject: t104ClosureSubject }], []), /Outside accepted closure history/);
   reject("unaccepted-same-path-commit", () => {
     const altered = structuredClone(history); altered[4].commit = "unaccepted";
     validate(args[1], anchors, head, altered, []);
@@ -554,21 +569,37 @@ function assertTaskScope() {
   reject("closure-evidence-content-tamper", () => validateClosureContent(approvedVerifier, Buffer.concat([approvedEvidence, Buffer.from("unaccepted")])), /Unaccepted closure evidence content/);
   reject("closure-verifier-pin-tamper", () => validateClosureContent(approvedVerifier.replace('const closureVerifierSha256 = "' + closureVerifierSha256, 'const closureVerifierSha256 = "' + "0".repeat(64)), approvedEvidence), /Closure verifier pin changed/);
   reject("closure-evidence-pin-tamper", () => validateClosureContent(approvedVerifier.replace('const closureEvidenceSha256 = "' + closureEvidenceSha256, 'const closureEvidenceSha256 = "' + "0".repeat(64)), approvedEvidence), /Closure evidence pin changed/);
-  // Freeze accepted product/evidence bytes. Only the three explicitly shared
-  // test paths may receive additive T1-04 work; their historical Git blobs stay pinned.
-  for (const path of [...new Set(accepted.flatMap(item => item.paths))].filter(path => !repairPaths.includes(path))) {
-    const preserved = blob(t103, path);
-    if (!t104Paths.includes(path)) assert.deepEqual(fs.readFileSync(path), preserved, "Frozen T1-01/T1-02/T1-03 worktree bytes: " + path);
-    assert.deepEqual(blob(head, path), preserved, "Frozen T1-01/T1-02/T1-03 committed bytes: " + path);
+  // Latest accepted owner supplies each current blob; earlier shared-tool blobs
+  // remain immutable in their exact registered commits, not compared to newer versions.
+  const latestOwner = new Map(accepted.flatMap(item => item.paths.map(path => [path, item.commit])));
+  for (const [path, owner] of latestOwner) {
+    if (path === verifierPath) continue; // exact closure content checked separately below
+    const preserved = blob(owner, path);
+    assert.deepEqual(fs.readFileSync(path), preserved, "Frozen accepted worktree bytes: " + path);
+    assert.deepEqual(blob(head, path), preserved, "Frozen accepted committed bytes: " + path);
   }
+  const currentVerifier = fs.readFileSync(verifierPath, "utf8"), currentEvidence = fs.readFileSync(t104ClosurePaths[1]);
+  pass("exact-t1-04-closure-content", () => validateT104ClosureContent(currentVerifier, currentEvidence));
+  reject("t1-04-closure-verifier-content-tamper", () => validateT104ClosureContent(currentVerifier + "\n// unaccepted\n", currentEvidence), /Unaccepted T1-04 closure verifier content/);
+  reject("t1-04-closure-evidence-content-tamper", () => validateT104ClosureContent(currentVerifier, Buffer.concat([currentEvidence, Buffer.from("unaccepted")])), /Unaccepted T1-04 closure evidence content/);
+  reject("t1-04-closure-verifier-pin-tamper", () => validateT104ClosureContent(currentVerifier.replace('const t104ClosureVerifierSha256 = "' + t104ClosureVerifierSha256, 'const t104ClosureVerifierSha256 = "' + "0".repeat(64)), currentEvidence), /T1-04 closure verifier pin changed/);
+  reject("t1-04-closure-evidence-pin-tamper", () => validateT104ClosureContent(currentVerifier.replace('const t104ClosureEvidenceSha256 = "' + t104ClosureEvidenceSha256, 'const t104ClosureEvidenceSha256 = "' + "0".repeat(64)), currentEvidence), /T1-04 closure evidence pin changed/);
+  reject("unauthorized-closure-subject", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [t104], paths: t104ClosurePaths, subject: "unrelated" }], []), /Unaccepted closure subject/);
+  reject("unauthorized-closure-parent", () => validate(args[1], anchors, head, [...history.slice(0, accepted.length), { commit: "unaccepted", parents: [initialClosure], paths: t104ClosurePaths, subject: t104ClosureSubject }], []), /sole direct child/);
+  reject("unknown-task-commit", () => {
+    const altered = structuredClone(history); altered[6].commit = "unaccepted";
+    validate(args[1], anchors, head, altered, []);
+  }, /Unaccepted intervening commit/);
   for (const path of [...productPaths, "packages/guard-core/src/mesr/repaired/requirements.ts", ...t103Paths.slice(0, 2)]) {
     const source = fs.readFileSync(path, "utf8");
     for (const match of source.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g)) assert.ok(!/scripts|fixtures|gate1|b09/.test(match[1]), "Test dependency: " + path);
   }
   reject("tampered-t1-04-allowlist", () => validate("T1-04", anchors, head, history, [], { ...declared, "T1-04": [...t104Paths, "README.md"] }), /Tampered accepted task allowlist/);
   reject("missing-t1-04-anchor", () => validate("T1-04", { ...anchors, "T1-04": undefined }, head, history, []), /Missing\/tampered/);
-  for (const path of t104Paths) pass("t1-04-authorized-" + path, () => validate("T1-04", anchors, head, history, [path]));
-  console.log(JSON.stringify({ verifier_lineage_guard: "STRICT", scope: "T1-04", historical_commits: history.length, controls }));
+  for (const path of t104Paths) pass("t1-04-authorized-" + path, () => { assert.ok(history[6].paths.includes(path)); validate("T1-04", anchors, head, history, []); });
+  for (const path of t104Paths.filter(path => path !== verifierPath)) reject("t1-04-frozen-pending-" + path, () => validate("T1-04", anchors, head, history, [path]), /Outside current verifier-closure allowlist/);
+  for (const path of t104ClosurePaths) pass("t1-04-closure-authorized-" + path, () => validate("T1-04", anchors, head, history, [path]));
+  console.log(JSON.stringify({ verifier_lineage_guard: "STRICT", scope: "T1-04", historical_commits: history.length, head, closure_commit: history.length > accepted.length ? history.at(-1).commit : null, controls }));
   return Object.freeze({ validatedPaths: Object.freeze([...new Set([...history.flatMap(item => item.paths), ...pending])]) });
 }
 
@@ -880,6 +911,10 @@ async function runCompositionTask() {
   console.log("T1-04 full replay 1 PASS: " + replayHashes[0]);
   for (let i = 1; i < 3; i++) { replayHashes.push(digest(execute())); console.log("T1-04 full replay " + (i + 1) + " PASS: " + replayHashes[i]); }
   assert.equal(new Set(replayHashes).size, 1, "T1-04 complete replay nondeterminism");
+  const acceptedResult = readJson(t104Paths[5]);
+  assert.equal(digest(first.outputs), acceptedResult.product_composition_semantic_hash, "Accepted T1-04 product semantic hash changed");
+  assert.equal(replayHashes[0], acceptedResult.result_hash, "Accepted T1-04 task-result hash changed");
+  console.log("PRODUCT_COMPOSITION_SEMANTIC_HASH=" + digest(first.outputs));
   const regressions = args.includes("--regressions") ? compositionRegressions() : [];
   if (regressions.length) assert.deepEqual(regressions.map(r => r.command), baseline.regressions.map(r => r.command));
   // Public/default callers and accepted product/fixture bytes remain guarded by
