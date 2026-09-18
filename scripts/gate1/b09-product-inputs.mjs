@@ -89,3 +89,40 @@ export function loadStateInputs() {
   if (new Set(rows.map(row => row.case_id)).size !== rows.length) throw new Error("Duplicate T1-03 cases");
   return structuredClone(rows.map(({ case_id, input }) => ({ case_id, input })));
 }
+
+// T1-04 finite composition inputs remain byte/content-identical to frozen cases.
+export const t104HardeningIds = ["H22", "H23", "H24", "H25", "H31"];
+export function loadCompositionInputs() {
+  const rows = readJson(frozenDir + "cases.v0.2.json").filter(row => row.case_id.startsWith("C"));
+  if (rows.length !== 41 || new Set(rows.map(row => row.case_id)).size !== rows.length) throw new Error("T1-04 C inventory drift");
+  const hardening = loadInputs().filter(row => t104HardeningIds.includes(row.case_id));
+  return structuredClone([...rows, ...hardening].map(({ case_id, input }) => ({ case_id, input })));
+}
+export function loadCoreProbes() {
+  const basis = readJson(frozenDir + "basis.v0.2.json");
+  const complete = readJson(frozenDir + "cases.v0.2.json").find(row => row.case_id === "I10").input;
+  const probes = [];
+  for (const entry of basis.entries) {
+    const input = structuredClone(complete);
+    input.requests = [{ path: "generic", claim: entry.supports[0], semantic_ids: [entry.semantic_id], semantic_version: entry.version, required_bindings: [] }];
+    probes.push({ id: entry.semantic_id + ":base", facet: "base", input });
+    for (const binding of entry.required_bindings) for (const value of [null, "", [], false]) {
+      const probe = structuredClone(input); probe.bindings[binding] = value;
+      probes.push({ id: entry.semantic_id + ":" + binding + ":" + JSON.stringify(value), facet: "binding", binding, input: probe });
+    }
+    for (const nonclaim of entry.does_not_support) {
+      const probe = structuredClone(input); probe.requests[0].claim = nonclaim; probe.caller_supported_claim_parts = [nonclaim];
+      probes.push({ id: entry.semantic_id + ":nonclaim:" + nonclaim, facet: "nonclaim", nonclaim, input: probe });
+    }
+  }
+  if (probes.length !== 603 || new Set(probes.map(p => p.id)).size !== 603) throw new Error("T1-04 probe inventory drift");
+  return probes;
+}
+
+export function compositionTrust() {
+  const basis = readJson(frozenDir + "basis.v0.2.json");
+  // Frozen vocabulary-role identifiers, not inferred semantic equivalences.
+  return { ...testTrust(), context_versions: structuredClone(basis.context_versions), context_modules: {
+    core: "mesr.core", software: "mesr.module.software.v0_1", crosswalk: "mesr.xw.test_nist_like.v0_1"
+  } };
+}

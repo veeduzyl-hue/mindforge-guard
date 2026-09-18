@@ -163,3 +163,38 @@ export function compareStateResults(rows, outputs, oracle, baseline) {
     return { case_id: row.case_id, fields, classification: fields.some(f => f.pending_specialized_proof) ? "PARTIAL_CONFORMANCE_IMPROVED" : "EXPECTED_GAP_CLOSED", unit: "task-owned selector slice; specialized semantics not claimed" };
   });
 }
+
+// All frozen composition fields are compared in full. The extra product
+// admission/legacy/provenance fields are retained and checked separately.
+export function compareCompositions(rows, outputs, oracle, hardening) {
+  const ids = rows.map(r => r.case_id);
+  assert.equal(new Set(ids).size, ids.length, "Duplicate composition case");
+  assert.equal(ids.filter(id => id.startsWith("C")).length, 41);
+  assert.deepEqual(Object.keys(outputs), ids, "Missing/unmatched composition result");
+  return rows.map(row => {
+    const result = outputs[row.case_id];
+    assert.equal(result.contract_version, "mesr-composition-lock/0.1");
+    const expected = row.case_id.startsWith("C") ? oracle.cases[row.case_id] : hardening.cases.find(r => r.case_id === row.case_id)?.expected;
+    assert.ok(expected, "Missing expectation: " + row.case_id);
+    const actual = Object.fromEntries(Object.keys(expected).map(key => [key, result[key]]));
+    assert.deepEqual(actual, expected, "Full composition oracle: " + row.case_id);
+    if (result.status === "INVALID_COMPOSITION") {
+      for (const key of ["semantic_entries", "mappings", "profiles", "requirements", "nonclaims", "resolved_modules"]) assert.deepEqual(result[key], [], row.case_id + ":" + key);
+      assert.equal(result.core_basis_input, null);
+      assert.ok(result.diagnostics.length > 0);
+    } else {
+      assert.equal(result.admission.status, "CHECKED_BASIS");
+      assert.equal(result.resolved_modules.length, row.input.modules.length);
+      assert.ok(result.provenance.admission_basis_refs.length > 0);
+      assert.ok(result.core_basis_input);
+      assert.equal(result.requirements.length, result.semantic_entries.length);
+      assert.equal(result.nonclaims.length, result.semantic_entries.length);
+      for (const entry of result.semantic_entries) {
+        assert.deepEqual(result.requirements.find(r => r.semantic_id === entry.semantic_id).required_bindings, entry.required_bindings);
+        assert.deepEqual(result.nonclaims.find(r => r.semantic_id === entry.semantic_id).does_not_support, entry.does_not_support);
+      }
+    }
+    assert.equal(result.later_assurance, "WITHHELD_FOR_TRANCHE_2");
+    return { case_id: row.case_id, asserted_fields: Object.keys(expected), atomicity: "PASS", outcome: "PASS", classification: "EXPECTED_GAP_CLOSED" };
+  });
+}
