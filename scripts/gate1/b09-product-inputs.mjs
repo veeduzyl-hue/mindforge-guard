@@ -166,3 +166,19 @@ export function loadVerificationEventInputs() {
 
 // T2-02: new supplied records stay separate from frozen B09 evidence.
 export function loadIntegrityInputs() { return structuredClone(readJson("tests/fixtures/gate1/t2-02-controls.v0.1.json").cases); }
+
+// T2-03: explicit NEW supplemental witnesses only; no frozen input enrichment.
+export function loadIndependenceInputs() {
+  const controls = readJson("tests/fixtures/gate1/t2-03-controls.v0.1.json");
+  return controls.cases.map(row => {
+    const input = structuredClone(controls.supplemental_input);
+    for (const operation of row.operations) {
+      const keys = [...operation.path], key = keys.pop();
+      const parent = keys.reduce((value, part) => value[part], input);
+      if (operation.op === "delete") delete parent[key];
+      else if (operation.op === "set") parent[key] = structuredClone(operation.value);
+      else throw new Error("Unknown declarative T2-03 operation");
+    }
+    return { ...row, input };
+  });
+}

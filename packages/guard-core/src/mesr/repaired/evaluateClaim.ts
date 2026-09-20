@@ -5,6 +5,7 @@ import { canonicalJson, compareCodePoints, contentDigest } from "./canonicalByte
 import { nonempty, record, type AdmissionTrust, type JsonRecord } from "./contracts.ts";
 import { type ClaimState, type StateBasis } from "./claimState.ts";
 import { readIntegrityReceipt } from "./integrity.ts";
+import { readIndependenceFinding } from "./independence.ts";
 
 function selectClaimState(basis: StateBasis): { state: ClaimState; rationale: string } {
   if (basis.prohibitions.length) return { state: "UNSUPPORTED", rationale: "CORE_PROHIBITED_INFERENCE" };
@@ -29,7 +30,7 @@ const time = (v: unknown) => typeof v === "string" && /(?:Z|[+-]\d{2}:\d{2})$/.t
  * Recorded producer results remain attributed assertions. No check is executed,
  * no independent-verifier/custody/integrity/profile/current-standing method runs.
  */
-export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown) {
+export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown, independenceFinding?: unknown) {
   const collection = collectBindingRequirements(input, coreInput, trust, contexts);
   const result: JsonRecord = { contract_version: "mesr-claim-state-projection/0.1", method_version: "mesr-claim-evaluation/0.1", status: collection.status === "COLLECTED" ? "EVALUATED" : "REJECTED",
     semantic_composition: "WITHHELD_FOR_T1_04", input_digest: collection.input_digest, checked_basis: collection.checked_basis, input_issues: collection.input_issues, claims: [] };
@@ -83,6 +84,17 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
     } else if (has("mesr.core.evidence.item") && ["evidence_presence", "evidence.present"].includes(c.claim)) {
       if (bound(source.positive_evidence) && nonempty(source.positive_evidence.ref) && source.positive_evidence.time === c.provenance.evaluation_time && source.evidence_present === true) positive.push({ ref: proofRef(source.positive_evidence), evidence: structuredClone(source.positive_evidence), criterion: "attributed-evidence-presence/0.1", origin: "PRODUCER_ASSERTION" });
       else missing.push("positive_evidence");
+    } else if ((c.claim === "verification.independent" && has("mesr.core.evidence.verification") || c.claim === "custody.independent" && has("mesr.core.evidence.item"))
+      && readIndependenceFinding(independenceFinding, source, coreInput, trust, contexts, collection, c.path)) {
+      const finding = readIndependenceFinding(independenceFinding, source, coreInput, trust, contexts, collection, c.path)!;
+      const dimensions = c.claim === "custody.independent" ? [finding.custody] : [finding.identity, finding.principal_separation, finding.custody, finding.successful_check];
+      for (const dimension of dimensions) {
+        missing.push(...dimension.missing);
+        negative.push(...dimension.violations.map((evidence: JsonRecord) => ({ ref: proofRef(evidence), criterion: finding.method, evidence })));
+        undecidable.push(...dimension.undecidable.map((evidence: JsonRecord) => ({ ref: proofRef(evidence), criterion: finding.method, evidence })));
+        conflicts.push(...dimension.contradictions);
+      }
+      if (dimensions.every(d => d.satisfied)) positive.push({ ref: proofRef(finding), criterion: finding.method, evidence: finding });
     } else if (c.claim === "verification.independent" && has("mesr.core.evidence.verification")) {
       missing.push("independent_verification_basis");
       for (const key of ["verifier_principal", "separation", "custody"]) if (!source[key]) missing.push(key);

@@ -226,3 +226,14 @@ export function compareIntegrity(rows, outputs) {
     return {case_id:row.case_id,outcome:"PASS",state:row.expected_state};
   });
 }
+
+// T2-03 expectations assert product output; they never enter product evaluation.
+export function compareIndependence(rows, outputs) {
+  assert.deepEqual(Object.keys(outputs).sort(), rows.map(r => r.case_id).sort());
+  return rows.map(row => {
+    const result = outputs[row.case_id].evaluation;
+    assert.equal(result.status, "EVALUATED", row.case_id);
+    for (const [path, expected] of Object.entries(row.expected)) assert.equal(result.claims.find(c => c.path === path)?.state, expected, row.case_id + ":" + path);
+    return { case_id: row.case_id, asserted: row.expected, outcome: "PASS" };
+  });
+}

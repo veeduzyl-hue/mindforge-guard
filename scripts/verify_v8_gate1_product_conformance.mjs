@@ -15,8 +15,8 @@ import { GUARD_REASON_CODES } from "../packages/guard-core/src/reasonCodes.ts";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 const args = process.argv.slice(2);
-assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04", "T2-01", "T2-02"].includes(args[1]));
-assert.ok(args.slice(2).every(arg => ["--before", "--record", "--scope-only", "--regressions"].includes(arg)));
+assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04", "T2-01", "T2-02", "T2-03"].includes(args[1]));
+assert.ok(args.slice(2).every(arg => (args[1] === "T2-03" && arg === "--semantic-only") || ["--before", "--record", "--scope-only", "--regressions"].includes(arg)));
 const before = args.includes("--before"), record = args.includes("--record");
 const fixturePath = "tests/fixtures/gate1/t1-01-controls.v0.1.json";
 const resultPath = "tests/fixtures/gate1/t1-01-results.v0.1.json";
@@ -26,7 +26,7 @@ const t103Paths = ["packages/guard-core/src/mesr/repaired/claimState.ts", "packa
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const t104Anchor = "ef3e5b7fbcd8854d99a680bf532816b50cc851cd";
 const t104Paths = ["packages/guard-core/src/mesr/repaired/composition.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-04-controls.v0.1.json", "tests/fixtures/gate1/t1-04-results.v0.1.json", "docs/validation/v8-gate1-t1-04-evidence-v0.1.md"];
-const taskScope = args[1] === "T2-02" ? assertT202Scope() : args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();
+const taskScope = args[1] === "T2-03" ? assertT203Scope() : args[1] === "T2-02" ? assertT202Scope() : args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();
 if (args.includes("--regressions")) assert.equal(args[1], "T1-04");
 if (args.includes("--scope-only")) { assert.equal(args[1], "T1-04"); console.log("T1-04 pre-change recognized: PASS"); process.exit(0); }
 const pins = readJson(frozenDir + "freeze.v0.2.json");
@@ -57,7 +57,7 @@ function legacyControls() {
   return { outputs, invalid: invalidResults, invalid_json: parseEvidencePack("{invalid"), reason_values: Object.values(GUARD_REASON_CODES) };
 }
 
-if (args[1] === "T2-02") { await runT202Task(); } else if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
+if (args[1] === "T2-03") { await runT203Task(); } else if (args[1] === "T2-02") { await runT202Task(); } else if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
 const rows = loadInputs(), expected = expectations(), trust = testTrust();
 const oracle = readJson(frozenDir + "oracle.v0.2.json");
 for (const row of rows.filter(row => row.case_id.startsWith("C"))) assert.equal(digest(row.input), oracle.fixture_input_digests[row.case_id]);
@@ -1244,6 +1244,7 @@ async function runT201Task() {
   };
   const first=run();console.log("T2-01 controls PASS: "+rows.length+" cases; "+first.controls.length+" bridge/falsifier controls");
   const replayHashes=[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);console.log("T2-01 three replays identical: "+replayHashes[0]);
+  if (args[1] === "T2-03") return { first, replayHashes }; // T2-03 attributed T2-01 replay
   if (args[1] === "T2-02") return { first, replayHashes }; // T2-02 attributed semantic replay
   // BEGIN POST-COMMIT RECEIPT REUSE
   if(taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION") {
@@ -1480,6 +1481,7 @@ async function runT202Task() {
   console.log('T2-02 '+rows.length+' comparisons, '+first.controls.length+' controls; three replays '+replayHashes[0]);
   const t201=await runT201Task();assert.equal(t201.replayHashes[0],taskScope.controls.before.t201.replay_hashes[0]);assert.equal(t201.first.comparisons.length,370);assert.equal(t201.first.controls.length,64);
   assert.deepEqual(JSON.parse(JSON.stringify(legacyControls())),taskScope.controls.before.legacy);
+  if (args[1] === "T2-03") return { first, replayHashes, t201 }; // T2-03 attributed T2-02 replay
   const outputPath=taskScope.allowlist[6];
   if(taskScope.lifecycle==='POST_COMMIT_ACCEPTED_IMPLEMENTATION') {
     assert.ok(!record,'Committed evidence is immutable');const accepted=readJson(outputPath);
@@ -1498,4 +1500,114 @@ async function runT202Task() {
   const result={version:'gate1-t2-02-results/0.1',decision:failures?'BLOCKED_BY_VALIDATION':'T2_02_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS',pre_change_head:taskScope.entry,branch:taskScope.branch,file_allowlist:taskScope.allowlist,semantic_results:first,replay_hashes:replayHashes,result_hash:replayHashes[0],t201:{annotations:370,bridge_controls:64,replay_hashes:t201.replayHashes,result_hash:t201.replayHashes[0]},preservation,regressions,protected_files:taskScope.protected_files,before_sha256:digest(fs.readFileSync(taskScope.allowlist[5])),source_hashes:Object.fromEntries(taskScope.allowlist.slice(0,5).map(p=>[p,digest(fs.readFileSync(p))])),public_contract_drift:'NO',authority_expansion:'NO',NEW_REGRESSION:failures,deferred:{T2_03:'NOT_STARTED',G03:'OPEN',G05:'OPEN'}};
   assertT202Scope();if(record)fs.writeFileSync(outputPath,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({decision:result.decision,result_hash:result.result_hash,NEW_REGRESSION:failures,recorded:record}));if(failures)process.exitCode=1;
+}
+
+// T2-03 PRIVATE INDEPENDENCE LANE: earlier lifecycle modes remain exact.
+function assertT203Scope() {
+  const entry='d5beff29c5e33a7b9ff5a8e7f9af7214e802f228',branch='feat/v8-gate1-tranche2-t2-03-independent-checking-v0.1';
+  const t203=readJson('tests/fixtures/gate1/t2-03-controls.v0.1.json');
+  const allowlist=['packages/guard-core/src/mesr/repaired/independence.ts','packages/guard-core/src/mesr/repaired/evaluateClaim.ts','scripts/verify_v8_gate1_product_conformance.mjs','scripts/gate1/b09-product-inputs.mjs','scripts/gate1/b09-product-compare.mjs','tests/fixtures/gate1/t2-03-controls.v0.1.json','tests/fixtures/gate1/t2-03-results.v0.1.json','docs/validation/v8-gate1-t2-03-evidence-v0.1.md'];
+  const git=(...a)=>execFileSync('git',a,{encoding:'utf8',maxBuffer:128000000}).trim(),list=s=>s.split('\n').filter(Boolean);
+  assert.equal(t203.pre_change_head,entry);assert.equal(t203.before.pre_change_head,entry);assert.deepEqual(t203.file_allowlist,allowlist);assert.equal(git('branch','--show-current'),branch);
+  const pending=[...new Set([...list(git('diff','--name-only','--no-renames',head)),...list(git('ls-files','--others','--exclude-standard'))])];
+  const validate=(current,parents,changed,dirty)=>{
+    for(const p of [...changed,...dirty])assert.ok(allowlist.includes(p),'Outside T2-03 eight-path scope: '+p);
+    if(current===entry)return 'PRE_COMMIT_IMPLEMENTATION';
+    assert.deepEqual(parents,[entry],'T2-03 must be direct entry child');assert.equal(dirty.length,0,'T2-03 committed tree must be clean');
+    assert.deepEqual([...changed].sort(),[...allowlist].sort(),'Exact committed eight paths');return 'POST_COMMIT_ACCEPTED_IMPLEMENTATION';
+  };
+  const lifecycle=validate(head,git('show','-s','--format=%P',head).split(' '),head===entry?[]:list(git('diff-tree','--no-commit-id','--name-only','--no-renames','-r',head)),pending);
+  assert.equal(validate(entry,[],[],allowlist),'PRE_COMMIT_IMPLEMENTATION');assert.equal(validate('implementation',[entry],allowlist,[]),'POST_COMMIT_ACCEPTED_IMPLEMENTATION');
+  assert.throws(()=>validate('later',['implementation'],allowlist,[]),/direct entry child/);assert.throws(()=>validate('merge',[entry,'other'],allowlist,[]),/direct entry child/);
+  assert.throws(()=>validate(entry,[],[],['README.md']),/eight-path/);assert.throws(()=>validate('implementation',[entry],[...allowlist,'README.md'],[]),/eight-path/);assert.throws(()=>validate('implementation',[entry],allowlist,[allowlist[0]]),/clean/);
+  const inventory=list(git('ls-tree','-r','--name-only',entry));assert.deepEqual(Object.keys(t203.before.protected_hashes).sort(),inventory.sort());
+  for(const p of inventory.filter(p=>!allowlist.includes(p)))assert.equal(digest(fs.readFileSync(p)),t203.before.protected_hashes[p],'Protected source: '+p);
+  assert.deepEqual(list(git('diff','--name-only','--no-renames',entry)).filter(p=>!allowlist.includes(p)),[]);
+  let restored=fs.readFileSync(allowlist[2],'utf8').split('\n// T2-03 PRIVATE INDEPENDENCE LANE:')[0];
+  restored=restored.replace('"T2-01", "T2-02", "T2-03"].includes(args[1])','"T2-01", "T2-02"].includes(args[1])')
+    .replace('assert.ok(args.slice(2).every(arg => (args[1] === "T2-03" && arg === "--semantic-only") || [','assert.ok(args.slice(2).every(arg => [')
+    .replace('const taskScope = args[1] === "T2-03" ? assertT203Scope() : args[1] === "T2-02"','const taskScope = args[1] === "T2-02"')
+    .replace('if (args[1] === "T2-03") { await runT203Task(); } else if (args[1] === "T2-02")','if (args[1] === "T2-02")')
+    .replace('  if (args[1] === "T2-03") return { first, replayHashes }; // T2-03 attributed T2-01 replay\n','')
+    .replace('  if (args[1] === "T2-03") return { first, replayHashes, t201 }; // T2-03 attributed T2-02 replay\n','');
+  const oldVerifier=execFileSync('git',['show',entry+':'+allowlist[2]],{encoding:'utf8'});
+  assert.equal(restored.trimEnd(),oldVerifier.trimEnd(),'Historical verifier/lifecycle guards modified');assert.equal(digest(oldVerifier),t203.before.capture_verifier_sha256);
+  for(const p of allowlist.slice(3,5))assert.ok(fs.readFileSync(p,'utf8').startsWith(execFileSync('git',['show',entry+':'+p],{encoding:'utf8'})),'Historical adapter changed');
+  const old=execFileSync('git',['show',entry+':'+allowlist[1]],{encoding:'utf8'}),current=fs.readFileSync(allowlist[1],'utf8');
+  let reverted=current.replace('import { readIndependenceFinding } from "./independence.ts";\n','').replace('integrityReceipt?: unknown, independenceFinding?: unknown)','integrityReceipt?: unknown)');
+  const start=reverted.indexOf('    } else if ((c.claim === "verification.independent"');const end=reverted.indexOf('    } else if (c.claim === "verification.independent"',start);
+  assert.ok(start>=0&&end>start);reverted=reverted.slice(0,start)+reverted.slice(end);assert.equal(reverted,old,'Only the two guarded branches/intake/import may change');
+  for(const p of allowlist.slice(0,2)){const product=fs.readFileSync(p,'utf8');for(const m of product.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g))assert.ok(!/scripts|fixtures|gate1|b09/.test(m[1]),'Product/test isolation');}
+  assert.ok(!/selectClaimState|node:fs|node:http|Date\.now\(|new Date\(/.test(fs.readFileSync(allowlist[0],'utf8')));
+  return {entry,branch,allowlist,lifecycle,pending,t203,baseline:readJson('tests/fixtures/gate1/t2-01-controls.v0.1.json'),controls:readJson('tests/fixtures/gate1/t2-02-controls.v0.1.json'),protected_files:inventory.filter(p=>!allowlist.includes(p)).length};
+}
+
+async function runT203Task() {
+  assert.ok(!before,'T2-03 BEFORE already captured');assert.ok(!(record&&args.includes('--semantic-only')),'Cannot accept partial validation');
+  const {loadIndependenceInputs,requirementCoreInput}=await import('./gate1/b09-product-inputs.mjs');
+  const {compareIndependence}=await import('./gate1/b09-product-compare.mjs');
+  const {evaluateIndependence,readIndependenceFinding}=await import('../packages/guard-core/src/mesr/repaired/independence.ts');
+  const {compareExactBytes}=await import('../packages/guard-core/src/mesr/repaired/integrity.ts');
+  const {evaluateClaims,evaluateCompositeClaim}=await import('../packages/guard-core/src/mesr/repaired/evaluateClaim.ts');
+  const {collectBindingRequirements}=await import('../packages/guard-core/src/mesr/repaired/requirements.ts');
+  const {evaluateVerificationEvent}=await import('../packages/guard-core/src/mesr/repaired/verificationEvent.ts');
+  const core=requirementCoreInput(),trust=testTrust(),rows=loadIndependenceInputs();
+  const dossier=x=>x.evidence_ledger['t2-03:dossier'],base=()=>structuredClone(rows[0].input);
+  const make=(x,contexts=[],suppliedCore=core,suppliedTrust=trust)=>evaluateIndependence(x,suppliedCore,suppliedTrust,contexts,(Array.isArray(dossier(x).members)?dossier(x).members:[]).map(m=>m?.comparison?compareExactBytes(m.comparison.input,m.comparison.path,m.comparison.contexts).receipt:null));
+  const evaluate=(x,finding,contexts=[],suppliedCore=core,suppliedTrust=trust)=>evaluateClaims(x,suppliedCore,suppliedTrust,contexts,undefined,finding);
+  const state=(out,path='independence')=>out.claims.find(c=>c.path===path)?.state;
+  const run=()=>{
+    const outputs={},controls=[],check=(id,fn)=>{const observation=fn();controls.push({id,outcome:'PASS',observation:observation??null});};
+    for(const row of rows){const original=canonical(row.input),finding=make(row.input);outputs[row.case_id]={evidence:finding.evidence,evaluation:evaluate(row.input,finding.finding)};assert.equal(canonical(row.input),original,'Immutable input');compareIndependence([row],{[row.case_id]:outputs[row.case_id]});if(Object.keys(outputs).length%40===0)console.log('T2-03 witness controls '+Object.keys(outputs).length+'/'+rows.length);}
+    const comparisons=compareIndependence(rows,outputs);
+    const x=base(),f=make(x),historical=evaluate(x);assert.ok(Object.isFrozen(f.finding));assert.ok(Object.isFrozen(f.evidence));
+    check('no-finding-history',()=>taskScope.t203.before.historical.map(row=>{const actual=evaluate(row.input);assert.deepEqual(actual,row.output,'Default-off '+row.case_id);return {case_id:row.case_id,output_sha256:digest(actual)};}));
+    check('H14-H15',()=>{for(const id of ['H14','H15'])assert.equal(taskScope.t203.before.historical.find(r=>r.case_id===id).output.status,'REJECTED');return 'REJECTED';});
+    for(const [id,fake]of [['fabricated',{evidence:f.evidence}],['copied',{...f.finding}],['serialized',JSON.parse(JSON.stringify(f.finding))],['state-basis',{positive:[{independent:true}]}],['fixture-expectation',{expected_state:'SUPPORTED'}],['independent-flag',{independent:true}],['custody-flag',{'custody.independent':true}],['verification-pass',{result:'passed'}],['T2-01-occurrence',evaluateVerificationEvent(dossier(x).verification)],['T2-02-equality',compareExactBytes(dossier(x).members[0].comparison.input,'integrity').receipt]])check('inert.'+id,()=>{assert.deepEqual(evaluate(x,fake),historical);assert.equal(readIndependenceFinding(fake,x,core,trust,[],collectBindingRequirements(x,core,trust),'independence'),null);return digest(historical);});
+    check('tampered-handle',()=>{assert.throws(()=>{f.finding.evidence.custody.satisfied=false;},TypeError);assert.throws(()=>{f.evidence.dossier.principals.verifier='other';},TypeError);assert.equal(state(evaluate(x,f.finding)),'SUPPORTED');return 'IMMUTABLE';});
+    const replays=[['subject',y=>{y.subject='other';}],['revision',y=>{y.revision='other';}],['scope',y=>{y.scope='other';}],['event',y=>{y.event_id='other';}],['principal',y=>{y.verifier_principal='other';}],['member',y=>{dossier(y).members[0].member_ref='other';}],['representation',y=>{dossier(y).members[0].representation='other';}],['domain',y=>{dossier(y).members[0].byte_domain='other';}],['policy-version',y=>{dossier(y).records['t203:policy'].version='9';}],['custody-interval',y=>{dossier(y).custody_interval.until='2026-09-18T10:30:00Z';}],['time',y=>{y.event_time='2026-09-18T10:30:00Z';}],['evaluation-time',y=>{y.bindings.evaluation_time='2026-09-18T13:00:00Z';}],['path',y=>{y.requests[0].path='other';}],['identity-method',y=>{dossier(y).records['t203:identity:verifier'].method='other';}],['identity-result',y=>{dossier(y).records['t203:identity:verifier'].result='other';}],['identity-provenance',y=>{dossier(y).records['t203:identity:verifier'].provenance_ref='other';}]];
+    for(const [id,mutate]of replays)check('context-replay.'+id,()=>{const y=base();mutate(y);assert.deepEqual(evaluate(y,f.finding),evaluate(y));return digest(evaluate(y));});
+    for(const [id,mutate]of replays.filter(([id])=>!['path','evaluation-time','custody-interval'].includes(id)))check('fresh-wrong-association.'+id,()=>{const y=base();mutate(y);const fresh=make(y),out=evaluate(y,fresh.finding);assert.notEqual(state(out),'SUPPORTED');return {missing:out.claims.find(c=>c.path==='independence')?.missing_bindings};});
+    check('core-and-trust-replay',()=>{const altered=structuredClone(core);altered.registry.digest='0'.repeat(64);assert.deepEqual(evaluate(x,f.finding,[],altered),evaluate(x,undefined,[],altered));const t=structuredClone(trust);t.registry.digest='0'.repeat(64);assert.deepEqual(evaluate(x,f.finding,[],core,t),evaluate(x,undefined,[],core,t));return 'INERT';});
+    const contextFor=(y,path,name)=>({path,subject:y.subject,scope:y.scope,evaluation_time:y.bindings.evaluation_time,source_ref:'t203:caller-obligation',requirements:[{binding:name,predicate:'true'}]});
+    check('context-replay-requirements',()=>{const contexts=[contextFor(x,'independence','independent_verification_basis')];assert.deepEqual(evaluate(x,f.finding,contexts),evaluate(x,undefined,contexts));return 'INERT';});
+    for(const origin of ['caller','context'])for(const path of ['independence','custody'])for(const name of ['independent_verification_basis','custody','complete_identity_basis'])check('obligation.'+origin+'.'+path+'.'+name,()=>{const y=base(),contexts=[];if(origin==='caller')y.requests.find(r=>r.path===path).required_bindings.push(name);else contexts.push(contextFor(y,path,name));const fresh=make(y,contexts),out=evaluate(y,fresh.finding,contexts);assert.equal(state(out,path),'UNRESOLVED');assert.ok(out.claims.find(c=>c.path===path).missing_bindings.includes(name));assert.equal(out.claims.find(c=>c.path===path).evaluation_basis.positive.length,1);return digest(out);});
+    check('core-missing-preserved',()=>{const y=base();delete y.bindings.evidence_id_or_ref;const out=evaluate(y,make(y).finding);assert.equal(state(out,'custody'),'UNRESOLVED');return out.claims.find(c=>c.path==='custody').missing_bindings;});
+    check('same-principal',()=>{const y=base(),d=dossier(y),old=d.principals.verifier;d.principals.verifier=d.principals.producer;y.verifier_principal=d.principals.verifier;for(const r of Object.values(d.records)){if(r.principal===old)r.principal=d.principals.verifier;if(r.content?.principal===old)r.content.principal=d.principals.verifier;if(r.content?.credential_subject===old)r.content.credential_subject=d.principals.verifier;if(r.right===old)r.right=d.principals.verifier;}const a=make(y),out=evaluate(y,a.finding);assert.equal(state(out),'UNSUPPORTED');assert.equal(state(out,'custody'),'SUPPORTED');return a.evidence.principal_separation;});
+    const contradict=(y,kind)=>{const d=dossier(y),ref=kind==='control'?'t203:relationship:producer':'t203:custody:0:access_control',other=ref+':contradiction',r=structuredClone(d.records[ref]);r.source_ref=other;r.provenance_ref=other+':provenance';r.content[kind==='control'?'common_control':'producer_can_substitute']=true;d.records[other]=r;const p=structuredClone(d.records[ref+':provenance']);p.source_ref=r.provenance_ref;p.content.record_ref=other;d.records[p.source_ref]=p;d[kind==='control'?'relationship_refs':'custody_refs'].push(other);};
+    for(const kind of ['control','custody'])check('contradictory.'+kind,()=>{const y=base();contradict(y,kind);delete y.bindings.verifier;const a=make(y),out=evaluate(y,a.finding);assert.equal(state(out),'CONFLICTED');if(kind==='custody')assert.equal(state(out,'custody'),'CONFLICTED');dossier(y)[kind==='control'?'relationship_refs':'custody_refs'].reverse();assert.equal(state(evaluate(y,make(y).finding)),'CONFLICTED');return {evidence:a.evidence,states:out.claims.map(c=>[c.path,c.state])};});
+    check('core-prohibition-precedes-conflict',()=>{const y=base();contradict(y,'control');y.requests.find(r=>r.path==='independence').semantic_ids.push('mesr.core.provenance.producer');const out=evaluate(y,make(y).finding);assert.equal(state(out),'UNSUPPORTED');assert.ok(out.claims.find(c=>c.path==='independence').excluded_inferences.length);return out.claims.find(c=>c.path==='independence').rationale;});
+    check('missing-precedes-violation',()=>{const y=base();dossier(y).records['t203:relationship:producer'].content.common_control=true;delete dossier(y).records['t203:identity:verifier'];assert.equal(state(evaluate(y,make(y).finding)),'UNRESOLVED');return 'UNRESOLVED';});
+    for(const dimension of ['relationship','custody'])check('unselected-candidate.'+dimension,()=>{const y=base();contradict(y,dimension==='relationship'?'control':'custody');dossier(y)[dimension==='relationship'?'relationship_refs':'custody_refs'].pop();assert.equal(state(evaluate(y,make(y).finding)),'UNRESOLVED');return 'UNRESOLVED';});
+    check('serialized-integrity-receipts',()=>{const receipts=dossier(x).members.map(m=>JSON.parse(JSON.stringify(compareExactBytes(m.comparison.input,m.comparison.path).receipt)));const a=evaluateIndependence(x,core,trust,[],receipts);assert.equal(state(evaluate(x,a.finding),'custody'),'UNRESOLVED');return a.evidence.custody.missing;});
+    check('byte-equality-alone',()=>{const a=evaluateIndependence(x,core,trust);assert.equal(state(evaluate(x,a.finding),'custody'),'UNRESOLVED');return a.evidence.custody.missing;});
+    check('native-event-namespace',()=>{const y=base();dossier(y).event_namespace='other-namespace';const a=make(y);assert.equal(state(evaluate(y,a.finding)),'UNRESOLVED');return a.evidence.identity.missing;});
+    check('comparison-does-not-map-unrelated-content',()=>{const y=base(),d=dossier(y);d.members[0].content_sha256='0'.repeat(64);const a=make(y);assert.equal(state(evaluate(y,a.finding),'custody'),'UNRESOLVED');return a.evidence.custody.missing;});
+    check('independent-check-passed-path-separate',()=>{const y=base(),d=dossier(y);delete d.records['t203:identity:verifier'];const a=make(y);assert.equal(state(evaluate(y,a.finding)),'UNRESOLVED');const source=structuredClone(y),ev=d.verification.records[d.verification.occurrence_ref];source.method={id:ev.method,version:ev.method_version,digest:'t203:explicit-check-method'};source.evidence_ledger={};source.bindings.evidence_refs=[];source.requests=[{path:'pass',claim:'verification.passed',semantic_ids:['mesr.core.evidence.verification'],semantic_version:'0.1.0',required_bindings:[]}];const result=evaluateVerificationEvent(d.verification,{input:source,coreInput:core,trust});assert.equal(state(result.claim_evaluation,'pass'),'SUPPORTED');return digest(result);});
+    check('complete-T2-01-result-conflict',()=>{const y=base(),d=dossier(y),v=d.verification,r=structuredClone(v.records['w:result']),o=structuredClone(v.records['w:output']);r.source_ref='w:other-result';r.output_ref='w:other-output';r.result='failed';o.source_ref=r.output_ref;o.result='failed';v.records[r.source_ref]=r;v.records[o.source_ref]=o;v.result_refs.push(r.source_ref);v.records[v.occurrence_ref].output_refs.push(o.source_ref);const a=make(y),out=evaluate(y,a.finding);assert.equal(state(out),'CONFLICTED');assert.deepEqual(a.evidence.attributable_result.result_basis.values,['passed','failed']);return a.evidence.successful_check;});
+    check('frozen-I10-no-private-upgrade',()=>{const row=taskScope.t203.before.historical.find(r=>r.case_id==='I10');const a=evaluateIndependence(row.input,core,trust);assert.equal(a.finding,null);assert.deepEqual(evaluate(row.input,a.finding),row.output);return digest(row.output);});
+    check('T2-01-results-retained',()=>{for(const row of rows.filter(r=>r.case_id.startsWith('check.'))){const a=outputs[row.case_id];assert.deepEqual(a.evidence.attributable_result,evaluateVerificationEvent(dossier(row.input).verification));assert.notEqual(state(a.evaluation),'SUPPORTED');assert.equal(a.evidence.principal_separation.satisfied,true);}return 'EXACT_FAILED_SKIPPED_INCONCLUSIVE_AND_INCOMPLETE';});
+    check('successful-check-missing-independence',()=>{const y=base();delete dossier(y).records['t203:identity:verifier'];const a=make(y);assert.equal(a.evidence.attributable_result.result_basis.values[0],'passed');assert.equal(state(evaluate(y,a.finding)),'UNRESOLVED');return 'PASS_RETAINED';});
+    check('unrelated-and-composite-owner',()=>{const out=evaluate(x,f.finding);assert.deepEqual(out.claims.filter(c=>!['custody','independence'].includes(c.path)),historical.claims.filter(c=>!['custody','independence'].includes(c.path)));const children=out.claims.filter(c=>['custody','independence'].includes(c.path)),identity={claim:'bounded-check',subject:x.subject,scope:x.scope,evaluation_time:x.bindings.evaluation_time,source_ref:'t203:composite'};assert.equal(evaluateCompositeClaim(identity,['custody','independence'],children).state,'SUPPORTED');assert.equal(evaluateCompositeClaim(identity,['custody','independence'],structuredClone(children)).state,'UNRESOLVED');return 'ACTUAL_RESULTS_ONLY';});
+    check('fresh-serialized-evidence-recomputation',()=>{const y=JSON.parse(JSON.stringify(x)),fresh=make(y);assert.notEqual(fresh.finding,f.finding);assert.deepEqual(fresh.evidence,f.evidence);assert.deepEqual(evaluate(y,fresh.finding),evaluate(x,f.finding));return digest(fresh.evidence);});
+    check('comparator-falsifiers',()=>{const wrong=structuredClone(rows);wrong[0].expected.independence='UNSUPPORTED';assert.throws(()=>compareIndependence(wrong,outputs));const missing={...outputs};delete missing[rows[0].case_id];assert.throws(()=>compareIndependence(rows,missing));return ['wrong-expectation','dropped-result'];});
+    return {outputs,comparisons,controls};
+  };
+  const first=run(),serialized=JSON.stringify(first),replayHashes=[digest(first)],serializedReplayHashes=[digest(serialized)];
+  for(let i=0;i<2;i++){const next=run();assert.equal(JSON.stringify(next),serialized,'Exact serialized replay');replayHashes.push(digest(next));serializedReplayHashes.push(digest(JSON.stringify(next)));}assert.equal(new Set(replayHashes).size,1);
+  console.log(JSON.stringify({task:'T2-03',comparisons:first.comparisons.length,controls:first.controls.length,replay_hashes:replayHashes,serialized_replay_hashes:serializedReplayHashes}));
+  if(args.includes('--semantic-only')){console.log('SEMANTIC_DEBUG_ONLY_NOT_ACCEPTANCE');return;}
+  const t202=await runT202Task();assert.equal(t202.replayHashes[0],'a1a11f600d227220aac30d91dda8f7e57a1d6f1f3825c4fb392583ad0b36f4c5');assert.equal(t202.t201.replayHashes[0],'4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102');
+  assert.deepEqual(t202.replayHashes,taskScope.t203.before.t202.replay_hashes);assert.deepEqual(t202.t201.replayHashes,taskScope.t203.before.t201.replay_hashes);
+  const outputPath=taskScope.allowlist[6];
+  if(taskScope.lifecycle==='POST_COMMIT_ACCEPTED_IMPLEMENTATION'){
+    assert.ok(!record,'Committed evidence immutable');const accepted=readJson(outputPath);assert.equal(accepted.decision,'T2_03_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS');assert.deepEqual(first,accepted.semantic_results);assert.deepEqual(replayHashes,accepted.replay_hashes);assert.deepEqual(serializedReplayHashes,accepted.serialized_replay_hashes);assert.equal(accepted.NEW_REGRESSION,0);assert.ok(accepted.regressions.length===21&&accepted.regressions.every(r=>r.exit_code===0));
+    for(const [p,hash]of Object.entries(accepted.source_hashes))assert.equal(digest(fs.readFileSync(p)),hash);assert.equal(digest(fs.readFileSync(taskScope.allowlist[5])),accepted.controls_sha256);assertT203Scope();
+    console.log(JSON.stringify({decision:'T2_03_POST_COMMIT_PRESERVATION_PASS',lifecycle:taskScope.lifecycle,result_hash:replayHashes[0],t201_result_hash:t202.t201.replayHashes[0],t202_result_hash:t202.replayHashes[0],PUBLIC_CONTRACT_DRIFT:'NO',AUTHORITY_EXPANSION:'NO',working_tree:'CLEAN',large_suites:'INHERITED_ACCEPTED_UNCHANGED; NOT_RERUN'}));return;
+  }
+  const preservation=await t201Preservation(taskScope.baseline);assert.deepEqual(preservation,taskScope.t203.before.preservation);console.log('T2-03 T1-01/02/03/04 + 603 Core PASS');
+  const regressions=taskScope.t203.before.regressions.map(prior=>{assert.equal(digest(fs.readFileSync(prior.path)),prior.source_sha256);try{const stdout=execFileSync(process.execPath,[prior.path],{encoding:'utf8',maxBuffer:30000000});console.log('AFTER PASS '+prior.path);return {...prior,exit_code:0,stdout,stdout_sha256:digest(stdout)};}catch(e){console.log('AFTER FAIL '+prior.path);return {...prior,exit_code:e.status??null,stdout:String(e.stdout??''),stderr:String(e.stderr??'')};}});
+  const failures=regressions.filter(r=>r.exit_code!==0).length;assert.equal(regressions.length,21);
+  const result={version:'gate1-t2-03-results/0.1',decision:failures?'BLOCKED_BY_VALIDATION':'T2_03_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS',pre_change_head:taskScope.entry,branch:taskScope.branch,file_allowlist:taskScope.allowlist,semantic_results:first,replay_hashes:replayHashes,serialized_replay_hashes:serializedReplayHashes,result_hash:replayHashes[0],t201:{result_hash:t202.t201.replayHashes[0],comparisons:t202.t201.first.comparisons.length,controls:t202.t201.first.controls.length},t202:{result_hash:t202.replayHashes[0],comparisons:t202.first.comparisons.length,controls:t202.first.controls.length},preservation,regressions,protected_files:taskScope.protected_files,source_hashes:Object.fromEntries(taskScope.allowlist.slice(0,5).map(p=>[p,digest(fs.readFileSync(p))])),controls_sha256:digest(fs.readFileSync(taskScope.allowlist[5])),PUBLIC_CONTRACT_DRIFT:'NO',AUTHORITY_EXPANSION:'NO',NEW_REGRESSION:failures,gaps:{G05:failures?'OPEN':'CLOSED',G07:'OPEN',G06:'OPEN',G03:'OPEN'}};
+  assertT203Scope();if(record)fs.writeFileSync(outputPath,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({decision:result.decision,result_hash:result.result_hash,NEW_REGRESSION:failures,recorded:record}));if(failures)process.exitCode=1;
 }
