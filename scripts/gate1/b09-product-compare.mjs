@@ -237,3 +237,25 @@ export function compareIndependence(rows, outputs) {
     return { case_id: row.case_id, asserted: row.expected, outcome: "PASS" };
   });
 }
+
+// T2-04 comparisons never manufacture retained witness facts or select states.
+export function compareTemporal(rows,outputs) {
+  return rows.map(row=>{
+    const actual=outputs[row.case_id];assert.ok(actual,'Missing T2-04 output '+row.case_id);
+    const claim=actual.evaluation.claims.find(c=>c.path==='current');
+    assert.equal(claim?.state,row.expected.state,row.case_id);
+    const retained=row.input.evidence_ledger['t2-04:dossier'];
+    assert.deepEqual(actual.evidence.dossier,retained,'Exact retained witness spelling/content '+row.case_id);
+    assert.equal(actual.evidence.times.evaluation_time,retained.evaluation_time??null);
+    assert.equal(actual.evidence.times.reliance_time,retained.reliance_time??null);
+    assert.deepEqual(actual.evidence.nonclaims,['real_world_temporal_truth','context_continuity','current_authority','institutional_acceptance','execution_permission']);
+    assert.equal(claim.world_falsity_asserted,false);
+    if(row.expected.state==='SUPPORTED'){assert.equal(actual.evidence.applicable,true);assert.deepEqual(actual.evidence.missing,[]);assert.deepEqual(actual.evidence.losses,[]);}
+    if(row.expected.state==='STALE'){assert.equal(actual.evidence.historical_support,true);assert.ok(actual.evidence.losses.length);}
+    if(retained.historical?.verification)assert.deepEqual(actual.evidence.historical_result.raw_input,retained.historical.verification,'Original T2-01 evidence retained');
+    for(const name of row.expected.missing??[])assert.ok(claim.missing_bindings.includes(name),row.case_id+': '+name);
+    for(const reason of row.expected.losses??[])assert.ok(actual.evidence.losses.some(x=>x.reason===reason),row.case_id+': '+reason);
+    assert.equal(actual.evaluation.world_falsity_asserted??false,false);
+    return {case_id:row.case_id,state:claim.state,missing:claim.missing_bindings,losses:actual.evidence?.losses.map(x=>x.reason)??[],outcome:'PASS'};
+  });
+}

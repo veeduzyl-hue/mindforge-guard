@@ -182,3 +182,18 @@ export function loadIndependenceInputs() {
     return { ...row, input };
   });
 }
+
+// T2-04 NEW task-specific evidence only; frozen translators above stay exact.
+export function loadTemporalInputs() {
+  const controls=readJson('tests/fixtures/gate1/t2-04-controls.v0.1.json');
+  return controls.cases.map(row=>{
+    const input=structuredClone(controls.supplemental_input);
+    for(const operation of row.operations){
+      const keys=[...operation.path],key=keys.pop(),parent=keys.reduce((value,part)=>value[part],input);
+      if(operation.op==='delete')delete parent[key];
+      else if(operation.op==='set')parent[key]=structuredClone(operation.value);
+      else throw new Error('Unknown declarative T2-04 operation');
+    }
+    return {...row,input};
+  });
+}
