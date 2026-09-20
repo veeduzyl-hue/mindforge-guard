@@ -977,27 +977,128 @@ function assertT201PreservationScope() {
   assert.equal(digest(fs.readFileSync(baselinePath)), "6f0fbc92fb7347c3fe814bd534fcd58740fd96794943d675519b7f5dbd52185e", "Immutable BEFORE capture");
   const baseline = readJson(baselinePath);
   assert.equal(baseline.status, "BEFORE_PASS");
-  assert.equal(head, baseline.pre_change_head, "Uncommitted T2-01 must retain its accepted entry");
-  const git = (...a) => execFileSync("git", a, { encoding: "utf8", maxBuffer: 128_000_000 }).trim();
-  assert.equal(git("branch", "--show-current"), "feat/v8-gate1-tranche2-t2-01-v0.1");
-  for (const receipt of baseline.accepted_receipts) git("merge-base", "--is-ancestor", receipt, head);
-  assert.deepEqual(git("diff", "--name-only", baseline.accepted_receipts.at(-1), head).split("\n"), baseline.documentation_only_since_closure);
-  const pending = [...git("diff", "--name-only", "--no-renames", head).split("\n"), ...git("ls-files", "--others", "--exclude-standard").split("\n")].filter(Boolean);
-  const validate = paths => paths.forEach(p => assert.ok(baseline.file_allowlist.includes(p), "Outside T2-01 scope: " + p));
-  validate(pending);
-  for (const p of ["README.md", "packages/guard-core/src/mesr/repaired/evaluateClaim.ts", "tests/fixtures/gate1/t1-04-results.v0.1.json"]) assert.throws(() => validate([...pending,p]));
-  for (const [path, sha256] of Object.entries(baseline.protected_hashes)) assert.equal(digest(fs.readFileSync(path)),sha256,"Protected file: "+path);
-  for (const path of baseline.file_allowlist.slice(2,4)) assert.ok(fs.readFileSync(path,"utf8").startsWith(execFileSync("git",["show",head+":"+path],{encoding:"utf8"})),"Historical adapter changed: "+path);
+  const entry = "d2cd1460684b37e3a3ca8e8e1e958d15b3357d28";
+  const implementation = "112d19ca84f13cc74447a41dfde5df49d9f9e49b";
+  const expectedHash = "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102";
+  const verifierPath = "scripts/verify_v8_gate1_product_conformance.mjs";
+  const implementationPaths = [
+    "packages/guard-core/src/mesr/repaired/verificationEvent.ts", verifierPath,
+    "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs",
+    baselinePath, "tests/fixtures/gate1/t2-01-results.v0.1.json",
+    "docs/validation/v8-gate1-t2-01-evidence-v0.1.md"
+  ];
+  const closurePaths = [verifierPath, "docs/validation/v8-gate1-t2-01-post-commit-verifier-closure-v0.1.md"];
+  const closureSubject = "test(v8): preserve accepted T2-01 implementation lifecycle";
+  const t201ClosureVerifierSha256 = "50d77f565b0091fb4ac0d176d4cf16b83d91b5bd34327bbb781258c1b00fc1f7";
+  const t201ClosureEvidenceSha256 = "b3d4add94d3e38c86ccf4634ef58e3d7cad9573f752622f701b789d7e11e4237";
+  const normalize = text => text.replace(/^  const t201Closure(?:Verifier|Evidence)Sha256 = "[0-9a-f]{64}";$/gm, line => line.replace(/"[0-9a-f]{64}"/, '"<PIN>"'));
+  const git = (...a) => execFileSync("git", a, { encoding: "utf8", stdio: "pipe", maxBuffer: 128_000_000 }).trim();
+  const blob = (commit, path) => execFileSync("git", ["cat-file", "blob", commit+":"+path], {maxBuffer:128_000_000});
+  const list = text => text.split("\n").filter(Boolean);
+  const sorted = paths => [...paths].sort();
+  const isAncestor = (anchor, current) => {
+    try { git("cat-file", "-e", anchor+"^{commit}"); git("merge-base", "--is-ancestor", anchor, current); return true; }
+    catch { return false; }
+  };
+  const inventory = commit => ({
+    commit, parents:git("show","-s","--format=%P",commit).split(" "),
+    paths:list(git("diff-tree","--no-commit-id","--name-only","--no-renames","-r",commit)),
+    subject:git("show","-s","--format=%s",commit)
+  });
+  const validateClosureContent = (verifier, evidence) => {
+    assert.equal(digest(normalize(verifier)),t201ClosureVerifierSha256,"Unaccepted T2-01 closure verifier");
+    assert.ok(verifier.includes('const t201ClosureVerifierSha256 = "'+t201ClosureVerifierSha256+'";'),"Closure verifier pin changed");
+    assert.ok(verifier.includes('const t201ClosureEvidenceSha256 = "'+t201ClosureEvidenceSha256+'";'),"Closure evidence pin changed");
+    assert.equal(digest(evidence),t201ClosureEvidenceSha256,"Unaccepted T2-01 closure evidence");
+  };
+  // Real Git inventories and adversarial controls share this guard.
+  // Ancestry alone never admits a descendant: at most one content-pinned
+  // closure child may follow the accepted implementation.
+  const validate = (task, anchor, current, history, pending, allowlist = baseline.file_allowlist) => {
+    assert.equal(task,"T2-01","Unknown task");
+    assert.equal(baseline.pre_change_head,entry,"Tampered entry anchor");
+    assert.deepEqual(sorted(allowlist),sorted(implementationPaths),"Tampered task allowlist");
+    if(current===entry) {
+      assert.equal(history.length,0,"Pre-commit history must be empty");
+      for(const path of pending) assert.ok(implementationPaths.includes(path),"Outside pre-commit T2-01 scope: "+path);
+      return "PRE_COMMIT_IMPLEMENTATION";
+    }
+    assert.equal(anchor,implementation,"Missing/tampered accepted implementation anchor");
+    assert.ok(isAncestor(anchor,current),"Nonancestor accepted implementation");
+    assert.ok(history.length===1 || history.length===2,"Unrelated intervening commit count");
+    assert.equal(history[0].commit,implementation,"Wrong implementation commit");
+    assert.deepEqual(history[0].parents,[entry],"Implementation must directly follow entry");
+    assert.deepEqual(sorted(history[0].paths),sorted(implementationPaths),"Implementation seven-path scope invalid");
+    if(history.length===2) {
+      const closure=history[1];
+      assert.deepEqual(closure.parents,[implementation],"Unrelated intervening commit");
+      assert.equal(closure.subject,closureSubject,"Unaccepted closure subject");
+      assert.deepEqual(sorted(closure.paths),sorted(closurePaths),"Closure two-path scope invalid");
+      validateClosureContent(blob(closure.commit,verifierPath).toString("utf8"),blob(closure.commit,closurePaths[1]));
+      assert.equal(pending.length,0,"Accepted closure requires clean working tree");
+    } else {
+      for(const path of pending) assert.ok(closurePaths.includes(path),"Outside authorized closure scope: "+path);
+    }
+    assert.equal(current,history.at(-1).commit,"Unattributed HEAD");
+    return "POST_COMMIT_ACCEPTED_IMPLEMENTATION";
+  };
+  assert.ok(["feat/v8-gate1-tranche2-t2-01-v0.1","planning/v8-gate1-tranche2-t2-02-v0.1"].includes(git("branch","--show-current")),"T2-01 branch mismatch");
+  for(const receipt of baseline.accepted_receipts) git("merge-base","--is-ancestor",receipt,head);
+  assert.deepEqual(list(git("diff","--name-only",baseline.accepted_receipts.at(-1),entry)),baseline.documentation_only_since_closure);
+  // Index and worktree are inspected separately so opposite edits cannot
+  // cancel out and hide an unauthorized pending path.
+  const pending=[...new Set([
+    ...list(git("diff","--name-only","--no-renames",head)),
+    ...list(git("diff","--cached","--name-only","--no-renames")),
+    ...list(git("diff","--name-only","--no-renames")),
+    ...list(git("ls-files","--others","--exclude-standard"))
+  ])];
+  const history=head===entry ? [] : list(git("rev-list","--reverse","--topo-order",entry+".."+head)).map(inventory);
+  const lifecycle=validate(args[1],implementation,head,history,pending);
+  const controls=[];
+  const pass=(id,fn)=>{fn();controls.push({id,outcome:"PASS"});};
+  const reject=(id,fn,pattern)=>pass(id,()=>assert.throws(fn,pattern));
+  pass("pre-commit-valid-entry",()=>validate("T2-01",implementation,entry,[],implementationPaths));
+  const accepted=[inventory(implementation)];
+  pass("accepted-implementation",()=>validate("T2-01",implementation,implementation,accepted,[]));
+  reject("unauthorized-eighth-path",()=>validate("T2-01",implementation,implementation,[{...accepted[0],paths:[...accepted[0].paths,"README.md"]}],[]),/seven-path/);
+  reject("wrong-implementation-commit",()=>validate("T2-01",implementation,implementation,[{...accepted[0],commit:entry}],[]),/Wrong implementation/);
+  reject("nonancestor-implementation",()=>validate("T2-01",implementation,baseline.accepted_receipts.at(-1),accepted,[]),/Nonancestor/);
+  reject("unknown-task",()=>validate("T2-02",implementation,implementation,accepted,[]),/Unknown task/);
+  reject("tampered-task-allowlist",()=>validate("T2-01",implementation,implementation,accepted,[],[...implementationPaths,"README.md"]),/Tampered task allowlist/);
+  reject("unrelated-intervening-commit",()=>validate("T2-01",implementation,implementation,[...accepted,{...accepted[0],parents:[implementation],subject:"unrelated"}],[]),/Unaccepted closure subject/);
+  reject("current-unrelated-pending-path",()=>validate("T2-01",implementation,implementation,accepted,["README.md"]),/Outside authorized closure/);
+  reject("missing-accepted-anchor",()=>validate("T2-01",undefined,implementation,accepted,[]),/Missing\/tampered/);
+  reject("pre-commit-unrelated-path",()=>validate("T2-01",implementation,entry,[],["README.md"]),/Outside pre-commit/);
+  reject("implementation-pending-product-change",()=>validate("T2-01",implementation,implementation,accepted,[implementationPaths[0]]),/Outside authorized closure/);
+  reject("unattributed-descendant",()=>validate("T2-01",implementation,implementation,[...accepted,...accepted,...accepted],[]),/intervening commit count/);
+  if(lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION") {
+    assert.ok(!record,"Accepted T2-01 fixtures cannot be rewritten");
+    for(const path of implementationPaths.filter(p=>p!==verifierPath)) {
+      assert.equal(digest(fs.readFileSync(path)),digest(blob(implementation,path)),"Accepted task bytes changed: "+path);
+      assert.equal(digest(blob(head,path)),digest(blob(implementation,path)),"Accepted task Git bytes changed: "+path);
+    }
+    if(head===implementation && pending.length) validateClosureContent(fs.readFileSync(verifierPath,"utf8"),fs.readFileSync(closurePaths[1]));
+    reject("closure-verifier-content-tamper",()=>validateClosureContent(fs.readFileSync(verifierPath,"utf8")+"\n// tampered",fs.readFileSync(closurePaths[1])),/Unaccepted T2-01 closure verifier/);
+    reject("closure-evidence-content-tamper",()=>validateClosureContent(fs.readFileSync(verifierPath,"utf8"),Buffer.from("tampered")),/Unaccepted T2-01 closure evidence/);
+    const acceptedVerifier=blob(implementation,verifierPath).toString("utf8");
+    const currentText=fs.readFileSync(verifierPath,"utf8");
+    const currentTask=currentText.slice(currentText.lastIndexOf("\nasync function t201Preservation("));
+    const restoredTask=currentTask.replace(/\n  \/\/ BEGIN POST-COMMIT RECEIPT REUSE[\s\S]*?  \/\/ END POST-COMMIT RECEIPT REUSE\n/,"\n");
+    assert.equal(restoredTask,acceptedVerifier.slice(acceptedVerifier.lastIndexOf("\nasync function t201Preservation(")),"Accepted semantic assertions or preservation expectations changed");
+  }
+  for(const [path,sha256] of Object.entries(baseline.protected_hashes)) assert.equal(digest(fs.readFileSync(path)),sha256,"Protected file: "+path);
+  for(const path of baseline.file_allowlist.slice(2,4)) assert.ok(fs.readFileSync(path,"utf8").startsWith(blob(entry,path).toString("utf8")),"Historical adapter changed: "+path);
   // Compare the ENTIRE historical verifier after reversing only dispatch additions
   // in memory. No historical guard, assertion or falsifier may be changed.
-  const verifierPath=baseline.file_allowlist[1], current=fs.readFileSync(verifierPath,"utf8");
+  const current=fs.readFileSync(verifierPath,"utf8");
   const prefix=current.split("\n// T2-01 PRESERVATION MODE:")[0].trimEnd()+"\n";
-  const original=execFileSync("git",["show",head+":"+verifierPath],{encoding:"utf8"});
+  const original=execFileSync("git",["show",entry+":"+verifierPath],{encoding:"utf8"});
   const restored=prefix.replace('["T1-01", "T1-02", "T1-03", "T1-04", "T2-01"].includes(args[1])','["T1-01", "T1-02", "T1-03", "T1-04"].includes(args[1])')
     .replace('const taskScope = args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();','const taskScope = assertTaskScope();')
     .replace('if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04")','if (args[1] === "T1-04")');
   assert.equal(restored,original,"Historical T1 verifier/lineage assertions changed");
-  return {baseline,pending,historical_verifier_sha256:digest(original),protected_files:Object.keys(baseline.protected_hashes).length};
+  return {baseline,pending,lifecycle,implementation,expectedHash,controls,historical_verifier_sha256:digest(original),protected_files:Object.keys(baseline.protected_hashes).length};
 }
 
 async function t201Preservation(baseline) {
@@ -1143,6 +1244,47 @@ async function runT201Task() {
   };
   const first=run();console.log("T2-01 controls PASS: "+rows.length+" cases; "+first.controls.length+" bridge/falsifier controls");
   const replayHashes=[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);console.log("T2-01 three replays identical: "+replayHashes[0]);
+  // BEGIN POST-COMMIT RECEIPT REUSE
+  if(taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION") {
+    // Task semantics above execute on this checkout. Expensive T1/Core and
+    // 21-suite acceptance remain explicitly inherited from unchanged receipts.
+    const accepted=readJson(baseline.file_allowlist[5]),closure=accepted.acceptance_closure;
+    assert.equal(replayHashes[0],taskScope.expectedHash,"T2_01_POST_COMMIT_SEMANTIC_DRIFT");
+    assert.equal(accepted.result_hash,taskScope.expectedHash);
+    assert.deepEqual(replayHashes,accepted.replay_hashes);
+    assert.equal(rows.length,370);assert.equal(first.comparisons.length,370);assert.equal(first.controls.length,64);
+    for(const key of ["t101","t102","t103","t104","core_603"]) assert.equal(accepted.preservation[key],"PASS");
+    assert.equal(accepted.preservation.existing_verification_occurred,"PRESERVED");
+    assert.equal(accepted.preservation.six_state_selector,"PRESERVED");
+    assert.equal(taskScope.protected_files,1422);
+    assert.equal(closure.final_after_pass,21);assert.equal(closure.final_after_total,21);
+    assert.equal(closure.final_counts.NEW_REGRESSION,0);
+    assert.equal(closure.public_contract_drift,"NO");assert.equal(closure.authority_expansion,"NO");
+    assert.equal(closure.final_after_regressions.length,baseline.regressions.length);
+    for(const [i,prior] of baseline.regressions.entries()) {
+      const receipt=closure.final_after_regressions[i];
+      assert.equal(receipt.command,prior.command);assert.equal(receipt.exit_code,0);
+      assert.equal(receipt.source_sha256,prior.source_sha256);
+      assert.equal(digest(fs.readFileSync(prior.path)),prior.source_sha256);
+    }
+    const product=fs.readFileSync(baseline.file_allowlist[0],"utf8");
+    for(const m of product.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g)) assert.ok(!/scripts|fixtures|gate1|b09/.test(m[1]));
+    assert.ok(!/\bselectClaimState\b/.test(product));
+    assertT201PreservationScope();
+    console.log(JSON.stringify({
+      decision:"T2_01_POST_COMMIT_PASS",semantic_assertions_reached:true,
+      lifecycle:taskScope.lifecycle,accepted_task_implementation_commit:taskScope.implementation,
+      implementation_seven_path_scope:"PASS",verifier_lifecycle_guard:"STRICT",lifecycle_controls:taskScope.controls,
+      annotations_pass:370,bridge_boundary_controls_pass:64,result_hash:replayHashes[0],
+      preservation:"INHERITED_ACCEPTED_T1_CORE_RECEIPTS_WITH_UNCHANGED_BYTES",
+      after_regressions:"INHERITED_ACCEPTED_21_OF_21; NOT_RERUN",
+      protected_files:taskScope.protected_files,product_code_changed:"NO",
+      public_contract_drift:"NO",authority_expansion:"NO",recorded:false,
+      deferred:{T2_02:"NOT_STARTED",T2_03:"NOT_STARTED",G03:"OPEN",G05:"OPEN"}
+    }));
+    return;
+  }
+  // END POST-COMMIT RECEIPT REUSE
   const preservation=await t201Preservation(baseline);console.log("T1-01/02/03/04 fingerprints and 603 Core probes preserved");
   const regressions=baseline.regressions.map(prior=>{
     assert.equal(digest(fs.readFileSync(prior.path)),prior.source_sha256);
