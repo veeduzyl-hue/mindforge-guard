@@ -163,3 +163,6 @@ export function loadVerificationEventInputs() {
   }
   if(new Set(rows.map(r=>r.case_id)).size!==rows.length)throw new Error("Duplicate T2-01 case");return rows;
 }
+
+// T2-02: new supplied records stay separate from frozen B09 evidence.
+export function loadIntegrityInputs() { return structuredClone(readJson("tests/fixtures/gate1/t2-02-controls.v0.1.json").cases); }

@@ -4,6 +4,7 @@ import { collectBindingRequirements, type RequirementContext } from "./requireme
 import { canonicalJson, compareCodePoints, contentDigest } from "./canonicalBytes.ts";
 import { nonempty, record, type AdmissionTrust, type JsonRecord } from "./contracts.ts";
 import { type ClaimState, type StateBasis } from "./claimState.ts";
+import { readIntegrityReceipt } from "./integrity.ts";
 
 function selectClaimState(basis: StateBasis): { state: ClaimState; rationale: string } {
   if (basis.prohibitions.length) return { state: "UNSUPPORTED", rationale: "CORE_PROHIBITED_INFERENCE" };
@@ -28,7 +29,7 @@ const time = (v: unknown) => typeof v === "string" && /(?:Z|[+-]\d{2}:\d{2})$/.t
  * Recorded producer results remain attributed assertions. No check is executed,
  * no independent-verifier/custody/integrity/profile/current-standing method runs.
  */
-export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = []) {
+export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown) {
   const collection = collectBindingRequirements(input, coreInput, trust, contexts);
   const result: JsonRecord = { contract_version: "mesr-claim-state-projection/0.1", method_version: "mesr-claim-evaluation/0.1", status: collection.status === "COLLECTED" ? "EVALUATED" : "REJECTED",
     semantic_composition: "WITHHELD_FOR_T1_04", input_digest: collection.input_digest, checked_basis: collection.checked_basis, input_issues: collection.input_issues, claims: [] };
@@ -91,7 +92,13 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
       missing.push("profile_bound_sufficiency_basis");
       for (const key of ["profile_id", "claim_set_id", "scope", "evaluation_time", "evidence_refs", "material_gap_result"]) if (!source.sufficiency?.[key]) missing.push("sufficiency." + key);
     }
-    else if (c.claim === "artifact.byte_equality") { missing.push("integrity_comparison_basis"); if (!source.integrity?.bytes_base64) missing.push("integrity.bytes_base64"); }
+    else if (c.claim === "artifact.byte_equality") {
+      const comparison = has("mesr.core.evidence.item") ? readIntegrityReceipt(integrityReceipt, source, c.path, contexts) : null;
+      if (comparison) {
+        const fact = { ref: source.integrity.comparison_event, criterion: comparison.method, evidence: comparison };
+        (comparison.match ? positive : negative).push(fact);
+      } else { missing.push("integrity_comparison_basis"); if (!source.integrity?.bytes_base64) missing.push("integrity.bytes_base64"); }
+    }
     else if (["institutional.acceptance", "acceptance.decision_occurred"].includes(c.claim)) { missing.push("institutional_evidence_basis"); if (c.claim === "institutional.acceptance" && !source.acceptance_authority) missing.push("acceptance_authority"); }
     else if (source.caller_contradiction === true) missing.push("contradictory_evidence");
     else if (!anchored && !prohibitions.length) missing.push("admitted_mapping_and_evidence");

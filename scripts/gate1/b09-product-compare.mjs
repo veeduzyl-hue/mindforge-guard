@@ -213,3 +213,16 @@ export function compareVerificationEvents(rows,outputs){
     return {case_id:row.case_id,result:"PASS",classification:"EXPECTED_GAP_CLOSED",asserted:["annotation","occurrence_basis","result_basis","raw_input","no_primary_state"],scope:"Private occurrence/result slice; no whole-case G05 closure"};
   });
 }
+
+// T2-02 expected assertions only; all states come from the product evaluator.
+export function compareIntegrity(rows, outputs) {
+  return rows.map(row => {
+    const output = outputs[row.case_id];
+    assert.ok(output, row.case_id);
+    assert.equal(output.comparison.receipt !== null, row.receipt, row.case_id);
+    assert.equal(output.evaluation.status, "EVALUATED", row.case_id);
+    assert.equal(output.evaluation.claims.find(c => c.path === "integrity").state, row.expected_state, row.case_id);
+    if (row.measured_byte_length !== undefined) assert.equal(output.comparison.evidence.measured_byte_length, row.measured_byte_length);
+    return {case_id:row.case_id,outcome:"PASS",state:row.expected_state};
+  });
+}
