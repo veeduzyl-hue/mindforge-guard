@@ -198,3 +198,18 @@ export function compareCompositions(rows, outputs, oracle, hardening) {
     return { case_id: row.case_id, asserted_fields: Object.keys(expected), atomicity: "PASS", outcome: "PASS", classification: "EXPECTED_GAP_CLOSED" };
   });
 }
+
+// Private annotation assertions only; no claim selector or evidence synthesis.
+export function compareVerificationEvents(rows,outputs){
+  assert.deepEqual(Object.keys(outputs).sort(),rows.map(r=>r.case_id).sort(),"T2-01 inventory");
+  return rows.map(row=>{
+    const out=outputs[row.case_id];assert.ok(!Object.hasOwn(out,"state"),row.case_id+": no primary state");
+    assert.equal(out.annotation??null,row.expected_annotation,row.case_id);assert.deepEqual(out.raw_input,row.input,row.case_id+": raw facts");
+    assert.equal(out.occurrence_basis.established,!!row.expected_annotation&&row.expected_annotation!=="NO_ATTRIBUTABLE_OCCURRENCE",row.case_id);
+    assert.equal(out.result_basis.established,row.expected_annotation==="ATTRIBUTABLE_OCCURRENCE_WITH_RESULT",row.case_id);
+    if(row.expected_annotation==="ATTRIBUTABLE_OCCURRENCE_WITH_RESULT")assert.deepEqual(out.result_basis.values,[row.input.records["w:result"].result]);
+    if(row.case_id==="W13"){assert.deepEqual(out.result_basis.values,["passed","failed"]);assert.ok(out.diagnostics.some(d=>d.issue==="COMPETING_RESULTS"));}
+    if(row.case_id.startsWith("field."))assert.ok(out.missing_facts.some(m=>m.path.startsWith("/records/")),row.case_id+": missing fact");
+    return {case_id:row.case_id,result:"PASS",classification:"EXPECTED_GAP_CLOSED",asserted:["annotation","occurrence_basis","result_basis","raw_input","no_primary_state"],scope:"Private occurrence/result slice; no whole-case G05 closure"};
+  });
+}

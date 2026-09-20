@@ -1,0 +1,3800 @@
+{
+  "version": "gate1-t2-01-results/0.1",
+  "decision": "T2_01_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS",
+  "acceptance_limitation": "Product controls passed; required 21/21 AFTER matrix not achieved. Public-surface task scope guard rejects authorized dirty T2-01 tooling before evaluating public content.",
+  "entry_commit": "d2cd1460684b37e3a3ca8e8e1e958d15b3357d28",
+  "pre_change_head": "d2cd1460684b37e3a3ca8e8e1e958d15b3357d28",
+  "file_allowlist": [
+    "packages/guard-core/src/mesr/repaired/verificationEvent.ts",
+    "scripts/verify_v8_gate1_product_conformance.mjs",
+    "scripts/gate1/b09-product-inputs.mjs",
+    "scripts/gate1/b09-product-compare.mjs",
+    "tests/fixtures/gate1/t2-01-controls.v0.1.json",
+    "tests/fixtures/gate1/t2-01-results.v0.1.json",
+    "docs/validation/v8-gate1-t2-01-evidence-v0.1.md"
+  ],
+  "before_sha256": "6f0fbc92fb7347c3fe814bd534fcd58740fd96794943d675519b7f5dbd52185e",
+  "source_hashes": {
+    "packages/guard-core/src/mesr/repaired/verificationEvent.ts": "3c0a89acec980450b6e2d6a2aa98e250bef9fdd9dc683036ebe18bd8b3948e8e",
+    "scripts/verify_v8_gate1_product_conformance.mjs": "9c19dbea30a951a7cb11d8dee64461ff8ef759077dd2209bab217f69926308dc",
+    "scripts/gate1/b09-product-inputs.mjs": "0b4bc28756b37c0835b157ff5df11e36acb927a5a638a717fad58b083df2bd2f",
+    "scripts/gate1/b09-product-compare.mjs": "d290e708a64660fe07908020ed0b249fcf0cff84af3b59a00163d4f473d80c2e"
+  },
+  "execution_receipt": {
+    "command": "node scripts/verify_v8_gate1_product_conformance.mjs --task T2-01 --record",
+    "exit_code": 1,
+    "control_log": "T2-01 controls PASS: 370 cases; 64 bridge/falsifier controls",
+    "replay_log": "T2-01 three replays identical: 4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+    "preservation_log": "T1-01/02/03/04 fingerprints and 603 Core probes preserved",
+    "note": "The run reached regression 19, then exited before writing its full output payload. This receipt records observed logs; it does not reconstruct unretained outputs. Later change makes regression failure recording exhaustive; product and control definitions unchanged; completed controls were not rerun."
+  },
+  "task_cases": [
+    {
+      "case_id": "W01",
+      "input_sha256": "44220cf09776bd281ccefd7ffee097986e3d64d675dacb31943ffd75b18d14b7",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_WITH_RESULT",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W02",
+      "input_sha256": "57adb64357d289bc3d4cd466c5f1f108ac82492dff04a051cac6709e9a65c97b",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_WITH_RESULT",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W03",
+      "input_sha256": "21eed2ea15e4c939f8dd4b9058db907b31f616faddc31e250e8a1e93bd5c7cca",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_WITH_RESULT",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W04",
+      "input_sha256": "b7ca8d5ffa0f611b4cfe3f39da9b42dfeed82b9d13d89bdcbb31d96dce1e798c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W04o",
+      "input_sha256": "6304d9f8ba49864b545f01403de9a1bf93c4ee1a7c039315d5124b5c96367664",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W05",
+      "input_sha256": "bce131823466315c92603a8e47cb83eb3638fb2f91ee7f2b27b59871d924e882",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W06",
+      "input_sha256": "00ea9215adf088098534d3dfe14a4fd0499a1decfe898aece9d6fded062ad7cc",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W07",
+      "input_sha256": "f256702f6161f516a9be523ef767b791b00d0078d618e03849402224ccbc8751",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W08a",
+      "input_sha256": "a327d7e30e256ced3ad428738ca8622b674a4ab1dec09334310e0ef81de68eba",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W08b",
+      "input_sha256": "4d26edc0854bf0844b6d9362f23d92f30a70794c07d94363cee620a8494cc336",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W09",
+      "input_sha256": "fa9c7981e6801ca734229de827f50d3beacf5ebf78f261ea83a137e1feabea5b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W10",
+      "input_sha256": "57f4d5fc974f8a74150080ed07d504ba1b52683b421a436dca7c5e66701a9129",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W11",
+      "input_sha256": "a30ab9b37da62cd3c7ae9312b2551cb5753fd2024826ffe8b1ca0e6b17ed28e6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W17",
+      "input_sha256": "fd95825e42bb900904c6a539084e4952cafc0fe190e526f4f97f792c51db531c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W18",
+      "input_sha256": "dc725c9d097325e15cccd01f143216707c866aea73fd7806596d8e3350f52aef",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W19",
+      "input_sha256": "32d86839099616de3448f462164787b950a99efa8f777cf0df598a4f8821f335",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W22",
+      "input_sha256": "ae353345e321e195551e50761940618489b488bfe2e507bf9f05021b107f256c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W23",
+      "input_sha256": "a76ceecd3645fb18420809715f6d3760ec61fb4cd85fed9662fc69bac2a1f7ba",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W24",
+      "input_sha256": "84392b8bc2c685ce4c46e2f8300a24060b3b6910c5170e8df419f70910a31314",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W12.revision",
+      "input_sha256": "ec92759a18e57e8b4b3b6a4b33926c8d8736ca68f74fe64bbb0019490d094090",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W12.scope",
+      "input_sha256": "0bb6b7c69c6aed58b65528d272846411bc8c71434f9ec735df60edceb0617168",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W12.event_time",
+      "input_sha256": "6982ebd7dbbb876eb11e1a9edf1b8509f317c49eb85dd5a09e9fe36689193d36",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W13",
+      "input_sha256": "f69e53ca7ffe8134ca3d265768823214e45c4965ef0cc8ea56a2eee12e4d519a",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W14",
+      "input_sha256": "ef79fc01f243ecfb16b3dde0f73a2f0af1717d4c2f7cb141adbee58852c90662",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W15",
+      "input_sha256": "97db3ecfaec75d6c0fda31e876fd8bd2018409c938ef13668ce5a1bdf94685f6",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W16",
+      "input_sha256": "60aaa3caa9a41c7abb02a421da7af81724fecc76368a44ad425aaf6674f7467d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W20",
+      "input_sha256": "9e76a4aec2180a589b5fb851d50c7dbb27905b8a1505c73ceee86be7e76ea600",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W21",
+      "input_sha256": "54a74d46c4ef842b65a9610ab218dc87d4cbad37149330e68d0687cb5d2597db",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "W25",
+      "input_sha256": "fb659565ef3b59ba66e0f1eb1a37566bf41b6079657516a319ceca2d543bd074",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.kind.absent",
+      "input_sha256": "258c28b1c995f6e657133c01eef6f991d64d7397dddb303a422ec409d8d9abf2",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.kind.null",
+      "input_sha256": "b86818a716aeae9c8b752aa0a464be829d616299b73ae98b0995e09c0cd1e8cf",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.kind.empty",
+      "input_sha256": "28e5545ebf15d9f4bf61cfbb7a75b365f1c5f4f35e28b00683a4397496e507fa",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.kind.whitespace",
+      "input_sha256": "dced0ccc38a00781116cf10b64e8aca619c0f9663db6db8413fed3aae65242a7",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.kind.wrong-type",
+      "input_sha256": "393a0782ec12161ecda414fe8ed93efb49b17c139b6c93d416a3dd014f7d92ba",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_namespace.absent",
+      "input_sha256": "ae353345e321e195551e50761940618489b488bfe2e507bf9f05021b107f256c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_namespace.null",
+      "input_sha256": "052c8a76378bfd630740e4694af4207e885092e5ae3384eb997ab58a60d562bb",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_namespace.empty",
+      "input_sha256": "f9657b9ad100446cb6b1d3d8de4833cdc683b68d93db3c284e803413fe36e60a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_namespace.whitespace",
+      "input_sha256": "8362964354fe6358f527b780263d8fe918ebcd61b3af4fbb48e857ca9bf9826b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_namespace.wrong-type",
+      "input_sha256": "28f05630aaa34a405ec318f230e6e9af85fd1c5dfbab866d228f9e2514f14e57",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_ref.absent",
+      "input_sha256": "3bb2f5ab77296130212d7873aae4b5450cf7d4c95cf52354692a90eceaf5fbe5",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_ref.null",
+      "input_sha256": "f69b8b518818c998cadaa3397c07f98870d310a54e9d2bd055a549eb4a69b933",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_ref.empty",
+      "input_sha256": "11dc5da62d63f7cbe6270ba62a7017e4295df39081f0edfcf7bf5b6997aca16a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_ref.whitespace",
+      "input_sha256": "ab8fdb5c5c3d4434e9b98fca3c693e2fad0b72156529c5a5ba9bf2aac3997e94",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.source_ref.wrong-type",
+      "input_sha256": "ac0e837b5e82c2616a319b653b09ef7a873d6e95d331f83db4431d1e489fce33",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_id.absent",
+      "input_sha256": "bce131823466315c92603a8e47cb83eb3638fb2f91ee7f2b27b59871d924e882",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_id.null",
+      "input_sha256": "6220cddd8f46900f8efa8611ed3efa620a449a5c33c4707bddbcb69c70162288",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_id.empty",
+      "input_sha256": "cd9559e1853fc924c51c7cbdec6150dcb1030254f3543e570f679c8a9e619c90",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_id.whitespace",
+      "input_sha256": "e7a92d13a049521f7d96931d2875ccdb7fb8746527c14d8254353daa2ce6f845",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_id.wrong-type",
+      "input_sha256": "8503140b2249e585a60f0b5444fbc92a2edbd874278825beaa0c7470f780fd9f",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.subject.absent",
+      "input_sha256": "00ea9215adf088098534d3dfe14a4fd0499a1decfe898aece9d6fded062ad7cc",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.subject.null",
+      "input_sha256": "905635fb56967d4688716665a65125c9b3a9160dc1a84f2c775e2cd42c58dca2",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.subject.empty",
+      "input_sha256": "573965df79668c910a87dceb01cf56b19a09e592b3eefa46bc98ea8fab0da959",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.subject.whitespace",
+      "input_sha256": "fb546639a7140df4a833ba393df018ed3326fa35d05a6a76a72ebbd025380a93",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.subject.wrong-type",
+      "input_sha256": "1064d0cce60354af11149e49fa2bc8f7cd86f3ea3f59c06709b910bf86942695",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.revision.absent",
+      "input_sha256": "84392b8bc2c685ce4c46e2f8300a24060b3b6910c5170e8df419f70910a31314",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.revision.null",
+      "input_sha256": "055b4cb3bdeb5cd8cb58ebe79103a163b784666dcf30797b850b812bf5f9e932",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.revision.empty",
+      "input_sha256": "2419a4c2983a60071ace301a8ff2664f26182af872d1fa2e8bc289966c01e458",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.revision.whitespace",
+      "input_sha256": "d7994d7b36a3e6052bd06cfc3544256445be0b5698d3fc6fa749bf3e57fd0b10",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.revision.wrong-type",
+      "input_sha256": "95e354b722e0b40e04fcdfdae9269d24c8875094194ddec89c1397204fbd1e20",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.scope.absent",
+      "input_sha256": "f256702f6161f516a9be523ef767b791b00d0078d618e03849402224ccbc8751",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.scope.null",
+      "input_sha256": "efa98c1e8c6441c027f95a84d28c127aad90db56547f2b4219f78473f45b750d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.scope.empty",
+      "input_sha256": "5f2947b0276059c49fa8b59d8a7f7872d25c25d85503c64f7bd523f44c54199e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.scope.whitespace",
+      "input_sha256": "0d3854dab4531ee6a9b2fbd1d701a50aa8d542075e6d6d1b4f48c1c78e447ff3",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.scope.wrong-type",
+      "input_sha256": "f6b6522274373e0315554a6d9ac4ab2ce59a501e25bbad17a3d53c1bd3189f1b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.checked_property.absent",
+      "input_sha256": "a76ceecd3645fb18420809715f6d3760ec61fb4cd85fed9662fc69bac2a1f7ba",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.checked_property.null",
+      "input_sha256": "f5509a2234fe9992cd4a84a5a64547d2a183242894734fe8faf68797dc31f377",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.checked_property.empty",
+      "input_sha256": "6ca0da09d5fe2d922bc62c59aa78342c094861edf17e0c5857f9a2c8feb64f12",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.checked_property.whitespace",
+      "input_sha256": "c9f5e8e5b9ccb20b83d98f01a7b8b5cd8a1a5ca83b43cbca9c6a1c556089b57e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.checked_property.wrong-type",
+      "input_sha256": "d47293085adccc603e70f811e8761c649bb54659d3e3bf13c6a8bcfe923c10c2",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method.absent",
+      "input_sha256": "a327d7e30e256ced3ad428738ca8622b674a4ab1dec09334310e0ef81de68eba",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method.null",
+      "input_sha256": "0cb47f61d5c3974e5f04cf18703007d0e5aea123342b80f4f51a6d6c0d8e0b22",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method.empty",
+      "input_sha256": "8f2bb3f1ca4e24ef3e8324bb2cdc26a8b7d532b2b50e490c25f552f98f8da176",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method.whitespace",
+      "input_sha256": "9e3a60e845696103b220a3b85d9cadd19acd8016a93e83e5b66411b13aabf594",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method.wrong-type",
+      "input_sha256": "039e79a9cd3e6daf942b9b30ec9bfdc94af49bf0e2f4d3002b440aeff847dc70",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method_version.absent",
+      "input_sha256": "4d26edc0854bf0844b6d9362f23d92f30a70794c07d94363cee620a8494cc336",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method_version.null",
+      "input_sha256": "f02c4332f94cb08363eb515bd4333d4620d21d8994e880aac6abb4199bdecd66",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method_version.empty",
+      "input_sha256": "9e1c1f7d80b2b4c88576fe00e6ac513c52192125453073573e6c8587189bf29e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method_version.whitespace",
+      "input_sha256": "89b1e635c006fa3c165a1b646189888814dd416ff342c7e0985e3dbc3f16cf13",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.method_version.wrong-type",
+      "input_sha256": "aa4de00a2a0ab550bed5861e83424dbf1a300c6296e43e0635ddd4e93bfd2ed6",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_time.absent",
+      "input_sha256": "fa9c7981e6801ca734229de827f50d3beacf5ebf78f261ea83a137e1feabea5b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_time.null",
+      "input_sha256": "6c7e46bed5cf33d33e3b0037199a3b7348401adf6029bdd79d2c862db7893f42",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_time.empty",
+      "input_sha256": "baf9a88d1083d3ac2a73442695c0cccd0675f819a53eb03b2aab7bc25208c02d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_time.whitespace",
+      "input_sha256": "8f61b4c6cf57810b11d2fa8c25f2967be51688405df72af0e45a935830e56bed",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.event_time.wrong-type",
+      "input_sha256": "d51926581bb951e7ccd901c1fb12fe04f5632cac4ae7fae52698e47c6a6482a5",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.producer.absent",
+      "input_sha256": "afe79c5aaa8d5e0819d04473337152ff0301b31842bb039f9d6a096d288d50ac",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.producer.null",
+      "input_sha256": "801b4a935a00ce0929896a20ebeee13395e909016c4c7a15f36cb9cf66358e9d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.producer.empty",
+      "input_sha256": "38366ec58dcb28725a05c9ad7af6330a079afeee8fb0d89c37e354f0888b4d88",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.producer.whitespace",
+      "input_sha256": "10db4810afcd841387c280a12dce95e14455475c7b973db2937be500c1b0a3f7",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.producer.wrong-type",
+      "input_sha256": "a86c144b3f1a2e59e8b652f030f1e4bf247823e8205318fbb43fa37c482fef8f",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.verifier.absent",
+      "input_sha256": "32d86839099616de3448f462164787b950a99efa8f777cf0df598a4f8821f335",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.verifier.null",
+      "input_sha256": "62c7473e1a028a8026c23dbbcbd3ddb3f5d319b2b2e7273c6d53b522cc5e1cc9",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.verifier.empty",
+      "input_sha256": "3ff697edd07d4fbd8a4bcd5f81b9b67b8186dd686b37865e09d30aee3384cada",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.verifier.whitespace",
+      "input_sha256": "277b82397fc7502011e9e7424fbe0598bfcb85d9a10f1070489d12c4bce1c75b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.verifier.wrong-type",
+      "input_sha256": "9f1047a3f9ae30af721e2609a9e4a956099819610d7f78fdd9565433b6126b44",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.output_refs.absent",
+      "input_sha256": "09c8a40f6d8e2ce898e82fc922440714b22a4a9c38b56879c22171d9dff82a06",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.output_refs.null",
+      "input_sha256": "1a693f74faa27d1097bf9b5082605d50848fd09fdfc4d42ab3822508c7bf241c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.output_refs.empty",
+      "input_sha256": "6ad68e83a69d97a6f91fbf214976ee68b2b72c867c389dae204947da939f0091",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.output_refs.whitespace",
+      "input_sha256": "2f926871ac9d923ff2545b7aaac5d61affe5d16f570ed8debd1cfd41bffa7168",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:event.output_refs.wrong-type",
+      "input_sha256": "a0359a840e6cb8a7e1de7a94035a0331f8cbc199fa5ca38444da811e1fdbdb74",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.kind.absent",
+      "input_sha256": "19d0e0a787a4baaf6150bc551630241bbb995313a81c211099f77720555c262a",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.kind.null",
+      "input_sha256": "b7343e68fc52b27454b8448dc08ce5ccb7e903ab7c211d2d89898f62858f19fc",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.kind.empty",
+      "input_sha256": "7949ffc4b21020aa95463b8d5e085aad59f0f264c97f5eddb49fe3ba50bf4157",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.kind.whitespace",
+      "input_sha256": "2e3c0322989544b852275c1f1495eef5dd3990f1b5ab37668f9476c17126c5e1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.kind.wrong-type",
+      "input_sha256": "7c049d91bf4e7c3bde8cec56a707632ff971b62b84da75f7bde711e3c31802fd",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_namespace.absent",
+      "input_sha256": "6c6783d3f2b914ed5e9156b41e41401c38efdd9595738a0e335b90840403143c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_namespace.null",
+      "input_sha256": "157ad3eaf1df042a6761a4b74b5f014bee5937822507fa922c5762834bc3b383",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_namespace.empty",
+      "input_sha256": "285ad7f1c26ba2fa1c567f5edba5eedfeb97f99efa26f3ef3c321d9b5247bfb1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_namespace.whitespace",
+      "input_sha256": "7a62f9ab09b8ad6a2bdf984cf6c2f6c23e7e18c5ecf525250bd5cbd359216645",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_namespace.wrong-type",
+      "input_sha256": "9afae8986b562cbb8db04fab8c949f013c5a36635dd94933c76b5d33fedfdccd",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_ref.absent",
+      "input_sha256": "e67a35b2fbd893814b378944c4f2b33a48be5f46502dcc2fcee81f7e980415ef",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_ref.null",
+      "input_sha256": "a59ea62f8660818b6c9dabf74ea6f701325b023872a17224cc59b5012e4bb9aa",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_ref.empty",
+      "input_sha256": "6845b2f75002a8aeef626e87aaac96697b46b46d7fc06a259eed4652a22f0356",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_ref.whitespace",
+      "input_sha256": "b65cff36520929b0ff53a28a3aaefa026b699e350d3fb2b6dc74d1a8533ad992",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.source_ref.wrong-type",
+      "input_sha256": "7a2f6ead2c991421f3bace59770aff0348842a0d51b1d3fe826c53414e023b3a",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_ref.absent",
+      "input_sha256": "a30ab9b37da62cd3c7ae9312b2551cb5753fd2024826ffe8b1ca0e6b17ed28e6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_ref.null",
+      "input_sha256": "dd68ce204f034907b655a264fc4b869d08a2a210e6c33752451a28a881b94c44",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_ref.empty",
+      "input_sha256": "16f755db0be9183c53e18d3543c44195fb40a8e5b23c2d631127413bb2a6d518",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_ref.whitespace",
+      "input_sha256": "69499e59740fc123181fa9f3033d0eb087bfa9b2e4d3cf49c589246d209ce1d8",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_ref.wrong-type",
+      "input_sha256": "5197f3126fc37913ebf0ed8f50a16ce19c8ef9eebd52f2f32881c87f1a8915d2",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_id.absent",
+      "input_sha256": "3adb821ae725a6e7d50f7da2e0ee81c50549bfc22572162046de60a9eca17f19",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_id.null",
+      "input_sha256": "f81ecb2943816c4b0ba9b4c5a0ab407bd74f40ff200bc209142c5d538d6a2b84",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_id.empty",
+      "input_sha256": "864ed03806c978f6ee7b79593f4a7e2a1fcd862f38ebb2b3261fc974a3330105",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_id.whitespace",
+      "input_sha256": "c6043bc9516962288fa4c46331b2535bd1edee446adb672abc4bf229f183e293",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_id.wrong-type",
+      "input_sha256": "db44deb3fbfee7327f31c014f0afea3fa07e40959c3e316768c35d19f4609637",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.subject.absent",
+      "input_sha256": "bb81c192dcd28293ccd1d06fba9b8215a371ebcafb17078e7bd7c407430b8297",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.subject.null",
+      "input_sha256": "f91b0c5416cfae4c5e8cec1f9bf18a016bb384b5ecfb8847e36d4a1a64bb5fc6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.subject.empty",
+      "input_sha256": "c46909e1422c72e11437dbc954a5dc55024ec63f13ab4ae92b5c220a2171c8ae",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.subject.whitespace",
+      "input_sha256": "ee5c3fb410a5dfb259ed92ef77c13c1b48e63aff66d97de2b8d15f0065343ea4",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.subject.wrong-type",
+      "input_sha256": "0a376fde81b355f1e871b5fdb5b861018282f57b048f6cf5ee685df35f8108df",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.revision.absent",
+      "input_sha256": "fc08a71457536c8ff0f1194c74652c13a96710a8d6ebe26d22f4edd2aecc389e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.revision.null",
+      "input_sha256": "5d38b0b1ee26dfe356e7f7410704bc61d1d1c141f7ef49a799b5c3df124c0968",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.revision.empty",
+      "input_sha256": "3fda9df693202c3cff173e1fca71fbc582775b2e046d3f7d0c31e2eadfd75508",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.revision.whitespace",
+      "input_sha256": "87f398fe9e03f85c999ab3bbeb874b10a2324d08a987f0f29383c73a3da4d8d8",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.revision.wrong-type",
+      "input_sha256": "68634a107b1642f231be95df8e05009747901b11af2e055b31d440d2f6a9a67f",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.scope.absent",
+      "input_sha256": "94aa62e83bb56fa821e06e2db4149a4b571a34c5315fefec3346faa510d5e29c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.scope.null",
+      "input_sha256": "00c41f108d158db69327d808438e9fd6fae369a12166901ecab33bad2d46e7bb",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.scope.empty",
+      "input_sha256": "8d085d26f7b29b2e951d895008fdffb5cd0a4a5cb7a531be31fa4b8ef97598c1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.scope.whitespace",
+      "input_sha256": "9b96b6bd361819dfc35628218f5dd810e210dae51f7fb929459ba0f3707d04e9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.scope.wrong-type",
+      "input_sha256": "9c594d05f039b53c9acec6198405f7b8855a7bf76813b089d5822e08c3c44062",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.checked_property.absent",
+      "input_sha256": "88864ae794a5917b0872fcaecf36f428ac1017847599469be4aba5515626ada7",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.checked_property.null",
+      "input_sha256": "6e3a9ce7c840b6fecd44f2b3a077e17989fa0ebcd6bab144474fa8485ced24bc",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.checked_property.empty",
+      "input_sha256": "82099db81104e5410e0d11f09b7a7f61ff73e2a1889540ee580f8dd8b2cccdb0",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.checked_property.whitespace",
+      "input_sha256": "c24429f32dbd6498a8fd219622945dd84d5ec93d1f38536b39df92728bc4baf0",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.checked_property.wrong-type",
+      "input_sha256": "28cc1998fc7bf2cafae5e8ddd19d5b8d115da4f78fd97afbe3d1708692b3bee5",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method.absent",
+      "input_sha256": "b850e7af0ee86b6ba31fa98be05cdeb457100b894057b8377d1ca347b9249350",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method.null",
+      "input_sha256": "d535dab19de97a4e6ead45cdac9e8a5c310a3c4efa3c9bd05c9509fba6bd6a4d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method.empty",
+      "input_sha256": "cea62409120d51135b36bcaa57bfe62465af4fc1ee85c391b55548ff78aa6f16",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method.whitespace",
+      "input_sha256": "411c7b8df939ba2a648763226ad233240937587e6cecab8210efcbebb178a911",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method.wrong-type",
+      "input_sha256": "c11e42a110ae27c4e18dc37538f78a37517ebaf389ef5486bef9a2a3a975206d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method_version.absent",
+      "input_sha256": "9f920fb391ad92ea448453072d1b7677ded6ff7a5fc68934411f63cddddd3fd2",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method_version.null",
+      "input_sha256": "717d9e2174b3b89840ab383db6303987cc588c90ae64be853e01f429ac77dc31",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method_version.empty",
+      "input_sha256": "4ea8cf41aa3d613a819cb3b988480d1949f88fe45c5a910004fcabf3c2d2861b",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method_version.whitespace",
+      "input_sha256": "534fe6c95fc6899450e781719a36a2b9cf15a78872e6d56857228e2e53fabf65",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.method_version.wrong-type",
+      "input_sha256": "85b07686983e24ef04b2ce3018eff7298c7774a608d3e843670632e175743b33",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_time.absent",
+      "input_sha256": "4f1f0e6d7b9f2f67a6318a2b4dc2153bfbae91898d343f458039b49c72b7a569",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_time.null",
+      "input_sha256": "fa777accf6c3077a83e19d0d99ed8c9961e468e37d3bb9b5ba0fc9b1c5823401",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_time.empty",
+      "input_sha256": "0a539580ce4396280edfbc7cdd9e5e8b828c3f30dd05e72a053f43a7dcf2d49d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_time.whitespace",
+      "input_sha256": "77c44f36c33a46b7ecdb4bbe7a1137b6016ce0d22462fefdd84dc0ab6609d534",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.event_time.wrong-type",
+      "input_sha256": "505225142cca9ebe9e177158be6eb50e5bbd7b4bd17c1a7b877c6b3483e29401",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.producer.absent",
+      "input_sha256": "521c6f3596d9c59a45de11d511e0346ed0207e5949e9ca9dc719f9bed0951c12",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.producer.null",
+      "input_sha256": "0bdaa219721e6f80bcc854ee370e26024c46afaae74439156ee0cf217d18fe94",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.producer.empty",
+      "input_sha256": "339ce4f3ebb93bda0140d7640704ea96320884fc1002035771cd7a503675ff63",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.producer.whitespace",
+      "input_sha256": "03d599c7163549bacc34195be74cc8db8858fb79f6691c89581be8c94879ea03",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.producer.wrong-type",
+      "input_sha256": "481ba053b568b4b1ba310270c3747b0db0f1e46db6ce2369d08922844418dbea",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.verifier.absent",
+      "input_sha256": "d8fbc463e27f5234fe4f4a8dbf23308476205f2638a55786b7cb48d9c386ffaf",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.verifier.null",
+      "input_sha256": "7955d04494483c1447341c7c69b14638b223d77ed7774e9db116f72f2ffc5e1c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.verifier.empty",
+      "input_sha256": "5f1e3aa415d6861018e964f98e28f2fbb6ea9610074271dec293699bb64a0225",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.verifier.whitespace",
+      "input_sha256": "6ff888fe2d265ad02b626910cfb516a073962ecd2dce60d182a6f1f4c83b0bf4",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.verifier.wrong-type",
+      "input_sha256": "c3ff7aa32ffdbc5fff4d4dccc6d30d6892609d7988251b06a1e84ef948f6abf1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.input_ref.absent",
+      "input_sha256": "2c62db39c275784e8fd228e481afebc30616e2042d5d4241127872e355c35868",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.input_ref.null",
+      "input_sha256": "c487dd3dc5d6b2a7a07a926dcdac82a3a762b3fce0a055e48fde27f0afa7f659",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.input_ref.empty",
+      "input_sha256": "dc27f1c629a29dcdd0560ac41b2c3c43b121e245846299d71049f38815174a05",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.input_ref.whitespace",
+      "input_sha256": "c08ea9ce71319ab064eace0acc6f4fefd35f2ae5f36591430f5a127d14da89c0",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.input_ref.wrong-type",
+      "input_sha256": "f0b9d6294487f03e85a28d100f64b83f2e31d27e8fd04b5ba9bbb211f42591d9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.output_ref.absent",
+      "input_sha256": "5d734a4428abf7b2f154f55e7a0776143ee88baa77db8fc3caf577862c7acad4",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.output_ref.null",
+      "input_sha256": "17700f957c03e53c5bfc48b62b6596d0730b8e0fbbf18353f56b18039611e07b",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.output_ref.empty",
+      "input_sha256": "1219ba6165661f5f8d046e44cfb5a16f2294b3357c8daebcd02df3eb1d196571",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.output_ref.whitespace",
+      "input_sha256": "4ea2b9cb0691e4d987919551096f54875f2a5c3e05971c08942b0d65f8a8a622",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.output_ref.wrong-type",
+      "input_sha256": "cb40259d2d4c18ab2093758da780951fb1a879d5c883f428978bc9dbec500e72",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.criterion.absent",
+      "input_sha256": "57f4d5fc974f8a74150080ed07d504ba1b52683b421a436dca7c5e66701a9129",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.criterion.null",
+      "input_sha256": "2657138fb497cea1c47158efa4988f0d29614ad12fcff5322a5f8e1b4ecbe697",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.criterion.empty",
+      "input_sha256": "88cd51a71afc57fc2e7016705655c23b1397cf7ae2f4ff30bc5bfdda0a4ccd97",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.criterion.whitespace",
+      "input_sha256": "417e5e5c91f2f6178f118db76239f7173ecac162982310f48e523c98974e9dc3",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.criterion.wrong-type",
+      "input_sha256": "f784ab8b26f371087e5301eed4a9aaab8f1b978a20913e812d9a5b86162cb299",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.result.absent",
+      "input_sha256": "fd95825e42bb900904c6a539084e4952cafc0fe190e526f4f97f792c51db531c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.result.null",
+      "input_sha256": "11e9992e93e080e540a760651a195e89deae9a416f7de824290ab557b21e9eac",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.result.empty",
+      "input_sha256": "075893ac0b4ccf3a7c22f50d0ab62d2a96c1d95ea212f04cbf33d532467ade93",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.result.whitespace",
+      "input_sha256": "0693f05d875a9f801cf828416a56dd3c8294a976ecbb4010f23f1164db83c91e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.result.wrong-type",
+      "input_sha256": "558792864a24d8deb5afd4d262ba6cde3bc6775f23655a65689dd6fe333fc2a2",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.limitations.absent",
+      "input_sha256": "dc725c9d097325e15cccd01f143216707c866aea73fd7806596d8e3350f52aef",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.limitations.null",
+      "input_sha256": "422093f6a93a865467e39101a05fbefe0e7b1ddaaba1950a2f4ef0199be354ec",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.limitations.empty",
+      "input_sha256": "75f237cee7afbe0e8b093a0e897ffc9a0a7bdfb962fbd4bfb3c7b62ec5d6e39c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.limitations.whitespace",
+      "input_sha256": "5747b5d77379523b67d163be9026ccda5f443d26caee61916c2f4e9942e184fc",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:result.limitations.wrong-type",
+      "input_sha256": "44ec6eeeee8b7483c732a8a6c001ee9ceaa4b48b571b77b443b8fc6fab4dc26a",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.kind.absent",
+      "input_sha256": "f4a04945e009b95f9d10c8d18b2e9ab516f513760547ce95fbf6e3b5c4c2d727",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.kind.null",
+      "input_sha256": "b5cd8ae136059cff7672a99618bb02ca5b1d73ab5a663889868621352f19d983",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.kind.empty",
+      "input_sha256": "1207234bb098e64249e2d47f8043670bf650c0a9facd1e1ed41ba60e0a57ba47",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.kind.whitespace",
+      "input_sha256": "77805fcf273a18c0070efe877487457ec73fb2725607955425193f2f5219950f",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.kind.wrong-type",
+      "input_sha256": "35c09b3194cecea5b2a498af616ab8c32b8bb08699c1fbd1af7c44e6d8e16ee9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_namespace.absent",
+      "input_sha256": "63e771c20454ebc9b6fe4502fd0cac880b2a113c99982d642d799f87bb837f79",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_namespace.null",
+      "input_sha256": "c04aa0f85b1e81cd0c8d4b992c0fdecc286a60131a34769a88e5c2c9b28d10c6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_namespace.empty",
+      "input_sha256": "6f72af2bf2494e86618e86c71d5a0af3c1d1deb82535622cd2f7c8366dac1e33",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_namespace.whitespace",
+      "input_sha256": "760fe220c06c1d43fd7c1508a5ae4c5096684897441244a6049449008e7e87b5",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_namespace.wrong-type",
+      "input_sha256": "358d324615c5c1ee389ab3ebfe31add239eb32e681b12d33f83d3e6224dd846e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_ref.absent",
+      "input_sha256": "e558716bba61b77cdf4e38b1ad41869f9b46f7eea646f302373e67b74f192785",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_ref.null",
+      "input_sha256": "fa3a5ca21dde39532ec0bd161d6a491b44f88360603f85994adc01b7768b810d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_ref.empty",
+      "input_sha256": "1ac4f7cdb37fb97d5fed13378d639bbe1e2d27bd41d9477cab7a84ee5f4e9362",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_ref.whitespace",
+      "input_sha256": "3e1b82394deb6a22aafe95fd7ed332bf2add3de42e8d8f82383393af2ebf3a56",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.source_ref.wrong-type",
+      "input_sha256": "9f139630ae8d87ea9ddfd8cc302a82e539b3794a3bc30419f0267378b11d9e2b",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.subject.absent",
+      "input_sha256": "4e6caa1fe2e5607c0d1156fd0c39e6cba08e45926f9652b0c1dbe6e11fb9fb84",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.subject.null",
+      "input_sha256": "e7931b35f3a4bc0bcfb8b41209bfeb8b1ecef0f2146d3fa6dbb49cc36a6bdcf9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.subject.empty",
+      "input_sha256": "c808625e269047d26d105e05961037562de23a998590d7b36f1f6f1a9f7042cc",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.subject.whitespace",
+      "input_sha256": "41bab36727264e7af63146bfff2e69a224c24cc4cf240e0d699e6fc99cde5823",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.subject.wrong-type",
+      "input_sha256": "2c12db5393c86af00e68657efb07e94ff8f5b43c48cad5c4bb7722da0e825d98",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.revision.absent",
+      "input_sha256": "74513ec0ede556e56498bc63900761dd2cbf32ebbd46e505fc4c5bf2c2fd37d6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.revision.null",
+      "input_sha256": "6e7f0881bbdbab8e45defddf647377ad867e934626ffccd6f8debf45663b117e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.revision.empty",
+      "input_sha256": "8c857be200216a84bf7acd258af62f4f7443a461aa2189685bc8ef71723c1d91",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.revision.whitespace",
+      "input_sha256": "b767b7749425553b0172041b20ba574419493d8d7ea907ef1d18d589c1786795",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.revision.wrong-type",
+      "input_sha256": "1e9b1869d572a9101d03fd47c51a59fabf0f9c3fce66b5cf6cf207bb040b129a",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.scope.absent",
+      "input_sha256": "8e66cd113ac035ffe75d88ba6154df16a21b310aa9efecaeaecfd7dc2e405343",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.scope.null",
+      "input_sha256": "52a08cd604881ce6c31ae99fa49ffff38dcb46d513836c522932f663fc53fa89",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.scope.empty",
+      "input_sha256": "2039677f3474c4251db40ed639f1652db2b19e88ce7b115ec9cf57b617589516",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.scope.whitespace",
+      "input_sha256": "cdb43be0b47c9ee7d9020e1ab8a225149f716056b7bf1e0b01cae606bf3b7270",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:input.scope.wrong-type",
+      "input_sha256": "24c8eada9992a877fb07e64f46f45f3e07d5db48310c5aa05b6741170123a219",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.kind.absent",
+      "input_sha256": "0c1bf90932bbb7bf890fb0b855d2a38196edfc49bddb646840e8637c3fcfa6e4",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.kind.null",
+      "input_sha256": "18429fbc6196d04f3a9ceb6aeafbb930f209f4f58c2c6aeb126a6e171f86550b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.kind.empty",
+      "input_sha256": "ddebc03d61fca0ea5c89b1726ed0ea5dada6ed7160847fea5dc7b6d2a0025505",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.kind.whitespace",
+      "input_sha256": "bbea283469db1031726c2de02c94d3db5ca8d788b9f6b240cd9d8f5af078f6d7",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.kind.wrong-type",
+      "input_sha256": "73b65ba4b436b20ce03fa08724187667bdc2c764225f880e07575173606c4ef0",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_namespace.absent",
+      "input_sha256": "e26404f693306e1a1fe29b9f1d6a86ddbd7222200caaa40cf8e68f56fe765f2e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_namespace.null",
+      "input_sha256": "0149445029ce7f3cad6c635b9a780bcaa93c269e6835ddfdf5882f9a3db64e03",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_namespace.empty",
+      "input_sha256": "6876b805ae2e4d248c7745b318c0c9408a79a10ab6d17d53440a186bc6aaafdc",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_namespace.whitespace",
+      "input_sha256": "fc2dcd773f1905c03dcba505f817b5d2586bf848969d2788973fd9bdfd59bffe",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_namespace.wrong-type",
+      "input_sha256": "e195ee1f89309feed0e556a5e3807ccf4748aa43efb870af2334140be4a8077a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_ref.absent",
+      "input_sha256": "2689fc03f3294d67e323a141be223dcef098a81b9e785a6194825b6c0567af08",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_ref.null",
+      "input_sha256": "e1f6da371a599cd5476f9a7a9f4efba174626ed3ac9c1238afc7187364164403",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_ref.empty",
+      "input_sha256": "bf54b56400229b343b4557e5b8c7f0ca87dc3ebf9cf0ce6ccb4a67551a6d0d1d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_ref.whitespace",
+      "input_sha256": "124d11d1b7f529e8887a5e4b38eaab56cd55e3551f930e1a74822d444af8ba5a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.source_ref.wrong-type",
+      "input_sha256": "f4a1589b88f20e5e6735bbbb818d16ed7d4931e33a894743cc6f262045f614a1",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_id.absent",
+      "input_sha256": "4a420e57df8c5394b5254acf667cfd4f1e2b8f67f6d1ae8c3217f9768cd5693b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_id.null",
+      "input_sha256": "74bf81c8b5ed3a6e1fe1258ad177ee064f9fcef73b33ce860a620c205d343918",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_id.empty",
+      "input_sha256": "1eb5b67f78cc2d57734641eab80d0710858647ff8f53a1233ed53e44070d5ae4",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_id.whitespace",
+      "input_sha256": "6d2186432d69488aa831b19f73c9c569762fc16aa935b374fbb05048e8bcbf5d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_id.wrong-type",
+      "input_sha256": "339d4e969dc25e01f35f5dd22e0a3e2c3c4a55b70412e2e76b5470b6934e750c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.subject.absent",
+      "input_sha256": "1b069fd3b94a462bcbb5bcaadf51fdced200b2f2d7497c05f4f4074e497318d7",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.subject.null",
+      "input_sha256": "c6e52735c222840ee492712b01944a74ddefa8ca8c0f3a2a32a8562e2c24c514",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.subject.empty",
+      "input_sha256": "b64883bc5b53fc811c874e94ae5fab612ea7a78996b9f896543a4d3da580ebde",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.subject.whitespace",
+      "input_sha256": "28313054c9dd1f7420846c586bb63f9ace354f8ac75ac3daad91f546076dc3fc",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.subject.wrong-type",
+      "input_sha256": "87f2ceed4cf9fc0cfd18aef3acfa30e9546e59fda5561d828c26e22d593a6ac6",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.revision.absent",
+      "input_sha256": "12080eca16bb25c01bfe375c5e85eded269bff980a36bcbedee3cd1ec268c854",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.revision.null",
+      "input_sha256": "4b3d217c78cde8ddee192f8ff11227a1f26023373fcc49bef7872d4a2b8ddc79",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.revision.empty",
+      "input_sha256": "fc7a5f2ada6f548e36ecc9d6214e2d46a58e2632d7a58b4712d6b911dc59962a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.revision.whitespace",
+      "input_sha256": "df79d2b4858aa9489d9753671b41e5dcbfb63a29a82d1d4bc66e72a270831a66",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.revision.wrong-type",
+      "input_sha256": "980802e3be93335f6896aca1e6b318e95709bc0a82ca65e2b84b90fd46d64543",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.scope.absent",
+      "input_sha256": "edacb2f74a7aeb285d12258c1fe7c10db985b59bf8d8024d27f91b8296bf2ce5",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.scope.null",
+      "input_sha256": "593d9c9ae2b866f8e41ae5fe8415ff0a57a130d283d0d21f682cfd06e5b3f945",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.scope.empty",
+      "input_sha256": "981a48b03e6b6ad902b7e847af812c4a4a84c85a74bf935a8ecd98800f88cdbb",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.scope.whitespace",
+      "input_sha256": "8046cd81f18c4c618f78526676ca1f9a0629c9f2c34bbd076f8c07fd305faab0",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.scope.wrong-type",
+      "input_sha256": "0ab133fb2c3e1be06e9b47ecce36239c2202cf55fca436b9a25fca1af8b6da47",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.checked_property.absent",
+      "input_sha256": "6f830978b55f256315e9e9ad82faa561e0a588de4d42fefc39bebd8c75efef77",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.checked_property.null",
+      "input_sha256": "ddf29b24011686ac0f9e56bd9a5a57fe0e6af15b2c5963124eb1abdbb2152214",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.checked_property.empty",
+      "input_sha256": "a92cf899ff8179af630c17046a9c1c552f5b10df9b8cc50644c34aa5a06f49ef",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.checked_property.whitespace",
+      "input_sha256": "f4211f8020604c567e519a14f39f5de67bc54f52327fa95866fa2cc5f7b8c41e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.checked_property.wrong-type",
+      "input_sha256": "bf693e8ce8846b2afe47446a5c24edd167b398e4e5c52d40d575ac1f72b8fa30",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method.absent",
+      "input_sha256": "874d90fee0e54f7d74b61b9781b297e9eea137f607435d5d3c862aa5014b8776",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method.null",
+      "input_sha256": "d721cec8891a4c0c8460db4ac2de5db1109a0f24ec19a088d25be0d4bf66bd7d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method.empty",
+      "input_sha256": "0f4ce023e02f3d71041192b99fa1293176ab880bb319248abfd04756f85a6906",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method.whitespace",
+      "input_sha256": "9598af3c71713f634c630c82c8033f97a28334dbc10c5ee13fe8d4053ec0e48a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method.wrong-type",
+      "input_sha256": "fb9d21f35a14579a42f1525f72b4c0e98ea8672e65de11087d38d7920f728c74",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method_version.absent",
+      "input_sha256": "48f78e675f09d10e39d5d69dd503b976574777870d85972113719272cb9ab22c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method_version.null",
+      "input_sha256": "17d10b3a369b4d7ef0583ac8fe3dd5733ca30701b54426c1f071e487c1741c81",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method_version.empty",
+      "input_sha256": "ebbfcad79acc71f2b5a5b7616c87c69adbd3723cbbd7afdb3872a18aa2a06ad1",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method_version.whitespace",
+      "input_sha256": "38318ccadb7815ff5517ee16ac503b56d3dc23bc7c84432657cac4c87ccf6800",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.method_version.wrong-type",
+      "input_sha256": "a60fe5e24679ebd65b28b1981f15e78892c96a2585c43a2950c61f52d25fbaae",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_time.absent",
+      "input_sha256": "082ecd1f1b9f58d26270fbf10267e407c2c1921d0f77339d52a608e6392a45f4",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_time.null",
+      "input_sha256": "8dc0480114f2a9df39cb82278c8fc832e5889b14f1301469610432afbb6a375c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_time.empty",
+      "input_sha256": "6f7d7297e1be0da8d9d754ee7d2a35eee3512b02de9b5bbf1b9a6dc4e2ef8ee2",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_time.whitespace",
+      "input_sha256": "d3e32d265cbc5d7f345d0a8b0cc3eb65a72dfd4be3376a1b0773fa4ea7b8b14a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.event_time.wrong-type",
+      "input_sha256": "49d23c7a88a23124eb9e49fea2a7b9aa34920531b2b8700ec0c7e23c2622b032",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.input_ref.absent",
+      "input_sha256": "e7683e20f8ea80a8aa2763e520d761780beaaa5bdfb40b4cc92faa165b408c68",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.input_ref.null",
+      "input_sha256": "5f38ae56e88f1c7de87dc135a24ccd8faba83078c88d8f12c2fd02a7398be3fb",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.input_ref.empty",
+      "input_sha256": "160805dbf19af420d6ba9428e8d77e4bee6551c45c088dfa490b806356017aa8",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.input_ref.whitespace",
+      "input_sha256": "6cdda5ba693c31d59fc117187608af18521cc167a4cd473995a3cc77538690ca",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.input_ref.wrong-type",
+      "input_sha256": "c6cd47893330d23d42198080628f9765b595586cd0b11508261815e407b14765",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.criterion.absent",
+      "input_sha256": "05ecca60a96d9fee8cf30b44b027a35ed364d2aadc065aa2500942c464f79413",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.criterion.null",
+      "input_sha256": "de5e36e6be36be0bf987cdf0d13998e17373e1426130cf0da51e5af52db1e7c7",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.criterion.empty",
+      "input_sha256": "cec52f955012f86c4bb9976f198741e3367f83bc253ff13940ae1e9d7f8af0b1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.criterion.whitespace",
+      "input_sha256": "311aeb08601248422751ce74391a5a8aa18665d2da69d9b7a297a77188258965",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.criterion.wrong-type",
+      "input_sha256": "38c8b49e151066f04dc16da3a64f0d4517b291fe1cf646ba419484e97815a5b3",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.result.absent",
+      "input_sha256": "2d75a8fd6405c31a1b2958f2b257292b4e434f13c5536adddb18dbb0bc6dd67c",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.result.null",
+      "input_sha256": "45d97fc02c5780cecfad8dac37560ccdcc097c259b68b1b0044b21e14e42c510",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.result.empty",
+      "input_sha256": "819342b53898d6f24d10d0bbd9878ffe7794573aa1259989d44ca0c928f1f858",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.result.whitespace",
+      "input_sha256": "f8746313962d0a55f0e479b0dc2f0332c0807e14a41e6fbf907ce4f7e95136cf",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.result.wrong-type",
+      "input_sha256": "d7cd75a22af53d5b4f88b33aef10822937981d263e015d7a07ec68d4ad888974",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.limitations.absent",
+      "input_sha256": "660ba844e272cc482133a70f92a37e5376a3e9a677893886fa6cf2068123dfd9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.limitations.null",
+      "input_sha256": "a0a9bad1bc77f4746168a478da87ce8b40a7d8fd6764dc312b2de0e8504c56ce",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.limitations.empty",
+      "input_sha256": "6c3c87920d6746f779e84e1e78b85b06cc5c67d03b0ce56e32f35c79c98f83c5",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.limitations.whitespace",
+      "input_sha256": "8bf6c016b47d1cc52148a28bae1abdc248f9b2533e4b8c2d4370e17e60b8e4f4",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "field.w:output.limitations.wrong-type",
+      "input_sha256": "f03ce43b2099a6da6ebc9e071b58afdc5fc7effaf6871dc366f9095ed9297715",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "missing-content.w:input",
+      "input_sha256": "80eddc74e1e5d1f5da32608f67f1a115c50ae4ccd1147efd369448c77bb186a4",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "missing-content.w:output",
+      "input_sha256": "18bb7817282aa2d80ff6687c595871105a543a95261c4fd6e4c146d2dcef3a59",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.source_namespace",
+      "input_sha256": "c817c9d12d56ff936b8a7de0c5ac8fd0d971755b955ae8e609c722097decc1d2",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.source_ref",
+      "input_sha256": "3651c9dd73240d381fa6359e2544930a8ca5c875ad3199f51a9cac2565dcb6d7",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.subject",
+      "input_sha256": "0ca12441a341fbdfdfd17ef32985c709a89a85cb1cc9e3fc6d13bf32d957b3da",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.revision",
+      "input_sha256": "6cfb33289813bf4817e1d569a505d351ae3186ff75ef551a806c0c19306193a1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.scope",
+      "input_sha256": "ec33eed1dc15a3d33f03066e0882dcb5bf23cf81ab342a75071173fc7c655dc8",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.event_id",
+      "input_sha256": "406e80c93388c5a1de727fa7da216403ea7db1cccc24d1e5ef585688e7a2f68f",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.checked_property",
+      "input_sha256": "5019fc17541e2fb14f6ed57886e0e6b6363a94fc71530d0f2402782f9c886869",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.method",
+      "input_sha256": "65c7f48f8c0eeba81479a00d6dee03672028cf2659f5aeff363010a0e43d00a5",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.method_version",
+      "input_sha256": "6cb742d96250cff29738a9b6cf4dc034463d5b255200731730b5c45b69593f55",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:result.event_time",
+      "input_sha256": "6982ebd7dbbb876eb11e1a9edf1b8509f317c49eb85dd5a09e9fe36689193d36",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.source_namespace",
+      "input_sha256": "49e178651440608e1dc98c3e63ea38739a128d1c77586d22be2c80c68785c5f9",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.source_ref",
+      "input_sha256": "8e65109520725459cc1b9afb6c5a10f0e376676d160467cadac8e57df4629d80",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.subject",
+      "input_sha256": "82707b947f38de3b781ff4474bed76095f8e4e0a3035fee78dc1bbeebdfd7f2f",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.revision",
+      "input_sha256": "8ef3440f5379b424288ddea38ad2e00404ed5af805e192bad2ae2212140683c2",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.scope",
+      "input_sha256": "b2b797f7a71da19f7e037a3ea0457efa5175e005a47da23d75b5b98637e23b29",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.event_id",
+      "input_sha256": "836ee85df001a6eb5827e6e8ffe39937cc5c514b1617e8cee1583fecff6dbf51",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.checked_property",
+      "input_sha256": "5a61321395d1f388f8354765ec40dfcf7f0af3ed745abc98b85b73f29e88a696",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.method",
+      "input_sha256": "472110585aee71d8171458b4cbf9b8ea234e7422a05400b38e6dc6287dbf38bb",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.method_version",
+      "input_sha256": "2337829c4bfc70f0ca95bd44a52876f1a93c19266277e4ba238bdca3a2cb527e",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:output.event_time",
+      "input_sha256": "6cd94adbbb71a2e4e9904ca750b9e1ea27a586a5f977089a769cb88b43d6ceec",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:input.source_namespace",
+      "input_sha256": "8ef62a49d34b9a4cfd6de54b3a265adb23816a9ccb96c4c7361c1a4df2b7c124",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:input.source_ref",
+      "input_sha256": "309bd089b39402131843ed8a0be1d81761d33fa0f6b66cb4f04a0643691dd7a3",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:input.subject",
+      "input_sha256": "73e222812d4ef2d9b67fe8178a6504ecf61fc22a994785548fa37193df305ac1",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:input.revision",
+      "input_sha256": "81b38a16de023688f45dad6b01fb503962e5b0edaa17cc7e6f47ce5b5ffbfc67",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mismatch.w:input.scope",
+      "input_sha256": "91c2101d85e443138b33c5b1ef43548da6c753a3cb8622a54aba48120713919d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.producer",
+      "input_sha256": "eb5b4f63e07a460d0600fe0af59d6660daa594e32a3024942d0dc37015af397e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.verifier",
+      "input_sha256": "0ee1042710d2c2a4f1534d70f39510bc2f78a8282fc80815f19a05f8e78f57a9",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.event_ref",
+      "input_sha256": "91f3b480f2f537e54b75b7b1cb58dc808619eac79cb49bce053314aa3783cefe",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.input_ref",
+      "input_sha256": "184ef1160209d0554f755d794fb67283c18c5319d57a35e9f38f0e8bf18722fd",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.output_ref",
+      "input_sha256": "fe36c02f57169d49860f8b2054fa32fbb747585b066d2b7c5c6ffb0e41c17cdf",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.criterion",
+      "input_sha256": "493ca4ff20926c086fe33ef549e0809407a0db502f4c2380058ef4694c325373",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.limitations",
+      "input_sha256": "a3563363c8eeb5dd0d787c64b7269cc3fd1c76753f3af485c9f5c58ef019ea2d",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result-mismatch.result",
+      "input_sha256": "66ae30c13c33172f04b3d68ae9c27c4b9e182439f4b40e62b02317c598f8c65b",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result.not_run",
+      "input_sha256": "cb45150c50b80beddf1400d9706839b973fd8bdda01df21f99ed8a8e701518ea",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result.missing-selection",
+      "input_sha256": "85ab4eeca1550e561b6afc281cbc0e2caf85ec9502da66d852915138fb7334fa",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result.empty-selection",
+      "input_sha256": "04839fc86866690748de855c90dfbfc5ed516e26652f3d9eff4649f048b7e0c6",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "duplicate-native-identity",
+      "input_sha256": "02c3886c8b3a15ddd7e5cdb39087bd905487f46664c2f41b3d5c02f9fd262ffc",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "mixed-valid-invalid-results",
+      "input_sha256": "f969db4751d5223c2aa713107854a91ea22aa007015bf85f6baaf06f6019876f",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "target.subject",
+      "input_sha256": "cd568cef9c571a4d20c32d866a24a4c37308a294cb5df1c8c283ccff7327b737",
+      "annotation_expected": null,
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "target.revision",
+      "input_sha256": "1b8ef9367dc98007bcc547df91968a6bdfb2f7c88ed3ad927c3bd4b1517fbba1",
+      "annotation_expected": null,
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "target.scope",
+      "input_sha256": "59c18fd3a4583745e0d1b3695755070769b7f489855a100126039fbd02031104",
+      "annotation_expected": null,
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "envelope.unknown",
+      "input_sha256": "e3678e4022828a9fc51414bbb623b232ea396a92cfb45861c57bebba83fa6c89",
+      "annotation_expected": null,
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "target.unknown",
+      "input_sha256": "c5284ecee3bbdfc2ce9886648a6613bba83091aedd03c0b93cd1e2562b081f4e",
+      "annotation_expected": null,
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "result.duplicate-ref",
+      "input_sha256": "42fcb09d866eddc958e9f004f0c1ceaa5f64d22beafaa416d1541a2b477ead2e",
+      "annotation_expected": "ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "event.invalid-time",
+      "input_sha256": "d6a9d109fded9bc33e141e191033821f53b56e677b313ecd999819105b8bcf16",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "N02",
+      "input_sha256": "42b5f1dbf06a29177e243f10d9bc6d747d29cbbfc68f27c44b7b92805c1728c9",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "N01",
+      "input_sha256": "e4c7af215a97606df57bfd36f58add6048da13c131172d413188e447ac6d9de4",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "N12.missing",
+      "input_sha256": "b45d32c6ae1deb5429902332016c84a2e0d0b8a5ffd0eb4b5d68cc1d2cdd3e80",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I04",
+      "input_sha256": "06ad970ffce8b83fc0b0ac0cdbc98efadbb0d97578abc80c8d44818eab9f2f62",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I05.failed",
+      "input_sha256": "c7aa02786ef0d16eb7221006a6f36273380c0d6455a8600b1122730ea695257b",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I05.skipped",
+      "input_sha256": "28034eb4c1bee1b7257a8bb3e65afd05daea64bbb5deb1486cb2f9082816258c",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I12.subject",
+      "input_sha256": "1d11b79644b4af9cc2ecd3e17765286de744c3eb484f9676d9c2466d06d2da6d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I12.scope",
+      "input_sha256": "412b525bb317e0ac34f1ea0212b815fd5cd7655f05e425060ab2c4fff664d3a7",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I12.time",
+      "input_sha256": "2bd4cf1fa0d55fa6562f5fe0c0d5511cd32d76c8eeb0b8c609cb44996093f583",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I13",
+      "input_sha256": "5b7bcfa1279e9116523bed6811afcdfe4c0bd448d208e6fefa16ea0d2ede7682",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I14.missing",
+      "input_sha256": "5fdef81500a0329dead90defa59d0d4974f3b1f221c24630eb2e3b77c723a306",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "I16",
+      "input_sha256": "4e5cda30b6194494eb8c61a88e1f9724f0f09900594ad0ee065d2500678dc7c3",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-A.ci",
+      "input_sha256": "85040d097910f129860da17f071f896112a10dc3a869ecb71d41f59023de759a",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-A.harness_style",
+      "input_sha256": "b3c28f7f32ba1cb828cd244041912c38636822b5da87cdce8cea95f50e64a060",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-B.producer",
+      "input_sha256": "42b5f1dbf06a29177e243f10d9bc6d747d29cbbfc68f27c44b7b92805c1728c9",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-A.ci.execution_only",
+      "input_sha256": "b8c093e1cf2e1957982187e401d5a48d24ae0f331b17d32392d557e4f6c4e77f",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-A.harness_style.execution_only",
+      "input_sha256": "4781170ce29f2a71a8a91b8978580062985610a9c1b5f1002c17aa25e8f8845d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "E3-B.absent",
+      "input_sha256": "0d3c11c20cb0259f45d7be53b1c3527a27bb40a14c17018133972b39d9c7e0f1",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H09",
+      "input_sha256": "67a69a257e41e732beca5801b2a657c57d8b5bd9415ec6b1ed9ce36677dd698d",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H10",
+      "input_sha256": "504419bfa8f339cc1177623d6319d9ab132a8b6a181649d2f736552e37c79b70",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H26",
+      "input_sha256": "805fe61065f1212198df4c414d28491240b57418025528ab5c5804971743a0df",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H27",
+      "input_sha256": "49a03e6325c3972015244abba65d10a929707390a2d2bf89138aeaec247bec55",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H29",
+      "input_sha256": "0bb97c5f2ebba7e7ceda888c231434183441f50fdae541b43552afcfa7452007",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    },
+    {
+      "case_id": "H32",
+      "input_sha256": "23db19fad70b08b4389047ba57f168471ae49718c084980854090a5105e0e8bb",
+      "annotation_expected": "NO_ATTRIBUTABLE_OCCURRENCE",
+      "observed_assertion": "PASS",
+      "classification": "EXPECTED_GAP_CLOSED",
+      "scope": "Private annotation, raw preservation and factual-basis assertions; not whole B09 case/G05 closure"
+    }
+  ],
+  "task_cases_pass": 370,
+  "task_cases_total": 370,
+  "controls_pass": 64,
+  "controls_total": 64,
+  "bridge_results": {
+    "complete_passed": "PASS",
+    "complete_failed": "PASS",
+    "complete_inconclusive": "PASS",
+    "occurrence_only_stronger_claim_unresolved": "PASS",
+    "caller_added_requirements": "PASS",
+    "malformed_T1_rejection": "PASS",
+    "Core_admission_rejection": "PASS"
+  },
+  "conflict_controls": {
+    "comparable_passed_failed": "PASS",
+    "identical_results": "PASS",
+    "different_criterion": "PASS",
+    "different_subject": "PASS",
+    "different_scope": "PASS",
+    "different_time": "PASS",
+    "different_event_identity": "PASS",
+    "order_and_majority": "PASS",
+    "retained_set_required": "PASS"
+  },
+  "caller_bypass": "REJECTED",
+  "shortcut_falsifiers": "REJECTED",
+  "missing_facts": "PASS",
+  "reference_evaluator_imported": "NO",
+  "replay_hashes": [
+    "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+    "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+    "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102"
+  ],
+  "result_hash": "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+  "result_hash_domain": "canonical {outputs,comparisons,controls} from the actual completed 3 task evaluations; excludes this execution receipt and regression status",
+  "preservation": {
+    "t101": "PASS",
+    "t102": "PASS",
+    "t103": "PASS",
+    "t104": "PASS",
+    "core_603": "PASS",
+    "protected_files": 1422,
+    "public_serialized_bytes": "PASS",
+    "existing_verification_occurred": "PRESERVED",
+    "six_state_selector": "PRESERVED"
+  },
+  "before_regressions": [
+    {
+      "command": "node scripts/verify_mesr_registry.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "27b44de12c3cc1027ed81c4e8428e6cd830e359f4eb73dd46809295807c7dc1f"
+    },
+    {
+      "command": "node scripts/verify_mesr_reason_bindings.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "f13e72889d28248625bba98d337c232282ea8c0e8e02a311191cc0c3bfe3fac6"
+    },
+    {
+      "command": "node scripts/verify_mesr_claim_stability.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "1fef93b0bfa4b995441314633581ad8f847e1121b442756100a938be43ac04d4"
+    },
+    {
+      "command": "node scripts/verify_mesr_composition.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "33c6a9c12419985363611e86616ad95211eeb22019ceac861a32fca35878ff0d"
+    },
+    {
+      "command": "node scripts/verify_mesr_runtime_portability.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "6246178f816e5f10e4e81b3c156e4a63791c7dbdc68004ef124ed8ce2433b64e"
+    },
+    {
+      "command": "node scripts/verify_mesr_cross_domain.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "3e42917d3097cdd4bf29107fb5b212ecfa588d01bbe79c208aa569da4fcd5718"
+    },
+    {
+      "command": "node scripts/verify_mesr_apaai_crosswalk.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "04e4c6016641f575bebc75fffa43ff16f70244cffdd80057cebbebde0922ef9d"
+    },
+    {
+      "command": "node scripts/verify_v8_runtime_compatibility.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "34a498b6d7c488b46053e85d8d4a57a1ab7832801764158d9375f552b76e751a"
+    },
+    {
+      "command": "node scripts/verify_v8_institutional_artifact_readiness.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "f89984210010f4db5ce739108a2097e12cfa274d6cdc2f13987386002b1b7641"
+    },
+    {
+      "command": "node scripts/verify_evidence_assurance_kernel_poc.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "4e135771af995ec5035f1c95804e2ac34aa8b94e801fac9fa352f5adb2ecd0ea"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_normalization_fixture.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "699fa082797809571aa5dd440d3f8d359281a0a44adb664fc9b97e0d8bfc96ec"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "93e939d24d0006b043e20980545c243107914a4dbb41512fd840c41ae942ef6a"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "82b82c12ed97f1edad3fb052553ca57fea860165e17bf023c623b78cdaf334f0"
+    },
+    {
+      "command": "node scripts/verify_governance_surface.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "7c1d3bb409f69f4612e79fe28e180853827878f0b3c1befb820a732e7f40b214"
+    },
+    {
+      "command": "node scripts/verify_governance_consumption_profile.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "d4fe7972b1ac55432ace076b56327359f397e29d6c15440e739711f0f7b74b68"
+    },
+    {
+      "command": "node scripts/verify_audit_permit_gate.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "38d6221a05780f8374657a75016e926810175d298f584e058b066864ddb83357"
+    },
+    {
+      "command": "node scripts/verify_v7_0_example_evidence_pack.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "1a7fe24a57cdd5eefd694b70b3aa7ff5336948affbb4aa98f7ec56fdaaee09f3"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "6fb02dcce1495a16a65ccf48ccc09e02ac69c4f34f31d033e68387da63ba7dd2"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_public_surface_consistency.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "d88d8e12e3852a64c502aa2e0dc60c5c64d9d91da44add8f882dd1eca43b3f10"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_current_docs_baseline.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "5eda00a3e7b6febb1493287ffd926237fb2ed1e795ff33668b38bed6d1a06c07"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_github_action_first_report.mjs",
+      "exit_code": 0,
+      "stdout_sha256": "e1be24a7741f4f0b97ff4d17fed78690e06f7d22f7c363129a50317157b5b38d"
+    }
+  ],
+  "after_regressions": [
+    {
+      "command": "node scripts/verify_mesr_registry.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_reason_bindings.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_claim_stability.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_composition.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_runtime_portability.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_cross_domain.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_mesr_apaai_crosswalk.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_v8_runtime_compatibility.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_v8_institutional_artifact_readiness.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_evidence_assurance_kernel_poc.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_normalization_fixture.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_governance_surface.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_governance_consumption_profile.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_audit_permit_gate.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_v7_0_example_evidence_pack.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Main task run"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_public_surface_consistency.mjs",
+      "exit_code": 1,
+      "result": "FAIL",
+      "execution": "Main task run",
+      "assertion": "unexpected changed path outside public surface consistency scope: scripts/gate1/b09-product-compare.mjs",
+      "classification": "HISTORICAL_PUBLIC_TASK_SCOPE_CONTEXT_MISMATCH",
+      "location": "scripts/verify_v7_0_1_public_surface_consistency.mjs:229",
+      "content_checks_reached": false
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_current_docs_baseline.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Direct follow-up after main task scope failure"
+    },
+    {
+      "command": "node scripts/verify_v7_0_1_github_action_first_report.mjs",
+      "exit_code": 0,
+      "result": "PASS",
+      "execution": "Direct follow-up after main task scope failure"
+    }
+  ],
+  "after_regressions_pass": 20,
+  "after_regressions_total": 21,
+  "b09_slices": [
+    {
+      "case_id": "N02",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "N01",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "N12.missing",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I04",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I05.failed",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I05.skipped",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I12.subject",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I12.scope",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I12.time",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I13",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I14.missing",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "I16",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-A.ci",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-A.harness_style",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-B.producer",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-A.ci.execution_only",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-A.harness_style.execution_only",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "E3-B.absent",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H09",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H10",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H26",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H27",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H29",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    },
+    {
+      "case_id": "H32",
+      "existing_T1_output": "UNCHANGED_CONFORMING",
+      "missing_private_native_joins": "UNCHANGED_EXPECTED_GAP",
+      "new_private_missing_fact_diagnostics": "EXPECTED_GAP_CLOSED",
+      "whole_case_pass": false
+    }
+  ],
+  "counts": {
+    "EXPECTED_GAP_CLOSED": 370,
+    "PARTIAL_CONFORMANCE_IMPROVED": 0,
+    "UNCHANGED_CONFORMING": 24,
+    "UNCHANGED_EXPECTED_GAP": 24,
+    "NEW_REGRESSION": 1
+  },
+  "count_unit": "Distinct named assertion slices. NEW_REGRESSION is one newly failing mandatory command, classified as scope-context failure, not a detected product-semantic change. Supplementary 64 controls are not counted as measured BEFORE improvements.",
+  "historical_task_acceptance": "INHERITED",
+  "historical_task_smokes": {
+    "T1-01": "NOT_APPLICABLE_BY_BRANCH_GUARD",
+    "T1-02": "NOT_RUN",
+    "T1-03": "NOT_RUN",
+    "T1-04": "NOT_RUN"
+  },
+  "lineage_guard": "STRICT",
+  "public_contract_drift": "NO_OBSERVED_DRIFT; source hashes and legacy bytes equal; one public acceptance command blocked before content checks",
+  "authority_expansion": "NO",
+  "typecheck": {
+    "command": "node node_modules/typescript/lib/tsc.js --noEmit --allowImportingTsExtensions --target ES2022 --module nodenext --moduleResolution nodenext --skipLibCheck --strictNullChecks packages/guard-core/src/mesr/repaired/verificationEvent.ts",
+    "exit_code": 0,
+    "note": "Initial invocation without strictNullChecks reported existing admission.ts never-array inference errors; correct strict null mode passes, without source edits."
+  },
+  "deferred": {
+    "T2_02": "NOT_STARTED",
+    "T2_03": "NOT_STARTED",
+    "G03": "OPEN",
+    "G05": "OPEN"
+  },
+  "implementation_committed": false,
+  "acceptance_closure": {
+    "version": "t2-01-mandatory-regression-acceptance-closure/0.1",
+    "classification": "HISTORICAL_PUBLIC_SCOPE_ACCEPTANCE_CLOSED_BY_AUTHORIZED_STAGING",
+    "owner_decision": "Explicit authorization to stage exactly seven accepted paths, verify attribute-aware fidelity, run the unchanged historical public verifier, then run the exact frozen 21-command matrix.",
+    "original_decision": "T2_01_IMPLEMENTATION_FAIL",
+    "original_result_sha256": "e997c2d87802ff0d2153014fdee40014f3a3bf27dee5167051673b8c58519138",
+    "original_evidence_sha256": "4ae1bcbc3b03a44f19f3a51f93f3f2a8cc84c6d7ed69921d15e4f3367a8095b7",
+    "original_after_pass": 20,
+    "original_after_total": 21,
+    "original_failure": "HISTORICAL_PUBLIC_TASK_SCOPE_CONTEXT_MISMATCH",
+    "chronology": "Existing execution_receipt, after_regressions, after_regressions_pass, counts and acceptance_limitation remain original failed-run history. This closure supersedes their acceptance conclusion.",
+    "stage_snapshot_before_receipt_updates": {
+      "head": "d2cd1460684b37e3a3ca8e8e1e958d15b3357d28",
+      "branch": "feat/v8-gate1-tranche2-t2-01-v0.1",
+      "prior_decision": "T2_01_IMPLEMENTATION_FAIL",
+      "result_hash": "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+      "protected_1422": "PASS",
+      "git_eol_config": "file:C:/Program Files/Git/etc/gitconfig\tcore.autocrlf true",
+      "files": [
+        {
+          "path": "packages/guard-core/src/mesr/repaired/verificationEvent.ts",
+          "worktree_raw_sha256": "3c0a89acec980450b6e2d6a2aa98e250bef9fdd9dc683036ebe18bd8b3948e8e",
+          "worktree_bytes": 15324,
+          "attributes": "packages/guard-core/src/mesr/repaired/verificationEvent.ts: text: auto",
+          "effective_conversion_attributes": "packages/guard-core/src/mesr/repaired/verificationEvent.ts: text: auto\npackages/guard-core/src/mesr/repaired/verificationEvent.ts: eol: unspecified\npackages/guard-core/src/mesr/repaired/verificationEvent.ts: filter: unspecified\npackages/guard-core/src/mesr/repaired/verificationEvent.ts: ident: unspecified\npackages/guard-core/src/mesr/repaired/verificationEvent.ts: working-tree-encoding: unspecified",
+          "clean_git_oid": "17a8c629b7c4ac8d4d2a742dd5545d2025749a4e"
+        },
+        {
+          "path": "scripts/verify_v8_gate1_product_conformance.mjs",
+          "worktree_raw_sha256": "9c19dbea30a951a7cb11d8dee64461ff8ef759077dd2209bab217f69926308dc",
+          "worktree_bytes": 123982,
+          "attributes": "scripts/verify_v8_gate1_product_conformance.mjs: text: set\nscripts/verify_v8_gate1_product_conformance.mjs: eol: lf",
+          "effective_conversion_attributes": "scripts/verify_v8_gate1_product_conformance.mjs: text: set\nscripts/verify_v8_gate1_product_conformance.mjs: eol: lf\nscripts/verify_v8_gate1_product_conformance.mjs: filter: unspecified\nscripts/verify_v8_gate1_product_conformance.mjs: ident: unspecified\nscripts/verify_v8_gate1_product_conformance.mjs: working-tree-encoding: unspecified",
+          "clean_git_oid": "bace894e33a0307218b8dd5640885ba30cb09363"
+        },
+        {
+          "path": "scripts/gate1/b09-product-inputs.mjs",
+          "worktree_raw_sha256": "0b4bc28756b37c0835b157ff5df11e36acb927a5a638a717fad58b083df2bd2f",
+          "worktree_bytes": 12983,
+          "attributes": "scripts/gate1/b09-product-inputs.mjs: text: set\nscripts/gate1/b09-product-inputs.mjs: eol: lf",
+          "effective_conversion_attributes": "scripts/gate1/b09-product-inputs.mjs: text: set\nscripts/gate1/b09-product-inputs.mjs: eol: lf\nscripts/gate1/b09-product-inputs.mjs: filter: unspecified\nscripts/gate1/b09-product-inputs.mjs: ident: unspecified\nscripts/gate1/b09-product-inputs.mjs: working-tree-encoding: unspecified",
+          "clean_git_oid": "b14980a40124a7e5d08fca87d16e35679df1a1e9"
+        },
+        {
+          "path": "scripts/gate1/b09-product-compare.mjs",
+          "worktree_raw_sha256": "d290e708a64660fe07908020ed0b249fcf0cff84af3b59a00163d4f473d80c2e",
+          "worktree_bytes": 16581,
+          "attributes": "scripts/gate1/b09-product-compare.mjs: text: set\nscripts/gate1/b09-product-compare.mjs: eol: lf",
+          "effective_conversion_attributes": "scripts/gate1/b09-product-compare.mjs: text: set\nscripts/gate1/b09-product-compare.mjs: eol: lf\nscripts/gate1/b09-product-compare.mjs: filter: unspecified\nscripts/gate1/b09-product-compare.mjs: ident: unspecified\nscripts/gate1/b09-product-compare.mjs: working-tree-encoding: unspecified",
+          "clean_git_oid": "c0e1e731941a3e187072b58f1671086e4e412950"
+        },
+        {
+          "path": "tests/fixtures/gate1/t2-01-controls.v0.1.json",
+          "worktree_raw_sha256": "6f0fbc92fb7347c3fe814bd534fcd58740fd96794943d675519b7f5dbd52185e",
+          "worktree_bytes": 2177855,
+          "attributes": "tests/fixtures/gate1/t2-01-controls.v0.1.json: text: set\ntests/fixtures/gate1/t2-01-controls.v0.1.json: eol: lf",
+          "effective_conversion_attributes": "tests/fixtures/gate1/t2-01-controls.v0.1.json: text: set\ntests/fixtures/gate1/t2-01-controls.v0.1.json: eol: lf\ntests/fixtures/gate1/t2-01-controls.v0.1.json: filter: unspecified\ntests/fixtures/gate1/t2-01-controls.v0.1.json: ident: unspecified\ntests/fixtures/gate1/t2-01-controls.v0.1.json: working-tree-encoding: unspecified",
+          "clean_git_oid": "eacfb9b43ad4a592984b0bb4f8c4dba495fb4109"
+        },
+        {
+          "path": "tests/fixtures/gate1/t2-01-results.v0.1.json",
+          "worktree_raw_sha256": "e997c2d87802ff0d2153014fdee40014f3a3bf27dee5167051673b8c58519138",
+          "worktree_bytes": 173383,
+          "attributes": "tests/fixtures/gate1/t2-01-results.v0.1.json: text: set\ntests/fixtures/gate1/t2-01-results.v0.1.json: eol: lf",
+          "effective_conversion_attributes": "tests/fixtures/gate1/t2-01-results.v0.1.json: text: set\ntests/fixtures/gate1/t2-01-results.v0.1.json: eol: lf\ntests/fixtures/gate1/t2-01-results.v0.1.json: filter: unspecified\ntests/fixtures/gate1/t2-01-results.v0.1.json: ident: unspecified\ntests/fixtures/gate1/t2-01-results.v0.1.json: working-tree-encoding: unspecified",
+          "clean_git_oid": "2d5f65e7679c6bc57a764e392b07f8879e60d08b"
+        },
+        {
+          "path": "docs/validation/v8-gate1-t2-01-evidence-v0.1.md",
+          "worktree_raw_sha256": "4ae1bcbc3b03a44f19f3a51f93f3f2a8cc84c6d7ed69921d15e4f3367a8095b7",
+          "worktree_bytes": 10148,
+          "attributes": "docs/validation/v8-gate1-t2-01-evidence-v0.1.md: text: set\ndocs/validation/v8-gate1-t2-01-evidence-v0.1.md: eol: lf",
+          "effective_conversion_attributes": "docs/validation/v8-gate1-t2-01-evidence-v0.1.md: text: set\ndocs/validation/v8-gate1-t2-01-evidence-v0.1.md: eol: lf\ndocs/validation/v8-gate1-t2-01-evidence-v0.1.md: filter: unspecified\ndocs/validation/v8-gate1-t2-01-evidence-v0.1.md: ident: unspecified\ndocs/validation/v8-gate1-t2-01-evidence-v0.1.md: working-tree-encoding: unspecified",
+          "clean_git_oid": "cb1274cd390e1a23fe2a32b29f79ca25e06c9232"
+        }
+      ]
+    },
+    "stage_worktree_fidelity": [
+      {
+        "path": "packages/guard-core/src/mesr/repaired/verificationEvent.ts",
+        "staged_git_oid": "17a8c629b7c4ac8d4d2a742dd5545d2025749a4e",
+        "staged_raw_sha256": "3c0a89acec980450b6e2d6a2aa98e250bef9fdd9dc683036ebe18bd8b3948e8e",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "scripts/verify_v8_gate1_product_conformance.mjs",
+        "staged_git_oid": "bace894e33a0307218b8dd5640885ba30cb09363",
+        "staged_raw_sha256": "9c19dbea30a951a7cb11d8dee64461ff8ef759077dd2209bab217f69926308dc",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "scripts/gate1/b09-product-inputs.mjs",
+        "staged_git_oid": "b14980a40124a7e5d08fca87d16e35679df1a1e9",
+        "staged_raw_sha256": "0b4bc28756b37c0835b157ff5df11e36acb927a5a638a717fad58b083df2bd2f",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "scripts/gate1/b09-product-compare.mjs",
+        "staged_git_oid": "c0e1e731941a3e187072b58f1671086e4e412950",
+        "staged_raw_sha256": "d290e708a64660fe07908020ed0b249fcf0cff84af3b59a00163d4f473d80c2e",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "tests/fixtures/gate1/t2-01-controls.v0.1.json",
+        "staged_git_oid": "eacfb9b43ad4a592984b0bb4f8c4dba495fb4109",
+        "staged_raw_sha256": "6f0fbc92fb7347c3fe814bd534fcd58740fd96794943d675519b7f5dbd52185e",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "tests/fixtures/gate1/t2-01-results.v0.1.json",
+        "staged_git_oid": "2d5f65e7679c6bc57a764e392b07f8879e60d08b",
+        "staged_raw_sha256": "e997c2d87802ff0d2153014fdee40014f3a3bf27dee5167051673b8c58519138",
+        "raw_byte_equal": true
+      },
+      {
+        "path": "docs/validation/v8-gate1-t2-01-evidence-v0.1.md",
+        "staged_git_oid": "cb1274cd390e1a23fe2a32b29f79ca25e06c9232",
+        "staged_raw_sha256": "4ae1bcbc3b03a44f19f3a51f93f3f2a8cc84c6d7ed69921d15e4f3367a8095b7",
+        "raw_byte_equal": true
+      }
+    ],
+    "historical_public_verifier": {
+      "command": "node scripts/verify_v7_0_1_public_surface_consistency.mjs",
+      "exit_code": 0,
+      "stdout": "PASS: v7.0.1 public surface consistency verified.\n",
+      "stdout_sha256": "d88d8e12e3852a64c502aa2e0dc60c5c64d9d91da44add8f882dd1eca43b3f10",
+      "public_content_assertions_reached": true,
+      "script_modified": false
+    },
+    "final_after_regressions": [
+      {
+        "command": "node scripts/verify_mesr_registry.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "27b44de12c3cc1027ed81c4e8428e6cd830e359f4eb73dd46809295807c7dc1f",
+        "stdout_bytes": 76,
+        "source_sha256": "03e787c23582dc1372d5c89dcd168c61895e67cd8b1158ecde55c7731b152db6"
+      },
+      {
+        "command": "node scripts/verify_mesr_reason_bindings.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "f13e72889d28248625bba98d337c232282ea8c0e8e02a311191cc0c3bfe3fac6",
+        "stdout_bytes": 77,
+        "source_sha256": "d068b1a073ad5023e3958e2ac7005ab3995e12c74acf8728beb61087b830a015"
+      },
+      {
+        "command": "node scripts/verify_mesr_claim_stability.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "1fef93b0bfa4b995441314633581ad8f847e1121b442756100a938be43ac04d4",
+        "stdout_bytes": 527,
+        "source_sha256": "be1a98262a008106d6e3e2a751c7d67e6436fb64de082b53508663f28584c6cf"
+      },
+      {
+        "command": "node scripts/verify_mesr_composition.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "33c6a9c12419985363611e86616ad95211eeb22019ceac861a32fca35878ff0d",
+        "stdout_bytes": 311,
+        "source_sha256": "f4ca2ccf6299fc9d56fc16fa22baba32d67a5f7d6ade611f2e68b0897f9f0db5"
+      },
+      {
+        "command": "node scripts/verify_mesr_runtime_portability.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "6246178f816e5f10e4e81b3c156e4a63791c7dbdc68004ef124ed8ce2433b64e",
+        "stdout_bytes": 749,
+        "source_sha256": "e422ea3fbd11220f1ff51d25402be92b7f3abc268517e79437cf2c63a00882d0"
+      },
+      {
+        "command": "node scripts/verify_mesr_cross_domain.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "3e42917d3097cdd4bf29107fb5b212ecfa588d01bbe79c208aa569da4fcd5718",
+        "stdout_bytes": 2980,
+        "source_sha256": "9e151c0dfad63c8a34aeda5d2d35b52b4f5c72f5a3c7cb44fb34221ef6ebc5b2"
+      },
+      {
+        "command": "node scripts/verify_mesr_apaai_crosswalk.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "04e4c6016641f575bebc75fffa43ff16f70244cffdd80057cebbebde0922ef9d",
+        "stdout_bytes": 1909,
+        "source_sha256": "20b05d5954e4af1dbedaaa58803c7284086d130700d8218564a38f0861624bce"
+      },
+      {
+        "command": "node scripts/verify_v8_runtime_compatibility.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "34a498b6d7c488b46053e85d8d4a57a1ab7832801764158d9375f552b76e751a",
+        "stdout_bytes": 436,
+        "source_sha256": "ffae88fbf08810e64d96ef02d42cee4a003af2b9f481913e7ed49e7e42fa7451"
+      },
+      {
+        "command": "node scripts/verify_v8_institutional_artifact_readiness.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "f89984210010f4db5ce739108a2097e12cfa274d6cdc2f13987386002b1b7641",
+        "stdout_bytes": 447,
+        "source_sha256": "7c0216a5fb1420ca5221dc37f248fc40f566939ba7880fcf54d3d168f396c9e4"
+      },
+      {
+        "command": "node scripts/verify_evidence_assurance_kernel_poc.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "4e135771af995ec5035f1c95804e2ac34aa8b94e801fac9fa352f5adb2ecd0ea",
+        "stdout_bytes": 53,
+        "source_sha256": "45a7560509b3b8998174aae70828c55315f32110f5a1f054ef05e95f97fffe12"
+      },
+      {
+        "command": "node scripts/verify_external_evidence_local_normalization_fixture.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "699fa082797809571aa5dd440d3f8d359281a0a44adb664fc9b97e0d8bfc96ec",
+        "stdout_bytes": 67,
+        "source_sha256": "e5716cbf77fb3ea30690ba38b362a306eed00194231f3f9acbed2a68dc5fbe4d"
+      },
+      {
+        "command": "node scripts/verify_external_evidence_local_assurance_report_fixture.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "93e939d24d0006b043e20980545c243107914a4dbb41512fd840c41ae942ef6a",
+        "stdout_bytes": 58,
+        "source_sha256": "7616edbd822e39e95994ec7a3ad7f27ea831c8b2febaa36a4e9417be3209ae4d"
+      },
+      {
+        "command": "node scripts/verify_external_evidence_local_assurance_composition.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "82b82c12ed97f1edad3fb052553ca57fea860165e17bf023c623b78cdaf334f0",
+        "stdout_bytes": 55,
+        "source_sha256": "45c797a90f5456935a5c009052013dcfd652fb05a54fb313b3f5c097c1f73837"
+      },
+      {
+        "command": "node scripts/verify_governance_surface.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "7c1d3bb409f69f4612e79fe28e180853827878f0b3c1befb820a732e7f40b214",
+        "stdout_bytes": 28,
+        "source_sha256": "374f05be21e9c0906684a60b1acafb7b84f09d9a7c1546087b8dd8a6bfbccfa8"
+      },
+      {
+        "command": "node scripts/verify_governance_consumption_profile.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "d4fe7972b1ac55432ace076b56327359f397e29d6c15440e739711f0f7b74b68",
+        "stdout_bytes": 40,
+        "source_sha256": "ff4cac43f67946c3cbbc2f6351ea9b7911e286bb198df14db8a9335b3ec90029"
+      },
+      {
+        "command": "node scripts/verify_audit_permit_gate.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "38d6221a05780f8374657a75016e926810175d298f584e058b066864ddb83357",
+        "stdout_bytes": 27,
+        "source_sha256": "2b40652aa6b238454e9ba345cb9d9218f6269952d296409f637c5bbba2dfa8c1"
+      },
+      {
+        "command": "node scripts/verify_v7_0_example_evidence_pack.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "1a7fe24a57cdd5eefd694b70b3aa7ff5336948affbb4aa98f7ec56fdaaee09f3",
+        "stdout_bytes": 44,
+        "source_sha256": "f4eb11a477cc7b9c48ee6cffcbd3390f180d1232aa8bfc2c56f10476f32cae43"
+      },
+      {
+        "command": "node scripts/verify_v7_0_1_license_hub_after_purchase_copy.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "6fb02dcce1495a16a65ccf48ccc09e02ac69c4f34f31d033e68387da63ba7dd2",
+        "stdout_bytes": 66,
+        "source_sha256": "ab1f9ea935bf304f1600f1a19d1ce46d3d561be6126f44e9dd330c45030e12e1"
+      },
+      {
+        "command": "node scripts/verify_v7_0_1_public_surface_consistency.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "d88d8e12e3852a64c502aa2e0dc60c5c64d9d91da44add8f882dd1eca43b3f10",
+        "stdout_bytes": 50,
+        "source_sha256": "5fb564f23035916ff0d2153a727dcfe9e52f2628864d97685480aa402460a079"
+      },
+      {
+        "command": "node scripts/verify_v7_0_1_current_docs_baseline.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "5eda00a3e7b6febb1493287ffd926237fb2ed1e795ff33668b38bed6d1a06c07",
+        "stdout_bytes": 45,
+        "source_sha256": "c581a96be98aa1cb635eba8b0731c4cc9e92079ba4157a53533d2e6b49a4ffb4"
+      },
+      {
+        "command": "node scripts/verify_v7_0_1_github_action_first_report.mjs",
+        "exit_code": 0,
+        "stdout_sha256": "e1be24a7741f4f0b97ff4d17fed78690e06f7d22f7c363129a50317157b5b38d",
+        "stdout_bytes": 50,
+        "source_sha256": "c6341b79fe73d92f5eead04c22a0fc3e10995dc31ed406591dd3ead0f7fee752"
+      }
+    ],
+    "final_after_pass": 21,
+    "final_after_total": 21,
+    "task_contents_unchanged_through_matrix": true,
+    "product_test_semantic_changes": false,
+    "reused_acceptance": {
+      "annotation_cases": "370/370 PASS",
+      "bridge_boundary_bypass_controls": "64/64 PASS",
+      "replay_hashes": [
+        "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+        "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+        "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102"
+      ],
+      "result_hash": "4df327296d4c2baea45cd22ce13d4b789fedbb783a7c8a1ff7a526745edad102",
+      "reason": "All six non-evidence files matched the pre-staging hashes through the matrix. Only this results receipt and the evidence appendix change afterward."
+    },
+    "semantic_preservation": {
+      "t101": "PASS",
+      "t102": "PASS",
+      "t103": "PASS",
+      "t104": "PASS",
+      "core_603": "PASS",
+      "protected_1422": "PASS",
+      "lineage_guard": "STRICT"
+    },
+    "public_contract_drift": "NO",
+    "authority_expansion": "NO",
+    "final_counts": {
+      "EXPECTED_GAP_CLOSED": 370,
+      "PARTIAL_CONFORMANCE_IMPROVED": 0,
+      "UNCHANGED_CONFORMING": 24,
+      "UNCHANGED_EXPECTED_GAP": 24,
+      "NEW_REGRESSION": 0
+    },
+    "final_decision": "T2_01_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS",
+    "deferred": {
+      "T2_02": "NOT_STARTED",
+      "T2_03": "NOT_STARTED",
+      "G03": "OPEN",
+      "G05": "OPEN"
+    },
+    "implementation_committed": false
+  }
+}

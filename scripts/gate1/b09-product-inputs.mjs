@@ -126,3 +126,40 @@ export function compositionTrust() {
     core: "mesr.core", software: "mesr.module.software.v0_1", crosswalk: "mesr.xw.test_nist_like.v0_1"
   } };
 }
+
+// T2-01: literal accepted planning declarations; not observed Harness checks.
+export function loadVerificationEventInputs() {
+  const baseline=readJson("tests/fixtures/gate1/t2-01-controls.v0.1.json"),literals=baseline.witnesses.map(r=>r.input),rows=[];
+  const no="NO_ATTRIBUTABLE_OCCURRENCE",unresolved="ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED",full="ATTRIBUTABLE_OCCURRENCE_WITH_RESULT";
+  const add=(id,input,annotation)=>rows.push({case_id:id,input,expected_annotation:annotation});
+  const mutate=(id,fn,annotation=unresolved)=>{const x=structuredClone(literals[0]);fn(x);add(id,x,annotation);};
+  literals.forEach((x,i)=>add("W0"+(i+1),structuredClone(x),i<3?full:unresolved));
+  const occurrence=structuredClone(literals[3]);occurrence.requested_dimension="occurrence";add("W04o",occurrence,"ATTRIBUTABLE_OCCURRENCE");
+  const removals={W05:["w:event","event_id",no],W06:["w:event","subject",no],W07:["w:event","scope",no],W08a:["w:event","method",no],W08b:["w:event","method_version",no],W09:["w:event","event_time",no],W10:["w:result","criterion",unresolved],W11:["w:result","event_ref",unresolved],W17:["w:result","result",unresolved],W18:["w:result","limitations",unresolved],W19:["w:event","verifier",no],W22:["w:event","source_namespace",no],W23:["w:event","checked_property",no],W24:["w:event","revision",no]};
+  for(const [id,[ref,field,annotation]] of Object.entries(removals))mutate(id,x=>{delete x.records[ref][field];},annotation);
+  for(const [k,v] of [["revision","revision-b"],["scope","other-case"],["event_time","2026-09-18T11:00:00Z"]])mutate("W12."+k,x=>{x.records["w:result"][k]=v;});
+  const conflict=structuredClone(literals[0]);conflict.result_refs=["w:result-pass","w:result-fail"];conflict.records["w:event"].output_refs=["w:output-pass","w:output-fail"];
+  for(const [i,suffix] of [[0,"pass"],[1,"fail"]])for(const kind of ["result","output"]){const ref="w:"+kind+"-"+suffix,r=structuredClone(literals[i].records["w:"+kind]);r.source_ref=ref;if(kind==="result")r.output_ref="w:output-"+suffix;conflict.records[ref]=r;}
+  delete conflict.records["w:result"];delete conflict.records["w:output"];add("W13",conflict,unresolved);
+  for(const [id,r] of [["W14",{kind:"command_result",event_id:"command-17",exit_code:0}],["W15",{passed:8,failed:0,paths:["reports/tests.json"]}],["W16",{producer:"sample-ci/1.0",verified:true,status:"passed"}]])mutate(id,x=>{delete x.occurrence_ref;x.result_refs=[];x.records={assertion:r};},no);
+  mutate("W20",x=>{delete x.records["w:input"];});mutate("W21",x=>{delete x.records["w:output"];},no);mutate("W25",x=>{x.records["w:result"].source_namespace="other-producer";});
+  for(const [ref,r] of Object.entries(literals[0].records))for(const field of Object.keys(r).filter(k=>k!=="content")){
+    const resultOnly=ref==="w:result"||ref==="w:input"||(ref==="w:output"&&["input_ref","criterion","result","limitations"].includes(field));
+    for(const [variant,value] of [["absent",undefined],["null",null],["empty",""],["whitespace","  "],["wrong-type",42]])mutate(`field.${ref}.${field}.${variant}`,x=>{if(variant==="absent")delete x.records[ref][field];else x.records[ref][field]=value;},resultOnly?unresolved:no);
+  }
+  for(const ref of ["w:input","w:output"])mutate("missing-content."+ref,x=>{delete x.records[ref].content;},ref==="w:input"?unresolved:no);
+  for(const ref of ["w:result","w:output","w:input"])for(const field of ["source_namespace","source_ref","subject","revision","scope",...(ref==="w:input"?[]:["event_id","checked_property","method","method_version","event_time"])])mutate(`mismatch.${ref}.${field}`,x=>{x.records[ref][field]=field==="event_time"?"2026-09-18T11:00:00Z":"different";},ref==="w:output"?no:unresolved);
+  for(const field of ["producer","verifier","event_ref","input_ref","output_ref","criterion","limitations","result"])mutate("result-mismatch."+field,x=>{x.records["w:result"][field]="different";});
+  mutate("result.not_run",x=>{x.records["w:result"].result="not_run";});mutate("result.missing-selection",x=>{delete x.result_refs;});mutate("result.empty-selection",x=>{x.result_refs=[];});
+  mutate("duplicate-native-identity",x=>{const r=structuredClone(x.records["w:event"]);r.source_ref="w:duplicate";r.revision="different";x.records["w:duplicate"]=r;},no);
+  mutate("mixed-valid-invalid-results",x=>{x.result_refs.push("w:missing");});
+  for(const k of ["subject","revision","scope"])mutate("target."+k,x=>{delete x.target[k];},null);
+  mutate("envelope.unknown",x=>{x.caller_positive=true;},null);mutate("target.unknown",x=>{x.target.extra=true;},null);
+  mutate("result.duplicate-ref",x=>{x.result_refs.push("w:result");});mutate("event.invalid-time",x=>{x.records["w:event"].event_time="2026-09-18T10:00:00";},no);
+  for(const observation of baseline.observations){
+    // No absent native namespace, event or output association is invented.
+    const input={contract_version:literals[0].contract_version,requested_dimension:"occurrence_and_result",target:Object.fromEntries(["subject","revision","scope"].filter(k=>Object.hasOwn(observation.input,k)).map(k=>[k,observation.input[k]])),records:{frozen_source:structuredClone(observation.input)}};
+    add(observation.case_id,input,no);
+  }
+  if(new Set(rows.map(r=>r.case_id)).size!==rows.length)throw new Error("Duplicate T2-01 case");return rows;
+}

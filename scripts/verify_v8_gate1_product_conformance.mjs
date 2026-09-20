@@ -15,7 +15,7 @@ import { GUARD_REASON_CODES } from "../packages/guard-core/src/reasonCodes.ts";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 const args = process.argv.slice(2);
-assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04"].includes(args[1]));
+assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04", "T2-01"].includes(args[1]));
 assert.ok(args.slice(2).every(arg => ["--before", "--record", "--scope-only", "--regressions"].includes(arg)));
 const before = args.includes("--before"), record = args.includes("--record");
 const fixturePath = "tests/fixtures/gate1/t1-01-controls.v0.1.json";
@@ -26,7 +26,7 @@ const t103Paths = ["packages/guard-core/src/mesr/repaired/claimState.ts", "packa
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const t104Anchor = "ef3e5b7fbcd8854d99a680bf532816b50cc851cd";
 const t104Paths = ["packages/guard-core/src/mesr/repaired/composition.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-04-controls.v0.1.json", "tests/fixtures/gate1/t1-04-results.v0.1.json", "docs/validation/v8-gate1-t1-04-evidence-v0.1.md"];
-const taskScope = assertTaskScope();
+const taskScope = args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();
 if (args.includes("--regressions")) assert.equal(args[1], "T1-04");
 if (args.includes("--scope-only")) { assert.equal(args[1], "T1-04"); console.log("T1-04 pre-change recognized: PASS"); process.exit(0); }
 const pins = readJson(frozenDir + "freeze.v0.2.json");
@@ -57,7 +57,7 @@ function legacyControls() {
   return { outputs, invalid: invalidResults, invalid_json: parseEvidencePack("{invalid"), reason_values: Object.values(GUARD_REASON_CODES) };
 }
 
-if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
+if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
 const rows = loadInputs(), expected = expectations(), trust = testTrust();
 const oracle = readJson(frozenDir + "oracle.v0.2.json");
 for (const row of rows.filter(row => row.case_id.startsWith("C"))) assert.equal(digest(row.input), oracle.fixture_input_digests[row.case_id]);
@@ -969,4 +969,202 @@ async function runCompositionTask() {
     fs.writeFileSync(t104Paths[5], JSON.stringify(result, null, 2) + "\n");
   }
   console.log(JSON.stringify({ task: "T1-04", cases: 41, malformed_controls: 5, probes: first.probes.length, supplemental_controls: first.supplemental_controls.length, permutations: first.permutations.length, ...counts, replay_hashes: replayHashes, T1_04_RESULT_HASH: replayHashes[0], regressions_after: regressions.length }));
+}
+
+// T2-01 PRESERVATION MODE: historical T1 task modes and their guards remain intact.
+function assertT201PreservationScope() {
+  const baselinePath = "tests/fixtures/gate1/t2-01-controls.v0.1.json";
+  assert.equal(digest(fs.readFileSync(baselinePath)), "6f0fbc92fb7347c3fe814bd534fcd58740fd96794943d675519b7f5dbd52185e", "Immutable BEFORE capture");
+  const baseline = readJson(baselinePath);
+  assert.equal(baseline.status, "BEFORE_PASS");
+  assert.equal(head, baseline.pre_change_head, "Uncommitted T2-01 must retain its accepted entry");
+  const git = (...a) => execFileSync("git", a, { encoding: "utf8", maxBuffer: 128_000_000 }).trim();
+  assert.equal(git("branch", "--show-current"), "feat/v8-gate1-tranche2-t2-01-v0.1");
+  for (const receipt of baseline.accepted_receipts) git("merge-base", "--is-ancestor", receipt, head);
+  assert.deepEqual(git("diff", "--name-only", baseline.accepted_receipts.at(-1), head).split("\n"), baseline.documentation_only_since_closure);
+  const pending = [...git("diff", "--name-only", "--no-renames", head).split("\n"), ...git("ls-files", "--others", "--exclude-standard").split("\n")].filter(Boolean);
+  const validate = paths => paths.forEach(p => assert.ok(baseline.file_allowlist.includes(p), "Outside T2-01 scope: " + p));
+  validate(pending);
+  for (const p of ["README.md", "packages/guard-core/src/mesr/repaired/evaluateClaim.ts", "tests/fixtures/gate1/t1-04-results.v0.1.json"]) assert.throws(() => validate([...pending,p]));
+  for (const [path, sha256] of Object.entries(baseline.protected_hashes)) assert.equal(digest(fs.readFileSync(path)),sha256,"Protected file: "+path);
+  for (const path of baseline.file_allowlist.slice(2,4)) assert.ok(fs.readFileSync(path,"utf8").startsWith(execFileSync("git",["show",head+":"+path],{encoding:"utf8"})),"Historical adapter changed: "+path);
+  // Compare the ENTIRE historical verifier after reversing only dispatch additions
+  // in memory. No historical guard, assertion or falsifier may be changed.
+  const verifierPath=baseline.file_allowlist[1], current=fs.readFileSync(verifierPath,"utf8");
+  const prefix=current.split("\n// T2-01 PRESERVATION MODE:")[0].trimEnd()+"\n";
+  const original=execFileSync("git",["show",head+":"+verifierPath],{encoding:"utf8"});
+  const restored=prefix.replace('["T1-01", "T1-02", "T1-03", "T1-04", "T2-01"].includes(args[1])','["T1-01", "T1-02", "T1-03", "T1-04"].includes(args[1])')
+    .replace('const taskScope = args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();','const taskScope = assertTaskScope();')
+    .replace('if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04")','if (args[1] === "T1-04")');
+  assert.equal(restored,original,"Historical T1 verifier/lineage assertions changed");
+  return {baseline,pending,historical_verifier_sha256:digest(original),protected_files:Object.keys(baseline.protected_hashes).length};
+}
+
+async function t201Preservation(baseline) {
+  const h=await import("./gate1/b09-product-inputs.mjs");
+  const {inspectCanonicalAdmission}=await import("../packages/guard-core/src/mesr/repaired/admission.ts");
+  const {collectBindingRequirements}=await import("../packages/guard-core/src/mesr/repaired/requirements.ts");
+  const {evaluateClaims}=await import("../packages/guard-core/src/mesr/repaired/evaluateClaim.ts");
+  const {composePinnedModules,collectComposedRequirements}=await import("../packages/guard-core/src/mesr/repaired/composition.ts");
+  const trust=h.testTrust(),core=h.requirementCoreInput(),ct=h.compositionTrust();
+  const map=(rows,fn)=>rows.map(r=>({id:r.case_id??r.id,input_sha256:digest(r.input),output_sha256:digest(fn(r.input))}));
+  const composition=composePinnedModules(h.loadCompositionInputs().find(r=>r.case_id==="C01").input,ct);assert.equal(composition.status,"VALID_COMPOSITION");
+  const fingerprints={t101:map(h.loadInputs(),x=>inspectCanonicalAdmission(x,trust)),t102:map(h.loadRequirementInputs(),x=>collectBindingRequirements(x,core,trust)),t103:map(h.loadStateInputs(),x=>evaluateClaims(x,core,trust)),t104:map(h.loadCompositionInputs(),x=>composePinnedModules(x,ct)),core_probes:h.loadCoreProbes().map(p=>{
+    const a=collectBindingRequirements(p.input,core,trust);assert.deepEqual(a,collectComposedRequirements(p.input,composition,ct));
+    return {id:p.id,input_sha256:digest(p.input),collection_sha256:digest(a),state_sha256:digest(evaluateClaims(p.input,core,trust))};
+  })};
+  assert.deepEqual(fingerprints,baseline.fingerprints,"T1/Core semantic or output drift");
+  assert.deepEqual(JSON.parse(JSON.stringify(legacyControls())),baseline.legacy,"Public bytes/reason order/parser/validator drift");
+  for(const row of baseline.observations)assert.deepEqual(evaluateClaims(row.input,core,trust),row.existing_t1_output,"Existing B09 verification semantics: "+row.case_id);
+  return {t101:"PASS",t102:"PASS",t103:"PASS",t104:"PASS",core_603:"PASS",fingerprints,public_bytes:"PASS",existing_verification_occurred:"PRESERVED"};
+}
+
+async function runT201Task() {
+  assert.ok(!before,"BEFORE already frozen; recapture forbidden");
+  const baseline=taskScope.baseline;
+  const {loadVerificationEventInputs,requirementCoreInput}=await import("./gate1/b09-product-inputs.mjs");
+  const {compareVerificationEvents}=await import("./gate1/b09-product-compare.mjs");
+  const {evaluateVerificationEvent}=await import("../packages/guard-core/src/mesr/repaired/verificationEvent.ts");
+  const {evaluateClaims}=await import("../packages/guard-core/src/mesr/repaired/evaluateClaim.ts");
+  const rows=loadVerificationEventInputs(),core=requirementCoreInput(),trust=testTrust();
+  const run=()=>{
+    const inputHash=digest(rows),outputs=Object.fromEntries(rows.map(r=>[r.case_id,evaluateVerificationEvent(r.input)]));
+    const comparisons=compareVerificationEvents(rows,outputs);assert.equal(digest(rows),inputHash,"Input mutation");
+    const controls=[],check=(id,fn)=>{const observation=fn();controls.push({id,result:"PASS",observation:observation??null});};
+    const witness=id=>structuredClone(rows.find(r=>r.case_id===id).input);
+    // Explicit semantic test context; these values never repair missing event facts.
+    const context=(x,requests)=>({input:{kind:"claims",input_set_id:"t2-01-explicit-test-context",subject:x.target.subject,revision:x.target.revision,scope:x.target.scope,producer:"test-context-author",registry:structuredClone(trust.registry),method:{id:"parser-case-check",version:"1.0.0",digest:"test-context:parser-case-check/1.0.0"},bindings:{evaluation_time:"2026-09-18T10:00:00Z"},evidence_ledger:{},events:[],requests:requests??[
+      {path:"pass",claim:"verification.passed",semantic_ids:["mesr.core.evidence.verification"],semantic_version:"0.1.0",required_bindings:[]},
+      {path:"occurred",claim:"verification.occurred",semantic_ids:["mesr.core.evidence.verification"],semantic_version:"0.1.0",required_bindings:[]}
+    ]},coreInput:core,trust});
+    const claim=(out,path)=>{assert.equal(out.claim_evaluation?.status,"EVALUATED");const c=out.claim_evaluation.claims.find(c=>c.path===path);assert.ok(c);return c;};
+    for(const [id,state] of [["W01","SUPPORTED"],["W02","UNSUPPORTED"],["W03","INCONCLUSIVE"]])check("bridge."+id,()=>{
+      const x=witness(id),c=context(x),before=digest({x,c}),out=evaluateVerificationEvent(x,c);
+      assert.equal(claim(out,"pass").state,state);assert.equal(claim(out,"occurred").state,"SUPPORTED");assert.equal(digest({x,c}),before);return out;
+    });
+    for(const id of ["W04","W04o","W10","W11","W17","W18","W20","mixed-valid-invalid-results"])check("missing-result."+id,()=>{
+      const x=witness(id),out=evaluateVerificationEvent(x,context(x));assert.equal(claim(out,"pass").state,"UNRESOLVED");assert.equal(claim(out,"occurred").state,"UNRESOLVED");assert.ok(claim(out,"pass").missing_bindings.includes("t2_01_result_basis"));return out;
+    });
+    const setContext=x=>{
+      const c=context(x);x.records["w:set"]={kind:"result_set",source_namespace:"planning-witness",source_ref:"w:set",...x.target,result_refs:[...x.result_refs]};c.result_set_ref="w:set";return c;
+    };
+    check("conflict-preserved-through-T1",()=>{
+      const x=witness("W13"),c=setContext(x),out=evaluateVerificationEvent(x,c);
+      assert.equal(claim(out,"pass").state,"CONFLICTED");assert.equal(claim(out,"occurred").state,"SUPPORTED");
+      assert.equal(claim(out,"pass").bindings.find(b=>b.binding==="t2_01_result_basis").value,true);
+      assert.equal(claim(out,"pass").evaluation_basis.conflicts[0].records.length,2);return out;
+    });
+    check("identical-compatible-results",()=>{
+      const x=witness("W13");x.records["w:result-fail"].result=x.records["w:output-fail"].result="passed";
+      x.records["w:output-fail"].content=structuredClone(x.records["w:output-pass"].content);
+      const out=evaluateVerificationEvent(x,setContext(x));assert.equal(out.annotation,"ATTRIBUTABLE_OCCURRENCE_WITH_RESULT");
+      assert.equal(claim(out,"pass").state,"SUPPORTED");assert.equal(claim(out,"pass").evaluation_basis.positive.length,2);return out;
+    });
+    for(const field of ["criterion","subject","scope","event_time","event_id"])check("competing-mismatch."+field,()=>{
+      const x=witness("W13");x.records["w:result-fail"][field]=field==="event_time"?"2026-09-18T11:00:00Z":"other";
+      if(field==="criterion")x.records["w:output-fail"][field]="other";
+      const out=evaluateVerificationEvent(x,setContext(x));assert.equal(out.annotation,"ATTRIBUTABLE_OCCURRENCE_RESULT_UNRESOLVED");
+      assert.equal(claim(out,"pass").state,"UNRESOLVED");assert.deepEqual(out.result_basis.values,["passed","failed"]);return out;
+    });
+    check("conflict-order-and-majority-do-not-select-winner",()=>{
+      const x=witness("W13"),a=evaluateVerificationEvent(x,setContext(x));x.result_refs.reverse();
+      const b=evaluateVerificationEvent(x,setContext(x));assert.equal(claim(a,"pass").state,"CONFLICTED");assert.equal(claim(b,"pass").state,"CONFLICTED");
+      const pass=structuredClone(x.records["w:result-pass"]),output=structuredClone(x.records["w:output-pass"]);pass.source_ref="w:another-pass";pass.output_ref="w:another-output";output.source_ref=pass.output_ref;
+      x.records[pass.source_ref]=pass;x.records[output.source_ref]=output;x.result_refs.push(pass.source_ref);x.records["w:event"].output_refs.push(output.source_ref);
+      const out=evaluateVerificationEvent(x,setContext(x));assert.equal(claim(out,"pass").state,"CONFLICTED");assert.equal(out.result_basis.values.length,3);return out;
+    });
+    check("multi-result-without-retained-set-withheld",()=>{const x=witness("W13"),out=evaluateVerificationEvent(x,context(x));assert.ok(!out.claim_evaluation);assert.deepEqual(out.result_basis.values,["passed","failed"]);return out;});
+    for(const location of ["bindings","predicates","request","context"])check("reserved-collision."+location,()=>{
+      const x=witness("W01"),c=context(x);
+      if(location==="request")c.input.requests[0].required_bindings.push("t2_01_result_basis");
+      else if(location==="context")c.contexts=[{path:"pass",subject:x.target.subject,scope:x.target.scope,evaluation_time:c.input.bindings.evaluation_time,source_ref:"test:reserved",requirements:[{binding:"t2_01_result_basis",predicate:"true"}]}];
+      else c.input[location]={...(c.input[location]??{}),t2_01_result_basis:true};
+      assert.throws(()=>evaluateVerificationEvent(x,c),/Reserved binding collision/);return "REJECTED";
+    });
+    for(const [key,value] of [["annotation","ATTRIBUTABLE_OCCURRENCE_WITH_RESULT"],["t2_01_result_basis",true],["state","SUPPORTED"],["status","VALID"],["result","passed"]])check("envelope-hint."+key,()=>{
+      const x=witness("W04");x[key]=value;const out=evaluateVerificationEvent(x);assert.ok(!out.annotation);assert.equal(out.occurrence_basis.established,false);return out;
+    });
+    check("caller-positive-hints-cannot-complete-result",()=>{
+      const x=witness("W04"),c=context(x);c.input.caller_supported_claim_parts=["verification.passed"];c.input.predicates={verification_executed:"true"};c.input.bindings.result="passed";c.input.bindings.limitations="caller none";
+      const out=evaluateVerificationEvent(x,c);assert.equal(claim(out,"pass").state,"UNRESOLVED");return out;
+    });
+    for(const [recordRef,key] of [["w:event","event_id"],["w:event","verifier"],["w:result","criterion"],["w:result","input_ref"],["w:result","output_ref"]])check("caller-fabrication."+recordRef+"."+key,()=>{
+      const x=witness("W01"),c=context(x);delete x.records[recordRef][key];c.input[key]="fake";c.input.bindings[key]="fake";
+      const out=evaluateVerificationEvent(x,c);assert.ok(!out.result_basis.established);if(out.claim_evaluation)assert.notEqual(claim(out,"pass").state,"SUPPORTED");return out;
+    });
+    check("synthetic-result-without-retained-witnesses",()=>{
+      const x=witness("W01");x.records["w:result"].input_ref="invented:input";x.records["w:result"].output_ref="invented:output";
+      const out=evaluateVerificationEvent(x,context(x));assert.equal(claim(out,"pass").state,"UNRESOLVED");return out;
+    });
+    for(const [id,record] of [["array-metadata",{verifications:[{status:"passed"}]}],["report-allow",{verdict:"allow"}],["prebuilt-valid",{status:"VALID",annotation:"ATTRIBUTABLE_OCCURRENCE_WITH_RESULT",t2_01_result_basis:true}]])check("shortcut."+id,()=>{
+      const x=witness("W14");x.records={assertion:record};const out=evaluateVerificationEvent(x,context(x));
+      assert.equal(out.annotation,"NO_ATTRIBUTABLE_OCCURRENCE");assert.equal(claim(out,"pass").state,"UNRESOLVED");return out;
+    });
+    check("caller-added-requirements-preserved",()=>{
+      const x=witness("W01"),c=context(x);c.input.requests[0].required_bindings.push("witnesses");const out=evaluateVerificationEvent(x,c);
+      assert.equal(claim(out,"pass").state,"UNRESOLVED");assert.ok(claim(out,"pass").missing_bindings.includes("witnesses"));assert.equal(claim(out,"occurred").state,"SUPPORTED");return out;
+    });
+    check("caller-context-obligation-preserved",()=>{
+      const x=witness("W01"),c=context(x);c.contexts=[{path:"pass",subject:x.target.subject,scope:x.target.scope,evaluation_time:c.input.bindings.evaluation_time,source_ref:"test:extra",requirements:[{binding:"additional",predicate:"true"}]}];
+      const out=evaluateVerificationEvent(x,c);assert.equal(claim(out,"pass").state,"UNRESOLVED");return out;
+    });
+    for(const [id,change] of [["descriptor-mismatch",c=>{c.input.method.version="2.0.0";}],["missing-method",c=>{delete c.input.method;}],["missing-time",c=>{delete c.input.bindings.evaluation_time;}],["context-subject",c=>{c.input.subject="other";}]])check(id,()=>{
+      const x=witness("W01"),c=context(x);change(c);const out=evaluateVerificationEvent(x,c);assert.ok(!out.claim_evaluation);assert.equal(out.annotation,"ATTRIBUTABLE_OCCURRENCE_WITH_RESULT");return out;
+    });
+    check("malformed-T1-remains-rejected",()=>{const x=witness("W01"),c=context(x);c.input.requests=null;const expected=evaluateClaims(c.input,core,trust),out=evaluateVerificationEvent(x,c);assert.equal(expected.status,"REJECTED");assert.deepEqual(out.claim_evaluation,expected);return out;});
+    check("unadmitted-Core-remains-rejected",()=>{const x=witness("W01"),c=context(x);c.coreInput=structuredClone(core);c.coreInput.registry.digest="unadmitted";const out=evaluateVerificationEvent(x,c);assert.equal(out.claim_evaluation.status,"REJECTED");return out;});
+    const facets=[["independence","verification.independent","mesr.core.evidence.verification"],["producer_inference","verification.independent","mesr.core.provenance.producer"],["integrity","artifact.byte_equality","mesr.core.evidence.item"],["authority","execution_authority","mesr.core.evidence.verification"],["acceptance","institutional.acceptance","mesr.core.evidence.verification"],["generic","compliance","mesr.core.evidence.verification"],["generic","approval","mesr.core.evidence.verification"],["generic","safe","mesr.core.evidence.verification"],["generic","execution_permission","mesr.core.evidence.verification"]];
+    for(const [path,facet,anchor] of facets)check("boundary."+facet+"."+anchor,()=>{
+      const x=witness("W01"),c=context(x,[{path,claim:facet,semantic_ids:[anchor],semantic_version:"0.1.0",required_bindings:[]}]),out=evaluateVerificationEvent(x,c);
+      assert.notEqual(claim(out,path).state,"SUPPORTED");assert.ok(!out.independent&&!out.authenticated_verifier&&!out.integrity&&!out.custody);return out;
+    });
+    check("same-producer-checker-not-independence",()=>{
+      const x=witness("W01");x.records["w:event"].verifier=x.records["w:result"].verifier=x.records["w:event"].producer;
+      const out=evaluateVerificationEvent(x,context(x));assert.equal(claim(out,"pass").state,"SUPPORTED");assert.ok(!out.independent);return out;
+    });
+    check("strict-duplicate-key-parser",()=>{assert.throws(()=>evaluateVerificationEvent('{"target":{},"target":{}}'));assert.throws(()=>evaluateVerificationEvent('{"x":1,"\\u0078":2}'));return "REJECTED";});
+    check("malformed-envelope",()=>{for(const x of [null,[],{},42])assert.ok(!evaluateVerificationEvent(x).annotation);return "REJECTED";});
+    check("unexpected-helper-errors-propagate",()=>{
+      const x=witness("W01");Object.defineProperty(x,"records",{enumerable:true,get(){throw new Error("unexpected-getter");}});
+      assert.throws(()=>evaluateVerificationEvent(x));const cycle={};cycle.self=cycle;assert.throws(()=>evaluateVerificationEvent(cycle));return "NO_POSITIVE_OUTPUT";
+    });
+    check("exact-serialized-input",()=>{const x=witness("W01");assert.deepEqual(evaluateVerificationEvent(JSON.stringify(x)),outputs.W01);return "PASS";});
+    check("absent-null-empty-type-diagnostics-distinct",()=>{
+      const variants=["absent","null","empty","whitespace","wrong-type"],issues=variants.map(v=>outputs["field.w:event.event_id."+v].diagnostics.find(d=>d.path==="/records/w:event/event_id").issue);
+      assert.deepEqual(issues,["ABSENT","NULL","EMPTY","WHITESPACE","WRONG_TYPE"]);return issues;
+    });
+    check("provenance-pointers-resolve",()=>{for(const p of outputs.W01.provenance){const value=p.pointer.split("/").slice(1).reduce((v,k)=>v[k.replaceAll("~1","/").replaceAll("~0","~")],outputs.W01.raw_input);assert.deepEqual(value,outputs.W01.raw_input.records[p.record_ref][p.field]);}return "PASS";});
+    check("comparator-falsifiers",()=>{
+      const corrupted=structuredClone(rows);corrupted[0].expected_annotation="NO_ATTRIBUTABLE_OCCURRENCE";assert.throws(()=>compareVerificationEvents(corrupted,outputs));
+      const dropped={...outputs};delete dropped.W01;assert.throws(()=>compareVerificationEvents(rows,dropped));
+      const falsePositive=structuredClone(outputs);falsePositive.W05.annotation="ATTRIBUTABLE_OCCURRENCE_WITH_RESULT";assert.throws(()=>compareVerificationEvents(rows,falsePositive));return ["corrupt-expectation","dropped-case","false-positive"];
+    });
+    return {outputs,comparisons,controls};
+  };
+  const first=run();console.log("T2-01 controls PASS: "+rows.length+" cases; "+first.controls.length+" bridge/falsifier controls");
+  const replayHashes=[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);console.log("T2-01 three replays identical: "+replayHashes[0]);
+  const preservation=await t201Preservation(baseline);console.log("T1-01/02/03/04 fingerprints and 603 Core probes preserved");
+  const regressions=baseline.regressions.map(prior=>{
+    assert.equal(digest(fs.readFileSync(prior.path)),prior.source_sha256);
+    try {
+      const stdout=execFileSync(process.execPath,[prior.path],{encoding:"utf8",maxBuffer:30_000_000});console.log("AFTER PASS "+prior.path);
+      return {command:prior.command,exit_code:0,stdout,stdout_sha256:digest(stdout),source_sha256:prior.source_sha256};
+    } catch (error) {
+      // Preserve failed commands and continue the matrix; never convert a scope
+      // rejection into PASS or discard completed product evidence.
+      const stdout=String(error.stdout??""),stderr=String(error.stderr??"");
+      console.log("AFTER FAIL "+prior.path);
+      return {command:prior.command,exit_code:error.status??null,stdout,stderr,stdout_sha256:digest(stdout),source_sha256:prior.source_sha256};
+    }
+  });
+  assert.equal(regressions.length,21);
+  const product=fs.readFileSync(baseline.file_allowlist[0],"utf8");for(const m of product.matchAll(/(?:from\s+|import\s*\()\s*["']([^"']+)["']/g))assert.ok(!/scripts|fixtures|gate1|b09/.test(m[1]));
+  assert.ok(!/\bselectClaimState\b/.test(product));assertT201PreservationScope();
+  const b09=baseline.observations.map(row=>({case_id:row.case_id,classification:"UNCHANGED_CONFORMING",scope:"Existing T1 occurrence/result output preserved exactly",private_joins:"UNCHANGED_EXPECTED_GAP",pending:["T2-02","T2-03","G03"]}));
+  // Distinct assertion slices; old rich-join gaps are not whole-case PASS.
+  const counts={EXPECTED_GAP_CLOSED:first.comparisons.length,PARTIAL_CONFORMANCE_IMPROVED:0,UNCHANGED_CONFORMING:b09.length,UNCHANGED_EXPECTED_GAP:b09.length,NEW_REGRESSION:regressions.filter(r=>r.exit_code!==0).length};
+  const result={version:"gate1-t2-01-results/0.1",decision:counts.NEW_REGRESSION ? "T2_01_IMPLEMENTATION_FAIL" : "T2_01_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS",entry_commit:head,pre_change_head:baseline.pre_change_head,implementation_committed:false,file_allowlist:baseline.file_allowlist,before_sha256:digest(fs.readFileSync(baseline.file_allowlist[4])),source_hashes:Object.fromEntries(baseline.file_allowlist.slice(0,4).map(p=>[p,digest(fs.readFileSync(p))])),input_hashes:rows.map(r=>({case_id:r.case_id,sha256:digest(r.input)})),...first,replay_hashes:replayHashes,result_hash:replayHashes[0],preservation,protected_files:taskScope.protected_files,historical_task_acceptance:"INHERITED",historical_task_smokes:baseline.historical_task_smokes,lineage_guard:"STRICT",before_regressions:baseline.regressions.map(r=>({command:r.command,exit_code:r.exit_code,stdout_sha256:r.stdout_sha256})),after_regressions:regressions,b09_slices:b09,counts,public_contract_drift:"NO",authority_expansion:"NO",reference_evaluator_imported:"NO",deferred:{T2_02:"NOT_STARTED",T2_03:"NOT_STARTED",G03:"OPEN",G05:"OPEN"}};
+  if(record)fs.writeFileSync(baseline.file_allowlist[5],JSON.stringify(result,null,2)+"\n");
+  console.log(JSON.stringify({decision:result.decision,...counts,result_hash:result.result_hash,recorded:record}));
+  if(counts.NEW_REGRESSION) process.exitCode=1;
 }
