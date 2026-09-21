@@ -1,3 +1,4 @@
+import { readSufficiencyFinding } from "./sufficiency.ts";
 import { MESR_CORE_REGISTRY } from "../coreRegistry.ts";
 import { MESR_CLAIM_BOUNDARIES } from "../claimBoundaries.ts";
 import { collectBindingRequirements, type RequirementContext } from "./requirements.ts";
@@ -32,7 +33,7 @@ const time = (v: unknown) => typeof v === "string" && /(?:Z|[+-]\d{2}:\d{2})$/.t
  * Recorded producer results remain attributed assertions. No check is executed,
  * no independent-verifier/custody/integrity/profile/current-standing method runs.
  */
-export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown, independenceFinding?: unknown, temporalApplicabilityFinding?: unknown, continuityFinding?: unknown) {
+export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown, independenceFinding?: unknown, temporalApplicabilityFinding?: unknown, continuityFinding?: unknown, sufficiencyChannel?: unknown) {
   const collection = collectBindingRequirements(input, coreInput, trust, contexts);
   const result: JsonRecord = { contract_version: "mesr-claim-state-projection/0.1", method_version: "mesr-claim-evaluation/0.1", status: collection.status === "COLLECTED" ? "EVALUATED" : "REJECTED",
     semantic_composition: "WITHHELD_FOR_T1_04", input_digest: collection.input_digest, checked_basis: collection.checked_basis, input_issues: collection.input_issues, claims: [] };
@@ -129,7 +130,19 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
       }
     }
     else if (c.claim === "evidence.sufficient") {
-      missing.push("profile_bound_sufficiency_basis");
+      const finding = readSufficiencyFinding(sufficiencyChannel, source, coreInput, trust, contexts, collection, c.path, [integrityReceipt, independenceFinding, temporalApplicabilityFinding, continuityFinding]);
+      if (!finding) missing.push("profile_bound_sufficiency_basis");
+      else {
+        // Discharge only this branch placeholder; collected obligations stay intact.
+        const fact = (evidence: JsonRecord) => ({ ref: proofRef(evidence), criterion: finding.method, evidence });
+        missing.push(...finding.missing);
+        prohibitions.push(...finding.prohibitions);
+        conflicts.push(...finding.conflicts);
+        stale.push(...finding.stale.map(fact));
+        negative.push(...finding.negative.map(fact));
+        undecidable.push(...finding.undecidable.map(fact));
+        positive.push(...finding.positive.map(fact));
+      }
       for (const key of ["profile_id", "claim_set_id", "scope", "evaluation_time", "evidence_refs", "material_gap_result"]) if (!source.sufficiency?.[key]) missing.push("sufficiency." + key);
     }
     else if (c.claim === "artifact.byte_equality") {

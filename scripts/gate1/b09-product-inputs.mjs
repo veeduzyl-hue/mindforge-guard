@@ -212,3 +212,23 @@ export function loadContinuityInputs() {
     return {...row,input};
   });
 }
+
+// T2-06 retained inputs: translation only; no assertion enters the product envelope.
+export function t206Criteria() {
+  const text=fs.readFileSync('docs/planning/v8-gate1-t2-06-private-profile-criteria-v0.1.md','utf8').replaceAll('\r\n','\n');
+  const rules=text.split('<!-- PROFILE_RULES_BEGIN -->\n')[1].split('\n<!-- PROFILE_RULES_END -->')[0];
+  const claim=JSON.parse(text.split('<!-- CLAIM_SET_CONTENT_BEGIN -->\n```json\n')[1].split('\n```')[0]);
+  const profile={domain:'private.t2-06.profile-content/0.1',id:'private.t2-06.software-change-check-record',version:'0.1.0',claim_set_digest:{algorithm:'SHA-256',value:digest(claim)},rules_text:rules};
+  return {profile:{content:profile,digest:digest(profile)},claim_set:{content:claim,digest:digest(claim)},method:{id:'private.t2-06.strict-requirement-materiality',version:'0.1.0',domain:'private.t2-06.method-rules/0.1',rules,digest:digest(canonical(rules))}};
+}
+export function loadSufficiencyInputs(){
+  const controls=readJson('tests/fixtures/gate1/t2-06-controls.v0.1.json');
+  return controls.cases.map(row=>{
+    const supplied=structuredClone(controls.supplemental_input);
+    for(const op of row.operations){
+      const keys=[...op.path],key=keys.pop(),parent=keys.reduce((v,k)=>v[k],supplied);
+      if(op.op==='delete')delete parent[key];else if(op.op==='set')parent[key]=structuredClone(op.value);else throw new Error('Unknown T2-06 operation');
+    }
+    return {...row,...supplied};
+  });
+}

@@ -15,9 +15,9 @@ import { GUARD_REASON_CODES } from "../packages/guard-core/src/reasonCodes.ts";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 const args = process.argv.slice(2);
-assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04", "T2-01", "T2-02", "T2-03", "T2-04", "T2-05"].includes(args[1]));
-assert.ok(args.slice(2).every(arg => (args[1] === "T2-05" && ["--replay-only", "--semantic-only"].includes(arg)) || ((["T2-03", "T2-04"].includes(args[1]) && arg === "--semantic-only") || (args[1] === "T2-04" && arg === "--replay-only")) || ["--before", "--record", "--scope-only", "--regressions"].includes(arg)));
-const before = args[1] !== "T2-05" && args[1] !== "T2-04" && args.includes("--before"), record = args.includes("--record");
+assert.equal(args[0], "--task"); assert.ok(["T1-01", "T1-02", "T1-03", "T1-04", "T2-01", "T2-02", "T2-03", "T2-04", "T2-05", "T2-06"].includes(args[1]));
+assert.ok(args.slice(2).every(arg => (["T2-05", "T2-06"].includes(args[1]) && ["--replay-only", "--semantic-only"].includes(arg)) || ((["T2-03", "T2-04"].includes(args[1]) && arg === "--semantic-only") || (args[1] === "T2-04" && arg === "--replay-only")) || ["--before", "--record", "--scope-only", "--regressions"].includes(arg)));
+const before = args[1] !== "T2-06" && args[1] !== "T2-05" && args[1] !== "T2-04" && args.includes("--before"), record = args.includes("--record");
 const fixturePath = "tests/fixtures/gate1/t1-01-controls.v0.1.json";
 const resultPath = "tests/fixtures/gate1/t1-01-results.v0.1.json";
 const productPaths = ["admission.ts", "contracts.ts", "canonicalBytes.ts"].map(p => "packages/guard-core/src/mesr/repaired/" + p);
@@ -26,7 +26,7 @@ const t103Paths = ["packages/guard-core/src/mesr/repaired/claimState.ts", "packa
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const t104Anchor = "ef3e5b7fbcd8854d99a680bf532816b50cc851cd";
 const t104Paths = ["packages/guard-core/src/mesr/repaired/composition.ts", "scripts/verify_v8_gate1_product_conformance.mjs", "scripts/gate1/b09-product-inputs.mjs", "scripts/gate1/b09-product-compare.mjs", "tests/fixtures/gate1/t1-04-controls.v0.1.json", "tests/fixtures/gate1/t1-04-results.v0.1.json", "docs/validation/v8-gate1-t1-04-evidence-v0.1.md"];
-const taskScope = args[1] === "T2-05" ? assertT205Scope() : args[1] === "T2-04" ? assertT204Scope() : args[1] === "T2-03" ? assertT203Scope() : args[1] === "T2-02" ? assertT202Scope() : args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();
+const taskScope = args[1] === "T2-06" ? assertT206Scope() : args[1] === "T2-05" ? assertT205Scope() : args[1] === "T2-04" ? assertT204Scope() : args[1] === "T2-03" ? assertT203Scope() : args[1] === "T2-02" ? assertT202Scope() : args[1] === "T2-01" ? assertT201PreservationScope() : assertTaskScope();
 if (args.includes("--regressions")) assert.equal(args[1], "T1-04");
 if (args.includes("--scope-only")) { assert.equal(args[1], "T1-04"); console.log("T1-04 pre-change recognized: PASS"); process.exit(0); }
 const pins = readJson(frozenDir + "freeze.v0.2.json");
@@ -57,7 +57,7 @@ function legacyControls() {
   return { outputs, invalid: invalidResults, invalid_json: parseEvidencePack("{invalid"), reason_values: Object.values(GUARD_REASON_CODES) };
 }
 
-if (args[1] === "T2-05") { await runT205Task(); } else if (args[1] === "T2-04") { await runT204Task(); } else if (args[1] === "T2-03") { await runT203Task(); } else if (args[1] === "T2-02") { await runT202Task(); } else if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
+if (args[1] === "T2-06") { await runT206Task(); } else if (args[1] === "T2-05") { await runT205Task(); } else if (args[1] === "T2-04") { await runT204Task(); } else if (args[1] === "T2-03") { await runT203Task(); } else if (args[1] === "T2-02") { await runT202Task(); } else if (args[1] === "T2-01") { await runT201Task(); } else if (args[1] === "T1-04") { await runCompositionTask(); } else if (args[1] === "T1-03") { await runStateTask(); } else if (args[1] === "T1-02") { await runRequirementsTask(); } else {
 const rows = loadInputs(), expected = expectations(), trust = testTrust();
 const oracle = readJson(frozenDir + "oracle.v0.2.json");
 for (const row of rows.filter(row => row.case_id.startsWith("C"))) assert.equal(digest(row.input), oracle.fixture_input_digests[row.case_id]);
@@ -1243,7 +1243,8 @@ async function runT201Task() {
     return {outputs,comparisons,controls};
   };
   const first=run();console.log("T2-01 controls PASS: "+rows.length+" cases; "+first.controls.length+" bridge/falsifier controls");
-  const replayHashes=["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION"?[digest(first)]:[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);console.log("T2-01 three replays identical: "+replayHashes[0]);
+  const replayHashes=(args[1]==="T2-06"||["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION")?[digest(first)]:[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);console.log("T2-01 three replays identical: "+replayHashes[0]);
+  if (args[1] === "T2-06") return { first, replayHashes }; // T2-06 attributed preservation
   if (args[1] === "T2-05") return { first, replayHashes }; // T2-05 attributed preservation
   if (args[1] === "T2-04") return { first, replayHashes }; // T2-04 attributed preservation
   if (args[1] === "T2-03") return { first, replayHashes }; // T2-03 attributed T2-01 replay
@@ -1479,10 +1480,11 @@ async function runT202Task() {
     check("comparator-falsifiers",()=>{const corrupt=structuredClone(rows);corrupt[0].expected_state='UNSUPPORTED';assert.throws(()=>compareIntegrity(corrupt,outputs));const dropped={...outputs};delete dropped[rows[0].case_id];assert.throws(()=>compareIntegrity(rows,dropped));return ['wrong-expectation','dropped-output'];});
     return {outputs,comparisons,controls};
   };
-  const first=run(),replayHashes=["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION"?[digest(first)]:[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);
+  const first=run(),replayHashes=(args[1]==="T2-06"||["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION")?[digest(first)]:[digest(first),digest(run()),digest(run())];assert.equal(new Set(replayHashes).size,1);
   console.log('T2-02 '+rows.length+' comparisons, '+first.controls.length+' controls; three replays '+replayHashes[0]);
   const t201=await runT201Task();assert.equal(t201.replayHashes[0],taskScope.controls.before.t201.replay_hashes[0]);assert.equal(t201.first.comparisons.length,370);assert.equal(t201.first.controls.length,64);
   assert.deepEqual(JSON.parse(JSON.stringify(legacyControls())),taskScope.controls.before.legacy);
+  if (args[1] === "T2-06") return { first, replayHashes, t201 }; // T2-06 attributed preservation
   if (args[1] === "T2-05") return { first, replayHashes, t201 }; // T2-05 attributed preservation
   if (args[1] === "T2-04") return { first, replayHashes, t201 }; // T2-04 attributed preservation
   if (args[1] === "T2-03") return { first, replayHashes, t201 }; // T2-03 attributed T2-02 replay
@@ -1598,8 +1600,9 @@ async function runT203Task() {
     return {outputs,comparisons,controls};
   };
   const first=run(),serialized=JSON.stringify(first),replayHashes=[digest(first)],serializedReplayHashes=[digest(serialized)];
-  for(let i=0;i<(["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION"?0:2);i++){const next=run();assert.equal(JSON.stringify(next),serialized,'Exact serialized replay');replayHashes.push(digest(next));serializedReplayHashes.push(digest(JSON.stringify(next)));}assert.equal(new Set(replayHashes).size,1);
+  for(let i=0;i<((args[1]==="T2-06"||["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION")?0:2);i++){const next=run();assert.equal(JSON.stringify(next),serialized,'Exact serialized replay');replayHashes.push(digest(next));serializedReplayHashes.push(digest(JSON.stringify(next)));}assert.equal(new Set(replayHashes).size,1);
   console.log(JSON.stringify({task:'T2-03',comparisons:first.comparisons.length,controls:first.controls.length,replay_hashes:replayHashes,serialized_replay_hashes:serializedReplayHashes}));
+  if (args[1] === "T2-06") return { first, replayHashes, serializedReplayHashes }; // T2-06 attributed preservation
   if (args[1] === "T2-05") return { first, replayHashes, serializedReplayHashes }; // T2-05 attributed preservation
   if (args[1] === "T2-04") return { first, replayHashes, serializedReplayHashes }; // T2-04 attributed preservation
   if(args.includes('--semantic-only')){console.log('SEMANTIC_DEBUG_ONLY_NOT_ACCEPTANCE');return;}
@@ -1964,4 +1967,148 @@ async function runT205After(){
   const regressions=runT204Regressions();assert.equal(regressions.length,23);const failures=regressions.filter(r=>r.exit_code!==0).length;
   const result={version:'gate1-t2-05-results/0.1',decision:failures?'BLOCKED_BY_VALIDATION':'T2_05_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS',pre_change_head:taskScope.entry,branch:taskScope.branch,file_allowlist:taskScope.allowlist,semantic_results:first,replay_hashes:replayHashes,serialized_replay_hashes:serializedHashes,result_hash:replayHashes[0],fresh_process_hash:freshProcessHash,integration,historical_hashes:hashes,preservation,historical_cases:b.historical.map(r=>({case_id:r.case_id,before_sha256:digest(r.output),after_sha256:digest(evaluateClaims(r.input,core,trust)),outcome:'EXACT'})),T_family:37,H33:'REJECTED',regressions,protected_files:protectedPaths.length,source_hashes:Object.fromEntries(taskScope.allowlist.slice(0,5).map(p=>[p,digest(fs.readFileSync(p))])),controls_sha256:digest(fs.readFileSync(taskScope.allowlist[5])),PUBLIC_CONTRACT_DRIFT:'NO',AUTHORITY_EXPANSION:'NO',NEW_REGRESSION:failures,gaps:{T2_05:'CLOSED',G07:'CLOSED',G06:'OPEN',G03:'OPEN'},command:'node scripts/verify_v8_gate1_product_conformance.mjs --task T2-05 --record',exit_code:failures?1:0};
   if(record)fs.writeFileSync(taskScope.allowlist[6],JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({decision:result.decision,T2_05_RESULT_HASH:result.result_hash,NEW_REGRESSION:failures,recorded:record}));if(failures)process.exitCode=1;
+}
+
+// T2-06 PRIVATE SUFFICIENCY LANE
+function assertT206Scope() {
+  const entry='1cc340b1123ed2e874ccaddf14f8f78d9232fa90',branch='feat/v8-gate1-tranche2-t2-06-profile-sufficiency-v0.1';
+  const allowlist=['packages/guard-core/src/mesr/repaired/sufficiency.ts','packages/guard-core/src/mesr/repaired/evaluateClaim.ts','scripts/verify_v8_gate1_product_conformance.mjs','scripts/gate1/b09-product-inputs.mjs','scripts/gate1/b09-product-compare.mjs','tests/fixtures/gate1/t2-06-controls.v0.1.json','tests/fixtures/gate1/t2-06-results.v0.1.json','docs/validation/v8-gate1-t2-06-evidence-v0.1.md'];
+  const git=(...a)=>execFileSync('git',a,{encoding:'utf8',maxBuffer:128000000}).trim(),list=s=>s.split('\n').filter(Boolean);
+  assert.equal(git('branch','--show-current'),branch);
+  const pending=[...new Set([...list(git('diff','--name-only','--no-renames',head)),...list(git('ls-files','--others','--exclude-standard'))])];
+  const validate=(current,parents,changed,dirty)=>{
+    for(const p of [...changed,...dirty])assert.ok(allowlist.includes(p),'Outside T2-06 scope: '+p);
+    if(current===entry)return 'PRE_COMMIT_IMPLEMENTATION';
+    assert.deepEqual(parents,[entry]);assert.equal(dirty.length,0);assert.deepEqual([...changed].sort(),[...allowlist].sort());return 'POST_COMMIT_ACCEPTED_IMPLEMENTATION';
+  };
+  const lifecycle=validate(head,git('show','-s','--format=%P',head).split(' '),head===entry?[]:list(git('diff-tree','--no-commit-id','--name-only','--no-renames','-r',head)),pending);
+  assert.equal(validate(entry,[],[],allowlist),'PRE_COMMIT_IMPLEMENTATION');assert.equal(validate('child',[entry],allowlist,[]),'POST_COMMIT_ACCEPTED_IMPLEMENTATION');
+  assert.throws(()=>validate('later',['child'],allowlist,[]));assert.throws(()=>validate('merge',[entry,'other'],allowlist,[]));assert.throws(()=>validate(entry,[],[],['README.md']));assert.throws(()=>validate('child',[entry],[...allowlist,'README.md'],[]));assert.throws(()=>validate('child',[entry],allowlist,[allowlist[0]]));
+  return {entry,branch,allowlist,lifecycle,pending,baseline:readJson('tests/fixtures/gate1/t2-01-controls.v0.1.json'),controls:readJson('tests/fixtures/gate1/t2-02-controls.v0.1.json'),t203:readJson('tests/fixtures/gate1/t2-03-controls.v0.1.json'),inventory:list(git('ls-tree','-r','--name-only',entry))};
+}
+async function t206HistoricalHashes(){
+  const hashes=await t205HistoricalHashes(),t205=await t205Semantic();
+  hashes.t205=digest(t205);assert.equal(hashes.t205,'d2a43d1073c9cb6be36ff7edd91b8fe6bf50a19809dd364dce2c34a9906f296f');return hashes;
+}
+async function runT206Task(){
+  if(!args.includes('--before'))return runT206After();
+  assert.equal(head,taskScope.entry);assert.ok(!fs.existsSync(taskScope.allowlist[0]));assert.ok(!fs.existsSync(taskScope.allowlist[5]));
+  assert.equal(fs.readFileSync(taskScope.allowlist[1],'utf8').replaceAll('\r\n','\n'),execFileSync('git',['show',head+':'+taskScope.allowlist[1]],{encoding:'utf8'}));
+  const h=await import('./gate1/b09-product-inputs.mjs'),{evaluateClaims}=await import('../packages/guard-core/src/mesr/repaired/evaluateClaim.ts');
+  const core=h.requirementCoreInput(),trust=h.testTrust();
+  const historical=[...readJson(frozenDir+'cases.v0.2.json').filter(r=>r.input.kind==='claims'),...h.loadInputs().filter(r=>['H08','H16','H17','H18','H19','H33'].includes(r.case_id))].map(r=>({case_id:r.case_id,input:r.input,output:evaluateClaims(r.input,core,trust)}));
+  const baseline={pre_change_head:head,preservation:await t201Preservation(taskScope.baseline),historical,legacy:legacyControls(),t25:await t204LegacyExpiry(),regressions:readJson('tests/fixtures/gate1/t2-05-controls.v0.1.json').before.regressions,protected_hashes:Object.fromEntries(taskScope.inventory.map(p=>[p,digest(fs.readFileSync(p))]))};
+  const controls={version:'gate1-t2-06-controls/0.1',pre_change_head:head,file_allowlist:taskScope.allowlist,before:baseline,cases:[]};
+  fs.writeFileSync(taskScope.allowlist[5],JSON.stringify(controls,null,2)+'\n');
+  baseline.hashes=await t206HistoricalHashes();
+  fs.writeFileSync(taskScope.allowlist[5],JSON.stringify(controls,null,2)+'\n');
+  execFileSync('git',['add','--',taskScope.allowlist[2],taskScope.allowlist[5]]);
+  baseline.regressions=runT204Regressions();baseline.command='node scripts/verify_v8_gate1_product_conformance.mjs --task T2-06 --before';baseline.exit_code=baseline.regressions.some(r=>r.exit_code!==0)?1:0;
+  fs.writeFileSync(taskScope.allowlist[5],JSON.stringify(controls,null,2)+'\n');
+  console.log(JSON.stringify({phase:'BEFORE',hashes:baseline.hashes,T1:'PASS',core_probes:603,historical:historical.length,regressions:baseline.regressions.map(r=>[r.path,r.exit_code])}));process.exitCode=baseline.exit_code;
+}
+
+async function t206Semantic(){
+  const h=await import('./gate1/b09-product-inputs.mjs'),cmp=await import('./gate1/b09-product-compare.mjs');
+  const {evaluateSufficiency,readSufficiencyFinding}=await import('../packages/guard-core/src/mesr/repaired/sufficiency.ts');
+  const {evaluateClaims,evaluateCompositeClaim}=await import('../packages/guard-core/src/mesr/repaired/evaluateClaim.ts');
+  const {collectBindingRequirements}=await import('../packages/guard-core/src/mesr/repaired/requirements.ts');
+  const rows=h.loadSufficiencyInputs(),inventory=readJson(taskScope.allowlist[5]).case_inventory,core=h.requirementCoreInput(),trust=h.testTrust();
+  const make=(s,c=core,t=trust)=>evaluateSufficiency(s.input,c,t,s.contexts,s.envelope);
+  const owner=(s,f,c=core,t=trust,other=[])=>evaluateClaims(s.input,c,t,s.contexts,other[0],other[1],other[2],other[3],{finding:f,envelope:s.envelope});
+  const runRow=(row,invoke=make)=>{try{const f=invoke(row);return {validation:f.validation,evidence:f.evidence,evaluation:owner(row,f.finding)};}catch(e){return {error:{classification:'ERROR',name:e.name,message:e.message}};}};
+  const outputs={},checks=[],check=(id,fn)=>{const observation=fn();checks.push({id,outcome:'PASS',observation:observation??null});};
+  for(const row of rows){const original=canonical({input:row.input,envelope:row.envelope,contexts:row.contexts});outputs[row.case_id]=runRow(row);assert.equal(canonical({input:row.input,envelope:row.envelope,contexts:row.contexts}),original);}
+  const comparisons=cmp.compareSufficiency(rows,outputs,inventory),base=()=>structuredClone(rows[0]),s=base(),f=make(s),old=owner(s,undefined);
+  const state=o=>o.claims.find(c=>c.path==='sufficiency')?.state;
+  for(const [name,fake]of [['plain',{}],['copied',{...f.finding}],['serialized',JSON.parse(JSON.stringify(f.finding))],['reconstructed',structuredClone(f.finding)],['sufficient',{sufficient:true}],['no_material_gap',{no_material_gap:true}],['material_gap_result',{material_gap_result:'no_material_gap'}],['StateBasis',{positive:[{}],missing:[]}],['predecessor-label',{state:'SUPPORTED'}],['predecessor-hash',{result_hash:taskScope.baseline.result_hash??'hash'}],['fixture-state',{expected:{state:'SUPPORTED'}}]])check('inert.'+name,()=>{
+    assert.deepEqual(owner(s,fake),old);assert.equal(readSufficiencyFinding({finding:fake,envelope:s.envelope},s.input,core,trust,s.contexts,collectBindingRequirements(s.input,core,trust,s.contexts),'sufficiency'),null);return 'EXACT_OLD_OUTPUT';
+  });
+  check('deep-freeze',()=>{assert.ok(!Object.isFrozen(s.input));assert.ok(!Object.isFrozen(s.envelope));assert.ok(!Object.isFrozen(s.envelope.claims[0].original));assert.ok(Object.isFrozen(f.finding));assert.ok(Object.isFrozen(f.evidence.envelope));assert.throws(()=>{f.evidence.no_material_gap=false;},TypeError);assert.throws(()=>{f.evidence.envelope.tuple.revision='changed';},TypeError);assert.throws(()=>{f.evidence.requirements[0].decision='satisfied';},TypeError);return 'PRODUCT_SNAPSHOTS_IMMUTABLE';});
+  const paths=[['input','subject'],['input','revision'],['input','scope'],['input','module_lock_digest'],['input','registry','digest'],['input','bindings','evaluation_time'],['envelope','profile','digest'],['envelope','claim_set','digest'],['envelope','method','digest'],['envelope','profile','content','rules_text'],['envelope','tuple','subject'],['envelope','tuple','revision'],['envelope','tuple','artifacts',0],['envelope','tuple','scope','included',0],['envelope','tuple','environment_ref'],['envelope','tuple','evaluation_time'],['envelope','tuple','reliance_time'],['envelope','source','bytes_base64'],['envelope','provenance',0],['envelope','limitations',0],['envelope','claims',0,'original','input','producer'],['envelope','manifest','source_digest']];
+  for(const path of paths)check('wrong-context.'+path.join('.'),()=>{const x=base(),keys=[...path],last=keys.pop(),parent=keys.reduce((v,k)=>v[k],x);parent[last]='changed';assert.deepEqual(owner(x,f.finding),owner(x,undefined));return 'EXACT_OLD_OUTPUT';});
+  check('changed-core',()=>{const c=structuredClone(core);c.registry.digest='changed';assert.deepEqual(owner(s,f.finding,c),owner(s,undefined,c));return 'INERT';});
+  check('changed-trust',()=>{const t=structuredClone(trust);t.proof_digest='changed';assert.deepEqual(owner(s,f.finding,core,t),owner(s,undefined,core,t));return 'INERT';});
+  check('fresh-requirements',()=>{const x=base();x.contexts=[{path:'sufficiency',subject:x.input.subject,scope:x.input.scope,evaluation_time:x.input.bindings.evaluation_time,source_ref:'t206:new-context',requirements:[{binding:'profile_bound_sufficiency_basis',predicate:'true'}]}];assert.deepEqual(owner(x,f.finding),owner(x,undefined));const g=make(x),o=owner(x,g.finding);assert.equal(state(o),'UNRESOLVED');assert.ok(o.claims[0].missing_bindings.includes('profile_bound_sufficiency_basis'));return 'INHERITED_COLLISION_REMAINS';});
+  for(let i=0;i<4;i++)check('conflicting-channel.'+i,()=>{const channels=[];channels[i]={caller:'fabrication'};assert.deepEqual(owner(s,f.finding,core,trust,channels),owner(s,undefined,core,trust,channels));return 'INERT';});
+  check('wrong-reader-envelope',()=>{assert.equal(readSufficiencyFinding({finding:f.finding,envelope:{}},s.input,core,trust,[],collectBindingRequirements(s.input,core,trust),'sufficiency'),null);return 'INERT';});
+  check('changed-predecessor-witness',()=>{const x=base();x.envelope.claims[0].original.input.method.version='changed';assert.deepEqual(owner(x,f.finding),owner(x,undefined));assert.equal(state(owner(x,make(x).finding)),'UNRESOLVED');return 'RECOMPUTATION_REQUIRED';});
+  check('fresh-handles-serialized-input',()=>{const x=JSON.parse(JSON.stringify(s)),g=make(x);assert.notEqual(g.finding,f.finding);assert.deepEqual(g.evidence,f.evidence);assert.deepEqual(owner(x,g.finding),owner(s,f.finding));return digest(g.evidence);});
+  check('no-clock',()=>{const oldNow=Date.now;try{Date.now=()=>{throw new Error('wall clock forbidden');};assert.equal(state(owner(s,make(s).finding)),'SUPPORTED');}finally{Date.now=oldNow;}return 'NO_CLOCK';});
+  check('caller-labels-no-basis',()=>{const x=base();Object.assign(x.input,{sufficient:true,no_material_gap:true,StateBasis:{positive:[{}],missing:[]}});x.input.sufficiency.material_gap_result='no_material_gap';x.input.sufficiency.atomic_results=[{claim:'verification.passed',state:'SUPPORTED'}];assert.deepEqual(owner(x,undefined),owner(x,{}));assert.equal(state(owner(x,undefined)),'UNRESOLVED');return 'LABELS_INERT';});
+  check('same-name-multiple-sources',()=>{const x=base();x.input.bindings.extra=true;x.contexts=['one','two'].map(source_ref=>({path:'sufficiency',subject:x.input.subject,scope:x.input.scope,evaluation_time:x.input.bindings.evaluation_time,source_ref,requirements:[{binding:'extra',predicate:'true'}]}));const g=make(x);assert.equal(state(owner(x,g.finding)),'SUPPORTED');const obligations=g.evidence.obligations.filter(o=>o.binding==='extra');assert.deepEqual(obligations.map(o=>o.source_ref),['one','two']);return obligations;});
+  check('NM0-no-discharging-assertion',()=>{const row=outputs['new.NM0'];assert.equal(row.evidence.no_material_gap,false);assert.equal(row.evidence.requirements[0].decision,'unresolved');return row.evidence.NM0;});
+  check('all-atomic-supported-insufficient',()=>{const row=outputs['new.all-supported-incomplete-materiality'];assert.equal(row.evidence.verification.claim_evaluation.claims[0].state,'SUPPORTED');assert.equal(state(row.evaluation),'UNRESOLVED');return 'R01_DOES_NOT_DISCHARGE_M1';});
+  check('all-transformed-members',()=>{const row=outputs['new.A1.transformed-all-members'];assert.equal(row.evidence.A1.result,'positive');assert.equal(row.evidence.requirements[3].members.length,2);assert.equal(row.evidence.requirements[2].members.length,3);assert.equal(row.evidence.X0.established,false);return 'EVERY_ORIGINAL_INTERMEDIATE_FINAL';});
+  check('S08-collateral-precedence',()=>{const row=rows.find(r=>r.case_id==='new.S08.stale'),x=structuredClone(row);delete x.envelope.materiality;const g=make(x),o=owner(x,g.finding);assert.equal(state(o),'STALE');assert.ok(o.claims[0].missing_bindings.length);const y=structuredClone(rows.find(r=>r.case_id==='new.S08.conflict'));delete y.envelope.materiality;const h=make(y),p=owner(y,h.finding);assert.equal(state(p),'CONFLICTED');assert.ok(p.claims[0].missing_bindings.length);return 'STRONGER_FACTS_AND_COLLATERAL_GAPS';});
+  check('prohibition-before-conflict',()=>{const x=structuredClone(rows.find(r=>r.case_id==='new.S08.conflict'));x.input.requests.push({path:'weakening_inference',claim:'verification',semantic_ids:['mesr.core.evidence.observation'],semantic_version:'0.1.0',required_bindings:[]});const o=owner(x,make(x).finding),prohibited=o.claims.find(c=>c.path==='weakening_inference'),conflict=o.claims.find(c=>c.path==='sufficiency');assert.equal(prohibited.state,'UNSUPPORTED');assert.equal(conflict.state,'CONFLICTED');const result=evaluateCompositeClaim({claim:'private-composite',subject:x.input.subject,scope:x.input.scope,evaluation_time:x.input.bindings.evaluation_time,source_ref:'t206:composite'},['weakening_inference','sufficiency'],[prohibited,conflict]);assert.equal(result.state,'UNSUPPORTED');assert.ok(result.evaluation_basis.conflicts.length);return 'EXISTING_OWNER_PROHIBITION_PRECEDES_RETAINED_CONFLICT';});
+  check('default-off-history',()=>readJson(taskScope.allowlist[5]).before.historical.map(r=>{assert.deepEqual(evaluateClaims(r.input,core,trust),r.output,r.case_id);assert.deepEqual(evaluateClaims(r.input,core,trust,[],undefined,undefined,undefined,undefined,{finding:f.finding,envelope:s.envelope}),r.output,r.case_id);return {case_id:r.case_id,sha256:digest(r.output)};}));
+  check('comparator-falsifiers',()=>{
+    const copy=structuredClone(rows);copy[0].expected.state='UNSUPPORTED';assert.throws(()=>cmp.compareSufficiency(copy,outputs,inventory));
+    const dropped=structuredClone(outputs),id='new.S07.same-name-collision';dropped[id].evaluation.claims.find(c=>c.path==='sufficiency').missing_bindings=[];assert.throws(()=>cmp.compareSufficiency(rows,dropped,inventory));
+    assert.throws(()=>cmp.compareSufficiency([...rows,rows[0]],outputs,inventory));assert.throws(()=>cmp.compareSufficiency(rows.slice(1),outputs,inventory));
+    assert.throws(()=>cmp.compareSufficiency(rows,{...outputs,[rows[0].case_id]:{outcome:'PASS'}},inventory));
+    const error=runRow(rows[0],()=>{throw new TypeError('deliberate unexpected exception');});assert.equal(error.error.classification,'ERROR');assert.throws(()=>cmp.compareSufficiency(rows,{...outputs,[rows[0].case_id]:error},inventory));
+    // Assertions change comparison only, never supplied witnesses or product computation.
+    const altered={...rows[0],expected:{state:'UNSUPPORTED'}};assert.deepEqual(runRow(altered),outputs[rows[0].case_id]);
+    return ['CORRUPTED_EXPECTATION','DROPPED_BINDING','DUPLICATE_CASE','OMITTED_CASE','FALSE_POSITIVE','EXCEPTION_ERROR','EXPECTED_STATE_INERT'];
+  });
+  return {outputs,comparisons,checks};
+}
+
+
+function t206ProtectedIntegration(){
+  const read=p=>fs.readFileSync(p,'utf8').replaceAll('\r\n','\n'),old=p=>execFileSync('git',['show',taskScope.entry+':'+p],{encoding:'utf8',maxBuffer:30000000}).replaceAll('\r\n','\n');
+  let owner=read(taskScope.allowlist[1]).replace('import { readSufficiencyFinding } from "./sufficiency.ts";\n','').replace(', sufficiencyChannel?: unknown)',')');
+  const start=owner.indexOf('      const finding = readSufficiencyFinding('),end=owner.indexOf('      for (const key of ["profile_id"',start);
+  assert.ok(start>=0&&end>start);
+  owner=owner.slice(0,start)+'      missing.push("profile_bound_sufficiency_basis");\n'+owner.slice(end);
+  assert.equal(owner,old(taskScope.allowlist[1]),'Sole owner changed only in approved intake/branch');
+  let verifier=read(taskScope.allowlist[2]).split('\n// T2-06 PRIVATE SUFFICIENCY LANE')[0];
+  verifier=verifier.replace('"T2-04", "T2-05", "T2-06"].includes(args[1]));','"T2-04", "T2-05"].includes(args[1]));')
+    .replace('(["T2-05", "T2-06"].includes(args[1]) && ["--replay-only", "--semantic-only"].includes(arg))','(args[1] === "T2-05" && ["--replay-only", "--semantic-only"].includes(arg))')
+    .replace('const before = args[1] !== "T2-06" && ','const before = ')
+    .replace('const taskScope = args[1] === "T2-06" ? assertT206Scope() : ','const taskScope = ')
+    .replace('if (args[1] === "T2-06") { await runT206Task(); } else ','')
+    .replace(/^  if \(args\[1\] === "T2-06"\) return .*; \/\/ T2-06 attributed preservation\n/gm,'')
+    .replaceAll('(args[1]==="T2-06"||["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION")','["T2-04","T2-05"].includes(args[1])&&taskScope.lifecycle==="POST_COMMIT_ACCEPTED_IMPLEMENTATION"');
+  assert.equal(verifier.trimEnd(),old(taskScope.allowlist[2]).trimEnd(),'Historical assertions/lifecycle guards changed');
+  for(const path of taskScope.allowlist.slice(3,5))assert.ok(read(path).startsWith(old(path)),'Frozen helper prefix '+path);
+  const product=read(taskScope.allowlist[0]);assert.ok(!/selectClaimState|Date\.now\(|new Date\(\)|node:fs|node:http|fetch\(/.test(product));
+  for(const m of product.matchAll(/from\s*["']([^"']+)["']/g))assert.ok(!/scripts|fixtures|gate1|b09/.test(m[1]));
+  return {owner:'EXACT_EXCEPT_APPROVED_PRIVATE_INTAKE_AND_SUFFICIENCY_BRANCH',selector:'UNCHANGED',historical_verifier:'EXACT_EXCEPT_T206_DISPATCH_AND_ATTRIBUTED_REPLAY',helpers:'FROZEN_PREFIX',product_state_selector:'ABSENT'};
+}
+async function runT206After(){
+  assert.ok(!(record&&(args.includes('--semantic-only')||args.includes('--replay-only'))),'Partial proof cannot record acceptance');
+  const first=await t206Semantic();
+  if(args.includes('--replay-only')){console.log('T206_FRESH_PROCESS_HASH='+digest(first));console.log(JSON.stringify({controls:first.comparisons.length,checks:first.checks.length}));return;}
+  if(args.includes('--semantic-only')){console.log(JSON.stringify({decision:'SEMANTIC_DEBUG_ONLY_NOT_ACCEPTANCE',T2_06_RESULT_HASH:digest(first),controls:first.comparisons.length,checks:first.checks.length}));return;}
+  const integration=t206ProtectedIntegration(),b=readJson(taskScope.allowlist[5]).before,post=taskScope.lifecycle==='POST_COMMIT_ACCEPTED_IMPLEMENTATION';
+  assert.equal(b.exit_code,0);assert.equal(b.regressions.length,23);assert.ok(b.regressions.every(r=>r.exit_code===0));
+  const hashes=[digest(first)],serializedHashes=[digest(JSON.stringify(first))];
+  for(let i=0;i<(post?0:2);i++){const next=await t206Semantic();assert.equal(JSON.stringify(next),JSON.stringify(first));hashes.push(digest(next));serializedHashes.push(digest(JSON.stringify(next)));}
+  console.log(JSON.stringify({T2_06_RESULT_HASH:hashes[0],replay_hashes:hashes,serialized_replay_hashes:serializedHashes}));
+  const criteria=(await import('./gate1/b09-product-inputs.mjs')).t206Criteria();
+  const criteriaReceipt={profile:{sha256:digest(criteria.profile.content),bytes:Buffer.byteLength(canonical(criteria.profile.content))},claim_set:{sha256:digest(criteria.claim_set.content),bytes:Buffer.byteLength(canonical(criteria.claim_set.content))},method:{sha256:digest(canonical(criteria.method.rules)),bytes:Buffer.byteLength(canonical(criteria.method.rules))}};
+  assert.deepEqual(criteriaReceipt,{profile:{sha256:'ef051daa4b12093d195429746ac96ebadb5f85fa9497a3905ac77ba63f5390a0',bytes:26112},claim_set:{sha256:'6c374f3517c77c340a7807dc2c3e07df209a69dca75cff01157f305be89c4e68',bytes:381},method:{sha256:'b46e86d207e9edb048992915f362be1cd8a7890a67fa224a0e301951a9223643',bytes:25866}});
+  const preservation=post?b.preservation:await t201Preservation(taskScope.baseline);assert.deepEqual(preservation,b.preservation);
+  assert.deepEqual(JSON.parse(JSON.stringify(legacyControls())),b.legacy);assert.deepEqual(JSON.parse(JSON.stringify(await t204LegacyExpiry())),b.t25);
+  const historicalHashes=await t206HistoricalHashes();assert.deepEqual(historicalHashes,b.hashes);
+  const protectedPaths=taskScope.inventory.filter(p=>!taskScope.allowlist.includes(p));
+  for(const p of protectedPaths)assert.equal(digest(fs.readFileSync(p)),b.protected_hashes[p],'Protected byte drift '+p);
+  if(post){
+    assert.ok(!record);const accepted=readJson(taskScope.allowlist[6]);
+    assert.equal(accepted.decision,'T2_06_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS');assert.equal(accepted.result_hash,hashes[0]);assert.deepEqual(accepted.semantic_results,first);assert.deepEqual(accepted.historical_hashes,historicalHashes);assert.equal(accepted.NEW_REGRESSION,0);
+    assert.equal(digest(fs.readFileSync(taskScope.allowlist[5])),accepted.controls_sha256);
+    for(const [p,hash]of Object.entries(accepted.source_hashes))assert.equal(digest(fs.readFileSync(p)),hash,'Accepted source hash '+p);
+    assertT206Scope();
+    console.log(JSON.stringify({decision:'T2_06_POST_COMMIT_PRESERVATION_PASS',lifecycle:taskScope.lifecycle,T2_06_RESULT_HASH:hashes[0],historicalHashes,PUBLIC_CONTRACT_DRIFT:'NO',AUTHORITY_EXPANSION:'NO',working_tree:'CLEAN',large_suites:'ACCEPTED_UNCHANGED_RECEIPTS_NOT_RERUN'}));return;
+  }
+  const stdout=execFileSync(process.execPath,['scripts/verify_v8_gate1_product_conformance.mjs','--task','T2-06','--replay-only'],{encoding:'utf8',maxBuffer:30000000});
+  const freshProcessHash=stdout.match(/T206_FRESH_PROCESS_HASH=([a-f0-9]{64})/)[1];assert.equal(freshProcessHash,hashes[0]);
+  execFileSync('git',['add','--',...taskScope.allowlist.filter(p=>fs.existsSync(p))]);
+  const regressions=runT204Regressions();assert.equal(regressions.length,23);const failures=regressions.filter(r=>r.exit_code!==0).length;
+  const result={version:'gate1-t2-06-results/0.1',decision:failures?'BLOCKED_BY_VALIDATION':'T2_06_IMPLEMENTATION_PASS_WITH_REMAINING_GAPS',pre_change_head:taskScope.entry,branch:taskScope.branch,file_allowlist:taskScope.allowlist,criteria:criteriaReceipt,semantic_results:first,replay_hashes:hashes,serialized_replay_hashes:serializedHashes,result_hash:hashes[0],fresh_process_hash:freshProcessHash,integration,historical_hashes:historicalHashes,preservation,historical_cases:b.historical.map(r=>({case_id:r.case_id,output_sha256:digest(r.output),outcome:'EXACT'})),regressions,protected_files:protectedPaths.length,source_hashes:Object.fromEntries(taskScope.allowlist.slice(0,5).map(p=>[p,digest(fs.readFileSync(p))])),controls_sha256:digest(fs.readFileSync(taskScope.allowlist[5])),before_sha256:digest(b),PUBLIC_CONTRACT_DRIFT:'NO',AUTHORITY_EXPANSION:'NO',NEW_REGRESSION:failures,gaps:{T2_06:failures?'OPEN':'CLOSED / EVIDENCE CLOSED',T2_07:failures?'BLOCKED_BY_SEQUENCE_UNTIL_T2-06_CLOSED':'UNBLOCKED_FOR_ENTRY / NOT STARTED',G06:'OPEN',G03:'DEFERRED_TO_G03 / OPEN'},command:'node scripts/verify_v8_gate1_product_conformance.mjs --task T2-06 --record',exit_code:failures?1:0};
+  assertT206Scope();if(record)fs.writeFileSync(taskScope.allowlist[6],JSON.stringify(result,null,2)+'\n');
+  console.log(JSON.stringify({decision:result.decision,T2_06_RESULT_HASH:hashes[0],NEW_REGRESSION:failures,controls:first.comparisons.length,checks:first.checks.length,recorded:record}));if(failures)process.exitCode=1;
 }

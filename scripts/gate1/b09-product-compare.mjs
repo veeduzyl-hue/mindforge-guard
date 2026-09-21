@@ -283,3 +283,30 @@ export function compareContinuity(rows,outputs) {
     return {case_id:row.case_id,canonical_case:row.canonical_case??null,claims:Object.fromEntries(Object.keys(row.expected.claims).map(p=>[p,{state:claims[p].state,missing:claims[p].missing_bindings,fact_counts:Object.fromEntries(Object.entries(claims[p].evaluation_basis).map(([k,v])=>[k,v.length]))}])),dimensions:Object.fromEntries(Object.entries(a.evidence.dimensions).map(([k,v])=>[k,{satisfied:v.satisfied,missing:v.missing,negative:v.negative.length,conflicts:v.conflicts.length,undecidable:v.undecidable.length}])),outcome:'PASS'};
   });
 }
+
+// T2-06 compares actual owner results; it never constructs a semantic basis.
+export function compareSufficiency(rows,outputs,inventory=rows.map(r=>r.case_id)){
+  assert.equal(new Set(inventory).size,inventory.length,'Duplicate expected inventory');
+  assert.equal(new Set(rows.map(r=>r.case_id)).size,rows.length,'Duplicate case');
+  assert.deepEqual(rows.map(r=>r.case_id).sort(),[...inventory].sort(),'Omitted/extra case');
+  assert.deepEqual(Object.keys(outputs).sort(),[...inventory].sort(),'Omitted/extra output');
+  return rows.map(row=>{
+    const a=outputs[row.case_id];assert.ok(a&&!a.error,'ERROR '+row.case_id+': '+JSON.stringify(a?.error));
+    assert.equal(a.evaluation.status,row.expected.status??'EVALUATED',row.case_id);
+    const c=a.evaluation.claims.find(c=>c.path==='sufficiency');
+    if(row.expected.state!==undefined)assert.equal(c?.state,row.expected.state,row.case_id);
+    for(const m of row.expected.missing??[])assert.ok(c?.missing_bindings.includes(m),row.case_id+': '+m);
+    for(const kind of row.expected.facts??[])assert.ok(c?.evaluation_basis[kind].length,row.case_id+': '+kind);
+    if(row.expected.validation)assert.ok(a.validation?.some(v=>v.code===row.expected.validation),row.case_id+': validation');
+    if(row.expected.inventory)assert.deepEqual(a.evidence?.requirements.map(r=>[r.requirement_id,r.decision]),row.expected.inventory,row.case_id);
+    for(const [key,value]of Object.entries(row.expected.dimensions??{}))assert.deepEqual(a.evidence?.[key],value,row.case_id+': '+key);
+    for(const r of a.evidence?.requirements??[])if(r.decision==='unresolved')assert.equal(r.rationale,r.missing.length?'missing-basis':'no-admitted-determination');
+    if(c?.state==='SUPPORTED'){
+      assert.equal(a.evidence.no_material_gap,true);assert.equal(a.evidence.A0.result,'positive');
+      assert.deepEqual(a.evidence.requirements.map(r=>r.requirement_id),['R00','R01','R02','R03']);
+      assert.ok(a.evidence.requirements.every(r=>['satisfied','permitted_exclusion'].includes(r.decision)));
+      assert.deepEqual(c.missing_bindings,[]);
+    }
+    return {case_id:row.case_id,canonical_case:row.canonical_case??null,status:a.evaluation.status,state:c?.state??null,missing:c?.missing_bindings??[],requirements:a.evidence?.requirements.map(r=>[r.requirement_id,r.decision])??[],outcome:'PASS'};
+  });
+}
