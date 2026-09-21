@@ -197,3 +197,18 @@ export function loadTemporalInputs() {
     return {...row,input};
   });
 }
+
+// T2-05: declarative supplemental inputs; no enrichment of frozen cases.
+export function loadContinuityInputs() {
+  const controls=readJson('tests/fixtures/gate1/t2-05-controls.v0.1.json');
+  return controls.cases.map(row=>{
+    const input=structuredClone(controls.supplemental_input);
+    for(const op of row.operations){
+      const keys=[...op.path],key=keys.pop(),parent=keys.reduce((v,k)=>v[k],input);
+      if(op.op==='delete')delete parent[key];
+      else if(op.op==='set')parent[key]=structuredClone(op.value);
+      else throw new Error('Unknown declarative T2-05 operation');
+    }
+    return {...row,input};
+  });
+}

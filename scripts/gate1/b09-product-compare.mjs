@@ -259,3 +259,27 @@ export function compareTemporal(rows,outputs) {
     return {case_id:row.case_id,state:claim.state,missing:claim.missing_bindings,losses:actual.evidence?.losses.map(x=>x.reason)??[],outcome:'PASS'};
   });
 }
+
+// T2-05 compares product-owned assertion fields; unexpected errors stay ERROR.
+export function compareContinuity(rows,outputs) {
+  return rows.map(row=>{
+    const a=outputs[row.case_id];assert.ok(a,'Missing T2-05 output '+row.case_id);
+    assert.ok(!a.error,'ERROR '+row.case_id+': '+a.error);
+    const d=row.input.evidence_ledger['t2-05:dossier'];
+    assert.ok(a.evidence,'Missing evaluated evidence '+row.case_id+': '+JSON.stringify(a.evaluation.input_issues));
+    assert.deepEqual(a.evidence.dossier,d,'Immutable retained history '+row.case_id);
+    const claims=Object.fromEntries(a.evaluation.claims.map(c=>[c.path,c]));
+    for(const [path,expected]of Object.entries(row.expected.claims)){
+      const c=claims[path];assert.equal(c?.state,expected.state,row.case_id+': '+path);
+      for(const m of expected.missing??[])assert.ok(c.missing_bindings.includes(m),row.case_id+': '+m);
+      for(const kind of expected.facts??[])assert.ok(c.evaluation_basis[kind].length,row.case_id+': '+kind);
+      assert.equal(c.world_falsity_asserted,false);
+      if(expected.state==='STALE'){assert.ok(a.evidence.paths[path].historical_support);assert.ok(a.evidence.paths[path].losses.length);}
+    }
+    for(const [name,expected]of Object.entries(row.expected.dimensions??{})){
+      const actual=a.evidence.dimensions[name];assert.ok(actual,'Missing dimension '+name);
+      for(const [field,value]of Object.entries(expected))assert.deepEqual(actual[field],value,row.case_id+': '+name+'.'+field);
+    }
+    return {case_id:row.case_id,canonical_case:row.canonical_case??null,claims:Object.fromEntries(Object.keys(row.expected.claims).map(p=>[p,{state:claims[p].state,missing:claims[p].missing_bindings,fact_counts:Object.fromEntries(Object.entries(claims[p].evaluation_basis).map(([k,v])=>[k,v.length]))}])),dimensions:Object.fromEntries(Object.entries(a.evidence.dimensions).map(([k,v])=>[k,{satisfied:v.satisfied,missing:v.missing,negative:v.negative.length,conflicts:v.conflicts.length,undecidable:v.undecidable.length}])),outcome:'PASS'};
+  });
+}

@@ -7,6 +7,7 @@ import { type ClaimState, type StateBasis } from "./claimState.ts";
 import { readIntegrityReceipt } from "./integrity.ts";
 import { readIndependenceFinding } from "./independence.ts";
 import { readTemporalApplicabilityFinding } from "./temporalApplicability.ts";
+import { readContinuityFinding } from "./continuity.ts";
 
 function selectClaimState(basis: StateBasis): { state: ClaimState; rationale: string } {
   if (basis.prohibitions.length) return { state: "UNSUPPORTED", rationale: "CORE_PROHIBITED_INFERENCE" };
@@ -31,7 +32,7 @@ const time = (v: unknown) => typeof v === "string" && /(?:Z|[+-]\d{2}:\d{2})$/.t
  * Recorded producer results remain attributed assertions. No check is executed,
  * no independent-verifier/custody/integrity/profile/current-standing method runs.
  */
-export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown, independenceFinding?: unknown, temporalApplicabilityFinding?: unknown) {
+export function evaluateClaims(input: unknown, coreInput: unknown, trust: AdmissionTrust, contexts: readonly RequirementContext[] = [], integrityReceipt?: unknown, independenceFinding?: unknown, temporalApplicabilityFinding?: unknown, continuityFinding?: unknown) {
   const collection = collectBindingRequirements(input, coreInput, trust, contexts);
   const result: JsonRecord = { contract_version: "mesr-claim-state-projection/0.1", method_version: "mesr-claim-evaluation/0.1", status: collection.status === "COLLECTED" ? "EVALUATED" : "REJECTED",
     semantic_composition: "WITHHELD_FOR_T1_04", input_digest: collection.input_digest, checked_basis: collection.checked_basis, input_issues: collection.input_issues, claims: [] };
@@ -44,6 +45,7 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
     const c = structuredClone(collected), missing = [...c.missing_bindings];
     if (!time(c.provenance.evaluation_time)) missing.push("evaluation_time");
     let temporalFinding: JsonRecord | null = null;
+    const continuity = readContinuityFinding(continuityFinding, source, coreInput, trust, contexts, collection, c.path, temporalApplicabilityFinding);
     const positive: JsonRecord[] = [], negative: JsonRecord[] = [], undecidable: JsonRecord[] = [], conflicts: JsonRecord[] = [], stale: JsonRecord[] = [];
     const prohibitions = structuredClone(c.excluded_inferences), supplementalNonclaims: JsonRecord[] = [], ignored: JsonRecord[] = [];
     const entries = MESR_CORE_REGISTRY.filter(e => c.semantic_ids.includes(e.semantic_id) && e.version === c.semantic_version);
@@ -101,6 +103,15 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
       missing.push("independent_verification_basis");
       for (const key of ["verifier_principal", "separation", "custody"]) if (!source[key]) missing.push(key);
       if (!source.events?.some((e: JsonRecord) => e.result === "passed" && bound(e))) missing.push("verification_event");
+    } else if (continuity && ["standing.current", "authority.current"].includes(c.claim) && has("mesr.core.temporal.basis")) {
+      const finding = continuity.paths[c.path];
+      const fact = (evidence: JsonRecord) => ({ ref: proofRef(evidence), criterion: continuity.method, evidence });
+      missing.push(...finding.missing);
+      stale.push(...finding.losses.map(fact));
+      negative.push(...finding.negative.map(fact));
+      undecidable.push(...finding.undecidable.map(fact));
+      conflicts.push(...finding.conflicts);
+      positive.push(...finding.positive.map(fact));
     } else if (c.claim === "standing.current" && has("mesr.core.temporal.basis")) {
       temporalFinding = readTemporalApplicabilityFinding(temporalApplicabilityFinding, source, coreInput, trust, contexts, collection, c.path);
       if (!temporalFinding) missing.push("currentness");
@@ -144,6 +155,7 @@ export function evaluateClaims(input: unknown, coreInput: unknown, trust: Admiss
         const p = { ref: proofRef(proof), criterion: proof.criterion, proof: structuredClone(proof), evidence: structuredClone(evidence) };
         (evidence[proof.property] === proof.expected ? positive : negative).push(p);
       } else if (proof.criterion === "bound-applicability-loss/0.1" && c.claim === "standing.current" && has("mesr.core.temporal.basis") && witness(proof.historical_ref) && witness(proof.current_ref)) {
+        if (continuity) { ignored.push({ ref: proofRef(proof), reason: "LEGACY_CONTINUITY_ROUTE_ISOLATED", evidence: structuredClone(proof) }); continue; }
         if (temporalFinding) { ignored.push({ ref: proofRef(proof), reason: "LEGACY_TEMPORAL_ROUTE_ISOLATED", evidence: structuredClone(proof) }); continue; }
         const old = source.evidence_ledger[proof.historical_ref], now = source.evidence_ledger[proof.current_ref];
         if (time(old.time) && Date.parse(old.time) < Date.parse(proof.time) && old.applicable === true && now.time === proof.time && now.applicable === false && old.predicate === c.claim && now.predicate === c.claim && nonempty(old.source_ref) && nonempty(now.source_ref)) stale.push({ ref: proofRef(proof), criterion: proof.criterion, proof: structuredClone(proof), historical: structuredClone(old), current: structuredClone(now) });
