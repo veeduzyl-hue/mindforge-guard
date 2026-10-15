@@ -1,0 +1,56 @@
+{
+  "schema_version": "static-inventory-contract/v0.1",
+  "inventory_status": "PARTIAL",
+  "complete": false,
+  "assertions": [
+    {
+      "assertion_id": "SYN-A-1",
+      "case_id": "SYN-CASE-1",
+      "evidence_domain": "SYNTHETIC",
+      "owner": "SYN-OWNER",
+      "source_ref": {
+        "artifact_id": "SYN-SOURCE",
+        "pointer": "/bad~2"
+      },
+      "source_pointer": "/items/0",
+      "assertion_site": "SYN-CHECK-1",
+      "iteration_key": {
+        "scope": "SYN-LOOP",
+        "value": "0"
+      },
+      "expected_ref": {
+        "artifact_id": "SYN-EXPECTED",
+        "pointer": "/expected/0"
+      },
+      "comparator_route_ref": "SYN-R-CMP",
+      "control_route_ref": "SYN-R-CTL",
+      "applicability": "APPLICABLE"
+    }
+  ],
+  "routes": [
+    {
+      "route_id": "SYN-R-CMP",
+      "route_kind": "COMPARATOR",
+      "source_ref": {
+        "artifact_id": "SYN-ROUTES",
+        "pointer": "/comparator"
+      }
+    },
+    {
+      "route_id": "SYN-R-CTL",
+      "route_kind": "CONTROL",
+      "source_ref": {
+        "artifact_id": "SYN-ROUTES",
+        "pointer": "/control"
+      }
+    }
+  ],
+  "applicability": {
+    "status": "APPLICABLE",
+    "applicable_assertion_count": 1
+  },
+  "multiplicity": {
+    "assertion_count": 1,
+    "route_count": 2
+  }
+}
