@@ -1,0 +1,163 @@
+{
+  "schema_version": "github-pr-change-source-snapshot/v0.1",
+  "repository": {
+    "id": 101,
+    "full_name": "synthetic/adapter"
+  },
+  "pr_number": 42,
+  "inspected": {
+    "sha": "2222222222222222222222222222222222222222",
+    "selection_basis": {
+      "kind": "PR_COMMIT",
+      "source_locator": "https://api.github.com/repos/synthetic/adapter/pulls/42/commits?per_page=100&page=1",
+      "source_pointer": "/0/sha",
+      "explanation": "Synthetic caller explicitly selects first PR commit, distinct from head."
+    }
+  },
+  "responses": [
+    {
+      "kind": "pr",
+      "locator": "https://api.github.com/repos/synthetic/adapter/pulls/42",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": null,
+      "has_next": null,
+      "body": {
+        "number": 42,
+        "url": "https://api.github.com/repos/synthetic/adapter/pulls/42",
+        "html_url": "https://github.com/synthetic/adapter/pull/42",
+        "base": {
+          "sha": "1111111111111111111111111111111111111111",
+          "repo": {
+            "id": 101,
+            "full_name": "synthetic/adapter"
+          }
+        },
+        "head": {
+          "sha": "3333333333333333333333333333333333333333",
+          "repo": {
+            "id": 102,
+            "full_name": "synthetic-fork/adapter"
+          }
+        },
+        "merged": true,
+        "merge_commit_sha": "4444444444444444444444444444444444444444",
+        "created_at": "2026-10-15T12:00:00Z",
+        "updated_at": "2026-10-15T12:00:00Z",
+        "closed_at": "2026-10-15T12:00:00Z",
+        "merged_at": "2026-10-15T12:00:00Z",
+        "commits": 2,
+        "changed_files": 1
+      },
+      "raw_base64": "ewogICJudW1iZXIiOiA0MiwKICAidXJsIjogImh0dHBzOi8vYXBpLmdpdGh1Yi5jb20vcmVwb3Mvc3ludGhldGljL2FkYXB0ZXIvcHVsbHMvNDIiLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vc3ludGhldGljL2FkYXB0ZXIvcHVsbC80MiIsCiAgImJhc2UiOiB7CiAgICAic2hhIjogIjExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLAogICAgInJlcG8iOiB7CiAgICAgICJpZCI6IDEwMSwKICAgICAgImZ1bGxfbmFtZSI6ICJzeW50aGV0aWMvYWRhcHRlciIKICAgIH0KICB9LAogICJoZWFkIjogewogICAgInNoYSI6ICIzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzIiwKICAgICJyZXBvIjogewogICAgICAiaWQiOiAxMDIsCiAgICAgICJmdWxsX25hbWUiOiAic3ludGhldGljLWZvcmsvYWRhcHRlciIKICAgIH0KICB9LAogICJtZXJnZWQiOiB0cnVlLAogICJtZXJnZV9jb21taXRfc2hhIjogIjQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQiLAogICJjcmVhdGVkX2F0IjogIjIwMjYtMTAtMTVUMTI6MDA6MDBaIiwKICAidXBkYXRlZF9hdCI6ICIyMDI2LTEwLTE1VDEyOjAwOjAwWiIsCiAgImNsb3NlZF9hdCI6ICIyMDI2LTEwLTE1VDEyOjAwOjAwWiIsCiAgIm1lcmdlZF9hdCI6ICIyMDI2LTEwLTE1VDEyOjAwOjAwWiIsCiAgImNvbW1pdHMiOiAyLAogICJjaGFuZ2VkX2ZpbGVzIjogMQp9Cg=="
+    },
+    {
+      "kind": "commits",
+      "locator": "https://api.github.com/repos/synthetic/adapter/pulls/42/commits?per_page=100&page=1",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": 1,
+      "has_next": false,
+      "body": [
+        {
+          "sha": "2222222222222222222222222222222222222222",
+          "url": "https://api.github.com/repos/synthetic/adapter/commits/2222222222222222222222222222222222222222",
+          "parents": [
+            {
+              "sha": "1111111111111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "sha": "3333333333333333333333333333333333333333",
+          "url": "https://api.github.com/repos/synthetic/adapter/commits/3333333333333333333333333333333333333333",
+          "parents": [
+            {
+              "sha": "2222222222222222222222222222222222222222"
+            }
+          ]
+        }
+      ],
+      "raw_base64": null
+    },
+    {
+      "kind": "inspected_commit",
+      "locator": "https://api.github.com/repos/synthetic/adapter/commits/2222222222222222222222222222222222222222",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": null,
+      "has_next": null,
+      "body": {
+        "sha": "2222222222222222222222222222222222222222",
+        "url": "https://api.github.com/repos/synthetic/adapter/commits/2222222222222222222222222222222222222222",
+        "parents": [
+          {
+            "sha": "1111111111111111111111111111111111111111"
+          }
+        ]
+      },
+      "raw_base64": null
+    },
+    {
+      "kind": "files",
+      "locator": "https://api.github.com/repos/synthetic/adapter/pulls/42/files?per_page=100&page=1",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": 1,
+      "has_next": false,
+      "body": [
+        {
+          "filename": "src/synthetic.mjs",
+          "status": "modified",
+          "sha": "5555555555555555555555555555555555555555",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3
+        }
+      ],
+      "raw_base64": null
+    },
+    {
+      "kind": "check_runs",
+      "locator": "https://api.github.com/repos/synthetic/adapter/commits/2222222222222222222222222222222222222222/check-runs?per_page=100&page=1&filter=all",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": 1,
+      "has_next": false,
+      "body": {
+        "total_count": 1,
+        "check_runs": [
+          {
+            "id": 11,
+            "name": "synthetic-test",
+            "head_sha": "2222222222222222222222222222222222222222",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-10-15T12:00:00Z",
+            "completed_at": "2026-10-15T12:00:00Z"
+          }
+        ]
+      },
+      "raw_base64": null
+    },
+    {
+      "kind": "statuses",
+      "locator": "https://api.github.com/repos/synthetic/adapter/commits/2222222222222222222222222222222222222222/statuses?per_page=100&page=1",
+      "captured_at": "2026-10-16T00:00:00Z",
+      "state": "OBTAINED",
+      "page": 1,
+      "has_next": false,
+      "body": [
+        {
+          "id": 12,
+          "context": "synthetic-status",
+          "state": "success",
+          "url": "https://api.github.com/repos/synthetic/adapter/statuses/2222222222222222222222222222222222222222",
+          "created_at": "2026-10-15T12:00:00Z",
+          "updated_at": "2026-10-15T12:00:00Z"
+        }
+      ],
+      "raw_base64": null
+    }
+  ]
+}
