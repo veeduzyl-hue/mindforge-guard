@@ -23,6 +23,12 @@ guard --help
 
 Use the sample single-agent Evidence Pack to validate inputs and generate a deterministic report locally:
 
+The commands use a Sample Pack from this GitHub repository. A global npm
+installation does not include the repository's root `examples/` directory.
+Acquire the pinned source snapshot separately, then run the commands from the
+extracted repository root. See the [First Governance Report guide](./docs/product/current/first-governance-report.md)
+for the download, working directory, saved JSON, and human review steps.
+
 ```bash
 guard pack validate --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
 guard report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json
