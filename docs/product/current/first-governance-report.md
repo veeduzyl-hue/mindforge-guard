@@ -39,6 +39,12 @@ These commands use the installed `guard` CLI, not a source build. You can
 instead prepare a real Evidence Pack using [Bring your own workflow](bring-your-own-workflow.md)
 and substitute its path in the commands.
 
+> **Windows PowerShell 5.1 users:** Its native `>` redirection writes UTF-16LE (with
+> a BOM), rather than a UTF-8 JSON file. To save UTF-8 output for other JSON
+> tools, use the Windows-specific commands below **instead of** the two generic
+> redirection examples. This encoding difference was observed in the
+> [bounded Windows automation run](https://github.com/veeduzyl-hue/mindforge-guard/actions/runs/40627033967).
+
 ## Validate The Evidence Pack
 
 Use the sample single-agent Evidence Pack for a first local walkthrough:
@@ -83,6 +89,64 @@ command success. Inspect exit code, JSON output and stderr for each command.
 `guard-pack-validate.json` is the validation output;
 `guard-single-agent-report.json` is the Report Preview.
 
+## Windows PowerShell 5.1: Save UTF-8 JSON
+
+From Windows PowerShell 5.1, in the extracted source root containing `examples/`,
+use the following **alternative to the two generic `>` commands above**. The
+fixed literal sample path is intentional. `cmd.exe /d /c` performs the native
+stdout/stderr redirection without PowerShell 5.1's `Out-File` UTF-16LE
+re-encoding; it does not modify system settings or change Guard itself.
+
+```powershell
+cmd.exe /d /c 'guard pack validate --pack "examples\single-agent-governance-pack\hr-self-service-agent" --preview --json 1>"guard-pack-validate.json" 2>"guard-pack-validate.stderr.txt"'
+$packExit = $LASTEXITCODE
+if ($packExit -ne 0) {
+  Write-Warning ('Pack Validate exit code: ' + $packExit)
+  Get-Content -LiteralPath '.\guard-pack-validate.stderr.txt'
+  throw 'Sample Pack validation stopped. Inspect JSON validation_status, exit code, and stderr.'
+}
+$packResult = Get-Content -LiteralPath '.\guard-pack-validate.json' -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($packResult.validation_status -ne 'valid_with_no_omissions') {
+  throw ('Unexpected sample validation_status: ' + $packResult.validation_status)
+}
+
+cmd.exe /d /c 'guard report single-agent --pack "examples\single-agent-governance-pack\hr-self-service-agent" --preview --json 1>"guard-single-agent-report.json" 2>"guard-single-agent-report.stderr.txt"'
+$reportExit = $LASTEXITCODE
+if ($reportExit -ne 0) {
+  Write-Warning ('Single-Agent Report exit code: ' + $reportExit)
+  Get-Content -LiteralPath '.\guard-single-agent-report.stderr.txt'
+  throw 'Sample report generation stopped. Inspect exit code, JSON, and stderr.'
+}
+$reportResult = Get-Content -LiteralPath '.\guard-single-agent-report.json' -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($reportResult.report_mode -ne 'preview' -or
+    $reportResult.review_posture -ne 'ready_for_review' -or
+    $reportResult.deterministic_hash -ne $packResult.deterministic_pack_hash) {
+  throw 'Unexpected report mode, review posture, or Pack/Report hash mismatch.'
+}
+```
+
+These commands capture the Guard CLI's native redirected output files without
+PowerShell 5.1 rewriting stdout as UTF-16LE. The JSON files are expected to be
+UTF-8 for the published Node.js CLI; check their actual bytes/encoding when
+using them for evidence or interoperability claims. The `.stderr.txt` files
+retain separate diagnostics, and `$LASTEXITCODE` records the exit code of each
+`cmd.exe` invocation. Do not treat the presence of a JSON file as success.
+
+For the fixed synthetic Sample Pack, the expected exit code for each command
+is `0`; the validation status should be `valid_with_no_omissions` and the report
+review posture `ready_for_review`. For other Packs, Pack Validate exit code
+`2` may mean `valid_with_limitations` **or** a usage error; inspect the JSON
+`validation_status` and stderr as well as the exit code. Review omissions and
+limitations before relying on an output. Redirected files are overwritten by
+a repeat run; choose a fresh working directory if earlier artifacts must
+be retained.
+
+Windows PowerShell 5.1 `Out-File -Encoding utf8` writes UTF-8 **with a BOM**,
+which is not the same as BOM-free UTF-8. See Microsoft's
+[PowerShell 5.1 encoding guidance](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding?view=powershell-5.1).
+This documentation-only alternative has not undergone a separate human
+Windows first-user walkthrough. It does not change the v7.0.1 npm package,
+CLI behavior, approval boundaries, or the earlier automated test receipt.
 ## Read The Report
 
 Read the output through these review layers:
