@@ -1,0 +1,254 @@
+name: PR348 Windows PowerShell 5.1 Exact Command Validation
+
+on:
+  push:
+    branches:
+      - validation/pr348-exact-ps51-test-20261028-v0.1
+    paths:
+      - .github/workflows/pr348-ps51-exact-commands-v0.1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  exact-commands:
+    if: github.run_attempt == 1 && github.event.head_commit.message == 'pr348-ps51-exact-command-single-run-v0.1'
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare isolated npm and pinned synthetic sample
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version 2.0
+          $root = Join-Path $env:RUNNER_TEMP ('PR348_PS51_Exact_' + $env:GITHUB_RUN_ID + '_' + $env:GITHUB_RUN_ATTEMPT)
+          $evidence = Join-Path $root 'evidence'
+          $archive = Join-Path $root 'source-archive.zip'
+          $sourceArea = Join-Path $root 'source'
+          $pkgPrefix = Join-Path $root 'npm-prefix'
+          New-Item -ItemType Directory -Force -Path $evidence, $sourceArea, $pkgPrefix | Out-Null
+          $env:npm_config_prefix = $pkgPrefix
+          $env:npm_config_cache = Join-Path $root 'npm-cache'
+          $env:npm_config_userconfig = Join-Path $root 'npm-user-config'
+          $env:npm_config_globalconfig = Join-Path $root 'npm-global-config'
+          $env:npm_config_registry = 'https://registry.npmjs.org/'
+          $env:npm_config_audit = 'false'
+          $env:npm_config_fund = 'false'
+          $env:npm_config_update_notifier = 'false'
+          $setup = [ordered]@{
+            test='PR348_PS51_EXACT_COMMANDS_V0_1'
+            source_pr_head='ad6d2bfa27396244d8d4750e937522478ddf8b23'
+            source_guide_blob='7bd3df5db66113a1d9da307d48732d3f6f445d7e'
+            user_commands='exact_unmodified_25_line_block_from_pr348'
+            sample_commit='6ac3401db09f3ecd4499e09e3bd9ce81abbcab46'
+            sample_tree='f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1'
+            os=[Environment]::OSVersion.VersionString
+            powershell=$PSVersionTable.PSVersion.ToString()
+            run_id=$env:GITHUB_RUN_ID
+            stage='preflight'
+            result='INCONCLUSIVE'
+          }
+          try {
+            if ($PSVersionTable.PSVersion.ToString() -notmatch '^5\.1\.') { throw 'POWERSHELL_5_1_REQUIRED' }
+            $setup.node = (& node.exe --version | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0 -or -not $setup.node.StartsWith('v24.')) { throw 'NODE_24_REQUIRED' }
+            $setup.npm = (& npm.cmd --version | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0) { throw 'NPM_VERSION_UNAVAILABLE' }
+            $setup.stage='npm_install'
+            & npm.cmd install -g '@veeduzyl/mindforge-guard@7.0.1' --no-audit --no-fund
+            $setup.npm_install_exit=$LASTEXITCODE
+            if ($setup.npm_install_exit -ne 0) { throw 'NPM_INSTALL_FAILED' }
+            $shim = Join-Path $pkgPrefix 'guard.cmd'
+            if (-not (Test-Path -LiteralPath $shim -PathType Leaf)) { throw 'ISOLATED_GUARD_CMD_SHIM_ABSENT' }
+            $installed = Join-Path $pkgPrefix 'node_modules/@veeduzyl/mindforge-guard/package.json'
+            if (-not (Test-Path -LiteralPath $installed -PathType Leaf)) { throw 'INSTALLED_PACKAGE_MANIFEST_ABSENT' }
+            $manifest = Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
+            if ($manifest.name -ne '@veeduzyl/mindforge-guard' -or $manifest.version -ne '7.0.1') { throw 'INSTALLED_PACKAGE_IDENTITY_MISMATCH' }
+            $setup.stage='fixed_sample_download'
+            $url='https://github.com/veeduzyl-hue/mindforge-guard/archive/6ac3401db09f3ecd4499e09e3bd9ce81abbcab46.zip'
+            Invoke-WebRequest -Uri $url -OutFile $archive -UseBasicParsing
+            $setup.source_url=$url
+            $setup.source_zip_sha256=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+            Expand-Archive -LiteralPath $archive -DestinationPath $sourceArea
+            $src=Join-Path $sourceArea 'mindforge-guard-6ac3401db09f3ecd4499e09e3bd9ce81abbcab46'
+            $sample=Join-Path $src 'examples/single-agent-governance-pack/hr-self-service-agent'
+            if (-not (Test-Path -LiteralPath $sample -PathType Container)) { throw 'SAMPLE_PACK_ROOT_NOT_FOUND' }
+            $expected=@{
+             'README.md'='65c89252030ae6b969651e544eb84500bf7159dd'
+             'action-boundary.yaml'='baba3e7179d876661da48916c089c068f185913e'
+             'agent-profile.json'='6844af265ad8472963867f8cf6e226b6502f78dd'
+             'data-sources.yaml'='e17701b296860f8ee8bd6be9d67df96777daaf11'
+             'evidence/run-record.json'='79d2d90fabff2c68e3a69e82c85551a5e6605fa8'
+             'evidence/sample-output.json'='8c64014440c247816dff19e175b844f4462dedf1'
+             'manifest.json'='865b6cac70518ec5846dce19fb0b8ff0db8cb031'
+             'review-standards.md'='ec724b5f606ebaf6399a7351d476c0141ebf6e58'
+             'snapshot.json'='ac01d2d50fadcc74cd84dd0f4605e55cc6ae417c'
+             'task-scope.md'='ac9f702548d94457dc9921431875b13e212e2170'
+             'tools.yaml'='0c18dddf4ddcd07a499fec1a44b4bcafa69ad495'
+            }
+            $files = @(Get-ChildItem -LiteralPath $sample -File -Recurse)
+            if ($files.Count -ne 11) { throw 'SAMPLE_FILE_COUNT_NOT_11' }
+            $sha1=[Security.Cryptography.SHA1]::Create()
+            try {
+             foreach($relative in ($expected.Keys | Sort-Object)){
+               $sourceFile=Join-Path $sample $relative
+               if(-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)){throw ('SAMPLE_MISSING_'+$relative)}
+               $raw=[IO.File]::ReadAllBytes($sourceFile)
+               $prefix=[Text.Encoding]::ASCII.GetBytes(('blob '+$raw.Length+[char]0))
+               $contents=New-Object byte[] ($prefix.Length+$raw.Length)
+               [Array]::Copy($prefix,0,$contents,0,$prefix.Length)
+               [Array]::Copy($raw,0,$contents,$prefix.Length,$raw.Length)
+               $actual=([BitConverter]::ToString($sha1.ComputeHash($contents))).Replace('-','').ToLowerInvariant()
+               if($actual -cne $expected[$relative]){throw ('SAMPLE_BLOB_MISMATCH_'+$relative)}
+             }
+            } finally { $sha1.Dispose() }
+            $setup.sample_files_verified=11
+            $setup.sample_verification='11_GIT_BLOB_SHA1_MATCH'
+            $setup.result='INPUT_READY'
+            $setup.stage='ready'
+          } catch {
+            $setup.result='INPUT_FAILED'
+            $setup.error=$_.Exception.Message
+            throw
+          } finally {
+            $json=$setup | ConvertTo-Json -Depth 7
+            [IO.File]::WriteAllText((Join-Path $evidence 'input-identity.json'),$json,(New-Object Text.UTF8Encoding($false)))
+          }
+      - name: Run EXACT unmodified PR348 PowerShell 5.1 block
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP ('PR348_PS51_Exact_' + $env:GITHUB_RUN_ID + '_' + $env:GITHUB_RUN_ATTEMPT)
+          $evidence = Join-Path $root 'evidence'
+          $src = Join-Path (Join-Path $root 'source') 'mindforge-guard-6ac3401db09f3ecd4499e09e3bd9ce81abbcab46'
+          $env:PATH = (Join-Path $root 'npm-prefix') + ';' + $env:PATH
+          if(-not (Test-Path -LiteralPath (Join-Path $root 'npm-prefix/guard.cmd') -PathType Leaf)){throw 'INSTALLED_GUARD_NOT_AVAILABLE'}
+          if(-not (Test-Path -LiteralPath $src -PathType Container)){throw 'PINNED_SAMPLE_SOURCE_NOT_AVAILABLE'}
+          Push-Location -LiteralPath $src
+          try {
+            cmd.exe /d /c 'guard pack validate --pack "examples\single-agent-governance-pack\hr-self-service-agent" --preview --json 1>"guard-pack-validate.json" 2>"guard-pack-validate.stderr.txt"'
+            $packExit = $LASTEXITCODE
+            if ($packExit -ne 0) {
+              Write-Warning ('Pack Validate exit code: ' + $packExit)
+              Get-Content -LiteralPath '.\guard-pack-validate.stderr.txt'
+              throw 'Sample Pack validation stopped. Inspect JSON validation_status, exit code, and stderr.'
+            }
+            $packResult = Get-Content -LiteralPath '.\guard-pack-validate.json' -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($packResult.validation_status -ne 'valid_with_no_omissions') {
+              throw ('Unexpected sample validation_status: ' + $packResult.validation_status)
+            }
+            
+            cmd.exe /d /c 'guard report single-agent --pack "examples\single-agent-governance-pack\hr-self-service-agent" --preview --json 1>"guard-single-agent-report.json" 2>"guard-single-agent-report.stderr.txt"'
+            $reportExit = $LASTEXITCODE
+            if ($reportExit -ne 0) {
+              Write-Warning ('Single-Agent Report exit code: ' + $reportExit)
+              Get-Content -LiteralPath '.\guard-single-agent-report.stderr.txt'
+              throw 'Sample report generation stopped. Inspect exit code, JSON, and stderr.'
+            }
+            $reportResult = Get-Content -LiteralPath '.\guard-single-agent-report.json' -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($reportResult.report_mode -ne 'preview' -or
+                $reportResult.review_posture -ne 'ready_for_review' -or
+                $reportResult.deterministic_hash -ne $packResult.deterministic_pack_hash) {
+              throw 'Unexpected report mode, review posture, or Pack/Report hash mismatch.'
+            }
+          } finally {
+            if(Get-Variable -Name packExit -ErrorAction SilentlyContinue){[IO.File]::WriteAllText((Join-Path $evidence 'pack-exit.txt'),[string]$packExit,(New-Object Text.UTF8Encoding($false)))}
+            if(Get-Variable -Name reportExit -ErrorAction SilentlyContinue){[IO.File]::WriteAllText((Join-Path $evidence 'report-exit.txt'),[string]$reportExit,(New-Object Text.UTF8Encoding($false)))}
+            foreach($f in @('guard-pack-validate.json','guard-pack-validate.stderr.txt','guard-single-agent-report.json','guard-single-agent-report.stderr.txt')){
+              if(Test-Path -LiteralPath $f -PathType Leaf){Copy-Item -LiteralPath $f -Destination (Join-Path $evidence $f)}
+            }
+            Pop-Location
+          }
+      - name: Inspect native CMD redirects and capture bounded receipt
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root=Join-Path $env:RUNNER_TEMP ('PR348_PS51_Exact_' + $env:GITHUB_RUN_ID + '_' + $env:GITHUB_RUN_ATTEMPT)
+          $evidence=Join-Path $root 'evidence'
+          if(-not (Test-Path -LiteralPath $evidence -PathType Container)){New-Item -ItemType Directory -Force -Path $evidence | Out-Null}
+          $result=[ordered]@{
+           test_id='PR348_PS51_EXACT_COMMANDS_V0_1'
+           pr=348
+           pr_head='ad6d2bfa27396244d8d4750e937522478ddf8b23'
+           pr_guide_blob='7bd3df5db66113a1d9da307d48732d3f6f445d7e'
+           runner='windows-2022'
+           run_id=$env:GITHUB_RUN_ID
+           powershell=$PSVersionTable.PSVersion.ToString()
+           file_observations=@()
+           status='INCONCLUSIVE'
+           human_first_user='NOT_TESTED'
+           production_assurance='NOT_ESTABLISHED'
+          }
+          try {
+            if($result.powershell -notmatch '^5\.1\.') {throw 'POWERSHELL_VERSION_NOT_5_1'}
+            $strictUtf8=New-Object Text.UTF8Encoding($false,$true)
+            $parsed=@{}
+            foreach($name in @('guard-pack-validate.json','guard-single-agent-report.json')){
+              $path=Join-Path $evidence $name
+              if(-not(Test-Path -LiteralPath $path -PathType Leaf)){throw ('OUTPUT_MISSING_'+$name)}
+              $bytes=[IO.File]::ReadAllBytes($path)
+              if($bytes.Length -lt 2){throw ('OUTPUT_EMPTY_'+$name)}
+              $isUtf16LE=($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE)
+              $isUtf8Bom=($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+              $rawtext=$strictUtf8.GetString($bytes)
+              $json=ConvertFrom-Json -InputObject $rawtext -ErrorAction Stop
+              $parsed[$name]=$json
+              $result.file_observations += [ordered]@{
+                filename=$name
+                size_bytes=$bytes.Length
+                sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+                utf16le_bom=$isUtf16LE
+                utf8_bom=$isUtf8Bom
+                strict_utf8_decoded=$true
+                json_parse_pass=$true
+                first_8_hex=[BitConverter]::ToString($bytes,0,[Math]::Min(8,$bytes.Length))
+              }
+              if($isUtf16LE -or $isUtf8Bom){throw ('UNEXPECTED_BOM_'+$name)}
+            }
+            foreach($name in @('guard-pack-validate.stderr.txt','guard-single-agent-report.stderr.txt')){
+              $path=Join-Path $evidence $name
+              if(-not(Test-Path -LiteralPath $path -PathType Leaf)){throw ('STDERR_MISSING_'+$name)}
+              $result.file_observations += [ordered]@{
+                filename=$name
+                size_bytes=(Get-Item -LiteralPath $path).Length
+                sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+              }
+            }
+            $packExitFile=Join-Path $evidence 'pack-exit.txt'
+            $reportExitFile=Join-Path $evidence 'report-exit.txt'
+            if(-not(Test-Path -LiteralPath $packExitFile -PathType Leaf) -or -not(Test-Path -LiteralPath $reportExitFile -PathType Leaf)){throw 'EXIT_CODE_RECEIPT_MISSING'}
+            $result.pack_exit=[int]([IO.File]::ReadAllText($packExitFile))
+            $result.report_exit=[int]([IO.File]::ReadAllText($reportExitFile))
+            $p=$parsed['guard-pack-validate.json']
+            $r=$parsed['guard-single-agent-report.json']
+            $result.validation_status=$p.validation_status
+            $result.review_posture=$r.review_posture
+            $result.report_mode=$r.report_mode
+            $result.hash_match=($p.deterministic_pack_hash -ceq $r.deterministic_hash)
+            $result.recommendation_only=$r.non_enforcement_boundary.recommendation_only
+            $result.non_executing=$r.non_enforcement_boundary.non_executing
+            if($result.pack_exit -ne 0 -or $result.report_exit -ne 0){throw 'NONZERO_EXIT'}
+            if($result.validation_status -ne 'valid_with_no_omissions' -or @($p.omissions).Count -ne 0 -or @($p.limitations).Count -ne 0 -or @($p.parser_warnings).Count -ne 0){throw 'PACK_PREVIEW_NOT_FULLY_VALID'}
+            if($result.report_mode -ne 'preview' -or $result.review_posture -ne 'ready_for_review' -or -not $result.hash_match){throw 'REPORT_POSTURE_OR_HASH_MISMATCH'}
+            if($result.recommendation_only -ne $true -or $result.non_executing -ne $true){throw 'NON_ENFORCEMENT_POSTURE_MISMATCH'}
+            $result.status='PASS_BOUNDED_EXACT_COMMANDS'
+          } catch {
+            $result.status='FAIL_OR_INCONCLUSIVE'
+            $result.error=$_.Exception.Message
+            throw
+          } finally {
+            [IO.File]::WriteAllText((Join-Path $evidence 'pr348-exact-command-receipt.json'),($result | ConvertTo-Json -Depth 10),(New-Object Text.UTF8Encoding($false)))
+          }
+      - name: Upload bounded evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr348-ps51-exact-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/PR348_PS51_Exact_${{ github.run_id }}_${{ github.run_attempt }}/evidence/
+          retention-days: 14
+          if-no-files-found: warn
