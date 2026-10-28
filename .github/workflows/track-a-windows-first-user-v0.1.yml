@@ -1,0 +1,222 @@
+name: Track A Windows First-User One-Shot v0.1
+
+on:
+  push:
+    branches:
+      - validation/track-a-windows-first-user-20261028-v0.1
+    paths:
+      - .github/workflows/track-a-windows-first-user-v0.1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  windows-first-user:
+    if: github.run_attempt == 1 && github.event.head_commit.message == 'windows-first-user-one-shot-v0.1'
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - name: Set up Node 24 for a fresh isolated npm installation
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Allocate isolated evidence directory
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP ('MF_Guard_Windows_First_User_v0_1_' + $env:GITHUB_RUN_ID + '_' + $env:GITHUB_RUN_ATTEMPT)
+          New-Item -ItemType Directory -Path (Join-Path $root 'evidence') -Force | Out-Null
+          ('MF_FIRST_USER_ROOT=' + $root) | Out-File -FilePath $env:GITHUB_ENV -Encoding ascii -Append
+      - name: Fresh npm install, fixed sample, PowerShell 5.1 report
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version 2.0
+          $root = $env:MF_FIRST_USER_ROOT
+          $evidence = Join-Path $root 'evidence'
+          $downloads = Join-Path $root 'downloads'
+          $source = Join-Path $root 'source'
+          New-Item -ItemType Directory -Path $downloads, $source -Force | Out-Null
+          $env:npm_config_prefix = Join-Path $root 'npm-prefix'
+          $env:npm_config_cache = Join-Path $root 'npm-cache'
+          $env:npm_config_registry = 'https://registry.npmjs.org/'
+          $env:npm_config_userconfig = Join-Path $root 'npm-user-config'
+          $env:npm_config_globalconfig = Join-Path $root 'npm-global-config'
+          $env:npm_config_update_notifier = 'false'
+          $env:npm_config_audit = 'false'
+          $env:npm_config_fund = 'false'
+
+          $sampleSha = '6ac3401db09f3ecd4499e09e3bd9ce81abbcab46'
+          $guideSha = '0785b84d8e5687a7b5842c6d7f8f80ef09947b35'
+          $packRel = 'examples/single-agent-governance-pack/hr-self-service-agent'
+          $receipt = [ordered]@{
+            test_id = 'TRACK_A_WINDOWS_AUTOMATED_FIRST_INSTALL_V0_1'
+            intended_scope = 'one-shot GitHub-hosted Windows automation; NOT a human first-user acceptance'
+            baseline_main = $guideSha
+            sample_commit = $sampleSha
+            sample_pack_tree = 'f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1'
+            registry_package = '@veeduzyl/mindforge-guard@7.0.1'
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            actor = $env:GITHUB_ACTOR
+            host_principal = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+            os = [Environment]::OSVersion.VersionString
+            ps_version = $PSVersionTable.PSVersion.ToString()
+            output_root = $root
+            stage = 'preflight'
+            result = 'INCONCLUSIVE'
+            commands = @()
+          }
+          function GitBlobOid([string]$filePath) {
+            $raw = [IO.File]::ReadAllBytes($filePath)
+            $prefix = [Text.Encoding]::ASCII.GetBytes(('blob ' + $raw.Length + [char]0))
+            $buffer = New-Object byte[] ($prefix.Length + $raw.Length)
+            [Array]::Copy($prefix, 0, $buffer, 0, $prefix.Length)
+            [Array]::Copy($raw, 0, $buffer, $prefix.Length, $raw.Length)
+            $hasher = [Security.Cryptography.SHA1]::Create()
+            try { return ([BitConverter]::ToString($hasher.ComputeHash($buffer))).Replace('-', '').ToLowerInvariant() }
+            finally { $hasher.Dispose() }
+          }
+          function InspectJsonFile([string]$filePath) {
+            $b = [IO.File]::ReadAllBytes($filePath)
+            $encoding = 'UNKNOWN'
+            if ($b.Length -ge 2 -and $b[0] -eq 255 -and $b[1] -eq 254) { $encoding = 'UTF-16LE-BOM' }
+            elseif ($b.Length -ge 3 -and $b[0] -eq 239 -and $b[1] -eq 187 -and $b[2] -eq 191) { $encoding = 'UTF-8-BOM' }
+            $utf8JsonReadable = $false
+            try {
+              $strictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+              $decoded = $strictUtf8.GetString($b)
+              $null = ConvertFrom-Json -InputObject $decoded -ErrorAction Stop
+              $utf8JsonReadable = $true
+            } catch { $utf8JsonReadable = $false }
+            return [ordered]@{
+              size_bytes = $b.Length
+              sha256 = (Get-FileHash -LiteralPath $filePath -Algorithm SHA256).Hash.ToLowerInvariant()
+              bom_encoding = $encoding
+              strict_utf8_json_parse = $utf8JsonReadable
+              shell_redirected = $true
+              native_stdout_original_bytes_claimed = $false
+            }
+          }
+          try {
+            if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'WINDOWS_POWERSHELL_5_1_REQUIRED' }
+            $nodeVersion = ((& node.exe --version) | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0 -or -not $nodeVersion.StartsWith('v24.')) { throw 'NODE_24_REQUIRED' }
+            $npmVersion = ((& npm.cmd --version) | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0) { throw 'NPM_VERSION_FAILED' }
+            $receipt.node_version = $nodeVersion
+            $receipt.npm_version = $npmVersion
+            $receipt.stage = 'registry_identity'
+            $integrity = ((& npm.cmd view '@veeduzyl/mindforge-guard@7.0.1' dist.integrity) | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0 -or $integrity -notmatch '^sha512-[A-Za-z0-9+/=]+$') { throw 'REGISTRY_INTEGRITY_UNAVAILABLE' }
+            $receipt.registry_integrity_observed = $integrity
+            $tarName = ((& npm.cmd pack '@veeduzyl/mindforge-guard@7.0.1' --pack-destination $downloads --silent) | Select-Object -Last 1).Trim()
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($tarName)) { throw 'NPM_PACK_FAILED' }
+            $tgz = Join-Path $downloads $tarName
+            if (-not (Test-Path -LiteralPath $tgz -PathType Leaf)) { throw 'NPM_PACK_TARBALL_MISSING' }
+            $sh = [Security.Cryptography.SHA512]::Create()
+            try { $calculated = 'sha512-' + [Convert]::ToBase64String($sh.ComputeHash([IO.File]::ReadAllBytes($tgz))) }
+            finally { $sh.Dispose() }
+            $receipt.registry_tarball_sha256 = (Get-FileHash -LiteralPath $tgz -Algorithm SHA256).Hash.ToLowerInvariant()
+            $receipt.registry_integrity_match = ($calculated -ceq $integrity)
+            if (-not $receipt.registry_integrity_match) { throw 'NPM_TARBALL_INTEGRITY_MISMATCH' }
+            $receipt.stage = 'install'
+            & npm.cmd install -g '@veeduzyl/mindforge-guard@7.0.1' --no-audit --no-fund
+            $installExit = $LASTEXITCODE
+            $receipt.commands += [ordered]@{ command = 'npm install -g @veeduzyl/mindforge-guard@7.0.1 --no-audit --no-fund'; exit_code = $installExit }
+            if ($installExit -ne 0) { throw 'NPM_GLOBAL_INSTALL_FAILED' }
+            $guardCmd = Join-Path $env:npm_config_prefix 'guard.cmd'
+            $installedPackage = Join-Path $env:npm_config_prefix 'node_modules/@veeduzyl/mindforge-guard/package.json'
+            if (-not (Test-Path -LiteralPath $guardCmd -PathType Leaf) -or -not (Test-Path -LiteralPath $installedPackage -PathType Leaf)) { throw 'INSTALLED_CLI_NOT_FOUND' }
+            $installedInfo = Get-Content -LiteralPath $installedPackage -Raw | ConvertFrom-Json
+            if ($installedInfo.version -ne '7.0.1' -or $installedInfo.name -ne '@veeduzyl/mindforge-guard') { throw 'INSTALLED_IDENTITY_MISMATCH' }
+            $receipt.installed_package_version = $installedInfo.version
+            $receipt.stage = 'download_sample'
+            $sampleUrl = 'https://github.com/veeduzyl-hue/mindforge-guard/archive/' + $sampleSha + '.zip'
+            $zip = Join-Path $downloads 'pinned-source.zip'
+            Invoke-WebRequest -Uri $sampleUrl -OutFile $zip -UseBasicParsing
+            if (-not (Test-Path -LiteralPath $zip -PathType Leaf)) { throw 'SAMPLE_ZIP_NOT_OBTAINED' }
+            $receipt.sample_zip_source = $sampleUrl
+            $receipt.sample_zip_sha256_observed = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+            $receipt.sample_zip_expected_sha256 = 'NOT_PREPINNED'
+            Expand-Archive -LiteralPath $zip -DestinationPath $source
+            $extractedRoot = Join-Path $source ('mindforge-guard-' + $sampleSha)
+            $pack = Join-Path $extractedRoot $packRel
+            if (-not (Test-Path -LiteralPath $pack -PathType Container)) { throw 'SAMPLE_PACK_PATH_MISSING' }
+            $receipt.stage = 'verify_sample_blobs'
+            $expected = @{
+              'README.md' = '65c89252030ae6b969651e544eb84500bf7159dd'
+              'action-boundary.yaml' = 'baba3e7179d876661da48916c089c068f185913e'
+              'agent-profile.json' = '6844af265ad8472963867f8cf6e226b6502f78dd'
+              'data-sources.yaml' = 'e17701b296860f8ee8bd6be9d67df96777daaf11'
+              'evidence/run-record.json' = '79d2d90fabff2c68e3a69e82c85551a5e6605fa8'
+              'evidence/sample-output.json' = '8c64014440c247816dff19e175b844f4462dedf1'
+              'manifest.json' = '865b6cac70518ec5846dce19fb0b8ff0db8cb031'
+              'review-standards.md' = 'ec724b5f606ebaf6399a7351d476c0141ebf6e58'
+              'snapshot.json' = 'ac01d2d50fadcc74cd84dd0f4605e55cc6ae417c'
+              'task-scope.md' = 'ac9f702548d94457dc9921431875b13e212e2170'
+              'tools.yaml' = '0c18dddf4ddcd07a499fec1a44b4bcafa69ad495'
+            }
+            $actualFiles = @(Get-ChildItem -LiteralPath $pack -Recurse -File)
+            if ($actualFiles.Count -ne 11) { throw ('SAMPLE_FILE_COUNT_MISMATCH_' + $actualFiles.Count) }
+            foreach ($rel in ($expected.Keys | Sort-Object)) {
+              $f = Join-Path $pack $rel
+              if (-not (Test-Path -LiteralPath $f -PathType Leaf)) { throw ('SAMPLE_FILE_MISSING_' + $rel) }
+              if ((GitBlobOid $f) -cne $expected[$rel]) { throw ('SAMPLE_BLOB_IDENTITY_MISMATCH_' + $rel) }
+            }
+            $receipt.sample_blob_readback = '11_OF_11_MATCH_GIT_BLOB_SHA1'
+            $receipt.stage = 'cli_first_use'
+            Push-Location -LiteralPath $extractedRoot
+            try {
+              & $guardCmd --version > (Join-Path $evidence 'guard-version.txt') 2> (Join-Path $evidence 'guard-version-stderr.txt')
+              $versionExit = $LASTEXITCODE
+              $receipt.commands += [ordered]@{ command = 'guard --version'; exit_code = $versionExit }
+              if ($versionExit -ne 0) { throw 'GUARD_VERSION_EXIT_NONZERO' }
+              & $guardCmd pack validate --pack $packRel --preview --json > (Join-Path $evidence 'guard-pack-validate.json') 2> (Join-Path $evidence 'pack-stderr.txt')
+              $validateExit = $LASTEXITCODE
+              $receipt.commands += [ordered]@{ command = 'guard pack validate --pack <sample> --preview --json'; exit_code = $validateExit }
+              $validateFile = Join-Path $evidence 'guard-pack-validate.json'
+              $receipt.validate_output = InspectJsonFile $validateFile
+              $validate = Get-Content -LiteralPath $validateFile -Raw | ConvertFrom-Json
+              $receipt.validation_status = $validate.validation_status
+              $receipt.validate_omissions = @($validate.omissions).Count
+              $receipt.validate_limitations = @($validate.limitations).Count
+              $receipt.validate_warnings = @($validate.parser_warnings).Count
+              if ($validateExit -ne 0 -or $validate.validation_status -ne 'valid_with_no_omissions' -or @($validate.omissions).Count -ne 0 -or @($validate.limitations).Count -ne 0) { throw 'VALIDATE_EXPECTATION_FAILED' }
+              & $guardCmd report single-agent --pack $packRel --preview --json > (Join-Path $evidence 'guard-single-agent-report.json') 2> (Join-Path $evidence 'report-stderr.txt')
+              $reportExit = $LASTEXITCODE
+              $receipt.commands += [ordered]@{ command = 'guard report single-agent --pack <sample> --preview --json'; exit_code = $reportExit }
+              $reportFile = Join-Path $evidence 'guard-single-agent-report.json'
+              $receipt.report_output = InspectJsonFile $reportFile
+              $report = Get-Content -LiteralPath $reportFile -Raw | ConvertFrom-Json
+              $receipt.report_mode = $report.report_mode
+              $receipt.review_posture = $report.review_posture
+              $receipt.pack_report_hash_equal = ($report.deterministic_hash -ceq $validate.deterministic_pack_hash)
+              $receipt.recommendation_only = $report.non_enforcement_boundary.recommendation_only
+              $receipt.non_executing = $report.non_enforcement_boundary.non_executing
+              if ($reportExit -ne 0 -or $report.report_mode -ne 'preview' -or $report.review_posture -ne 'ready_for_review' -or -not $receipt.pack_report_hash_equal -or $receipt.recommendation_only -ne $true -or $receipt.non_executing -ne $true) { throw 'REPORT_EXPECTATION_FAILED' }
+              $receipt.result = 'PASS_BOUNDED_AUTOMATED_WINDOWS_FIRST_INSTALL'
+              $receipt.stage = 'completed'
+            } finally { Pop-Location }
+          } catch {
+            $receipt.error = $_.Exception.Message
+            $receipt.result = 'FAIL_OR_INCONCLUSIVE'
+            Write-Error ('WINDOWS_FIRST_USER_TEST_STOP: ' + $_.Exception.Message)
+            throw
+          } finally {
+            $receipt.shell_output_note = 'Guard command outputs are PowerShell 5.1 redirected bytes; not asserted as untouched child stdout bytes.'
+            $receipt.human_first_user_acceptance = 'NOT_TESTED'
+            $receipt.production_assurance = 'NOT_ESTABLISHED'
+            $receipt.repository_main_mutated = $false
+            $receipt.ci_linux_smoke_repeated = $false
+            $receiptJson = $receipt | ConvertTo-Json -Depth 9
+            [IO.File]::WriteAllText((Join-Path $evidence 'windows-first-user-receipt.json'), $receiptJson, (New-Object System.Text.UTF8Encoding($false)))
+          }
+      - name: Upload bounded evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-a-windows-first-user-v0.1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/MF_Guard_Windows_First_User_v0_1_${{ github.run_id }}_${{ github.run_attempt }}/evidence/
+          retention-days: 14
+          if-no-files-found: warn
