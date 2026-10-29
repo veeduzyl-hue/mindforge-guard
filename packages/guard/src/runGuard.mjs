@@ -160,6 +160,7 @@ function renderGuardHelp() {
     "  guard snapshot .",
     "  guard action classify --text \"<string>\"",
     "  guard report single-agent --preview --json --fixture-file <file>",
+    "  guard report render --input <report.json> --out <report.html> --format html",
     "  guard guardrail map --preview --json --fixture-file <file>",
     "  guard transition explain --preview --json --fixture-file <file>",
     "",
