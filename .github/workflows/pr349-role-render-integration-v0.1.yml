@@ -1,0 +1,225 @@
+name: PR349 English role report integration — one shot
+
+on:
+  push:
+    branches:
+      - validation/pr349-integration-20261029-v0.1
+    paths:
+      - .github/workflows/pr349-role-render-integration-v0.1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  linux-regression:
+    if: github.run_attempt == 1 && github.event.head_commit.message == 'pr349-role-render-one-shot-ci-v0.1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify existing Guard and role renderer on Linux
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/pr349-linux-evidence"
+          set -euo pipefail
+          node --version
+          npm --version
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --check packages/guard/src/presentation/role_based_html_report.mjs
+          node --check packages/guard/src/cli/report_render_html.mjs
+          node --check packages/guard/src/cli/report.mjs
+          node --check packages/guard/src/runGuard.mjs
+          node --check scripts/verify_v7_role_based_report_render.mjs
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_v7_0_pack_parser_preview.mjs
+          node scripts/verify_v7_0_cli_pack_validate_preview.mjs
+          node scripts/verify_v7_0_report_single_agent_preview.mjs
+          node scripts/verify_v7_0_single_agent_governance_report_cli_preview.mjs
+          node scripts/verify_v7_0_single_agent_governance_report_preview.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          npm pack --workspace @veeduzyl/mindforge-guard --dry-run --json > "$RUNNER_TEMP/pr349-npm-pack-dry-run.json"
+          node -e 'const fs=require("node:fs"); const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"))[0];const names=new Set(p.files.map(x=>x.path));for(const f of ["bin/guard.mjs","src/runGuard.mjs","src/cli/report.mjs","src/cli/report_render_html.mjs","src/presentation/role_based_html_report.mjs"])if(!names.has(f))throw new Error("PACKAGING_MISSING:"+f); console.log("PASS: targeted packaged CLI and renderer files found");' "$RUNNER_TEMP/pr349-npm-pack-dry-run.json"
+          cp "$RUNNER_TEMP/pr349-npm-pack-dry-run.json" "$RUNNER_TEMP/pr349-linux-evidence/pr349-npm-pack-dry-run.json"
+      - name: Upload Linux packaging receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr349-linux-integration-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr349-linux-evidence/
+          retention-days: 14
+          if-no-files-found: warn
+
+  windows-new-command:
+    if: github.run_attempt == 1 && github.event.head_commit.message == 'pr349-role-render-one-shot-ci-v0.1'
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install controlled source dependencies and check Windows interpreter
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'WINDOWS_POWERSHELL_5_1_REQUIRED' }
+          & node.exe --version
+          & npm.cmd --version
+          & npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          & node.exe scripts/verify_v7_role_based_report_render.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'ROLE_RENDER_VERIFIER_FAILED' }
+      - name: Real Windows CLI process — English HTML, immutability and negative cases
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:MF_PS_VERSION = $PSVersionTable.PSVersion.ToString()
+          $source = @'
+          'use strict';
+          const fs=require('node:fs');
+          const os=require('node:os');
+          const path=require('node:path');
+          const crypto=require('node:crypto');
+          const {spawnSync}=require('node:child_process');
+          const assert=require('node:assert/strict');
+          const root=process.cwd();
+          const runnerTemp=process.env.RUNNER_TEMP || os.tmpdir();
+          const dir=fs.mkdtempSync(path.join(runnerTemp,'PR349 English Role Renderer '));
+          const guard=path.join(root,'packages','guard','bin','guard.mjs');
+          const byteHash=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const utf8=b=>new TextDecoder('utf-8',{fatal:true}).decode(b);
+          const steps=[];
+          const receipt={
+            test_id:'PR349_ENGLISH_ROLE_RENDERER_WINDOWS_INTEGRATION_V0_1',
+            test_commit:process.env.GITHUB_SHA,
+            expected_pr_head:'8562339a34a822ce07ffe37ac7a0fae6a5971c01',
+            runner:'windows-2022',
+            platform:os.platform(),
+            arch:os.arch(),
+            node:process.version,
+            powershell:process.env.MF_PS_VERSION || 'UNKNOWN',
+            output_dir:dir,
+            status:'INCONCLUSIVE',
+            steps
+          };
+          const record=(step, data)=>{steps.push({step,...data});};
+          function run(args){
+            const p=spawnSync(process.execPath,[guard,...args],{cwd:root,encoding:null,maxBuffer:6*1024*1024,timeout:120000,windowsHide:true});
+            if(p.error) throw Error('CHILD_PROCESS_ERROR: '+p.error.message);
+            record(args.join(' '),{exit_code:p.status,stderr:Buffer.from(p.stderr||[]).toString('utf8').slice(0,600)});
+            return p;
+          }
+          function expectExit(p, expected, tag) {
+            assert.equal(p.status,expected,tag+' expected exit '+expected+', got '+p.status+'; '+(p.stderr||'').toString());
+          }
+          function saveFile(name, content){
+            const p=path.join(dir,name);
+            fs.writeFileSync(p,content,{flag:'wx'});
+            return p;
+          }
+          try{
+            const reportGen=run(['report','single-agent','--pack','examples/single-agent-governance-pack/hr-self-service-agent','--preview','--json']);
+            expectExit(reportGen,0,'existing pack-backed report');
+            const raw=Buffer.from(reportGen.stdout);
+            assert(raw.length>1000);
+            const report=JSON.parse(utf8(raw));
+            assert.equal(report.object_type,'single_agent_governance_report_preview');
+            assert.equal(report.report_mode,'preview');
+            assert.equal(report.review_posture,'ready_for_review');
+            const original=saveFile('original-preview.json',raw);
+            const before=byteHash(fs.readFileSync(original));
+            const html=path.join(dir,'readable report.html');
+            const first=run(['report','render','--input',original,'--out',html,'--format','html']);
+            expectExit(first,0,'English renderer first execution');
+            assert.equal(fs.existsSync(html),true);
+            const htmlBytes=fs.readFileSync(html);
+            const htmlText=utf8(htmlBytes);
+            assert(!htmlText.startsWith('\ufeff'),'HTML must not start BOM');
+            assert(htmlText.startsWith('<!doctype html>'));
+            for(const needle of [
+              '<html lang="en">',
+              'Business owner',
+              'Technical reviewer',
+              'Governance / risk reviewer',
+              'No operational authority',
+              'ready_for_review',
+              'Source report timestamp',
+              'Source field:',
+              'Inspect the original input JSON'
+            ]) assert(htmlText.includes(needle),'missing HTML content: '+needle);
+            assert(!htmlText.includes('<script'),'presentation cannot execute JS');
+            assert(!htmlText.includes('https://cdn.'),'presentation must be offline');
+            assert(!/\p{Script=Han}/u.test(htmlText),'English sample presentation cannot contain Chinese UI text');
+            assert(htmlText.includes('sha256:'+before),'raw input byte SHA-256 must be shown in HTML');
+            assert.equal(byteHash(fs.readFileSync(original)),before,'input mutated');
+            const html2=path.join(dir,'readable report repeat.html');
+            expectExit(run(['report','render','--input',original,'--out',html2,'--format','html']),0,'repeat rendering');
+            assert.deepEqual(fs.readFileSync(html2),htmlBytes,'repeated HTML bytes mismatch');
+            expectExit(run(['report','render','--input',original,'--out',html,'--format','html']),4,'existing output rejection');
+            assert.deepEqual(fs.readFileSync(html),htmlBytes,'existing output changed');
+            expectExit(run(['report','render','--input',original,'--out',original,'--format','html']),4,'same input/output refusal');
+            expectExit(run(['report','render','--input',original,'--out',path.join(dir,'wrong_format.html')]),2,'explicit format required');
+            expectExit(run(['report','render','--help']),0,'render help');
+            const utf16=saveFile('utf16.json',Buffer.from('\ufeff'+utf8(raw),'utf16le'));
+            const utf16Out=path.join(dir,'utf16-out.html');
+            expectExit(run(['report','render','--input',utf16,'--out',utf16Out,'--format','html']),4,'UTF16 input rejection');
+            assert.equal(fs.existsSync(utf16Out),false);
+            const unsafe={...report,non_enforcement_boundary:{...report.non_enforcement_boundary,approval_granted:true}};
+            const invalid=saveFile('contradictory.json',Buffer.from(JSON.stringify(unsafe),'utf8'));
+            const invalidOut=path.join(dir,'contradictory.html');
+            expectExit(run(['report','render','--input',invalid,'--out',invalidOut,'--format','html']),4,'authority contradiction rejection');
+            assert.equal(fs.existsSync(invalidOut),false);
+            const wrong={...report,report_mode:'final'};
+            const wrongFile=saveFile('wrong-mode.json',Buffer.from(JSON.stringify(wrong),'utf8'));
+            expectExit(run(['report','render','--input',wrongFile,'--out',path.join(dir,'wrong-mode.html'),'--format','html']),4,'wrong contract');
+            const bad={...report,agent_identity:{...report.agent_identity,agent_label:'<img src=x onerror=alert(1)>'},authority_summary:'</pre><script>alert(1)</script>'};
+            const maliciousFile=saveFile('html-injection.json',Buffer.from(JSON.stringify(bad),'utf8'));
+            const maliciousHtml=path.join(dir,'escaped.html');
+            expectExit(run(['report','render','--input',maliciousFile,'--out',maliciousHtml,'--format','html']),0,'HTML escape');
+            const escaped=fs.readFileSync(maliciousHtml,'utf8');
+            assert(!escaped.includes('<img src=x onerror=alert(1)>'));
+            assert(!escaped.includes('<script>alert(1)</script>'));
+            assert(escaped.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+            assert.equal(byteHash(fs.readFileSync(original)),before);
+            receipt.status='PASS_BOUNDED_WINDOWS_CLI_INTEGRATION';
+            receipt.source_json_sha256=before;
+            receipt.source_json_bytes=raw.length;
+            receipt.output_html_sha256=byteHash(htmlBytes);
+            receipt.output_html_bytes=htmlBytes.length;
+            receipt.reproducible_html_bytes=true;
+            receipt.source_json_unchanged=true;
+            receipt.non_enforcement_boundary_checked=true;
+            receipt.windows_user_manual_test='NOT_TESTED';
+            receipt.npm_published_release='NOT_CHANGED';
+            console.log('PASS: PR349 English renderer Windows integration and CLI regression');
+          }catch(e){
+            receipt.status='FAIL';
+            receipt.error=String(e.stack||e.message||e);
+            console.error(receipt.error);
+            process.exitCode=1;
+          }finally{
+            fs.writeFileSync(path.join(dir,'verification-receipt.json'),JSON.stringify(receipt,null,2)+'\n','utf8');
+            console.log('WINDOWS_TEST_DIR '+dir);
+            console.log('WINDOWS_TEST_STATUS '+receipt.status);
+          }
+          '@
+          $script = Join-Path $env:RUNNER_TEMP 'pr349_role_renderer_windows_check.cjs'
+          [IO.File]::WriteAllText($script, $source, (New-Object System.Text.UTF8Encoding($false)))
+          & node.exe $script
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_RENDERER_TEST_FAILED' }
+      - name: Upload bounded Windows evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr349-windows-integration-${{ github.run_id }}
+          path: ${{ runner.temp }}/PR349 English Role Renderer */
+          retention-days: 14
+          if-no-files-found: warn
