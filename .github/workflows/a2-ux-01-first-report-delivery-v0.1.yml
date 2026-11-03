@@ -1,0 +1,69 @@
+name: A2 UX 01 first report delivery verification
+
+on:
+  pull_request:
+    paths:
+      - 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
+      - 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.*'
+      - 'scripts/build_a2_sample_pack.py'
+      - 'scripts/verify_a2_sample_pack.py'
+      - 'scripts/verify_a2_first_report_delivery.py'
+      - 'packages/guard/src/**'
+      - '.github/workflows/a2-ux-01-first-report-delivery-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  sample-and-cli-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: python scripts/build_a2_sample_pack.py
+      - run: python scripts/verify_a2_sample_pack.py
+      - run: python scripts/verify_a2_first_report_delivery.py
+      - run: node scripts/verify_v7_role_based_report_render.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-ux-01-linux-evidence
+          path: downloads/
+          retention-days: 14
+
+  sample-and-cli-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm.cmd ci --ignore-scripts --no-audit --no-fund
+        shell: powershell
+      - run: python scripts/build_a2_sample_pack.py
+        shell: powershell
+      - run: python scripts/verify_a2_sample_pack.py
+        shell: powershell
+      - run: python scripts/verify_a2_first_report_delivery.py
+        shell: powershell
+      - run: node scripts/verify_v7_role_based_report_render.mjs
+        shell: powershell
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-ux-01-windows-evidence
+          path: downloads/
+          retention-days: 14
