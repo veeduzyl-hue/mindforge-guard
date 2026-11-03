@@ -21,7 +21,7 @@ EXPECTED={
 'snapshot.json':'ac01d2d50fadcc74cd84dd0f4605e55cc6ae417c',
 'task-scope.md':'ac9f702548d94457dc9921431875b13e212e2170',
 'tools.yaml':'0c18dddf4ddcd07a499fec1a44b4bcafa69ad495'}
-def gitblob(b): return hashlib.sha1(('blob '+str(len(b))+'\\0').encode()+b).hexdigest()
+def gitblob(b): return hashlib.sha1(('blob '+str(len(b))+'\0').encode()+b).hexdigest()
 def main():
  OUT.mkdir(exist_ok=True)
  observed={p.relative_to(SOURCE).as_posix() for p in SOURCE.rglob('*') if p.is_file() and not p.is_symlink()}

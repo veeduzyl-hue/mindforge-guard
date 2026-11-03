@@ -3,7 +3,7 @@
 import hashlib,json,stat,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; D=ROOT/'downloads'; NAME='mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
-def gitblob(b): return hashlib.sha1(('blob '+str(len(b))+'\\0').encode()+b).hexdigest()
+def gitblob(b): return hashlib.sha1(('blob '+str(len(b))+'\0').encode()+b).hexdigest()
 def main():
  zpath=D/NAME; raw=zpath.read_bytes(); sha=hashlib.sha256(raw).hexdigest()
  m=json.loads((D/(NAME+'.manifest.json')).read_text(encoding='utf8'))
