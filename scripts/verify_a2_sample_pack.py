@@ -16,7 +16,7 @@ def main():
    p=Path(n)
    if p.is_absolute() or '..' in p.parts or not n.startswith('hr-self-service-agent/'): raise SystemExit('FAIL: unsafe path '+n)
    i=z.getinfo(n)
-   if (i.external_attr>>16)&stat.S_IFMT(0o170000)==stat.S_IFLNK: raise SystemExit('FAIL: symlink')
+   if ((i.external_attr>>16)&0o170000)==stat.S_IFLNK: raise SystemExit('FAIL: symlink')
   for f in m['files']:
    n='hr-self-service-agent/'+f['path']; b=z.read(n)
    if hashlib.sha256(b).hexdigest()!=f['sha256']: raise SystemExit('FAIL: member hash '+n)
