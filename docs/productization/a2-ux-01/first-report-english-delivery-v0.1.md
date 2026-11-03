@@ -6,7 +6,7 @@ MindForge Guard is a deterministic, local-first evidence presentation layer for 
 
 ## Standalone sample distribution
 
-Download the independent `mindforge-guard-hr-self-service-sample-pack-v0.1.zip` from this directory. It contains exactly eleven unchanged synthetic Evidence Pack files, not a source repository archive. Source commit: `46d77530a28b0a28d02e1c7ba29ccfa52e265849`; sample tree: `f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1`. Verify the ZIP with the adjacent `.sha256` file and inspect its manifest. Archive SHA-256, Git Blob SHA-1 and Guard logical deterministic hash are distinct digest domains.
+Download the independent [standalone sample ZIP](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip), [manifest](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.manifest.json), and [SHA-256 sidecar](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256) from the repository. It contains exactly eleven unchanged synthetic Evidence Pack files, not a source repository archive. Source commit: `46d77530a28b0a28d02e1c7ba29ccfa52e265849`; sample tree: `f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1`. Verify the ZIP with the adjacent `.sha256` file and inspect its manifest. Archive SHA-256, Git Blob SHA-1 and Guard logical deterministic hash are distinct digest domains.
 
 Extract into an empty, short-path working directory. The archive root is `hr-self-service-agent/`; retain the nested `evidence/` folder. The pack is synthetic and illustrative only, not evidence of a customer's own workflow or production behavior.
 

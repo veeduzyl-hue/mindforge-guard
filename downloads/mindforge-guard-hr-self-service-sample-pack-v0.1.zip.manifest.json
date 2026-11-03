@@ -8,7 +8,76 @@
   "source_repository": "veeduzyl-hue/mindforge-guard",
   "source_commit": "46d77530a28b0a28d02e1c7ba29ccfa52e265849",
   "source_pack_tree_git_sha1": "f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1",
+  "source_path": "examples/single-agent-governance-pack/hr-self-service-agent",
   "zip_pack_root": "hr-self-service-agent",
   "synthetic_only": true,
-  "no_production_assurance": true
+  "no_production_assurance": true,
+  "files": [
+    {
+      "path": "action-boundary.yaml",
+      "bytes": 465,
+      "git_blob_sha1": "baba3e7179d876661da48916c089c068f185913e",
+      "sha256": "e4130bc20efd7996d5832fc0c578c951bae4ec2fccafe3217376e1ad80634e4a"
+    },
+    {
+      "path": "agent-profile.json",
+      "bytes": 507,
+      "git_blob_sha1": "6844af265ad8472963867f8cf6e226b6502f78dd",
+      "sha256": "72d68cdaa139f5dee732db9f4da798c3cedca7427cb3a54353979d71cf08598f"
+    },
+    {
+      "path": "data-sources.yaml",
+      "bytes": 705,
+      "git_blob_sha1": "e17701b296860f8ee8bd6be9d67df96777daaf11",
+      "sha256": "10e5a90090c79b3f20e4ee364c7d4d93d2c879bbc9ac14ffae512ebb20eb7efd"
+    },
+    {
+      "path": "evidence/run-record.json",
+      "bytes": 507,
+      "git_blob_sha1": "79d2d90fabff2c68e3a69e82c85551a5e6605fa8",
+      "sha256": "971ad651df7f31811ffe921c2d2bc329a430d994958fbf8fc22dababd167594e"
+    },
+    {
+      "path": "evidence/sample-output.json",
+      "bytes": 757,
+      "git_blob_sha1": "8c64014440c247816dff19e175b844f4462dedf1",
+      "sha256": "7cbd5b4cff9753198b6d8cc15299c5832113d2c7a7d3fb9a5d316aaa02b933f2"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 375,
+      "git_blob_sha1": "865b6cac70518ec5846dce19fb0b8ff0db8cb031",
+      "sha256": "73d17490de70e77a03943637f8379708085915ac0216a288862913519de2020b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 545,
+      "git_blob_sha1": "65c89252030ae6b969651e544eb84500bf7159dd",
+      "sha256": "b9efc160337e0a84c8e93682d976fa9c07d8826121b1052fc6ca315312e0fed7"
+    },
+    {
+      "path": "review-standards.md",
+      "bytes": 689,
+      "git_blob_sha1": "ec724b5f606ebaf6399a7351d476c0141ebf6e58",
+      "sha256": "c45bbdad78704c66d1245fdbae95e501b15cef35d86c96e933e5b1db0a8386fe"
+    },
+    {
+      "path": "snapshot.json",
+      "bytes": 382,
+      "git_blob_sha1": "ac01d2d50fadcc74cd84dd0f4605e55cc6ae417c",
+      "sha256": "bc2e8466cebfa506c9591fc9e14043d93246e6f4e80d9f36096213a3670f82d3"
+    },
+    {
+      "path": "task-scope.md",
+      "bytes": 939,
+      "git_blob_sha1": "ac9f702548d94457dc9921431875b13e212e2170",
+      "sha256": "5b27c79256efe0dbaa8133fc1f39594d073fe99e748f8b47d1c9378b2b0dbd85"
+    },
+    {
+      "path": "tools.yaml",
+      "bytes": 777,
+      "git_blob_sha1": "0c18dddf4ddcd07a499fec1a44b4bcafa69ad495",
+      "sha256": "7f560e0dfb5b69c5ba4b26358cad4930c7e93ff85543e0dd1eee9b6ca0de3a04"
+    }
+  ]
 }

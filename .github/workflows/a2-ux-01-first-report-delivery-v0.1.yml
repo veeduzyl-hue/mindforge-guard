@@ -1,9 +1,6 @@
 name: A2 UX 01 first report delivery verification
 
 on:
-  push:
-    branches:
-      - feat/a2-ux-01-first-report-delivery-v0.1
   pull_request:
     paths:
       - 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
@@ -31,7 +28,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run verify:v7.0.1
       - run: python scripts/build_a2_sample_pack.py
+      - name: Verify reproducible committed downloads (Linux)
+        run: git diff --exit-code -- downloads/
       - run: python scripts/verify_a2_sample_pack.py
       - run: python scripts/verify_a2_first_report_delivery.py
       - run: node scripts/verify_v7_role_based_report_render.mjs
@@ -56,8 +56,15 @@ jobs:
           python-version: '3.12'
       - run: npm.cmd ci --ignore-scripts --no-audit --no-fund
         shell: powershell
+      - run: npm.cmd run verify:v7.0.1
+        shell: powershell
       - run: python scripts/build_a2_sample_pack.py
         shell: powershell
+      - name: Verify reproducible committed downloads (Windows)
+        shell: powershell
+        run: |
+          git diff --exit-code -- downloads/
+          if ($LASTEXITCODE -ne 0) { throw 'A2_COMMITTED_DOWNLOAD_BYTES_DIFFER' }
       - run: python scripts/verify_a2_sample_pack.py
         shell: powershell
       - run: python scripts/verify_a2_first_report_delivery.py

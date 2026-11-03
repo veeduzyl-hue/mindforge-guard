@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Build A2 standalone sample ZIP from the fixed repository fixture; no dependencies."""
-import hashlib,json,os,stat,zipfile
+import hashlib,json,stat,zipfile
 from pathlib import Path
-from datetime import datetime
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'examples/single-agent-governance-pack/hr-self-service-agent'
 OUT=ROOT/'downloads'
@@ -24,6 +23,7 @@ EXPECTED={
 def gitblob(b): return hashlib.sha1(('blob '+str(len(b))+'\0').encode()+b).hexdigest()
 def main():
  OUT.mkdir(exist_ok=True)
+ if any(p.is_symlink() for p in SOURCE.rglob('*')): raise SystemExit('FAIL: symlink in source inventory')
  observed={p.relative_to(SOURCE).as_posix() for p in SOURCE.rglob('*') if p.is_file() and not p.is_symlink()}
  if observed!=set(EXPECTED): raise SystemExit('FAIL: source file inventory drift')
  payloads={}
@@ -39,7 +39,7 @@ def main():
    info.create_system=3; info.external_attr=(stat.S_IFREG|0o644)<<16; info.compress_type=zipfile.ZIP_STORED
    z.writestr(info,b)
  raw=(OUT/NAME).read_bytes(); digest=hashlib.sha256(raw).hexdigest()
- manifest={'artifact_version':'v0.1','archive':NAME,'archive_bytes':len(raw),'archive_sha256':digest,'source_commit':COMMIT,'source_pack_tree':TREE,'synthetic_only':True,'production_assurance':False,'files':[{'path':k,'bytes':len(v),'git_blob_sha1':EXPECTED[k],'sha256':hashlib.sha256(v).hexdigest()} for k,v in sorted(payloads.items())]}
+ manifest={'artifact_kind':'standalone_synthetic_evidence_pack_distribution','artifact_version':'v0.1','archive':NAME,'archive_bytes':len(raw),'archive_sha256':digest,'archive_git_blob_sha1':gitblob(raw),'source_repository':'veeduzyl-hue/mindforge-guard','source_commit':COMMIT,'source_pack_tree_git_sha1':TREE,'source_path':'examples/single-agent-governance-pack/hr-self-service-agent','zip_pack_root':'hr-self-service-agent','synthetic_only':True,'no_production_assurance':True,'files':[{'path':k,'bytes':len(v),'git_blob_sha1':EXPECTED[k],'sha256':hashlib.sha256(v).hexdigest()} for k,v in sorted(payloads.items())]}
  (OUT/(NAME+'.manifest.json')).write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8')
  (OUT/(NAME+'.sha256')).write_text(digest+'  '+NAME+'\n',encoding='ascii')
  print('PASS: built '+NAME+' '+str(len(raw))+' bytes sha256='+digest)
