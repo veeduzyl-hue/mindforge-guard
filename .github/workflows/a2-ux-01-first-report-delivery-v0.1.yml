@@ -1,6 +1,9 @@
 name: A2 UX 01 first report delivery verification
 
 on:
+  push:
+    branches:
+      - feat/a2-ux-01-first-report-delivery-v0.1
   pull_request:
     paths:
       - 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
