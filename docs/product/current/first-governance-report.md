@@ -25,6 +25,16 @@ Installing `@veeduzyl/mindforge-guard@7.0.1` and obtaining the repository's
 Sample Pack are separate steps. Global npm installation does not include the
 repository's root `examples/` directory.
 
+### Recommended: standalone synthetic Sample Pack
+
+To avoid downloading the full source repository and Windows long-path extraction problems, obtain the [standalone HR Self-Service Sample Pack ZIP](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip), with its [SHA-256 checksum](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256) and [per-file manifest](../../../downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.manifest.json). This is a GitHub repository distribution artifact, **not** part of the published npm package. It is synthetic and has no production assurance significance.
+
+Extract into a short empty folder (for example, `C:\\G\\first-report`), where the pack directory is `hr-self-service-agent/`. From that directory, use `--pack hr-self-service-agent` instead of the longer `examples/...` path shown for the legacy full-source ZIP below. For PowerShell 5.1 use `npm.cmd`, `guard.cmd`, and the existing `cmd.exe /d /c` UTF-8 redirection technique, substituting the standalone pack path.
+
+The three-role English HTML renderer was merged after v7.0.1 and **is not yet available in the published npm v7.0.1**. Use that renderer only from an explicitly tested source checkout or following a later approved package release.
+
+### Alternative: full-repository historical source ZIP
+
 Download and extract the [fixed-SHA GitHub source ZIP](https://github.com/veeduzyl-hue/mindforge-guard/archive/6ac3401db09f3ecd4499e09e3bd9ce81abbcab46.zip).
 This ZIP is a **sample acquisition method**; its original downloaded archive
 bytes have **not** been independently verified by this documentation review.
