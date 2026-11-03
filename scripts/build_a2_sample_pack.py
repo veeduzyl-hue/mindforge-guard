@@ -40,7 +40,7 @@ def main():
    z.writestr(info,b)
  raw=(OUT/NAME).read_bytes(); digest=hashlib.sha256(raw).hexdigest()
  manifest={'artifact_version':'v0.1','archive':NAME,'archive_bytes':len(raw),'archive_sha256':digest,'source_commit':COMMIT,'source_pack_tree':TREE,'synthetic_only':True,'production_assurance':False,'files':[{'path':k,'bytes':len(v),'git_blob_sha1':EXPECTED[k],'sha256':hashlib.sha256(v).hexdigest()} for k,v in sorted(payloads.items())]}
- (OUT/(NAME+'.manifest.json')).write_text(json.dumps(manifest,indent=2)+'\\n',encoding='utf8')
- (OUT/(NAME+'.sha256')).write_text(digest+'  '+NAME+'\\n',encoding='ascii')
+ (OUT/(NAME+'.manifest.json')).write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8')
+ (OUT/(NAME+'.sha256')).write_text(digest+'  '+NAME+'\n',encoding='ascii')
  print('PASS: built '+NAME+' '+str(len(raw))+' bytes sha256='+digest)
 if __name__=='__main__': main()
