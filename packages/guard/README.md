@@ -37,6 +37,22 @@ Guard remains recommendation-only, additive-only, non-executing, default-off whe
 
 Guard does not approve, block, deploy, certify, or control execution.
 
+## Standalone Sample Pack
+
+For a first local walkthrough, download the [standalone synthetic HR Self-Service Sample Pack](https://github.com/veeduzyl-hue/mindforge-guard/blob/main/downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip), then verify its adjacent SHA-256 file and manifest. It contains only the eleven sample files; you do not need to download the full source repository. Extract it to a short working directory and use the extracted `hr-self-service-agent` directory as the `--pack` path.
+
+The pack is synthetic review material only. It is not evidence of your own production workflow and does not establish production assurance.
+
+## English Role-Based HTML Report
+
+The source repository now contains an offline English renderer with Business Owner, Technical Reviewer, and Governance / Risk Reviewer perspectives:
+
+```bash
+guard report render --input first-report.json --out first-report.html --format html
+```
+
+**Release distinction:** this command is not included in the published npm v7.0.1 package. It becomes available from a future package release that includes PR #349. Do not run this command against npm v7.0.1 and infer a product defect if it is unavailable. The HTML is a reading aid over the same JSON; it does not approve, certify, or authorize execution. Inspect the source JSON for sensitive content before sharing the HTML.
+
 ## License Hub
 
 Use License Hub to buy a commercial edition, sign in with your purchase email, download the signed license JSON, and keep local CLI license usage aligned with the same bounded runtime posture.

@@ -37,6 +37,11 @@ jobs:
         run: git diff --exit-code -- downloads/
       - run: python scripts/verify_a2_sample_pack.py
       - run: python scripts/verify_a2_first_report_delivery.py
+      - name: Verify next-release npm tarball contents (Linux)
+        shell: bash
+        run: |
+          npm pack --workspace @veeduzyl/mindforge-guard --dry-run --json > "$RUNNER_TEMP/a2-npm-pack.json"
+          node -e 'const fs=require("node:fs");const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"))[0];const s=new Set(p.files.map(f=>f.path));for(const f of ["bin/guard.mjs","src/cli/report_render_html.mjs","src/presentation/role_based_html_report.mjs","README.md"])if(!s.has(f))throw Error("PACKAGE_MISSING:"+f);console.log("PASS: next-release tarball contains CLI, renderer and README")' "$RUNNER_TEMP/a2-npm-pack.json"
       - run: node scripts/verify_v7_role_based_report_render.mjs
       - uses: actions/upload-artifact@v4
         if: always()
@@ -72,6 +77,15 @@ jobs:
         shell: powershell
       - run: python scripts/verify_a2_first_report_delivery.py
         shell: powershell
+      - name: Verify next-release npm tarball contents (Windows)
+        shell: powershell
+        run: |
+          npm.cmd pack --workspace @veeduzyl/mindforge-guard --dry-run --json | Out-File -Encoding utf8 "$env:RUNNER_TEMP\a2-npm-pack.json"
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_PACK_DRY_RUN_FAILED' }
+          $p = Get-Content "$env:RUNNER_TEMP\a2-npm-pack.json" -Raw | ConvertFrom-Json
+          $paths = @($p[0].files | ForEach-Object { $_.path })
+          foreach ($f in @('bin/guard.mjs','src/cli/report_render_html.mjs','src/presentation/role_based_html_report.mjs','README.md')) { if ($paths -notcontains $f) { throw ('PACKAGE_MISSING: ' + $f) } }
+          Write-Host 'PASS: next-release tarball contains CLI, renderer and README'
       - run: node scripts/verify_v7_role_based_report_render.mjs
         shell: powershell
       - uses: actions/upload-artifact@v4
