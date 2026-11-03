@@ -1,0 +1,14 @@
+{
+  "artifact_kind": "standalone_synthetic_evidence_pack_distribution",
+  "artifact_version": "v0.1",
+  "archive": "mindforge-guard-hr-self-service-sample-pack-v0.1.zip",
+  "archive_bytes": 8356,
+  "archive_sha256": "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf",
+  "archive_git_blob_sha1": "2350fbaa55843d0a7d7fbe7e2cac53db07250567",
+  "source_repository": "veeduzyl-hue/mindforge-guard",
+  "source_commit": "46d77530a28b0a28d02e1c7ba29ccfa52e265849",
+  "source_pack_tree_git_sha1": "f943fc9ced5f3087e70ecebcdf1cc7a5b323cce1",
+  "zip_pack_root": "hr-self-service-agent",
+  "synthetic_only": true,
+  "no_production_assurance": true
+}
