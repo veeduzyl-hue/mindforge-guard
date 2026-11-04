@@ -96,8 +96,8 @@ jobs:
           if (-not (Test-Path $tgz)) { throw 'RC_TARBALL_MISSING' }
           npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
           if ($LASTEXITCODE -ne 0) { throw 'RC_INSTALL_FAILED' }
-          python -c 'import os,zipfile;zipfile.ZipFile("downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip").extractall(os.path.join(os.environ["RUNNER_TEMP"],"guard-rc-v7.1.0","sample"))'
-          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_EXTRACT_FAILED' }
+          Expand-Archive -LiteralPath 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip' -DestinationPath (Join-Path $rcDir 'sample') -Force
+          if (-not (Test-Path (Join-Path $rcDir 'sample/hr-self-service-agent/manifest.json'))) { throw 'SAMPLE_EXTRACT_FAILED' }
           Copy-Item docs/commercial/pilot/v0.1/*.md (Join-Path $rcDir 'pilot')
           Copy-Item docs/release/v7_1_0_rc_0_release_candidate.md $rcDir
           Copy-Item downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip $rcDir
