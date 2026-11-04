@@ -11,7 +11,9 @@ assert.equal(lock.packages['packages/guard'].version,pkg.version);
 assert.equal(lock.packages['node_modules/@veeduzyl/mindforge-guard'].resolved,'packages/guard');
 assert.equal(pkg.license,'Apache-2.0');
 assert.equal(pkg.bin.guard,'bin/guard.mjs');
-const blobSha=(p)=>{const bytes=fs.readFileSync(p);return crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob '+bytes.length+'\0'),bytes])).digest('hex');};
+// Git converts eligible text files to CRLF in Windows checkout. Compare their
+// canonical LF text bytes to the fixed Git Blob SHA without ignoring any other edit.
+const blobSha=(p)=>{const bytes=Buffer.from(fs.readFileSync(p,'utf8').replace(/\r\n/g,'\n'),'utf8');return crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob '+bytes.length+'\0'),bytes])).digest('hex');};
 assert.equal(blobSha('apps/license-hub/lib/commercialCatalog.ts'),'b766f0a98bf19efefe980ad0959ad512cd38984a','Commercial catalog changed');
 assert.equal(blobSha('apps/license-hub/lib/paddlePrices.ts'),'e897c22b092f844b8cdb6ae862143292acce75cc','Paddle price IDs changed');
 assert.equal(blobSha('packages/guard/src/product/license_gate.mjs'),'0ee6997d4e217d5456b4cdf0b02d7174fc16bb10','License tier gates changed');
