@@ -1,6 +1,6 @@
 {
   "name": "@veeduzyl/mindforge-guard",
-  "version": "7.0.1",
+  "version": "7.1.0-rc.0",
   "description": "Deterministic governance evidence layer for single-agent AI workflows (CLI)",
   "license": "Apache-2.0",
   "private": false,
