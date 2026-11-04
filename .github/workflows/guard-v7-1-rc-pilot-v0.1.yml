@@ -54,6 +54,7 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
   rc-windows:
+    needs: rc-linux
     runs-on: windows-2022
     timeout-minutes: 25
     steps:
@@ -66,6 +67,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Download the exact Linux-built canonical RC tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-linux
+          path: ${{ runner.temp }}/guard-rc-canonical
       - name: Windows PowerShell 5.1 regression, actual RC tarball, fresh prefix install
         shell: powershell
         run: |
@@ -90,9 +96,14 @@ jobs:
           $rcDir = Join-Path $env:RUNNER_TEMP 'guard-rc-v7.1.0'
           $prefix = Join-Path $env:RUNNER_TEMP 'guard-rc-install'
           New-Item -ItemType Directory -Force $rcDir, $prefix, (Join-Path $rcDir 'sample'), (Join-Path $rcDir 'pilot') | Out-Null
-          npm.cmd pack --workspace @veeduzyl/mindforge-guard --pack-destination $rcDir --json | Out-File -FilePath (Join-Path $rcDir 'npm-pack.json') -Encoding UTF8
+          $repackDir = Join-Path $env:RUNNER_TEMP 'guard-rc-windows-repack'
+          New-Item -ItemType Directory -Force $repackDir | Out-Null
+          npm.cmd pack --workspace @veeduzyl/mindforge-guard --pack-destination $repackDir --json | Out-File -FilePath (Join-Path $rcDir 'npm-pack.json') -Encoding UTF8
           if ($LASTEXITCODE -ne 0) { throw 'RC_PACK_FAILED' }
+          $canonical = Join-Path $env:RUNNER_TEMP 'guard-rc-canonical/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          if (-not (Test-Path $canonical)) { throw 'CANONICAL_LINUX_TARBALL_MISSING' }
           $tgz = Join-Path $rcDir 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          Copy-Item -LiteralPath $canonical -Destination $tgz
           if (-not (Test-Path $tgz)) { throw 'RC_TARBALL_MISSING' }
           npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
           if ($LASTEXITCODE -ne 0) { throw 'RC_INSTALL_FAILED' }
