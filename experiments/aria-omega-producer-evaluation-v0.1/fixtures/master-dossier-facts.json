@@ -1,0 +1,67 @@
+{
+  "fixture_version": "0.1",
+  "producer": "ARIA OMEGA",
+  "source_artifact": {
+    "filename": "1793673197723.pdfARIA_OMEGA_Dossie_Auditavel_02-11-2026.pdf",
+    "sha256": "7ece4196fc069ffd12060bb25972b1d98e75a3882560ccb8b14ffdabd2de06d2",
+    "pages": 13,
+    "dossier_date": "2026-11-02",
+    "repository": "alebalbim/ARIA_OMEGA_Audit_Evolution",
+    "branch": "main",
+    "revision": "6bb11b6",
+    "output_artifact": "SAIDAS/dossie_auditavel_mestre_20261102_184231_914ebade.json"
+  },
+  "c14": {
+    "claim_id": "C14",
+    "registered_status": "TESTADO_EM_AMBIENTE_CONTROLADO",
+    "effective_status": "DESIGN_DECLARADO",
+    "reason": "nenhuma execução de estresse verificada localizada",
+    "stress_artifact_found_in_this_execution": false,
+    "stress_artifact_verified_in_this_execution": false,
+    "stress_artifact_reference": "SAIDAS_STRESS/LAUDO_STRESS_TEST_20261013_024430.md",
+    "dossier_nuance": "Stress tests reportedly exist in branch audit-logs with SHA256SUMS, but were not present in this execution output."
+  },
+  "envelope": {
+    "protocol_mode": "MOCK_PROTOCOLO",
+    "integrity_label": "SHA256_DIGEST_MOCK_PROTOCOLO (Prod: RSA-PSS-4096 via HSM Required)",
+    "tsa_status": "LOCAL_MOCK (Prod: RFC 3161 TSA Required)",
+    "signature": null,
+    "signature_status": "NAO_IMPLEMENTADO",
+    "signature_algorithm": "RSA-PSS/SHA-256 (Mocked in Prototype)",
+    "external_anchor_present": false,
+    "local_previous_dossier_chain_only": true
+  },
+  "rag": {
+    "sources_retrieved": 5,
+    "relevant_sources": 0,
+    "relevance_status": "contexto_insuficiente",
+    "criterion": ">= 30% das fontes com >= 2 termos de PALAVRAS_RELEVANCIA",
+    "query_status": "concluida",
+    "source_retrieval_means_support": false
+  },
+  "claims": {
+    "total": 21,
+    "effective_status_counts": {
+      "IMPLEMENTADO_EM_PROTOTIPO": 7,
+      "DESIGN_DECLARADO": 8,
+      "EM_ROADMAP": 6
+    },
+    "c14_registered_status": "TESTADO_EM_AMBIENTE_CONTROLADO",
+    "c14_effective_status": "DESIGN_DECLARADO"
+  },
+  "self_reported_integrity_checks": {
+    "payload_hash_recomputed_confers": true,
+    "final_response_hash_confers": true,
+    "core_hash_confers": true,
+    "audit_trail_hash_confers": true,
+    "external_independent_recalculation_by_this_evaluation": false
+  },
+  "explicit_non_proofs": [
+    "hashes prove internal integrity, not synthesis correctness",
+    "the dossier envelope has no signature or trusted timestamp",
+    "local dossier chaining has no external anchor",
+    "the dossier is not ISO/IEC 42001 certification",
+    "the dossier is not EU AI Act conformity evidence by itself"
+  ],
+  "non_authority_statement": "This evaluation pack is for deterministic research review only. It does not approve, block, deploy, certify, or control execution."
+}

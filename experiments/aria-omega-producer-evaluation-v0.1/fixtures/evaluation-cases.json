@@ -1,0 +1,54 @@
+{
+  "suite_id": "AOE-PE-v0.1",
+  "suite_title": "ARIA OMEGA External Producer Evaluation",
+  "evaluation_mode": "offline_source_bound_fixture",
+  "source_fixture": "master-dossier-facts.json",
+  "cases": [
+    {
+      "case_id": "AOE-PE-01-C14-DOWNGRADE",
+      "focus": "C14 self-downgrade",
+      "input_refs": ["c14"],
+      "assertions": ["registered_status_is_not_preserved_when_execution_scoped_evidence_is_absent", "effective_status_equals_design_declared", "absence_in_this_execution_is_not_overridden_by_a_claim_that_artifacts_exist_elsewhere"],
+      "expected_observation": "C14 is conservatively downgraded for this dossier execution.",
+      "expected_finding": "SUPPORTED_LIMITED",
+      "limitation": "The evaluation does not fetch the audit-logs branch or independently inspect the stress report."
+    },
+    {
+      "case_id": "AOE-PE-02-MOCK-PROTOCOL",
+      "focus": "MOCK_PROTOCOL semantics",
+      "input_refs": ["envelope", "self_reported_integrity_checks"],
+      "assertions": ["digest_claim_does_not_imply_signature", "local_mock_timestamp_does_not_imply_external_tsa_anchor", "signature_null_and_not_implemented_must_remain_unverified"],
+      "expected_observation": "The envelope supports a reproducible digest claim only; signature and external timestamp are not established.",
+      "expected_finding": "SUPPORTED_LIMITED",
+      "limitation": "The original JSON bytes were not supplied for independent payload-hash recalculation."
+    },
+    {
+      "case_id": "AOE-PE-03-RAG-ZERO-RELEVANCE",
+      "focus": "zero-relevance RAG",
+      "input_refs": ["rag"],
+      "assertions": ["five_retrieved_sources_do_not_equal_relevant_support", "zero_of_five_relevant_means_context_insufficient_under_declared_criterion", "retrieval_count_alone_cannot_support_external_claims"],
+      "expected_observation": "The dossier's own RAG validation says context is insufficient.",
+      "expected_finding": "SUPPORTED_LIMITED",
+      "limitation": "The five URLs and the relevance heuristic were not independently re-evaluated."
+    },
+    {
+      "case_id": "AOE-PE-04-UNSIGNED-ENVELOPE",
+      "focus": "unsigned report envelope",
+      "input_refs": ["envelope", "claims"],
+      "assertions": ["component_level_crypto_implementation_claims_do_not_sign_this_specific_envelope", "signature_null_prevents_signed_envelope_claim", "no_external_anchor_prevents_external_timestamp_claim"],
+      "expected_observation": "The master opinion envelope is unsigned and locally mocked despite separate project-level prototype claims for crypto components.",
+      "expected_finding": "SUPPORTED_LIMITED",
+      "limitation": "No raw signature, certificate chain, TSA token, or external witness artifact was supplied."
+    },
+    {
+      "case_id": "AOE-PE-05-CLAIM-STATUS-RECONCILIATION",
+      "focus": "21-claim status reconciliation",
+      "input_refs": ["claims", "c14"],
+      "assertions": ["effective_status_counts_sum_to_21", "prototype_implemented_count_equals_7", "design_declared_count_equals_8", "roadmap_count_equals_6", "c14_effective_status_does_not_exceed_evidence_supported_status"],
+      "expected_observation": "The 21 claims reconcile to 7 prototype, 8 design-declared, and 6 roadmap; C14 is the explicit downgrade shown in the summary.",
+      "expected_finding": "SUPPORTED_LIMITED",
+      "limitation": "Reconciliation is against the dossier's published table/transcription, not an independently fetched claims registry."
+    }
+  ],
+  "suite_non_authority_statement": "This evaluation suite is for deterministic research review only. It does not approve, block, deploy, certify, or control execution."
+}

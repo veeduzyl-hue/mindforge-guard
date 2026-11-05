@@ -1,0 +1,18 @@
+{
+  "suite_id": "AOE-PE-v0.1",
+  "mode": "offline_source_bound_fixture",
+  "total_checks": 15,
+  "passed": 15,
+  "failed": 0,
+  "disposition": "FIXTURE_CONTRACT_PASS",
+  "producer_assurance": "NOT_ESTABLISHED",
+  "guard_integration": "NOT_PERFORMED",
+  "limitations": [
+    "The source repository and original JSON dossier were not independently fetched.",
+    "The original JSON payload hashes were not independently recomputed from source bytes.",
+    "No signature, certificate chain, TSA token, or external witness was verified.",
+    "The evaluation tests the dossier disclosures and fixture semantics, not ARIA runtime behavior.",
+    "This result is not certification, production admission, or independent assurance of ARIA OMEGA."
+  ],
+  "non_authority_statement": "This evaluation suite is for deterministic research review only. It does not approve, block, deploy, certify, or control execution."
+}

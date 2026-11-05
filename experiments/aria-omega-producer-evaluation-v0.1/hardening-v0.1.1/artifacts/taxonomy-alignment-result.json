@@ -1,0 +1,64 @@
+{
+  "suite_id": "AOE-PE-v0.1.1-TAXONOMY-ALIGNMENT",
+  "total_checks": 13,
+  "passed": 13,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "finding names",
+      "result": "PASS"
+    },
+    {
+      "check": "finding categories",
+      "result": "PASS"
+    },
+    {
+      "check": "finding severities",
+      "result": "PASS"
+    },
+    {
+      "check": "EAK check types",
+      "result": "PASS"
+    },
+    {
+      "check": "EAK check statuses",
+      "result": "PASS"
+    },
+    {
+      "check": "case disposition separated",
+      "result": "PASS"
+    },
+    {
+      "check": "thirteen adversarial cases",
+      "result": "PASS"
+    },
+    {
+      "check": "adversarial findings use existing taxonomy",
+      "result": "PASS"
+    },
+    {
+      "check": "RAG emits no invented EAK check",
+      "result": "PASS"
+    },
+    {
+      "check": "C14 positive control",
+      "result": "PASS"
+    },
+    {
+      "check": "independent assurance positive control",
+      "result": "PASS"
+    },
+    {
+      "check": "no product integration",
+      "result": "PASS"
+    },
+    {
+      "check": "EAK source ref pinned",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "Uses a frozen source-contract snapshot; refresh if Guard taxonomy or EAK type files change.",
+    "This is repository-source alignment, not an independent audit of ARIA or Guard runtime verification."
+  ]
+}
