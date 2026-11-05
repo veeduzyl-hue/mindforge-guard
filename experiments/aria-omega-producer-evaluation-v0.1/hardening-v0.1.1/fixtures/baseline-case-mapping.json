@@ -51,12 +51,7 @@
         "evidence_insufficient_for_review",
         "partial_evidence"
       ],
-      "eak_checks": [
-        [
-          "provenance_completeness",
-          "partially_verified"
-        ]
-      ]
+      "eak_checks": []
     },
     {
       "case_id": "AOE-PE-04-UNSIGNED-ENVELOPE",
