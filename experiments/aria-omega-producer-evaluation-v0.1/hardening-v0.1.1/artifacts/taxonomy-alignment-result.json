@@ -1,11 +1,19 @@
 {
   "suite_id": "AOE-PE-v0.1.1-TAXONOMY-ALIGNMENT",
-  "total_checks": 8,
-  "expected_checks": 8,
-  "execution_status": "SOURCE_MAPPING_REVIEWED; COMMITTED_SCRIPT_NOT_YET_EXECUTED_IN_GITHUB_WORKSPACE",
-  "disposition": "PENDING_REPRODUCIBLE_RUN",
-  "note": "Taxonomy and EAK vocabulary were inspected against the current main source files during authoring. The committed checker has not yet been run in the repository workspace.",
+  "total_checks": 12,
+  "passed": 12,
+  "failed": 0,
+  "disposition": "TAXONOMY_AND_EAK_ALIGNMENT_PASS",
+  "execution_status": "COMMITTED_SCRIPT_CONTENTS_REPRODUCED_AND_EXECUTED_IN_ISOLATED_LINUX_WORKSPACE",
+  "execution_environment": {
+    "os": "Linux container",
+    "node_version": "v22.16.0",
+    "powershell_available": false
+  },
+  "reproducibility_note": "The committed script and fixture contents were fetched from the exact PR branch and reproduced in an isolated local directory. Frozen source blob SHAs were checked for format/presence but not fetched and hashed locally.",
   "limitations": [
-    "This is a source-contract review, not an independent external audit."
+    "Uses a frozen source-contract snapshot; refresh if Guard taxonomy or EAK type files change.",
+    "This is repository-source alignment, not an independent audit of ARIA or Guard runtime verification.",
+    "PowerShell/Windows execution was not available in this environment."
   ]
 }
