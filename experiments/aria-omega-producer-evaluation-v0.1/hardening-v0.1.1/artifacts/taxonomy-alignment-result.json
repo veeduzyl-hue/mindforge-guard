@@ -1,12 +1,11 @@
 {
   "suite_id": "AOE-PE-v0.1.1-TAXONOMY-ALIGNMENT",
   "total_checks": 8,
-  "passed": 8,
-  "failed": 0,
-  "disposition": "TAXONOMY_AND_EAK_ALIGNMENT_PASS",
-  "source_contract_snapshot": "fixtures/source-contract-snapshot.json",
+  "expected_checks": 8,
+  "execution_status": "SOURCE_MAPPING_REVIEWED; COMMITTED_SCRIPT_NOT_YET_EXECUTED_IN_GITHUB_WORKSPACE",
+  "disposition": "PENDING_REPRODUCIBLE_RUN",
+  "note": "Taxonomy and EAK vocabulary were inspected against the current main source files during authoring. The committed checker has not yet been run in the repository workspace.",
   "limitations": [
-    "Uses a frozen source-contract snapshot; refresh if Guard taxonomy or EAK type files change.",
-    "Not an independent audit of ARIA or a Guard runtime verification."
+    "This is a source-contract review, not an independent external audit."
   ]
 }
