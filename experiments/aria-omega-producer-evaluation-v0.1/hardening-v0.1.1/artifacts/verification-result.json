@@ -1,0 +1,20 @@
+{
+  "suite_id": "AOE-PE-v0.1.1",
+  "mode": "offline-source-bound-fixtures",
+  "total_checks": 17,
+  "passed": 17,
+  "failed": 0,
+  "disposition": "FIXTURE_AND_ADVERSARIAL_ORACLE_PASS",
+  "adversarial_cases": 8,
+  "adversarial_passed": 8,
+  "positive_controls": 1,
+  "controls_passed": 1,
+  "producer_assurance": "NOT_ESTABLISHED",
+  "guard_integration": "NOT_PERFORMED",
+  "limitations": [
+    "Source PDF digest is transcribed, not recalculated.",
+    "Underlying ARIA repository, raw JSON, signature, TSA token, and stress artifact were not independently fetched or verified.",
+    "Oracle is experimental fixture logic, not Guard Core or the EAK verifier."
+  ],
+  "non_authority_statement": "This evaluation suite is for deterministic research review only. It does not approve, block, deploy, certify, or control execution."
+}
