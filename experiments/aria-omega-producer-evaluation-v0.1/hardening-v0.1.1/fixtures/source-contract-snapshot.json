@@ -1,0 +1,65 @@
+{
+  "source_refs": {
+    "taxonomy": {
+      "path": "docs/verification-findings-taxonomy-v0.1.md",
+      "blob_sha": "d2f7e13b432d2b48c5243ad5abc429534cb9e436"
+    },
+    "types": {
+      "path": "packages/guard-core/src/externalEvidence/types.ts",
+      "blob_sha": "184a1391d3aef0bf1928187d3207853a2d08ce17"
+    },
+    "eak_types": {
+      "path": "packages/guard-core/src/externalEvidence/verificationTypes.ts",
+      "blob_sha": ""
+    }
+  },
+  "finding_types": [
+    "external_report_unavailable",
+    "evidence_incomplete",
+    "missing_signature",
+    "signature_not_checked",
+    "timestamp_not_checked",
+    "raw_payload_unavailable",
+    "evidence_insufficient_for_review",
+    "partial_evidence",
+    "reviewer_attention_recommended",
+    "not_review_ready",
+    "payload_hash_mismatch"
+  ],
+  "finding_categories": [
+    "identity",
+    "integrity",
+    "signature",
+    "timestamp",
+    "policy_reference",
+    "evidence_completeness",
+    "adapter",
+    "compatibility",
+    "review"
+  ],
+  "finding_severities": [
+    "info",
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "eak_check_types": [
+    "structural_validity",
+    "required_field_completeness",
+    "payload_binding",
+    "digest_integrity",
+    "signature_validity",
+    "temporal_consistency",
+    "provenance_completeness",
+    "evidence_chain_completeness"
+  ],
+  "eak_check_statuses": [
+    "verified",
+    "failed",
+    "not_run",
+    "unsupported",
+    "partially_verified"
+  ],
+  "note": "Read-only source snapshot for reproducible local alignment checks. Refresh refs if source contracts change."
+}
