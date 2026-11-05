@@ -1,18 +1,29 @@
 {
   "suite_id": "AOE-PE-v0.1.1",
-  "mode": "committed_verifier_definition_and_fixture_review",
-  "total_checks": 17,
-  "expected_checks": 17,
-  "execution_status": "COMMITTED_SCRIPT_NOT_YET_EXECUTED_IN_GITHUB_WORKSPACE",
-  "disposition": "PENDING_REPRODUCIBLE_RUN",
-  "adversarial_cases": 8,
+  "mode": "offline-source-bound-fixtures",
+  "total_checks": 23,
+  "passed": 23,
+  "failed": 0,
+  "disposition": "FIXTURE_AND_ADVERSARIAL_ORACLE_PASS",
+  "execution_status": "COMMITTED_SCRIPT_CONTENTS_REPRODUCED_AND_EXECUTED_IN_ISOLATED_LINUX_WORKSPACE",
+  "adversarial_cases": 9,
+  "adversarial_passed": 9,
   "positive_controls": 1,
+  "positive_controls_passed": 1,
+  "execution_environment": {
+    "os": "Linux container",
+    "node_version": "v22.16.0",
+    "npm_version": "10.9.2",
+    "powershell_available": false
+  },
   "producer_assurance": "NOT_ESTABLISHED",
   "guard_integration": "NOT_PERFORMED",
-  "note": "A prior local prototype of the same case logic passed 31 fixture/oracle checks. This artifact does not claim that the exact committed branch script was executed or that GitHub Actions ran it.",
+  "reproducibility_note": "The committed script and fixture contents were fetched from the exact PR branch and reproduced in an isolated local directory before execution. This was not a GitHub Actions run or a checkout of the complete repository.",
   "limitations": [
+    "Source PDF digest is transcribed, not recalculated.",
     "Underlying ARIA repository, raw JSON, signature, TSA token, and stress artifact were not independently fetched or verified.",
-    "The oracle is experiment-level logic, not Guard Core or the EAK verifier."
+    "Oracle is experiment-level fixture logic, not Guard Core or the EAK verifier.",
+    "PowerShell/Windows execution was not available in this environment."
   ],
-  "non_authority_statement": "This evaluation suite is for deterministic research review only. It does not approve, block, deploy, certify, or control execution."
+  "non_authority_statement": "Synthetic research fixtures only; no approval, blocking, deployment, certification, or runtime control."
 }
