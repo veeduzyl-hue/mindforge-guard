@@ -1,0 +1,12 @@
+{
+  "suite_id": "AOE-PE-v0.1.1-TAXONOMY-ALIGNMENT",
+  "total_checks": 8,
+  "passed": 8,
+  "failed": 0,
+  "disposition": "TAXONOMY_AND_EAK_ALIGNMENT_PASS",
+  "source_contract_snapshot": "fixtures/source-contract-snapshot.json",
+  "limitations": [
+    "Uses a frozen source-contract snapshot; refresh if Guard taxonomy or EAK type files change.",
+    "Not an independent audit of ARIA or a Guard runtime verification."
+  ]
+}
