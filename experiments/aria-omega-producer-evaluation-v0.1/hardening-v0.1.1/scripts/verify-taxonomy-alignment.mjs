@@ -16,10 +16,11 @@ const checks = [
   ["EAK check types", baseline.cases.every((item) => item.eak_checks.every(([type]) => source.eak_check_types.includes(type)))],
   ["EAK check statuses", baseline.cases.every((item) => item.eak_checks.every(([, status]) => source.eak_check_statuses.includes(status)))],
   ["case disposition separated", baseline.cases.every((item) => item.case_disposition === "SUPPORTED_LIMITED")],
-  ["nine adversarial cases", adversarial.cases.length === 9],
+  ["thirteen adversarial cases", adversarial.cases.length === 13],
   ["adversarial findings use existing taxonomy", adversarial.cases.every((item) => item.expected_findings.every((name) => source.finding_types.includes(name)))],
   ["RAG emits no invented EAK check", baseline.cases.find((item) => item.case_id === "AOE-PE-03-RAG-ZERO-RELEVANCE").eak_checks.length === 0],
-  ["positive control", report.positive_control_result.status === "TESTADO_EM_AMBIENTE_CONTROLADO" && report.positive_control_result.findings.length === 0],
+  ["C14 positive control", report.positive_control_result.status === "TESTADO_EM_AMBIENTE_CONTROLADO" && report.positive_control_result.findings.length === 0],
+  ["independent assurance positive control", report.positive_control_independent_verification_result.findings.length === 0],
   ["no product integration", report.guard_integration === "NOT_PERFORMED" && report.producer_assurance === "NOT_ESTABLISHED"],
   ["EAK source ref pinned", /^[a-f0-9]{40}$/.test(source.source_refs.eak_types.blob_sha)]
 ];
