@@ -1,15 +1,147 @@
 {
- "suite_id":"AOE-PE-v0.1.1-ADVERSARIAL",
- "cases":[
-  {"case_id":"AOE-PE-ADV-01-C14-CROSS-EXECUTION-PROMOTION","kind":"c14","input":{"registered":"TESTADO_EM_AMBIENTE_CONTROLADO","artifact_present":false,"bound":false,"digest_verified":false},"expected_status":"DESIGN_DECLARADO","expected_findings":["evidence_incomplete","external_report_unavailable"]},
-  {"case_id":"AOE-PE-ADV-02-DIGEST-TO-SIGNATURE-LAUNDERING","kind":"crypto","input":{"signature_present":false,"signature_checked":false,"raw_payload":false},"expected_findings":["missing_signature","raw_payload_unavailable","signature_not_checked"]},
-  {"case_id":"AOE-PE-ADV-03-LOCAL-TSA-PROMOTION","kind":"tsa","input":{"mode":"LOCAL_MOCK","external_token":false,"verified":false},"expected_findings":["timestamp_not_checked"]},
-  {"case_id":"AOE-PE-ADV-04-RAG-COUNT-INFLATION","kind":"rag","input":{"retrieved":5,"relevant":0,"minimum_ratio":0.3},"expected_findings":["evidence_insufficient_for_review","partial_evidence"]},
-  {"case_id":"AOE-PE-ADV-05-LLM-STATUS-OVERRIDE","kind":"narrative","input":{"deterministic":"DESIGN_DECLARADO","narrative":"TESTADO_EM_AMBIENTE_CONTROLADO","bound":false},"expected_status":"DESIGN_DECLARADO","expected_findings":["evidence_incomplete","reviewer_attention_recommended"]},
-  {"case_id":"AOE-PE-ADV-06-CLAIM-COUNT-MISMATCH","kind":"counts","input":{"total":21,"counts":[7,8,7]},"expected_findings":["evidence_incomplete","not_review_ready"]},
-  {"case_id":"AOE-PE-ADV-07-PAYLOAD-HASH-MISMATCH","kind":"hash","input":{"raw_payload":true,"declared":"sha256:aaa","computed":"sha256:bbb"},"expected_findings":["payload_hash_mismatch"]},
-  {"case_id":"AOE-PE-ADV-08-REFERENCED-ARTIFACT-NOT-RETRIEVED","kind":"reference","input":{"declared":true,"retrieved":false},"expected_findings":["evidence_incomplete","external_report_unavailable"]}
- ],
- "positive_control":{"case_id":"AOE-PE-CTRL-01-C14-CURRENT-EXECUTION-BOUND-EVIDENCE","kind":"c14","input":{"registered":"TESTADO_EM_AMBIENTE_CONTROLADO","artifact_present":true,"bound":true,"digest_verified":true},"expected_status":"TESTADO_EM_AMBIENTE_CONTROLADO","expected_findings":[]},
- "non_authority_statement":"Synthetic research fixtures only; no approval, blocking, deployment, certification, or runtime control."
+  "suite_id": "AOE-PE-v0.1.1-ADVERSARIAL",
+  "cases": [
+    {
+      "case_id": "AOE-PE-ADV-01-C14-CROSS-EXECUTION-PROMOTION",
+      "kind": "c14",
+      "input": {
+        "registered": "TESTADO_EM_AMBIENTE_CONTROLADO",
+        "artifact_present": false,
+        "artifact_exists_elsewhere": true,
+        "current_execution": false,
+        "bound": false,
+        "digest_verified": false
+      },
+      "expected_status": "DESIGN_DECLARADO",
+      "expected_findings": [
+        "evidence_incomplete",
+        "external_report_unavailable"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-02-DIGEST-TO-SIGNATURE-LAUNDERING",
+      "kind": "crypto",
+      "input": {
+        "digest_present": true,
+        "digest_verified": true,
+        "signature_present": false,
+        "signature_checked": false,
+        "raw_payload": false
+      },
+      "expected_findings": [
+        "missing_signature",
+        "raw_payload_unavailable",
+        "signature_not_checked"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-03-LOCAL-TSA-PROMOTION",
+      "kind": "tsa",
+      "input": {
+        "mode": "LOCAL_MOCK",
+        "external_token": false,
+        "verified": false
+      },
+      "expected_findings": [
+        "timestamp_not_checked"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-04-RAG-COUNT-INFLATION",
+      "kind": "rag",
+      "input": {
+        "retrieved": 5,
+        "relevant": 0,
+        "minimum_ratio": 0.3
+      },
+      "expected_findings": [
+        "evidence_insufficient_for_review",
+        "partial_evidence"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-05-LLM-STATUS-OVERRIDE",
+      "kind": "narrative",
+      "input": {
+        "deterministic": "DESIGN_DECLARADO",
+        "narrative": "TESTADO_EM_AMBIENTE_CONTROLADO",
+        "bound": false
+      },
+      "expected_status": "DESIGN_DECLARADO",
+      "expected_findings": [
+        "evidence_incomplete",
+        "reviewer_attention_recommended"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-06-CLAIM-COUNT-MISMATCH",
+      "kind": "counts",
+      "input": {
+        "total": 21,
+        "counts": [
+          7,
+          8,
+          7
+        ]
+      },
+      "expected_findings": [
+        "evidence_incomplete",
+        "not_review_ready"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-07-PAYLOAD-HASH-MISMATCH",
+      "kind": "hash",
+      "input": {
+        "raw_payload": true,
+        "declared": "sha256:aaa",
+        "computed": "sha256:bbb"
+      },
+      "expected_findings": [
+        "payload_hash_mismatch"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-08-REFERENCED-ARTIFACT-NOT-RETRIEVED",
+      "kind": "reference",
+      "input": {
+        "declared": true,
+        "retrieved": false
+      },
+      "expected_findings": [
+        "evidence_incomplete",
+        "external_report_unavailable"
+      ]
+    },
+    {
+      "case_id": "AOE-PE-ADV-09-SELF-ASSERTED-INDEPENDENT-VERIFICATION",
+      "kind": "self_assurance",
+      "input": {
+        "producer": "ARIA OMEGA",
+        "self_assessed": true,
+        "claim": "independently_verified",
+        "external_verifier_present": false,
+        "external_verification_artifact_present": false
+      },
+      "expected_findings": [
+        "evidence_incomplete",
+        "reviewer_attention_recommended"
+      ]
+    }
+  ],
+  "positive_control": {
+    "case_id": "AOE-PE-CTRL-01-C14-CURRENT-EXECUTION-BOUND-EVIDENCE",
+    "kind": "c14",
+    "input": {
+      "registered": "TESTADO_EM_AMBIENTE_CONTROLADO",
+      "artifact_present": true,
+      "artifact_exists_elsewhere": false,
+      "current_execution": true,
+      "bound": true,
+      "digest_verified": true
+    },
+    "expected_status": "TESTADO_EM_AMBIENTE_CONTROLADO",
+    "expected_findings": []
+  },
+  "non_authority_statement": "Synthetic research fixtures only; no approval, blocking, deployment, certification, or runtime control."
 }
