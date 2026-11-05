@@ -68,7 +68,7 @@ A synthetic control case supplies a stress-test artifact that is present, explic
 
 ## 8. Independent-verifier claim
 
-A producer cannot establish independent verification merely by self-labeling its own assessment as independent. Without an external verifier identity and separately addressable verification artifact, preserve the claim as unsupported and emit existing review-oriented findings. This does not establish that no external verifier exists; it establishes only that none is evidenced in the evaluated package.
+A producer cannot establish independent verification merely by self-labeling its own assessment as independent. The claim requires all of the following: an externally identified verifier; verification that the identity is authentic; evidence that the verifier is distinct from the producer; a separately addressable verification artifact; actual retrieval of that artifact; binding of that artifact to the claim under review; and verification of the artifact digest. Missing any one condition preserves the claim as unsupported and emits existing review-oriented findings. This does not establish that no external verifier exists; it establishes only that the evaluated package does not evidence every required condition.
 
 ## 9. Frozen boundaries
 
