@@ -70,16 +70,20 @@ function evaluate(testCase) {
         findings.push("evidence_incomplete", "external_report_unavailable");
       }
       break;
-    case "self_assurance":
-      if (
-        input.self_assessed === true &&
-        input.claim === "independently_verified" &&
-        input.external_verifier_present !== true &&
-        input.external_verification_artifact_present !== true
-      ) {
+    case "self_assurance": {
+      const independentlySupported =
+        input.external_verifier_present === true &&
+        input.external_verifier_identity_verified === true &&
+        input.external_verifier_distinct_from_producer === true &&
+        input.external_verification_artifact_present === true &&
+        input.external_verification_artifact_retrieved === true &&
+        input.artifact_bound_to_claim === true &&
+        input.artifact_digest_verified === true;
+      if (input.claim === "independently_verified" && !independentlySupported) {
         findings.push("evidence_incomplete", "reviewer_attention_recommended");
       }
       break;
+    }
     default:
       throw new Error("UNSUPPORTED_CASE_KIND:" + testCase.kind);
   }
@@ -134,6 +138,10 @@ const control = evaluate(adversarial.positive_control);
 check("positive control preserves fully bound current-execution evidence",
   JSON.stringify(control.findings) === "[]" &&
   control.status === adversarial.positive_control.expected_status);
+const independentControl = evaluate(adversarial.positive_control_independent_verification);
+check("positive control accepts independently verified external assurance only when all bindings are present",
+  JSON.stringify(independentControl.findings) === "[]" &&
+  independentControl.status === undefined);
 check("all expected findings use existing taxonomy",
   adversarial.cases.every((item) => item.expected_findings.every((finding) => source.finding_types.includes(finding))));
 check("non-authority boundary is explicit",
@@ -149,6 +157,7 @@ const report = {
   checks,
   adversarial_results: adversarialResults,
   positive_control_result: control,
+  positive_control_independent_verification_result: independentControl,
   producer_assurance: "NOT_ESTABLISHED",
   guard_integration: "NOT_PERFORMED",
   limitations: [
