@@ -1,60 +1,20 @@
 {
   "suite_id": "AOE-PE-v0.1.1-TAXONOMY-ALIGNMENT",
-  "total_checks": 12,
-  "passed": 12,
-  "failed": 0,
-  "checks": [
-    {
-      "check": "finding names",
-      "result": "PASS"
-    },
-    {
-      "check": "finding categories",
-      "result": "PASS"
-    },
-    {
-      "check": "finding severities",
-      "result": "PASS"
-    },
-    {
-      "check": "EAK check types",
-      "result": "PASS"
-    },
-    {
-      "check": "EAK check statuses",
-      "result": "PASS"
-    },
-    {
-      "check": "case disposition separated",
-      "result": "PASS"
-    },
-    {
-      "check": "nine adversarial cases",
-      "result": "PASS"
-    },
-    {
-      "check": "adversarial findings use existing taxonomy",
-      "result": "PASS"
-    },
-    {
-      "check": "RAG emits no invented EAK check",
-      "result": "PASS"
-    },
-    {
-      "check": "positive control",
-      "result": "PASS"
-    },
-    {
-      "check": "no product integration",
-      "result": "PASS"
-    },
-    {
-      "check": "EAK source ref pinned",
-      "result": "PASS"
-    }
-  ],
+  "total_checks": 13,
+  "expected_checks": 13,
+  "passed": null,
+  "failed": null,
+  "disposition": "PENDING_RERUN_AFTER_INDEPENDENT_VERIFIER_HARDENING",
+  "execution_status": "PREVIOUS_12_CHECK_BASELINE_SUPERSEDED_BY_NEW_TEST_LOGIC",
+  "previous_baseline": {
+    "total_checks": 12,
+    "passed": 12,
+    "failed": 0,
+    "windows": "PowerShell 7.6.9 / Node v24.15.0",
+    "receipt_commit": "1d40a2e4642d357fce0922a5d56f0b47d5f1d278"
+  },
   "limitations": [
-    "Uses a frozen source-contract snapshot; refresh if Guard taxonomy or EAK type files change.",
+    "The expanded taxonomy checker has not yet been rerun against the updated fixtures and verification result.",
     "This is repository-source alignment, not an independent audit of ARIA or Guard runtime verification."
   ]
 }
