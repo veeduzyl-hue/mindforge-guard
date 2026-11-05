@@ -1,0 +1,103 @@
+{
+  "suite_id": "AOE-PE-v0.1.1-BASELINE-MAPPING",
+  "source_case_suite": "AOE-PE-v0.1",
+  "cases": [
+    {
+      "case_id": "AOE-PE-01-C14-DOWNGRADE",
+      "case_disposition": "SUPPORTED_LIMITED",
+      "finding_types": [
+        "external_report_unavailable",
+        "evidence_incomplete"
+      ],
+      "eak_checks": [
+        [
+          "evidence_chain_completeness",
+          "failed"
+        ],
+        [
+          "provenance_completeness",
+          "partially_verified"
+        ]
+      ]
+    },
+    {
+      "case_id": "AOE-PE-02-MOCK-PROTOCOL",
+      "case_disposition": "SUPPORTED_LIMITED",
+      "finding_types": [
+        "missing_signature",
+        "signature_not_checked",
+        "timestamp_not_checked",
+        "raw_payload_unavailable"
+      ],
+      "eak_checks": [
+        [
+          "digest_integrity",
+          "not_run"
+        ],
+        [
+          "signature_validity",
+          "not_run"
+        ],
+        [
+          "temporal_consistency",
+          "not_run"
+        ]
+      ]
+    },
+    {
+      "case_id": "AOE-PE-03-RAG-ZERO-RELEVANCE",
+      "case_disposition": "SUPPORTED_LIMITED",
+      "finding_types": [
+        "evidence_insufficient_for_review",
+        "partial_evidence"
+      ],
+      "eak_checks": [
+        [
+          "provenance_completeness",
+          "partially_verified"
+        ]
+      ]
+    },
+    {
+      "case_id": "AOE-PE-04-UNSIGNED-ENVELOPE",
+      "case_disposition": "SUPPORTED_LIMITED",
+      "finding_types": [
+        "missing_signature",
+        "timestamp_not_checked",
+        "raw_payload_unavailable"
+      ],
+      "eak_checks": [
+        [
+          "signature_validity",
+          "not_run"
+        ],
+        [
+          "temporal_consistency",
+          "not_run"
+        ],
+        [
+          "digest_integrity",
+          "not_run"
+        ]
+      ]
+    },
+    {
+      "case_id": "AOE-PE-05-CLAIM-STATUS-RECONCILIATION",
+      "case_disposition": "SUPPORTED_LIMITED",
+      "finding_types": [
+        "reviewer_attention_recommended",
+        "partial_evidence"
+      ],
+      "eak_checks": [
+        [
+          "structural_validity",
+          "verified"
+        ],
+        [
+          "provenance_completeness",
+          "not_run"
+        ]
+      ]
+    }
+  ]
+}
