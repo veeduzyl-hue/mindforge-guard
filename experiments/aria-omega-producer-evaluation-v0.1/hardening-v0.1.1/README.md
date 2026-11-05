@@ -3,8 +3,8 @@
 This additive delta preserves the original AOE-PE v0.1 source fixtures and adds:
 
 - semantic mapping to existing Guard Evidence Contract, Verification Findings Taxonomy, Normalized Evidence Record, and EAK type-only contracts;
-- nine negative/adversarial cases covering cross-execution evidence promotion, digest/signature conflation, local TSA promotion, RAG retrieval-count inflation, LLM status override, claim-count mismatch, payload digest mismatch, un-retrieved artifact references, and self-asserted independent verification;
-- one positive control proving the evaluator does not downgrade when evidence is present, bound to the current execution, and digest-verified;
+- thirteen negative/adversarial cases covering cross-execution evidence promotion, digest/signature conflation, local TSA promotion, RAG retrieval-count inflation, LLM status override, claim-count mismatch, payload digest mismatch, un-retrieved artifact references, and self-asserted independent verification;
+- two positive controls proving the evaluator does not downgrade when evidence is present, bound to the current execution, and digest-verified;
 - a deterministic offline oracle and a separate repository-source taxonomy/EAK alignment review.
 
 Run from the repository root:
