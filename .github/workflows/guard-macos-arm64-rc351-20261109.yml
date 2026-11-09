@@ -1,0 +1,75 @@
+name: Guard macOS ARM64 rc351 isolated admission
+on:
+  push:
+    branches:
+      - experiment/guard-macos-arm64-rc351-20261109
+    paths:
+      - .github/workflows/guard-macos-arm64-rc351-20261109.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  macos-arm64-fixed-artifact:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - name: Checkout immutable PR 351 source (not experiment branch source)
+        uses: actions/checkout@v4
+        with:
+          ref: af0ca5427c90bb07d274d10c6df737ca5f89c782
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check host architecture and pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "arm64"
+          test "$(node -p 'process.arch')" = "arm64"
+          test "$(git rev-parse HEAD)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          echo "HOST_PLATFORM=$(uname -s) $(uname -m)"
+          echo "NODE_VERSION=$(node --version)"
+          echo "PINNED_SOURCE=$(git rev-parse HEAD)"
+      - name: Download canonical, previously built RC candidate artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-linux
+          run-id: 41752059453
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/guard-macos-arm64-canonical
+      - name: Offline package install and bounded first-report verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANON="$RUNNER_TEMP/guard-macos-arm64-canonical"
+          RC_DIR="$RUNNER_TEMP/guard-macos-arm64-rc351"
+          PREFIX="$RUNNER_TEMP/guard-macos-arm64-install"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          ZIP="$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip"
+          mkdir -p "$RC_DIR/sample" "$PREFIX"
+          test -s "$TGZ"
+          test -s "$ZIP"
+          test "$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" = "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51"
+          test "$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          cp "$TGZ" "$RC_DIR/"
+          cp "$ZIP" "$RC_DIR/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$RC_DIR/"
+          python3 -m zipfile -e "$ZIP" "$RC_DIR/sample"
+          npm install --offline --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="af0ca5427c90bb07d274d10c6df737ca5f89c782" GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          echo 'SOURCE_HEAD=af0ca5427c90bb07d274d10c6df737ca5f89c782' > "$RC_DIR/macos-arm64-attestation.txt"
+          echo "WORKFLOW_HEAD=$GITHUB_SHA" >> "$RC_DIR/macos-arm64-attestation.txt"
+          echo "HOST=$(uname -s) ARCH=$(uname -m)" >> "$RC_DIR/macos-arm64-attestation.txt"
+          echo "NODE=$(node -v)" >> "$RC_DIR/macos-arm64-attestation.txt"
+          echo "TARBALL_SHA256=$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" >> "$RC_DIR/macos-arm64-attestation.txt"
+          echo "SAMPLE_SHA256=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" >> "$RC_DIR/macos-arm64-attestation.txt"
+      - name: Upload bounded synthetic-only machine receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guard-macos-arm64-rc351-pinned-machine-receipt
+          path: ${{ runner.temp }}/guard-macos-arm64-rc351/
+          retention-days: 30
+          if-no-files-found: warn
