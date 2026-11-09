@@ -1,0 +1,73 @@
+name: Guard macOS Intel rc351 isolated admission
+on:
+  push:
+    branches:
+      - experiment/guard-macos-intel-rc351-20261109
+    paths:
+      - .github/workflows/guard-macos-intel-rc351-20261109.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  macos-intel-fixed-artifact:
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    steps:
+      - name: Checkout immutable PR 351 source
+        uses: actions/checkout@v4
+        with:
+          ref: af0ca5427c90bb07d274d10c6df737ca5f89c782
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify Intel architecture and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          test "$(node -p 'process.arch')" = "x64"
+          test "$(git rev-parse HEAD)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          echo "MAC_HOST=$(uname -s) $(uname -m) NODE=$(node -v)"
+      - name: Download fixed canonical RC tarball from prior Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-linux
+          run-id: 41752059453
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/guard-macos-intel-canonical
+      - name: Verify fixed bytes, offline installation and preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANON="$RUNNER_TEMP/guard-macos-intel-canonical"
+          RC_DIR="$RUNNER_TEMP/guard-macos-intel-rc351"
+          PREFIX="$RUNNER_TEMP/guard-macos-intel-install"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          ZIP="$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip"
+          mkdir -p "$RC_DIR/sample" "$PREFIX"
+          test -s "$TGZ"
+          test -s "$ZIP"
+          test "$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" = "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51"
+          test "$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          cp "$TGZ" "$RC_DIR/"
+          cp "$ZIP" "$RC_DIR/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$RC_DIR/"
+          python3 -m zipfile -e "$ZIP" "$RC_DIR/sample"
+          npm install --offline --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="af0ca5427c90bb07d274d10c6df737ca5f89c782" GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          echo 'SOURCE_HEAD=af0ca5427c90bb07d274d10c6df737ca5f89c782' > "$RC_DIR/macos-intel-attestation.txt"
+          echo "WORKFLOW_HEAD=$GITHUB_SHA" >> "$RC_DIR/macos-intel-attestation.txt"
+          echo "HOST=$(uname -s) ARCH=$(uname -m)" >> "$RC_DIR/macos-intel-attestation.txt"
+          echo "NODE=$(node -v)" >> "$RC_DIR/macos-intel-attestation.txt"
+          echo "TARBALL_SHA256=$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" >> "$RC_DIR/macos-intel-attestation.txt"
+          echo "SAMPLE_SHA256=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" >> "$RC_DIR/macos-intel-attestation.txt"
+      - name: Upload bounded synthetic-only Intel machine receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guard-macos-intel-rc351-pinned-machine-receipt
+          path: ${{ runner.temp }}/guard-macos-intel-rc351/
+          retention-days: 30
+          if-no-files-found: warn
