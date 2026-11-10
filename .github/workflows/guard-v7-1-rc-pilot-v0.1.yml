@@ -1,0 +1,128 @@
+name: Guard v7.1.0-rc.0 packaged install and pilot readiness
+on:
+  push:
+    branches:
+      - release/v7.1.0-rc.0
+permissions:
+  contents: read
+jobs:
+  rc-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Linux regression, actual RC tarball, fresh prefix install
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python scripts/build_a2_sample_pack.py
+          python scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          RC_DIR="$RUNNER_TEMP/guard-rc-v7.1.0"
+          PREFIX="$RUNNER_TEMP/guard-rc-install"
+          mkdir -p "$RC_DIR" "$PREFIX" "$RC_DIR/sample" "$RC_DIR/pilot"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$RC_DIR" --json > "$RC_DIR/npm-pack.json"
+          TARBALL="$RC_DIR/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          test -s "$TARBALL"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TARBALL"
+          python -c 'import os,zipfile;zipfile.ZipFile("downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip").extractall(os.path.join(os.environ["RUNNER_TEMP"],"guard-rc-v7.1.0","sample"))'
+          cp docs/commercial/pilot/v0.1/*.md "$RC_DIR/pilot/"
+          cp docs/release/v7_1_0_rc_0_release_candidate.md "$RC_DIR/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$RC_DIR/"
+          GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TARBALL" node scripts/verify_v7_1_rc_install.mjs
+      - name: Upload Linux candidate and bounded receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-linux
+          path: ${{ runner.temp }}/guard-rc-v7.1.0/
+          retention-days: 30
+          if-no-files-found: warn
+  rc-windows:
+    needs: rc-linux
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download the exact Linux-built canonical RC tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-linux
+          path: ${{ runner.temp }}/guard-rc-canonical
+      - name: Windows PowerShell 5.1 regression, actual RC tarball, fresh prefix install
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'PS_5_1_REQUIRED' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          foreach ($cmd in @('verify','verify:v7.0.1')) {
+            npm.cmd run $cmd
+            if ($LASTEXITCODE -ne 0) { throw ('REGRESSION_FAILED:' + $cmd) }
+          }
+          foreach ($script in @('verify_commercial_edition_boundary.mjs','verify_v7_role_based_report_render.mjs','verify_v7_1_rc_consistency.mjs')) {
+            node.exe ("scripts/" + $script)
+            if ($LASTEXITCODE -ne 0) { throw ('VERIFIER_FAILED:' + $script) }
+          }
+          python scripts/build_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_BUILD_FAILED' }
+          python scripts/verify_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_VERIFY_FAILED' }
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          if ($LASTEXITCODE -ne 0) { throw 'SOURCE_TREE_DRIFT' }
+          $rcDir = Join-Path $env:RUNNER_TEMP 'guard-rc-v7.1.0'
+          $prefix = Join-Path $env:RUNNER_TEMP 'guard-rc-install'
+          New-Item -ItemType Directory -Force $rcDir, $prefix, (Join-Path $rcDir 'sample'), (Join-Path $rcDir 'pilot') | Out-Null
+          $repackDir = Join-Path $env:RUNNER_TEMP 'guard-rc-windows-repack'
+          New-Item -ItemType Directory -Force $repackDir | Out-Null
+          npm.cmd pack --workspace @veeduzyl/mindforge-guard --pack-destination $repackDir --json | Out-File -FilePath (Join-Path $rcDir 'npm-pack.json') -Encoding UTF8
+          if ($LASTEXITCODE -ne 0) { throw 'RC_PACK_FAILED' }
+          $canonical = Join-Path $env:RUNNER_TEMP 'guard-rc-canonical/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          if (-not (Test-Path $canonical)) { throw 'CANONICAL_LINUX_TARBALL_MISSING' }
+          $tgz = Join-Path $rcDir 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          Copy-Item -LiteralPath $canonical -Destination $tgz
+          if (-not (Test-Path $tgz)) { throw 'RC_TARBALL_MISSING' }
+          npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'RC_INSTALL_FAILED' }
+          Expand-Archive -LiteralPath 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip' -DestinationPath (Join-Path $rcDir 'sample') -Force
+          if (-not (Test-Path (Join-Path $rcDir 'sample/hr-self-service-agent/manifest.json'))) { throw 'SAMPLE_EXTRACT_FAILED' }
+          Copy-Item docs/commercial/pilot/v0.1/*.md (Join-Path $rcDir 'pilot')
+          Copy-Item docs/release/v7_1_0_rc_0_release_candidate.md $rcDir
+          Copy-Item downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip $rcDir
+          Copy-Item downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 $rcDir
+          $env:GUARD_RC_OUTPUT_DIR = $rcDir
+          $env:GUARD_RC_INSTALL_DIR = $prefix
+          $env:GUARD_RC_TGZ = $tgz
+          node.exe scripts/verify_v7_1_rc_install.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PACKAGED_RC_SMOKE_FAILED' }
+      - name: Upload Windows candidate and bounded receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guard-v7-1-0-rc-0-windows
+          path: ${{ runner.temp }}/guard-rc-v7.1.0/
+          retention-days: 30
+          if-no-files-found: warn
