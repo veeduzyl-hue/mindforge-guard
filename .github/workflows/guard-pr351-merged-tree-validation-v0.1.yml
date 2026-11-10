@@ -1,0 +1,249 @@
+name: PR351 exact merged-tree integration v0.1
+on:
+  push:
+    branches:
+      - validation/pr351-main-merge-candidate-20261110
+    paths:
+      - .github/workflows/guard-pr351-merged-tree-validation-v0.1.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integration-linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4aa26fbdd418be669eb5c9cfeb1094b21ac554fb
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pinned two-parent source, regression, real tarball, isolated first report
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          test "$(git rev-parse HEAD:experiments)" = "1b77eebbd74af73fcc6a291ceaf2e6be99724702"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          RC_DIR="$RUNNER_TEMP/guard-merge-linux"
+          PREFIX="$RUNNER_TEMP/guard-install-linux"
+          mkdir -p "$RC_DIR/sample" "$PREFIX"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$RC_DIR" --json > "$RC_DIR/npm-pack.json"
+          TGZ="$RC_DIR/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$RC_DIR/"
+          python3 -m zipfile -e downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/sample"
+          GITHUB_SHA="4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          echo "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" > "$RC_DIR/merge-candidate-sha.txt"
+          echo "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61" > "$RC_DIR/parent-main-sha.txt"
+          echo "af0ca5427c90bb07d274d10c6df737ca5f89c782" > "$RC_DIR/parent-pr351-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$RC_DIR/host-platform.txt"
+          node --version > "$RC_DIR/node-version.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr351-merged-integration-linux
+          path: ${{ runner.temp }}/guard-merge-linux/
+          retention-days: 30
+          if-no-files-found: warn
+  integration-macos-arm64:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4aa26fbdd418be669eb5c9cfeb1094b21ac554fb
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Require arm64 then run merged-tree integration
+        shell: bash
+        run: |
+          test "$(uname -m)" = "arm64"
+          test "$(node -p 'process.arch')" = "arm64"
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          test "$(git rev-parse HEAD:experiments)" = "1b77eebbd74af73fcc6a291ceaf2e6be99724702"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          RC_DIR="$RUNNER_TEMP/guard-merge-mac-arm64"
+          PREFIX="$RUNNER_TEMP/guard-install-mac-arm64"
+          mkdir -p "$RC_DIR/sample" "$PREFIX"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$RC_DIR" --json > "$RC_DIR/npm-pack.json"
+          TGZ="$RC_DIR/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$RC_DIR/"
+          python3 -m zipfile -e downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/sample"
+          GITHUB_SHA="4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          echo "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" > "$RC_DIR/merge-candidate-sha.txt"
+          echo "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61" > "$RC_DIR/parent-main-sha.txt"
+          echo "af0ca5427c90bb07d274d10c6df737ca5f89c782" > "$RC_DIR/parent-pr351-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$RC_DIR/host-platform.txt"
+          node --version > "$RC_DIR/node-version.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr351-merged-integration-mac-arm64
+          path: ${{ runner.temp }}/guard-merge-mac-arm64/
+          retention-days: 30
+          if-no-files-found: warn
+  integration-macos-intel:
+    runs-on: macos-15-intel
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4aa26fbdd418be669eb5c9cfeb1094b21ac554fb
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Require x64 then run merged-tree integration
+        shell: bash
+        run: |
+          test "$(uname -m)" = "x86_64"
+          test "$(node -p 'process.arch')" = "x64"
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          test "$(git rev-parse HEAD:experiments)" = "1b77eebbd74af73fcc6a291ceaf2e6be99724702"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          RC_DIR="$RUNNER_TEMP/guard-merge-mac-intel"
+          PREFIX="$RUNNER_TEMP/guard-install-mac-intel"
+          mkdir -p "$RC_DIR/sample" "$PREFIX"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$RC_DIR" --json > "$RC_DIR/npm-pack.json"
+          TGZ="$RC_DIR/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$RC_DIR/"
+          python3 -m zipfile -e downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$RC_DIR/sample"
+          GITHUB_SHA="4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" GUARD_RC_OUTPUT_DIR="$RC_DIR" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          echo "4aa26fbdd418be669eb5c9cfeb1094b21ac554fb" > "$RC_DIR/merge-candidate-sha.txt"
+          echo "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61" > "$RC_DIR/parent-main-sha.txt"
+          echo "af0ca5427c90bb07d274d10c6df737ca5f89c782" > "$RC_DIR/parent-pr351-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$RC_DIR/host-platform.txt"
+          node --version > "$RC_DIR/node-version.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr351-merged-integration-mac-intel
+          path: ${{ runner.temp }}/guard-merge-mac-intel/
+          retention-days: 30
+          if-no-files-found: warn
+  integration-windows:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4aa26fbdd418be669eb5c9cfeb1094b21ac554fb
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: PowerShell 5.1 regression, fixed merged tree and installed package
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'PS5_1_REQUIRED' }
+          if ((git rev-parse HEAD).Trim() -ne '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb') { throw 'SOURCE_SHA_MISMATCH' }
+          if ((git rev-parse 'HEAD^1').Trim() -ne '0d3b1d9d1a1677f4619bef370691c0c77ecb4c61') { throw 'MAIN_PARENT_MISMATCH' }
+          if ((git rev-parse 'HEAD^2').Trim() -ne 'af0ca5427c90bb07d274d10c6df737ca5f89c782') { throw 'PR_PARENT_MISMATCH' }
+          if ((git rev-parse 'HEAD:experiments').Trim() -ne '1b77eebbd74af73fcc6a291ceaf2e6be99724702') { throw 'RESEARCH_TREE_MISMATCH' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          foreach ($task in @('verify','verify:v7.0.1')) {
+            npm.cmd run $task
+            if ($LASTEXITCODE -ne 0) { throw ('REGRESSION_FAILED:' + $task) }
+          }
+          foreach ($script in @('verify_commercial_edition_boundary.mjs','verify_v7_role_based_report_render.mjs','verify_v7_1_rc_consistency.mjs')) {
+            node.exe ('scripts/' + $script)
+            if ($LASTEXITCODE -ne 0) { throw ('CHECK_FAILED:' + $script) }
+          }
+          python scripts/build_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_BUILD_FAILED' }
+          python scripts/verify_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_VERIFY_FAILED' }
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          if ($LASTEXITCODE -ne 0) { throw 'SOURCE_DIFF_DETECTED' }
+          $rcDir = Join-Path $env:RUNNER_TEMP 'guard-merge-windows'
+          $prefix = Join-Path $env:RUNNER_TEMP 'guard-install-windows'
+          New-Item -ItemType Directory -Force $rcDir,$prefix,(Join-Path $rcDir 'sample') | Out-Null
+          npm.cmd pack --workspace @veeduzyl/mindforge-guard --pack-destination $rcDir --json | Out-File -Encoding utf8 (Join-Path $rcDir 'npm-pack.json')
+          if ($LASTEXITCODE -ne 0) { throw 'PACK_FAILED' }
+          $tgz = Join-Path $rcDir 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'INSTALL_FAILED' }
+          Copy-Item downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip $rcDir
+          Copy-Item downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 $rcDir
+          Expand-Archive -LiteralPath 'downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip' -DestinationPath (Join-Path $rcDir 'sample')
+          $env:GITHUB_SHA = '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb'
+          $env:GUARD_RC_OUTPUT_DIR = $rcDir
+          $env:GUARD_RC_INSTALL_DIR = $prefix
+          $env:GUARD_RC_TGZ = $tgz
+          node.exe scripts/verify_v7_1_rc_install.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'VERIFIER_FAILED' }
+          '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb' | Set-Content -Encoding ascii (Join-Path $rcDir 'merge-candidate-sha.txt')
+          '0d3b1d9d1a1677f4619bef370691c0c77ecb4c61' | Set-Content -Encoding ascii (Join-Path $rcDir 'parent-main-sha.txt')
+          'af0ca5427c90bb07d274d10c6df737ca5f89c782' | Set-Content -Encoding ascii (Join-Path $rcDir 'parent-pr351-sha.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $rcDir 'host-platform.txt')
+          (node --version) | Set-Content -Encoding ascii (Join-Path $rcDir 'node-version.txt')
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr351-merged-integration-windows
+          path: ${{ runner.temp }}/guard-merge-windows/
+          retention-days: 30
+          if-no-files-found: warn
