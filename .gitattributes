@@ -8,3 +8,7 @@
 
 # A2: keep the three fixed synthetic YAML sample blobs LF-accurate on Windows checkout.
 examples/single-agent-governance-pack/hr-self-service-agent/*.yaml text eol=lf
+
+# RC: byte-preserve packaged license and Ed25519 public key across Windows checkout.
+packages/guard/LICENSE text eol=lf
+packages/guard/src/product/keys/*.pem text eol=lf
