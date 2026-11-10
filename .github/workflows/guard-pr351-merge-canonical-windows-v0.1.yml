@@ -1,0 +1,70 @@
+name: PR351 exact-merge canonical Linux tarball Windows portability
+on:
+  push:
+    branches:
+      - validation/pr351-main-merge-candidate-20261110
+    paths:
+      - .github/workflows/guard-pr351-merge-canonical-windows-v0.1.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  install-linux-built-on-windows:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4aa26fbdd418be669eb5c9cfeb1094b21ac554fb
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/download-artifact@v4
+        with:
+          name: pr351-merged-integration-linux
+          run-id: 42753664718
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/canonical
+      - name: Strict canonical artifact readback and isolated Windows install
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'PS_5_REQUIRED' }
+          if ((git rev-parse HEAD).Trim() -ne '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb') { throw 'SOURCE_MISMATCH' }
+          if ((git rev-parse 'HEAD^1').Trim() -ne '0d3b1d9d1a1677f4619bef370691c0c77ecb4c61') { throw 'MAIN_PARENT_MISMATCH' }
+          if ((git rev-parse 'HEAD^2').Trim() -ne 'af0ca5427c90bb07d274d10c6df737ca5f89c782') { throw 'PR_PARENT_MISMATCH' }
+          $canonical = Join-Path $env:RUNNER_TEMP 'canonical'
+          $tgz = Join-Path $canonical 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          if (-not (Test-Path $tgz)) { throw 'TGZ_MISSING' }
+          $observed = (Get-FileHash -Algorithm SHA256 -LiteralPath $tgz).Hash.ToLowerInvariant()
+          if ($observed -ne '94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51') { throw ('CANONICAL_SHA_MISMATCH ' + $observed) }
+          $zip = Join-Path $canonical 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
+          if (-not (Test-Path $zip)) { throw 'SAMPLE_MISSING' }
+          if ((Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant() -ne '1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf') { throw 'SAMPLE_SHA_MISMATCH' }
+          $out = Join-Path $env:RUNNER_TEMP 'guard-merged-canonical-windows'
+          $prefix = Join-Path $env:RUNNER_TEMP 'guard-merged-canonical-prefix'
+          New-Item -ItemType Directory -Force $out,$prefix,(Join-Path $out 'sample') | Out-Null
+          npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'CANONICAL_INSTALL_FAILED' }
+          Copy-Item $zip $out
+          Copy-Item (Join-Path $canonical 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256') $out
+          Expand-Archive -LiteralPath $zip -DestinationPath (Join-Path $out 'sample')
+          $env:GITHUB_SHA = '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb'
+          $env:GUARD_RC_OUTPUT_DIR = $out
+          $env:GUARD_RC_INSTALL_DIR = $prefix
+          $env:GUARD_RC_TGZ = $tgz
+          node.exe scripts/verify_v7_1_rc_install.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'CANONICAL_REPORT_VERIFY_FAILED' }
+          '4aa26fbdd418be669eb5c9cfeb1094b21ac554fb' | Set-Content -Encoding ascii (Join-Path $out 'merge-candidate-sha.txt')
+          '0d3b1d9d1a1677f4619bef370691c0c77ecb4c61' | Set-Content -Encoding ascii (Join-Path $out 'parent-main-sha.txt')
+          'af0ca5427c90bb07d274d10c6df737ca5f89c782' | Set-Content -Encoding ascii (Join-Path $out 'parent-pr351-sha.txt')
+          'Canonical Linux-built tgz installed on Windows Server 2022 with verified SHA-256' | Set-Content -Encoding ascii (Join-Path $out 'cross-platform-package-note.txt')
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr351-merge-canonical-linux-tgz-on-windows-receipt
+          path: ${{ runner.temp }}/guard-merged-canonical-windows/
+          retention-days: 30
+          if-no-files-found: warn
