@@ -1,0 +1,277 @@
+name: Guard post-merge main SHA verification v0.1
+on:
+  push:
+    branches:
+      - validation/post-merge-main-20261111
+    paths:
+      - .github/workflows/guard-post-merge-main-20261111.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  linux:
+    name: main-linux-canonical-build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pinned main, full regression, deterministic tarball, isolated installed CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          test "$(git rev-parse HEAD)" = "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c"
+          test "$(git rev-parse 'HEAD^{tree}')" = "b17e063eefbac07e55a97e8d3e985c55e60e7746"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          OUT="$RUNNER_TEMP/postmerge-main-linux"
+          PREFIX="$RUNNER_TEMP/postmerge-install-linux"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$OUT" --json > "$OUT/npm-pack.json"
+          TGZ="$OUT/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          test -s "$TGZ"
+          test "$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" = "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$OUT/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          printf '%s\n' "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" > "$OUT/tested-main-sha.txt"
+          printf '%s\n' "b17e063eefbac07e55a97e8d3e985c55e60e7746" > "$OUT/tested-main-tree.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/runner-platform.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51  veeduzyl-mindforge-guard-7.1.0-rc.0.tgz" > "$OUT/expected-tarball.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guard-postmerge-canonical-linux-20261111
+          path: ${{ runner.temp }}/postmerge-main-linux/
+          retention-days: 30
+          if-no-files-found: warn
+  windows:
+    needs: linux
+    name: main-windows-powershell51
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: guard-postmerge-canonical-linux-20261111
+          path: ${{ runner.temp }}/postmerge-canonical-linux
+      - name: Pinned main regression and canonical Linux tarball install under PS 5.1
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'PS_5_1_REQUIRED' }
+          if ((git rev-parse HEAD).Trim() -ne '3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c') { throw 'PINNED_MAIN_SHA_MISMATCH' }
+          if ((git rev-parse 'HEAD^{tree}').Trim() -ne 'b17e063eefbac07e55a97e8d3e985c55e60e7746') { throw 'PINNED_MAIN_TREE_MISMATCH' }
+          if ((git rev-parse 'HEAD^1').Trim() -ne '0d3b1d9d1a1677f4619bef370691c0c77ecb4c61') { throw 'MAIN_PARENT_MISMATCH' }
+          if ((git rev-parse 'HEAD^2').Trim() -ne 'af0ca5427c90bb07d274d10c6df737ca5f89c782') { throw 'PR351_PARENT_MISMATCH' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          foreach ($task in @('verify','verify:v7.0.1')) { npm.cmd run $task; if ($LASTEXITCODE -ne 0) { throw ('REGRESSION_FAILED:' + $task) } }
+          foreach ($script in @('verify_commercial_edition_boundary.mjs','verify_v7_role_based_report_render.mjs','verify_v7_1_rc_consistency.mjs')) { node.exe ('scripts/' + $script); if ($LASTEXITCODE -ne 0) { throw ('TARGETED_CHECK_FAILED:' + $script) } }
+          python scripts/build_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_BUILD_FAILED' }
+          python scripts/verify_a2_sample_pack.py
+          if ($LASTEXITCODE -ne 0) { throw 'SAMPLE_VERIFY_FAILED' }
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          if ($LASTEXITCODE -ne 0) { throw 'SOURCE_TREE_DRIFT' }
+          $sampleHash = (Get-FileHash -Algorithm SHA256 -LiteralPath downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip).Hash.ToLowerInvariant()
+          if ($sampleHash -ne '1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf') { throw 'CHECKOUT_SAMPLE_SHA_MISMATCH' }
+          $canon = Join-Path $env:RUNNER_TEMP 'postmerge-canonical-linux'
+          $tgz = Join-Path $canon 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          $zip = Join-Path $canon 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip'
+          if (-not (Test-Path $tgz) -or -not (Test-Path $zip)) { throw 'CANONICAL_ARTIFACT_MISSING' }
+          if ((Get-FileHash -Algorithm SHA256 -LiteralPath $tgz).Hash.ToLowerInvariant() -ne '94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51') { throw 'CANONICAL_TARBALL_SHA_MISMATCH' }
+          if ((Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant() -ne '1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf') { throw 'CANONICAL_SAMPLE_SHA_MISMATCH' }
+          $out = Join-Path $env:RUNNER_TEMP 'postmerge-main-windows'
+          $prefix = Join-Path $env:RUNNER_TEMP 'postmerge-install-windows'
+          New-Item -ItemType Directory -Force $out,$prefix,(Join-Path $out 'sample') | Out-Null
+          Copy-Item $tgz $out
+          Copy-Item $zip $out
+          Copy-Item (Join-Path $canon 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256') $out
+          Expand-Archive -LiteralPath $zip -DestinationPath (Join-Path $out 'sample')
+          npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'CANONICAL_INSTALL_FAILED' }
+          $env:GITHUB_SHA = '3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c'
+          $env:GUARD_RC_OUTPUT_DIR = $out
+          $env:GUARD_RC_INSTALL_DIR = $prefix
+          $env:GUARD_RC_TGZ = $tgz
+          node.exe scripts/verify_v7_1_rc_install.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PACKAGED_REPORT_VERIFY_FAILED' }
+          '3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c' | Set-Content -Encoding ascii (Join-Path $out 'tested-main-sha.txt')
+          'b17e063eefbac07e55a97e8d3e985c55e60e7746' | Set-Content -Encoding ascii (Join-Path $out 'tested-main-tree.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'runner-platform.txt')
+          (node -v) | Set-Content -Encoding ascii (Join-Path $out 'node-version.txt')
+          '94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51  veeduzyl-mindforge-guard-7.1.0-rc.0.tgz' | Set-Content -Encoding ascii (Join-Path $out 'expected-tarball.sha256')
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guard-postmerge-windows-20261111
+          path: ${{ runner.temp }}/postmerge-main-windows/
+          retention-days: 30
+          if-no-files-found: warn
+  mac-arm64:
+    needs: linux
+    name: main-macos-arm64
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: guard-postmerge-canonical-linux-20261111
+          path: ${{ runner.temp }}/postmerge-canonical-linux
+      - name: Pinned main regression, canonical tarball on Apple Silicon
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "arm64"
+          test "$(git rev-parse HEAD)" = "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c"
+          test "$(git rev-parse 'HEAD^{tree}')" = "b17e063eefbac07e55a97e8d3e985c55e60e7746"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          OUT="$RUNNER_TEMP/postmerge-main-mac-arm64"
+          PREFIX="$RUNNER_TEMP/postmerge-install-mac-arm64"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          CANON="$RUNNER_TEMP/postmerge-canonical-linux"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          test -s "$TGZ"
+          test "$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" = "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51"
+          test "$(shasum -a 256 "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          cp "$TGZ" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          printf '%s\n' "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" > "$OUT/tested-main-sha.txt"
+          printf '%s\n' "b17e063eefbac07e55a97e8d3e985c55e60e7746" > "$OUT/tested-main-tree.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/runner-platform.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51  veeduzyl-mindforge-guard-7.1.0-rc.0.tgz" > "$OUT/expected-tarball.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guard-postmerge-macos-arm64-20261111
+          path: ${{ runner.temp }}/postmerge-main-mac-arm64/
+          retention-days: 30
+          if-no-files-found: warn
+  mac-intel:
+    needs: linux
+    name: main-macos-intel
+    runs-on: macos-15-intel
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: guard-postmerge-canonical-linux-20261111
+          path: ${{ runner.temp }}/postmerge-canonical-linux
+      - name: Pinned main regression, canonical tarball on Intel macOS
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          test "$(git rev-parse HEAD)" = "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c"
+          test "$(git rev-parse 'HEAD^{tree}')" = "b17e063eefbac07e55a97e8d3e985c55e60e7746"
+          test "$(git rev-parse HEAD^1)" = "0d3b1d9d1a1677f4619bef370691c0c77ecb4c61"
+          test "$(git rev-parse HEAD^2)" = "af0ca5427c90bb07d274d10c6df737ca5f89c782"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          test "$(shasum -a 256 downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          OUT="$RUNNER_TEMP/postmerge-main-mac-intel"
+          PREFIX="$RUNNER_TEMP/postmerge-install-mac-intel"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          CANON="$RUNNER_TEMP/postmerge-canonical-linux"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          test -s "$TGZ"
+          test "$(shasum -a 256 "$TGZ" | cut -d' ' -f1)" = "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51"
+          test "$(shasum -a 256 "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" | cut -d' ' -f1)" = "1c0c7d4c26f564294c0024a0412ebf2f03288484002e8b61716526153eafb6bf"
+          cp "$TGZ" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          printf '%s\n' "3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c" > "$OUT/tested-main-sha.txt"
+          printf '%s\n' "b17e063eefbac07e55a97e8d3e985c55e60e7746" > "$OUT/tested-main-tree.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/runner-platform.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "94ed637fb9e4824b6f6d49b2b1d5b8f02cb2e158f158131fc490c0d5720fac51  veeduzyl-mindforge-guard-7.1.0-rc.0.tgz" > "$OUT/expected-tarball.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guard-postmerge-macos-intel-20261111
+          path: ${{ runner.temp }}/postmerge-main-mac-intel/
+          retention-days: 30
+          if-no-files-found: warn
