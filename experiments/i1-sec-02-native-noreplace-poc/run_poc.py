@@ -47,6 +47,13 @@ def native_rejected(native, stage, final):
     result = native.rename(stage, final)
     assert result["ok"] is False, result
     assert result["no_fallback"] is True
+    # A refusal from an unrelated drive or malformed API argument is NOT
+    # evidence of no-replace. Windows must reject an existing same-volume
+    # target after a separate fresh-target success control.
+    if IS_WIN:
+        assert result["error_name"] not in ("ERROR_NOT_SAME_DEVICE", "ERROR_INVALID_PARAMETER"), result
+    else:
+        assert result["raw_error_code"] == errno.EEXIST, result
     assert stage.exists(), "Refused rename must not consume source"
     return result
 
@@ -152,6 +159,10 @@ def main(output):
             assert len(success)==1, as_json(results)
             assert len(loser)==n-1,as_json(results)
             assert all(x["no_fallback"] for x in results)
+            if IS_WIN:
+                assert not any(x["error_name"] in ("ERROR_NOT_SAME_DEVICE", "ERROR_INVALID_PARAMETER") for x in loser), results
+            else:
+                assert all(x["raw_error_code"] == errno.EEXIST for x in loser), results
             final=case/"final"
             winner=(final/"receipt.txt").read_text(encoding="utf8")
             assert winner==f"WORKER-{success[0]['index']:02d}",winner
