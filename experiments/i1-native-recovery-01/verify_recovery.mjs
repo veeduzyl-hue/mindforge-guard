@@ -155,11 +155,29 @@ await one('REC-16-LEGACY-PRIVATE_SOURCE-ORPHAN-FLAGGED',()=>{
 await one('REC-17-BINARY-DIGEST-FAILS-CLOSED',()=>{
  const f=fresh();const ret=publishSyntheticReview({root:f.root,
   name:'bundle-bad-binary',expectedBinarySha256:'0'.repeat(64)});
- assert.equal(ret.status,'NATIVE_COMMIT_REFUSED_OR_UNKNOWN');
+ assert.equal(ret.status,'NATIVE_COMMIT_REFUSED');
  assert.equal(ret.native.status,'REFUSED_BINARY_DIGEST_MISMATCH');
  assert.equal(inspectSyntheticRecovery(f.root).stages.length,1);
  assert.equal(fs.readdirSync(f.published).length,0);
  return {refusal:ret.native.status,stageRetainedForOwnerReview:true};
+});
+await one('REC-17B-SYNTHETIC-AMBIGUOUS-NATIVE-RESULT-NO-FALSE-NONCOMMIT',()=>{
+ const f=fresh();
+ process.env.I1_RECOVERY_SYNTHETIC_UNKNOWN='1';
+ process.env.I1_RECOVERY_FAULT_INJECTION_AUTHORIZED='1';
+ try{
+  const ret=publishSyntheticReview({root:f.root,name:'bundle-unknown',
+    expectedBinarySha256:binarySha});
+  assert.equal(ret.status,'COMMIT_OUTCOME_UNKNOWN_OWNER_REVIEW');
+  assert.equal(ret.publicationState,'UNKNOWN_REQUIRES_READ_ONLY_RECONCILIATION');
+  assert.equal(ret.ownerReviewRequired,true);
+  assert.equal(ret.automaticCleanupPerformed,false);
+  assert.equal(Object.hasOwn(ret,'readyButNotPublished'),false);
+  const audit=inspectSyntheticRecovery(f.root);
+  assert.equal(audit.stages.length,1);
+  return {injectionSyntheticOnly:true,status:ret.status,noNegativeCommitClaim:true};
+ }finally{delete process.env.I1_RECOVERY_SYNTHETIC_UNKNOWN;
+  delete process.env.I1_RECOVERY_FAULT_INJECTION_AUTHORIZED;}
 });
 notRun('REC-18-G4-FUTURE_PATH_AND_CONTENT_MUTATION','OBSERVED_UNPROTECTED',
  'Same-user actor can mutate published bytes or public path after any instantaneous readback.');
