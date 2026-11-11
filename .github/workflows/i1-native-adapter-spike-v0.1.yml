@@ -96,8 +96,11 @@ jobs:
           $env:I1_SPIKE_RECEIPT_DIR = $out
           node.exe ($root + '/verify.mjs')
           if ($LASTEXITCODE -ne 0) { throw 'NATIVE_SPIKE_TEST_FAILED' }
-          npm.cmd pack --prefix $root --offline --ignore-scripts --pack-destination $out --json | Out-File -Encoding utf8 (Join-Path $out 'npm-pack.json')
-          if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_PACK_FAILED' }
+          Push-Location $root
+          try {
+            npm.cmd pack --offline --ignore-scripts --pack-destination $out --json | Out-File -Encoding utf8 (Join-Path $out 'npm-pack.json')
+            if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_PACK_FAILED' }
+          } finally { Pop-Location }
           $tgz = (Get-ChildItem -LiteralPath $out -Filter '*.tgz' -File | Select-Object -First 1).FullName
           if (-not $tgz) { throw 'PRIVATE_TARBALL_MISSING' }
           npm.cmd install --prefix $prefix --offline --ignore-scripts --no-audit --no-fund $tgz
