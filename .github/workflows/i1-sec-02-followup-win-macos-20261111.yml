@@ -1,0 +1,124 @@
+name: I1-SEC-02 follow-up Windows HANDLE and macOS actual volume
+on:
+  push:
+    branches:
+      - experiment/i1-sec-02-winhandle-macos-fs-20261111
+    paths:
+      - 'experiments/i1-sec-02-native-noreplace-poc/**'
+      - '.github/workflows/i1-sec-02-followup-win-macos-20261111.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  windows-root-handle:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Frozen-PoC ancestry and changed-file scope
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git merge-base --is-ancestor 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'POC_BASELINE_MISMATCH' }
+          $changes = @(git diff --name-only 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD)
+          foreach ($file in $changes) {
+            if (-not ($file.StartsWith('experiments/i1-sec-02-native-noreplace-poc/') -or $file -eq '.github/workflows/i1-sec-02-followup-win-macos-20261111.yml')) { throw ('OUT_OF_SCOPE_CHANGE:' + $file) }
+          }
+      - name: Native Windows NTSTATUS and parent HANDLE tests
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'i1-sec02-followup-windows'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          python.exe experiments/i1-sec-02-native-noreplace-poc/win_handle_followup.py (Join-Path $out 'windows-handle-receipt.json') | Tee-Object -FilePath (Join-Path $out 'windows-handle-test.log')
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_G3_NATIVE_FOLLOWUP_FAILED' }
+          python.exe -c "import json,sys; r=json.load(open(sys.argv[1])); assert r['goals']['G1_root_handle_collision_no_replace']=='PASS_BOUNDED'; assert r['goals']['G3_Windows_handle_anchoring']=='PASS_BOUNDED'; print('WIN_ROOT_HANDLE_BOUNDED_PASS')" (Join-Path $out 'windows-handle-receipt.json')
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_G1_G3_NOT_ESTABLISHED' }
+          git rev-parse HEAD | Set-Content -Encoding ascii (Join-Path $out 'experiment-head.txt')
+          (node -v) | Set-Content -Encoding ascii (Join-Path $out 'node-version.txt')
+          (python --version) | Set-Content -Encoding ascii (Join-Path $out 'python-version.txt')
+      - name: Preserve original Windows machine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec02-followup-windows-handle
+          path: ${{ runner.temp }}/i1-sec02-followup-windows/
+          retention-days: 30
+          if-no-files-found: warn
+  macos-arm64-volume:
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Actual ARM64 statfs/fstatfs and native rename
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "arm64"
+          git merge-base --is-ancestor 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD
+          test -z "$(git diff --name-only 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD | grep -Ev '^(experiments/i1-sec-02-native-noreplace-poc/|\.github/workflows/i1-sec-02-followup-win-macos-20261111.yml$)' || true)"
+          OUT="$RUNNER_TEMP/i1-sec02-followup-macos-arm64"
+          mkdir -p "$OUT"
+          python3 experiments/i1-sec-02-native-noreplace-poc/macos_fs_followup.py "$OUT/macos-fs-receipt.json" | tee "$OUT/macos-fs-test.log"
+          python3 -m json.tool "$OUT/macos-fs-receipt.json" >/dev/null
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/experiment-head.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/host.txt"
+      - name: Preserve actual ARM64 filesystem receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec02-followup-macos-arm64-volume
+          path: ${{ runner.temp }}/i1-sec02-followup-macos-arm64/
+          retention-days: 30
+          if-no-files-found: warn
+  macos-intel-volume:
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Actual Intel statfs/fstatfs and native rename
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          git merge-base --is-ancestor 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD
+          test -z "$(git diff --name-only 'ef69a2702cc0ed8aaff07729331070e80bdb54d4' HEAD | grep -Ev '^(experiments/i1-sec-02-native-noreplace-poc/|\.github/workflows/i1-sec-02-followup-win-macos-20261111.yml$)' || true)"
+          OUT="$RUNNER_TEMP/i1-sec02-followup-macos-intel"
+          mkdir -p "$OUT"
+          python3 experiments/i1-sec-02-native-noreplace-poc/macos_fs_followup.py "$OUT/macos-fs-receipt.json" | tee "$OUT/macos-fs-test.log"
+          python3 -m json.tool "$OUT/macos-fs-receipt.json" >/dev/null
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/experiment-head.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/host.txt"
+      - name: Preserve actual Intel filesystem receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec02-followup-macos-intel-volume
+          path: ${{ runner.temp }}/i1-sec02-followup-macos-intel/
+          retention-days: 30
+          if-no-files-found: warn
