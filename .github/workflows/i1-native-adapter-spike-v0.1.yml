@@ -1,0 +1,122 @@
+name: I1 Native Adapter Spike v0.1 isolated NAPI8
+on:
+  push:
+    branches:
+      - experiment/i1-native-adapter-spike-v0.1-20261111
+    paths:
+      - 'experiments/i1-native-adapter-spike-v0.1/**'
+      - '.github/workflows/i1-native-adapter-spike-v0.1.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-spike:
+    name: build-${{ matrix.id }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux
+            runner: ubuntu-22.04
+            arch: x86_64
+          - id: mac-arm64
+            runner: macos-15
+            arch: arm64
+          - id: mac-intel
+            runner: macos-15-intel
+            arch: x86_64
+          - id: windows
+            runner: windows-2022
+            arch: x64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    env:
+      I1_RUNNER_ID: ${{ matrix.id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Confirm source admission boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 11349588a4604d4c472a00fea00e6bb7c0d3ee2e HEAD
+          test -z "$(git diff --name-only 11349588a4604d4c472a00fea00e6bb7c0d3ee2e HEAD | grep -Ev '^(experiments/i1-native-adapter-spike-v0.1/|\.github/workflows/i1-native-adapter-spike-v0.1.yml$)' || true)"
+      - name: Linux/macOS explicit build and native negative tests
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "${{ matrix.arch }}"
+          ROOT="experiments/i1-native-adapter-spike-v0.1"
+          OUT="$RUNNER_TEMP/i1-native-spike-${{ matrix.id }}"
+          PREFIX="$RUNNER_TEMP/i1-native-spike-install-${{ matrix.id }}"
+          mkdir -p "$OUT" "$PREFIX"
+          node "$ROOT/build.mjs"
+          I1_SPIKE_RECEIPT_DIR="$OUT" node "$ROOT/verify.mjs"
+          (cd "$ROOT" && npm pack --offline --ignore-scripts --pack-destination "$OUT" --json > "$OUT/npm-pack.json")
+          TGZ="$(find "$OUT" -maxdepth 1 -type f -name '*.tgz' | head -1)"
+          test -s "$TGZ"
+          npm install --prefix "$PREFIX" --offline --ignore-scripts --no-audit --no-fund "$TGZ"
+          node "$ROOT/verify_installed.mjs" "$PREFIX" "$OUT"
+          cp "$ROOT/native_adapter.node" "$OUT/"
+          cp "$ROOT/build-receipt.json" "$OUT/"
+          shasum -a 256 "$ROOT/native_adapter.node" "$TGZ" > "$OUT/distribution-sha256.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/candidate-head.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/host.txt"
+      - name: Verify and stage same-version official Node headers for Windows (nodejs.org only)
+        if: runner.os == 'Windows'
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          & 'experiments/i1-native-adapter-spike-v0.1/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'OFFICIAL_HEADER_ACQUISITION_FAILED' }
+      - name: Compile Windows Node-API with MSVC; no postinstall
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-native-adapter-spike-v0.1\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Windows native negatives, offline package and installed smoke
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = 'experiments/i1-native-adapter-spike-v0.1'
+          $out = Join-Path $env:RUNNER_TEMP 'i1-native-spike-windows'
+          $prefix = Join-Path $env:RUNNER_TEMP 'i1-native-spike-install-windows'
+          New-Item -ItemType Directory -Force $out,$prefix | Out-Null
+          $env:I1_SPIKE_RECEIPT_DIR = $out
+          node.exe ($root + '/verify.mjs')
+          if ($LASTEXITCODE -ne 0) { throw 'NATIVE_SPIKE_TEST_FAILED' }
+          Push-Location $root
+          try {
+            npm.cmd pack --offline --ignore-scripts --pack-destination $out --json | Out-File -Encoding utf8 (Join-Path $out 'npm-pack.json')
+            if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_PACK_FAILED' }
+          } finally { Pop-Location }
+          $tgz = (Get-ChildItem -LiteralPath $out -Filter '*.tgz' -File | Select-Object -First 1).FullName
+          if (-not $tgz) { throw 'PRIVATE_TARBALL_MISSING' }
+          npm.cmd install --prefix $prefix --offline --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_OFFLINE_INSTALL_FAILED' }
+          node.exe ($root + '/verify_installed.mjs') $prefix $out
+          if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_INSTALLED_SMOKE_FAILED' }
+          Copy-Item ($root + '/native_adapter.node') $out
+          Copy-Item ($root + '/build-receipt.json') $out
+          (Get-FileHash -Algorithm SHA256 ($root + '/native_adapter.node')).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-binary.sha256')
+          (Get-FileHash -Algorithm SHA256 $tgz).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'private-tarball.sha256')
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'candidate-head.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'host.txt')
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-native-spike-${{ matrix.id }}
+          path: ${{ runner.temp }}/i1-native-spike-${{ matrix.id }}/
+          retention-days: 30
+          if-no-files-found: warn

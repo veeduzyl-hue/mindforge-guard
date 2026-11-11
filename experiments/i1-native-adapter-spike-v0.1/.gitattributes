@@ -1,0 +1,6 @@
+# Preserve source-to-binary source bytes across Linux, macOS and Windows.
+*.cc text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.ps1 text eol=lf
+*.md text eol=lf
