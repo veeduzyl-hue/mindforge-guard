@@ -31,6 +31,7 @@
 
 - `UNCOMMITTED_ORPHAN_REVIEW_REQUIRED` — a staging directory still exists, never silently deleted.
 - `COMMITTED_WITHOUT_RECEIPT_OWNER_REVIEW` — published tree present but no external completion receipt; **does not mean failure**.
+- `COMMIT_OUTCOME_UNKNOWN_OWNER_REVIEW` — native caller could not prove a refusal or a successful commit. **Never claim a safe retry, never automatically remove the presumed source stage or final path, and inspect both locations.** A synthetic-only fault injection covers this no-false-noncommit behavior; it is not a claim of real syscall ambiguity.
 - `RECEIPT_WITH_MISSING_OR_REBOUND_PUBLIC_PATH` — prior receipt exists, user-visible target missing or replaced.
 - `LOCATOR_IDENTITY_CHANGED_OWNER_REVIEW` — content may match, but inode/device identity changed.
 - `CONTENT_DIGEST_CHANGED_OWNER_REVIEW` — identity matches but content/manifest changed compared with the prior receipt.
