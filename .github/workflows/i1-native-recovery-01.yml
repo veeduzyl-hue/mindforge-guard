@@ -1,0 +1,107 @@
+name: I1-NATIVE-RECOVERY-01 synthetic crash and locator CI
+on:
+  push:
+    branches:
+      - experiment/i1-native-recovery-01-20261111
+    paths:
+      - 'experiments/i1-native-recovery-01/**'
+      - '.github/workflows/i1-native-recovery-01.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  recovery:
+    name: recovery-${{ matrix.id }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux
+            runner: ubuntu-22.04
+            arch: x86_64
+          - id: windows
+            runner: windows-2022
+            arch: x64
+          - id: mac-arm64
+            runner: macos-15
+            arch: arm64
+          - id: mac-intel
+            runner: macos-15-intel
+            arch: x86_64
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Frozen parent and isolated changes only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c6364ef107060cb74c4baecee1862e5ffe2f44bc HEAD
+          test -z "$(git diff --name-only c6364ef107060cb74c4baecee1862e5ffe2f44bc HEAD | grep -Ev '^(experiments/i1-native-recovery-01/|\.github/workflows/i1-native-recovery-01.yml$)' || true)"
+      - name: Compile inherited N-API8 and verify recovery on Linux/macOS
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "${{ matrix.arch }}"
+          SRC="experiments/i1-native-adapter-spike-v0.1"
+          OUT="$RUNNER_TEMP/i1-native-recovery-${{ matrix.id }}"
+          mkdir -p "$OUT"
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/tested-candidate-sha.txt"
+          node "$SRC/build.mjs"
+          I1_RECOVERY_RECEIPT_DIR="$OUT" node experiments/i1-native-recovery-01/verify_recovery.mjs | tee "$OUT/recovery-test.log"
+          cp "$SRC/build-receipt.json" "$OUT/native-build-receipt.json"
+          shasum -a 256 "$SRC/native_adapter.node" > "$OUT/native-binary.sha256"
+          shasum -a 256 experiments/i1-native-recovery-01/*.mjs experiments/i1-native-recovery-01/README.md > "$OUT/recovery-source.sha256"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/platform.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+      - name: Acquire exact official Node build prerequisite (Windows only)
+        if: runner.os == 'Windows'
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          & 'experiments/i1-native-adapter-spike-v0.1/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'NODE_PREREQUISITES_FAILED' }
+      - name: Explicit MSVC Node-API8 build (Windows only)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-native-adapter-spike-v0.1\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Windows synthetic crash and locator negative tests
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'i1-native-recovery-windows'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'tested-candidate-sha.txt')
+          $env:I1_RECOVERY_RECEIPT_DIR = $out
+          node.exe experiments/i1-native-recovery-01/verify_recovery.mjs | Tee-Object -FilePath (Join-Path $out 'recovery-test.log')
+          if ($LASTEXITCODE -ne 0) { throw 'RECOVERY_TEST_FAILED' }
+          Copy-Item experiments/i1-native-adapter-spike-v0.1/build-receipt.json (Join-Path $out 'native-build-receipt.json')
+          (Get-FileHash -Algorithm SHA256 experiments/i1-native-adapter-spike-v0.1/native_adapter.node).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-binary.sha256')
+          $list = @()
+          foreach ($p in @(Get-ChildItem experiments/i1-native-recovery-01 -File | Where-Object { $_.Extension -in @('.mjs','.md') })) {
+            $list += ((Get-FileHash -Algorithm SHA256 $p.FullName).Hash.ToLowerInvariant() + '  ' + $p.Name)
+          }
+          $list | Set-Content -Encoding ascii (Join-Path $out 'recovery-source.sha256')
+          (node.exe -v) | Set-Content -Encoding ascii (Join-Path $out 'node-version.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'platform.txt')
+      - name: Retain bounded raw machine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-native-recovery-${{ matrix.id }}
+          path: ${{ runner.temp }}/i1-native-recovery-${{ matrix.id }}/
+          retention-days: 30
+          if-no-files-found: warn
