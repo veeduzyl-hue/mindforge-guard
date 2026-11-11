@@ -1,0 +1,17 @@
+{
+  "name": "@mindforge/i1-native-adapter-spike",
+  "version": "0.1.0-spike.0",
+  "private": true,
+  "description": "Experimental synthetic-only, opt-in, native NOREPLACE Node-API8 bridge; NOT a Guard product dependency",
+  "type": "module",
+  "files": [
+    "native_adapter.node",
+    "load.mjs",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {},
+  "license": "UNLICENSED"
+}
