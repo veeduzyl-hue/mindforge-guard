@@ -187,7 +187,7 @@ await one('SPK-17-RECOVERY-SIGKILL-RETAINED-PRIVATE-SNAPSHOT',()=>{
  try{
   const r=spawnSync(process.execPath,[path.join(dir,'crash_staging.mjs'),f.root],
     {env:{...process.env,I1_NATIVE_SPIKE_CRASH_TEST:'1'},encoding:'utf8',timeout:45000,windowsHide:true});
-  assert.match(r.stdout,'SYNTHETIC_CRASH_FIXTURE_READY');
+  assert.match(r.stdout,/SYNTHETIC_CRASH_FIXTURE_READY/);
   assert.notEqual(r.status,0);
   const report=inspectSyntheticStaging(f.root);
   assert.equal(report.readOnly,true);assert.equal(report.automaticCleanupPerformed,false);
