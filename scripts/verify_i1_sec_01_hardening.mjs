@@ -40,7 +40,7 @@ one('SEC-T02-creator-at-rename',()=>{
  const c=setup('race'),old=fs.renameSync;let attempted=false,rejected=false;
  try{
   fs.renameSync=(a,b)=>{
-   if(a===c.ctx.stage&&b===c.output){attempted=true;try{fs.mkdirSync(b);}catch(e){if(e.code==='EEXIST')rejected=true;else throw e;}}
+   if(a===c.ctx.stage&&b===c.ctx.finalPath){attempted=true;try{fs.mkdirSync(b);}catch(e){if(e.code==='EEXIST')rejected=true;else throw e;}}
    return old(a,b);
   };
   if(process.platform==='win32'){
@@ -58,7 +58,7 @@ for(const code of ['EIO','EXDEV']){
  one('SEC-T03-final-rename-'+code,()=>{
   const c=setup('rename-'+code),old=fs.renameSync;
   try{
-   fs.renameSync=(a,b)=>a===c.ctx.stage&&b===c.output?(()=>{throw error(code);})():old(a,b);
+   fs.renameSync=(a,b)=>a===c.ctx.stage&&b===c.ctx.finalPath?(()=>{throw error(code);})():old(a,b);
    assert.throws(()=>publishBundleNoReplace(c.ctx),e=>e.code==='output_error');
   }finally{fs.renameSync=old;partial(c);cleanup(c);}
  });
@@ -67,7 +67,7 @@ one('SEC-T04-POSIX-reservation-EACCES',()=>{
  if(process.platform==='win32')return; // Windows uses native no-replace rename
  const c=setup('access'),old=fs.mkdirSync;
  try{
-  fs.mkdirSync=(p,...args)=>p===c.output?(()=>{throw error('EACCES');})():old(p,...args);
+  fs.mkdirSync=(p,...args)=>p===c.ctx.finalPath?(()=>{throw error('EACCES');})():old(p,...args);
   assert.throws(()=>publishBundleNoReplace(c.ctx),e=>e.code==='output_error');
  }finally{fs.mkdirSync=old;partial(c);cleanup(c);}
 });
@@ -95,7 +95,7 @@ one('SEC-T07-existing-file-preserved',()=>{
 one('SEC-T08-input-unchanged-after-failure',()=>{
  const c=setup('source'),before=digest(fs.readFileSync(path.join(c.pack,'manifest.json'))),old=fs.renameSync;
  try{
-  fs.renameSync=(a,b)=>a===c.ctx.stage&&b===c.output?(()=>{throw error('EIO');})():old(a,b);
+  fs.renameSync=(a,b)=>a===c.ctx.stage&&b===c.ctx.finalPath?(()=>{throw error('EIO');})():old(a,b);
   assert.throws(()=>publishBundleNoReplace(c.ctx));
  }finally{
   fs.renameSync=old;verifySourceUnchanged(c.ctx);
