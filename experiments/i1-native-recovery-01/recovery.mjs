@@ -121,6 +121,7 @@ export function publishSyntheticReview({root,expectedBinarySha256,name,hook}={})
   }
   event('AFTER_NATIVE_COMMIT_BEFORE_RECEIPT',hook);
   const finalPath=path.join(d.published,name);
+  const publishedParentSync=safeSyncDir(d.published);
   const parentId=identity(d.published),fileId=identity(finalPath);
   const currentValid=inspectOneBundle(finalPath);
   const readbackConfirmed=native.locatorConfirmed===true &&
@@ -131,6 +132,8 @@ export function publishSyntheticReview({root,expectedBinarySha256,name,hook}={})
     name,confirmed_at_check:readbackConfirmed,
     status:readbackConfirmed?'COMMITTED_CONFIRMED_AT_READBACK':'COMMITTED_LOCATOR_UNCONFIRMED',
     locator_id_at_check:{parentId,fileId},source_sha256:sourceSha,
+    bundle_digests_at_check:{manifest_sha256:currentValid.manifestHash||null,derived_sha256:currentValid.hash||null},
+    publishedParentSync,
     native:{status:native.status,committed:native.committed,locatorConfirmed:native.locatorConfirmed,
       api:native.api,rawCode:native.rawCode,errorNamespace:native.errorNamespace},
     stageSync,parentSync,persistentDurability:'NOT_ESTABLISHED',
@@ -154,14 +157,14 @@ function inspectOneBundle(p){
        m.derived_files?.['derived.json']!==sha(b))return {valid:false,reason:'CONTENT_HASH_MISMATCH'};
     const listing=fs.readdirSync(p);
     if(listing.includes('.private-source'))return {valid:false,reason:'PRIVATE_SOURCE_ON_DISK'};
-    return {valid:true,hash:sha(b)};
+    return {valid:true,hash:sha(b),manifestHash:sha(fs.readFileSync(manifestPath))};
   }catch{return {valid:false,reason:'CORRUPTED_OR_UNREADABLE'};}
 }
 // Read-only audit. No unlink, no recursive deletion, no automatic recovery,
 // no sanitization of other user's files. It is not a production cleanup tool.
 export function inspectSyntheticRecovery(root){
   root=fs.realpathSync(root);marker(root);const d=dirs(root);
-  const stages=[],published=[];
+  const stages=[],published=[],seen=new Set();
   for(const e of fs.readdirSync(d.stages,{withFileTypes:true})){
     if(!e.name.startsWith('.guard-i1-partial-'))continue;
     const p=path.join(d.stages,e.name);
@@ -178,6 +181,7 @@ export function inspectSyntheticRecovery(root){
   }
   for(const e of fs.readdirSync(d.published,{withFileTypes:true})){
     if(!e.name.startsWith('bundle-'))continue;
+    seen.add(e.name);
     const p=path.join(d.published,e.name);
     if(e.isSymbolicLink()||!e.isDirectory()){
       published.push({name:e.name,status:'UNTRUSTED_PUBLISHED_NAME',ownerReviewRequired:true});continue;
@@ -189,13 +193,26 @@ export function inspectSyntheticRecovery(root){
     const nowFile=identity(p),nowParent=identity(d.published);
     const match=receipt&&sameId(receipt.locator_id_at_check?.fileId,nowFile)&&
        sameId(receipt.locator_id_at_check?.parentId,nowParent);
+    const digestMatch=receipt&&receipt.bundle_digests_at_check?.manifest_sha256===contents.manifestHash&&
+       receipt.bundle_digests_at_check?.derived_sha256===contents.hash;
     const status=!contents.valid?'CORRUPT_OR_PARTIAL_PUBLISHED':
       !receipt?'COMMITTED_WITHOUT_RECEIPT_OWNER_REVIEW':
       !match?'LOCATOR_IDENTITY_CHANGED_OWNER_REVIEW':
+      !digestMatch?'CONTENT_DIGEST_CHANGED_OWNER_REVIEW':
       'VALID_AT_AUDIT_INSTANT';
     published.push({name:e.name,status,manifestDigestValid:contents.valid,
-      identityConsistentWithPriorReceipt:Boolean(match),ownerReviewRequired:status!=='VALID_AT_AUDIT_INSTANT',
+      identityConsistentWithPriorReceipt:Boolean(match),contentMatchesPriorReceipt:Boolean(digestMatch),
+      ownerReviewRequired:status!=='VALID_AT_AUDIT_INSTANT',
       attestedCurrentPathForFuture:false,automaticCleanupPerformed:false});
+  }
+  // Receipts must still be considered when an attacker has moved the entire
+  // published parent away and replaced the public path with a decoy.
+  for(const entry of fs.readdirSync(d.receipts,{withFileTypes:true})){
+    if(!/^bundle-[a-z0-9-]{4,60}\.json$/.test(entry.name))continue;
+    const name=entry.name.slice(0,-5);
+    if(!seen.has(name))published.push({name,status:'RECEIPT_WITH_MISSING_OR_REBOUND_PUBLIC_PATH',
+      ownerReviewRequired:true,automaticCleanupPerformed:false,
+      attestedCurrentPathForFuture:false});
   }
   return {kind:'I1_NATIVE_RECOVERY_01_READ_ONLY_AUDIT',rootOwnershipConfirmed:true,
     stages,published,autoRecovery:false,automaticCleanupPerformed:false,
