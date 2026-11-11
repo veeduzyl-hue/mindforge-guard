@@ -140,7 +140,7 @@ function determineExitCode(validationStatus) {
   return EXIT_VALID;
 }
 
-function buildOutput(summary) {
+export function buildPackValidationFromSummary(summary) {
   const validationStatus = determineValidationStatus(summary);
   return {
     command: "pack validate",
@@ -180,7 +180,7 @@ export function handlePackValidatePreviewSubcommand(args) {
 
   try {
     const summary = parseSingleAgentGovernancePackPreview(parsed.packPath);
-    const output = buildOutput(summary);
+    const output = buildPackValidationFromSummary(summary);
     return {
       exitCode: determineExitCode(output.validation_status),
       stdout: JSON.stringify(output, null, 2) + "\n"

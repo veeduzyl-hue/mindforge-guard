@@ -18,6 +18,7 @@ import { handleAuthoritySubcommand } from "./cli/authority.mjs";
 import { handleGuardrailSubcommand } from "./cli/guardrail.mjs";
 import { handleGroundingSubcommand } from "./cli/grounding.mjs";
 import { handlePackSubcommand } from "./cli/pack.mjs";
+import { handleReviewPackSubcommand } from "./cli/review_pack.mjs";
 import { handleReportSubcommand } from "./cli/report.mjs";
 import { handleTransitionSubcommand } from "./cli/transition.mjs";
 import {
@@ -161,6 +162,7 @@ function renderGuardHelp() {
     "  guard action classify --text \"<string>\"",
     "  guard report single-agent --preview --json --fixture-file <file>",
     "  guard report render --input <report.json> --out <report.html> --format html",
+    "  guard review --pack <directory> --out <new-directory> [--format text|json] (I-1 candidate)",
     "  guard guardrail map --preview --json --fixture-file <file>",
     "  guard transition explain --preview --json --fixture-file <file>",
     "",
@@ -534,6 +536,9 @@ export async function runGuard({ argv }) {
   }
   if (argv && argv[0] === "report") {
     return handleReportSubcommand(argv.slice(1));
+  }
+  if (argv && argv[0] === "review") {
+    return handleReviewPackSubcommand(argv.slice(1), { guardVersion: GUARD_VERSION });
   }
   if (argv && argv[0] === "transition") {
     return handleTransitionSubcommand(argv.slice(1));
