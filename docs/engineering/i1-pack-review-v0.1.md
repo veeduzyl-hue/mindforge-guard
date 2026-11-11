@@ -57,3 +57,17 @@ The Bundle is a *delivery envelope*, not a fifth canonical Evidence Contract. `b
 ## Outstanding Owner Gates
 
 This candidate is not itself a frozen public command contract. Review numeric overall status behavior, allowed-file constraints, other first-user inputs and filesystem race coverage before final I-1 acceptance. Independent macOS first-user validation remains pending.
+
+## I1-SEC-01 NOREPLACE & failure-injection hardening (candidate-only)
+
+- **Scope:** This patch changes only I-1 local Review Bundle finalization and its local verification. It does not modify `--source`, `--repo`, EAK / MESR / Evidence Schema, published v7.0.1, license gating, other CLI commands or runtime authority.
+- **POSIX:** The publisher uses atomic exclusive `mkdir(finalPath)` to claim a fresh destination before the final same-filesystem directory rename. A concurrent independent directory creator must be refused rather than silently overwritten, even when its directory would be empty.
+- **Windows:** The final directory is **not** pre-created, because the native directory rename refuses an existing destination. Tests inject a concurrent creator immediately before that rename and require fail-closed behavior.
+- **Failure path:** A failed reservation, unexpected output collision, ENOSPC, EACCES, EXDEV or rename I/O error must never return a completed Bundle; the writer attempts to remove only **its own verified empty reservation**, never recursively deletes the destination, removes the private source copy from the partial staging directory and records `INCOMPLETE.json` where possible.
+- **Completed Bundle:** Valid native component results, evidence limitations, checksum index and source immutability remain unchanged; completion still requires a successful same-filesystem directory rename.
+- **Cross-volume:** Staging and final destination are siblings by construction. A device mismatch or injected `EXDEV` fails closed; no copy-and-delete fallback. Simulated EXDEV is not evidence of a physical cross-volume test.
+- **Crash consistency:** A process forcibly killed between reserving an empty output name and renaming can leave an empty claimed destination without a manifest. It is **not a completed Bundle**. A later run must reject the occupied name; review the filesystem and remove a proven-empty orphan manually rather than deleting or overwriting blindly.
+- **Threat-model boundary:** This is a bounded no-overwrite solution for ordinary competing directory creators. It is **not a kernel `RENAME_NOREPLACE` guarantee** against a malicious same-user actor allowed to remove and replace the claimed directory or change the parent path while the process runs. It is not independent assurance and does not close production or human-first-user admission.
+- **Verification:** Run both `scripts/verify_i1_pack_review.mjs` (original 21 local cases) and `scripts/verify_i1_sec_01_hardening.mjs` (focused security negatives and 5-process contention), plus existing full regressions and a canonical installed-package smoke on Windows, Ubuntu and both macOS architectures. Tests do not introduce Guard/EAK status enum values or change the M4 62-case matrix.
+
+No main merge, npm publish, stable tag, GitHub Release, website change or external customer-data workflow is authorized by I1-SEC-01. Machine pass must be supported by a fixed candidate SHA and original receipts.

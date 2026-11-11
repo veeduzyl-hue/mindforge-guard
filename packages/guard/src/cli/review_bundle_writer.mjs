@@ -179,6 +179,62 @@ export function dropPrivateSnapshot(ctx) {
   const p=path.join(ctx.stage,'.private-source');
   if(fs.existsSync(p)) fs.rmSync(p,{recursive:true,force:true});
 }
+// I1-SEC-01: an exclusive namespace claim closes the observed concurrent
+// empty-directory creation race.  On POSIX rename(2) otherwise *replaces* an
+// already-existing empty target directory.  Native Windows directory rename
+// refuses an existing target, so Windows must not pre-create a placeholder.
+//
+// Threat boundary: this protects independent creators of the destination name;
+// it is not a kernel RENAME_NOREPLACE against an adversary entitled to remove
+// and replace the claimed directory or mutate its parent in the same instant.
+// Do not describe this as independent assurance or protection against a
+// malicious same-user filesystem actor.
+export function publishBundleNoReplace(ctx) {
+  // A staging and final sibling must share a filesystem. Do not silently
+  // copy/move across devices, because that loses atomic visibility guarantees.
+  const stageDev = fs.statSync(ctx.stage).dev;
+  const parentDev = fs.statSync(ctx.parent).dev;
+  if (stageDev !== parentDev) throw new ReviewOutputError('Staging and output destination are on different filesystems; refusing non-atomic copy.');
+
+  let claim = null;
+  try {
+    if (process.platform !== 'win32') {
+      // mkdir is atomic, exclusive and fails when a competing writer created
+      // the destination even if that writer's directory is empty.  Holding the
+      // empty directory reserves the pathname until the final atomic rename.
+      try { fs.mkdirSync(ctx.finalPath, {mode:0o700}); }
+      catch (err) {
+        if (err?.code === 'EEXIST') throw new ReviewInputError('Output already exists. No overwrite is permitted.', 'precondition_failed');
+        throw new ReviewOutputError('Could not reserve output destination.');
+      }
+      claim = fs.lstatSync(ctx.finalPath);
+      if (!claim.isDirectory() || claim.isSymbolicLink()) throw new ReviewOutputError('Output destination claim is not a real directory.');
+    } else if (fs.existsSync(ctx.finalPath) || isLink(ctx.finalPath)) {
+      throw new ReviewInputError('Output already exists. No overwrite is permitted.', 'precondition_failed');
+    }
+    // Windows rename refuses an existing destination directory; on POSIX the
+    // exclusive claim above prevents an independent mkdir racing this rename.
+    try { fs.renameSync(ctx.stage, ctx.finalPath); }
+    catch (err) {
+      if (['EEXIST','ENOTEMPTY'].includes(err?.code)) {
+        throw new ReviewInputError('Output appeared during publication. No overwrite is permitted.', 'precondition_failed');
+      }
+      throw new ReviewOutputError('Atomic same-filesystem Bundle publication failed.');
+    }
+  } catch (error) {
+    // Clean up only our own empty claim if the rename did not happen.  Never
+    // recursively remove finalPath: it could belong to an external actor.
+    if (claim) {
+      try {
+        const now = fs.lstatSync(ctx.finalPath);
+        if (now.isDirectory() && !now.isSymbolicLink() && now.dev===claim.dev && now.ino===claim.ino &&
+            fs.readdirSync(ctx.finalPath).length===0) fs.rmdirSync(ctx.finalPath);
+      } catch { /* Retain an uncertain destination rather than deleting another writer's data. */ }
+    }
+    throw error;
+  }
+}
+
 export function commitReviewBundle(ctx,{validation,validationExit,report,reportExit,guardVersion,overallStatus}) {
   const stamp=new Date().toISOString();
   const files=[];
@@ -218,10 +274,9 @@ export function commitReviewBundle(ctx,{validation,validationExit,report,reportE
   writeAtomic(ctx.stage,'bundle-checksums.json',Buffer.from(JSON.stringify(checksums,null,2)+'\n','utf8'));
   dropPrivateSnapshot(ctx);
   verifySourceUnchanged(ctx);
-  if(fs.existsSync(ctx.finalPath)||isLink(ctx.finalPath)) throw new ReviewOutputError('Output appeared during preparation; final Bundle was not published.');
-  // The sibling staging and final target are on the same filesystem; final rename
-  // is the only operation publishing an apparently complete Review Bundle.
-  fs.renameSync(ctx.stage,ctx.finalPath);
+  // The exclusive destination claim and same-volume rename must both succeed
+  // before the CLI is allowed to announce a complete Review Bundle.
+  publishBundleNoReplace(ctx);
   return {manifest,files:[...files,{path:'bundle-checksums.json'}],finalPath:ctx.finalPath};
 }
 export function markReviewFailed(ctx,err) {

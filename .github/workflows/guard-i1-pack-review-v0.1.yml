@@ -3,8 +3,11 @@ on:
   push:
     branches:
       - feat/i1-pack-review-bounded-20261111
+      - security/i1-sec-01-noreplace-20261111
     paths:
       - .github/workflows/guard-i1-pack-review-v0.1.yml
+      - scripts/verify_i1_sec_01_hardening.mjs
+      - packages/guard/src/cli/review_bundle_writer.mjs
 permissions:
   contents: read
   actions: read
@@ -42,6 +45,8 @@ jobs:
           PREFIX="$RUNNER_TEMP/i1-install-linux"
           mkdir -p "$OUT/sample" "$PREFIX"
           I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
           npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$OUT" --json > "$OUT/npm-pack.json"
           TGZ="$OUT/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
           test -s "$TGZ"
@@ -106,6 +111,9 @@ jobs:
           $env:I1_TEST_RECEIPT = Join-Path $out 'i1-local-tests.json'
           node.exe scripts/verify_i1_pack_review.mjs | Tee-Object -FilePath (Join-Path $out 'i1-local-tests.log')
           if ($LASTEXITCODE -ne 0) { throw 'I1_LOCAL_SUITE_FAILED' }
+          $env:I1_SEC_RECEIPT = Join-Path $out 'i1-sec-01-tests.json'
+          node.exe scripts/verify_i1_sec_01_hardening.mjs | Tee-Object -FilePath (Join-Path $out 'i1-sec-01-tests.log')
+          if ($LASTEXITCODE -ne 0) { throw 'I1_SEC_01_FAILED' }
           npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
           if ($LASTEXITCODE -ne 0) { throw 'CANONICAL_INSTALL_FAILED' }
           $env:GUARD_RC_OUTPUT_DIR = $out
@@ -172,6 +180,7 @@ jobs:
           cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
           python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
           I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
           npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
           GITHUB_SHA="$GITHUB_SHA" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
           I1_CANONICAL_TGZ="$TGZ" I1_INSTALL_PREFIX="$PREFIX" I1_SAMPLE_DIR="$OUT/sample/hr-self-service-agent" I1_RECEIPT_DIR="$OUT" I1_TESTED_SHA="$GITHUB_SHA" node scripts/verify_i1_packaged_smoke.mjs
@@ -227,6 +236,7 @@ jobs:
           cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
           python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
           I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
           npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
           GITHUB_SHA="$GITHUB_SHA" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
           I1_CANONICAL_TGZ="$TGZ" I1_INSTALL_PREFIX="$PREFIX" I1_SAMPLE_DIR="$OUT/sample/hr-self-service-agent" I1_RECEIPT_DIR="$OUT" I1_TESTED_SHA="$GITHUB_SHA" node scripts/verify_i1_packaged_smoke.mjs
