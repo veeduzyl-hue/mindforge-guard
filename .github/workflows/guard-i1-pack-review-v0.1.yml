@@ -6,6 +6,8 @@ on:
       - security/i1-sec-01-noreplace-20261111
     paths:
       - .github/workflows/guard-i1-pack-review-v0.1.yml
+      - scripts/verify_i1_sec_01_hardening.mjs
+      - packages/guard/src/cli/review_bundle_writer.mjs
 permissions:
   contents: read
   actions: read
