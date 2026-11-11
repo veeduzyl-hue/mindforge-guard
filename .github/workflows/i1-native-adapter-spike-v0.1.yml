@@ -68,6 +68,14 @@ jobs:
           shasum -a 256 "$ROOT/native_adapter.node" "$TGZ" > "$OUT/distribution-sha256.txt"
           printf '%s\n' "$GITHUB_SHA" > "$OUT/candidate-head.txt"
           printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/host.txt"
+      - name: Verify and stage same-version official Node headers for Windows (nodejs.org only)
+        if: runner.os == 'Windows'
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          & 'experiments/i1-native-adapter-spike-v0.1/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'OFFICIAL_HEADER_ACQUISITION_FAILED' }
       - name: Compile Windows Node-API with MSVC; no postinstall
         if: runner.os == 'Windows'
         shell: cmd
