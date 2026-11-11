@@ -54,19 +54,19 @@ def value(s):
       "fstypename_offset":DarwinStatfs.f_fstypename.offset,
     }
 
-def call_statfs(libc, path):
+def call_statfs(statfs_function, path):
     stat=DarwinStatfs()
     ctypes.set_errno(0)
-    rc=libc.statfs(os.fsencode(path),ctypes.byref(stat))
+    rc=statfs_function(os.fsencode(path),ctypes.byref(stat))
     if rc!=0:raise OSError(ctypes.get_errno(),"statfs failed for actual synthetic path")
     return value(stat)
 
-def call_fstatfs(libc, path):
+def call_fstatfs(fstatfs_function, path):
     fd=os.open(path,os.O_RDONLY|os.O_DIRECTORY|getattr(os,"O_CLOEXEC",0))
     try:
         stat=DarwinStatfs()
         ctypes.set_errno(0)
-        rc=libc.fstatfs(fd,ctypes.byref(stat))
+        rc=fstatfs_function(fd,ctypes.byref(stat))
         if rc!=0:raise OSError(ctypes.get_errno(),"fstatfs failed for native directory fd")
         return value(stat)
     finally:os.close(fd)
@@ -105,12 +105,31 @@ def main(outfile):
     root=Path(tempfile.mkdtemp(prefix="guard-i1-sec02-macos-fs-")).resolve()
     try:
         libc=ctypes.CDLL(None,use_errno=True)
-        libc.statfs.argtypes=[ctypes.c_char_p,ctypes.POINTER(DarwinStatfs)]
-        libc.statfs.restype=ctypes.c_int
-        libc.fstatfs.argtypes=[ctypes.c_int,ctypes.POINTER(DarwinStatfs)]
-        libc.fstatfs.restype=ctypes.c_int
-        before_stat=call_statfs(libc,root)
-        before_fd=call_fstatfs(libc,root)
+        # arm64 Darwin has only the modern 64-bit inode ABI; Intel also exports
+        # the old statfs entrypoint, which fills a *different* struct.  Using
+        # ctypes libc.statfs on Intel silently gives garbage at offset 72.
+        # Select the explicit statfs64/fstatfs64 symbols for Intel; do not
+        # reinterpret an old ABI result as a valid filesystem identity.
+        arch=platform.machine()
+        if arch=="x86_64":
+            if hasattr(libc,"statfs64") and hasattr(libc,"fstatfs64"):
+                stat_fn=libc.statfs64
+                fstat_fn=libc.fstatfs64
+                abi="Darwin statfs64/fstatfs64 with 64-bit inode struct"
+            else:
+                stat_fn=getattr(libc,"statfs$INODE64")
+                fstat_fn=getattr(libc,"fstatfs$INODE64")
+                abi="Darwin statfs$INODE64/fstatfs$INODE64"
+        else:
+            stat_fn=libc.statfs
+            fstat_fn=libc.fstatfs
+            abi="Darwin arm64 native statfs/fstatfs modern ABI"
+        stat_fn.argtypes=[ctypes.c_char_p,ctypes.POINTER(DarwinStatfs)]
+        stat_fn.restype=ctypes.c_int
+        fstat_fn.argtypes=[ctypes.c_int,ctypes.POINTER(DarwinStatfs)]
+        fstat_fn.restype=ctypes.c_int
+        before_stat=call_statfs(stat_fn,root)
+        before_fd=call_fstatfs(fstat_fn,root)
         assert before_stat["fstypename"]==before_fd["fstypename"],(before_stat,before_fd)
         assert before_stat["mount_point"]==before_fd["mount_point"]
         assert before_stat["fsid"]==before_fd["fsid"]
@@ -128,7 +147,7 @@ def main(outfile):
         dest.rmdir()
         success=native.rename(source,dest)
         assert success["ok"] and (dest/"receipt.txt").exists(),success
-        after_fd=call_fstatfs(libc,dest)
+        after_fd=call_fstatfs(fstat_fn,dest)
         assert after_fd["fstypename"]==fst and after_fd["fsid"]==before_fd["fsid"],after_fd
         cross_mount=any(fst.lower() in [x.strip().lower() for x in r.get("options",[])]
                         for r in mount.get("matched_records",[]))
@@ -144,6 +163,7 @@ def main(outfile):
             "python":platform.python_version(),
             "synthetic_only":True,"root_directory_is_new_temp":True,
             "native_header":"Apple XNU bsd/sys/mount.h __DARWIN_STRUCT_STATFS64",
+            "selected_libsystem_abi":abi,
             "statfs_path":before_stat,"fstatfs_open_directory":before_fd,
             "mount_command":mount,"diskutil_info":diskutil,
             "native_rename_collision":reject,"native_rename_success":success,
