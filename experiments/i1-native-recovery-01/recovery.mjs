@@ -110,14 +110,26 @@ export function publishSyntheticReview({root,expectedBinarySha256,name,hook}={})
   // Never use fs.renameSync as a fallback. The native adapter holds
   // directory FD/HANDLE and reports the outcome explicitly.
   event('BEFORE_NATIVE_COMMIT',hook);
-  const native=nativeCommit({enabled:true,mode:'SYNTHETIC_ONLY',fixtureRoot:root,
-    sourceParent:d.stages,sourceName:path.basename(stage),
-    destinationParent:d.published,destinationName:name,
-    expectedBinarySha256});
+  // Fault injection is explicitly synthetic-only. It tests the caller's
+  // handling of an ambiguous result; it does NOT simulate an actual syscall.
+  const simulatedUnknown=process.env.I1_RECOVERY_SYNTHETIC_UNKNOWN==='1'&&
+    process.env.I1_RECOVERY_FAULT_INJECTION_AUTHORIZED==='1';
+  const native=simulatedUnknown?
+    {status:'COMMIT_OUTCOME_UNKNOWN',committed:false,locatorConfirmed:false,
+     noFallback:true,syntheticFaultInjection:true}:
+    nativeCommit({enabled:true,mode:'SYNTHETIC_ONLY',fixtureRoot:root,
+      sourceParent:d.stages,sourceName:path.basename(stage),
+      destinationParent:d.published,destinationName:name,
+      expectedBinarySha256});
   if(native.committed!==true){
-    return {status:'NATIVE_COMMIT_REFUSED_OR_UNKNOWN',native,
-      stageName:path.basename(stage),readyButNotPublished:true,
-      automaticCleanupPerformed:false,sourceSnapshotOnDisk:false};
+    const unknown=native.status==='COMMIT_OUTCOME_UNKNOWN';
+    // A missing or ambiguous native result does not prove no commit.
+    // The source pathname might already have moved. Never auto-retry or delete.
+    return {status:unknown?'COMMIT_OUTCOME_UNKNOWN_OWNER_REVIEW':'NATIVE_COMMIT_REFUSED',
+      native,stageName:path.basename(stage),
+      publicationState:unknown?'UNKNOWN_REQUIRES_READ_ONLY_RECONCILIATION':'REFUSED_AS_REPORTED_BY_NATIVE',
+      ownerReviewRequired:true,automaticCleanupPerformed:false,
+      sourceSnapshotOnDisk:false};
   }
   event('AFTER_NATIVE_COMMIT_BEFORE_RECEIPT',hook);
   const finalPath=path.join(d.published,name);
