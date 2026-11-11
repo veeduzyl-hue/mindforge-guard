@@ -1,0 +1,183 @@
+name: I1-SEC-02 real native NOREPLACE feasibility PoC
+on:
+  push:
+    branches:
+      - experiment/i1-sec-02-native-noreplace-20261111
+    paths:
+      - 'experiments/i1-sec-02-native-noreplace-poc/**'
+      - '.github/workflows/guard-i1-sec-02-native-poc.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  linux-local:
+    name: linux-local
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    env:
+      PLATFORM: linux-local
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe native API on a disposable runner filesystem
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          set -euo pipefail
+          echo "PINNED_RESEARCH_PARENT=a1e6c84a9628430c3a6a8d242ab96f62de79d1f9"
+          git merge-base --is-ancestor "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD
+          test "$(git diff --name-only "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD | grep -Ev '^(experiments/i1-sec-02-native-noreplace-poc/|\.github/workflows/guard-i1-sec-02-native-poc.yml$)' | wc -l | tr -d ' ')" = "0"
+          OUT="$RUNNER_TEMP/i1-sec-02-${PLATFORM}"
+          mkdir -p "$OUT"
+          python3 experiments/i1-sec-02-native-noreplace-poc/run_poc.py --output "$OUT/native-receipt.json" | tee "$OUT/native-run.log"
+          python3 -m json.tool "$OUT/native-receipt.json" >/dev/null
+          python3 -c 'import json,sys; j=json.load(open(sys.argv[1])); assert j["goals"]["G1_atomic_no_clobber"]=="PASS_BOUNDED"; assert j["counts"].get("FAIL",0)==0; print("NATIVE_G1_BOUNDED_PASS",j["goals"])' "$OUT/native-receipt.json"
+          shasum -a 256 experiments/i1-sec-02-native-noreplace-poc/*.py experiments/i1-sec-02-native-noreplace-poc/README.md > "$OUT/source-sha256.txt"
+          echo "$GITHUB_SHA" > "$OUT/experiment-branch-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$OUT/host-platform.txt"
+      - name: Retain raw syscall and boundary receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec-02-linux-local
+          path: ${{ runner.temp }}/i1-sec-02-linux-local/
+          retention-days: 30
+          if-no-files-found: warn
+
+  macos-arm64:
+    name: macos-arm64
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      PLATFORM: macos-arm64
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe native API on a disposable runner filesystem
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "arm64"
+          set -euo pipefail
+          echo "PINNED_RESEARCH_PARENT=a1e6c84a9628430c3a6a8d242ab96f62de79d1f9"
+          git merge-base --is-ancestor "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD
+          test "$(git diff --name-only "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD | grep -Ev '^(experiments/i1-sec-02-native-noreplace-poc/|\.github/workflows/guard-i1-sec-02-native-poc.yml$)' | wc -l | tr -d ' ')" = "0"
+          OUT="$RUNNER_TEMP/i1-sec-02-${PLATFORM}"
+          mkdir -p "$OUT"
+          python3 experiments/i1-sec-02-native-noreplace-poc/run_poc.py --output "$OUT/native-receipt.json" | tee "$OUT/native-run.log"
+          python3 -m json.tool "$OUT/native-receipt.json" >/dev/null
+          python3 -c 'import json,sys; j=json.load(open(sys.argv[1])); assert j["goals"]["G1_atomic_no_clobber"]=="PASS_BOUNDED"; assert j["counts"].get("FAIL",0)==0; print("NATIVE_G1_BOUNDED_PASS",j["goals"])' "$OUT/native-receipt.json"
+          shasum -a 256 experiments/i1-sec-02-native-noreplace-poc/*.py experiments/i1-sec-02-native-noreplace-poc/README.md > "$OUT/source-sha256.txt"
+          echo "$GITHUB_SHA" > "$OUT/experiment-branch-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$OUT/host-platform.txt"
+      - name: Retain raw syscall and boundary receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec-02-macos-arm64
+          path: ${{ runner.temp }}/i1-sec-02-macos-arm64/
+          retention-days: 30
+          if-no-files-found: warn
+
+  macos-intel:
+    name: macos-intel
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    env:
+      PLATFORM: macos-intel
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe native API on a disposable runner filesystem
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "x86_64"
+          set -euo pipefail
+          echo "PINNED_RESEARCH_PARENT=a1e6c84a9628430c3a6a8d242ab96f62de79d1f9"
+          git merge-base --is-ancestor "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD
+          test "$(git diff --name-only "a1e6c84a9628430c3a6a8d242ab96f62de79d1f9" HEAD | grep -Ev '^(experiments/i1-sec-02-native-noreplace-poc/|\.github/workflows/guard-i1-sec-02-native-poc.yml$)' | wc -l | tr -d ' ')" = "0"
+          OUT="$RUNNER_TEMP/i1-sec-02-${PLATFORM}"
+          mkdir -p "$OUT"
+          python3 experiments/i1-sec-02-native-noreplace-poc/run_poc.py --output "$OUT/native-receipt.json" | tee "$OUT/native-run.log"
+          python3 -m json.tool "$OUT/native-receipt.json" >/dev/null
+          python3 -c 'import json,sys; j=json.load(open(sys.argv[1])); assert j["goals"]["G1_atomic_no_clobber"]=="PASS_BOUNDED"; assert j["counts"].get("FAIL",0)==0; print("NATIVE_G1_BOUNDED_PASS",j["goals"])' "$OUT/native-receipt.json"
+          shasum -a 256 experiments/i1-sec-02-native-noreplace-poc/*.py experiments/i1-sec-02-native-noreplace-poc/README.md > "$OUT/source-sha256.txt"
+          echo "$GITHUB_SHA" > "$OUT/experiment-branch-sha.txt"
+          echo "$(uname -s) $(uname -m)" > "$OUT/host-platform.txt"
+      - name: Retain raw syscall and boundary receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec-02-macos-intel
+          path: ${{ runner.temp }}/i1-sec-02-macos-intel/
+          retention-days: 30
+          if-no-files-found: warn
+
+  windows-ntfs:
+    name: windows-ntfs
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe native Windows API on disposable test directory
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git merge-base --is-ancestor 'a1e6c84a9628430c3a6a8d242ab96f62de79d1f9' HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'BASELINE_IDENTITY_MISMATCH' }
+          $changes = @(git diff --name-only 'a1e6c84a9628430c3a6a8d242ab96f62de79d1f9' HEAD)
+          foreach ($p in $changes) {
+            if (-not ($p.StartsWith('experiments/i1-sec-02-native-noreplace-poc/') -or $p -eq '.github/workflows/guard-i1-sec-02-native-poc.yml')) {
+              throw ('PRODUCT_SOURCE_CHANGE_FORBIDDEN:' + $p)
+            }
+          }
+          $out = Join-Path $env:RUNNER_TEMP 'i1-sec-02-windows-ntfs'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          python.exe experiments/i1-sec-02-native-noreplace-poc/run_poc.py --output (Join-Path $out 'native-receipt.json') | Tee-Object -FilePath (Join-Path $out 'native-run.log')
+          if ($LASTEXITCODE -ne 0) { throw 'NATIVE_POC_TEST_FAILED' }
+          python.exe -c "import json,sys; j=json.load(open(sys.argv[1])); assert j['goals']['G1_atomic_no_clobber']=='PASS_BOUNDED'; assert j['counts'].get('FAIL',0)==0; print('NATIVE_G1_BOUNDED_PASS',j['goals'])" (Join-Path $out 'native-receipt.json')
+          if ($LASTEXITCODE -ne 0) { throw 'NATIVE_G1_NOT_ESTABLISHED' }
+          $hashes = @()
+          foreach ($p in @('experiments/i1-sec-02-native-noreplace-poc/native_bridge.py','experiments/i1-sec-02-native-noreplace-poc/run_poc.py','experiments/i1-sec-02-native-noreplace-poc/README.md')) {
+            $hashes += ((Get-FileHash -Algorithm SHA256 $p).Hash.ToLowerInvariant() + '  ' + $p)
+          }
+          $hashes | Set-Content -Encoding ascii (Join-Path $out 'source-sha256.txt')
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'experiment-branch-sha.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'host-platform.txt')
+      - name: Retain raw syscall and boundary receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-sec-02-windows-ntfs
+          path: ${{ runner.temp }}/i1-sec-02-windows-ntfs/
+          retention-days: 30
+          if-no-files-found: warn
+
