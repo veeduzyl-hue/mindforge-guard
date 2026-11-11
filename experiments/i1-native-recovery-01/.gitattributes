@@ -1,0 +1,3 @@
+# Preserve identical source bytes on all CI runners.
+*.mjs text eol=lf
+*.md text eol=lf
