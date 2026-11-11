@@ -26,8 +26,14 @@ class NotSupported(RuntimeError):
 
 
 def _result(ok: bool, *, api: str, flag: int, error: int = 0, message: str = "", anchored: bool = False):
+    win_codes = {2: "ERROR_FILE_NOT_FOUND", 3: "ERROR_PATH_NOT_FOUND",
+                 5: "ERROR_ACCESS_DENIED", 17: "ERROR_NOT_SAME_DEVICE",
+                 32: "ERROR_SHARING_VIOLATION", 80: "ERROR_FILE_EXISTS",
+                 87: "ERROR_INVALID_PARAMETER", 183: "ERROR_ALREADY_EXISTS"}
+    error_name = ((win_codes.get(error, f"WIN32_{error}") if IS_WIN else
+                   errno.errorcode.get(error, f"ERRNO_{error}")) if error else "SUCCESS")
     return {"ok": bool(ok), "api": api, "flag": flag, "raw_error_code": int(error),
-            "error_name": errno.errorcode.get(error, f"WIN32_{error}") if error else "SUCCESS",
+            "error_name": error_name, "error_namespace": "Win32" if IS_WIN else "POSIX_errno",
             "message": message[:240], "parent_anchored": anchored, "no_fallback": True}
 
 
@@ -83,7 +89,10 @@ class NativeNoReplace:
         if IS_WIN:
             if source.parent.resolve() != destination.parent.resolve():
                 raise NotSupported("Windows PoC requires same-parent sibling directory; no copy fallback")
-            return self._win_rename(source, destination.name, cls=win_class)
+            # Win32 RootDirectory=NULL must receive the *full destination path*;
+            # a bare basename can resolve relative to process CWD (another drive)
+            # and yield ERROR_NOT_SAME_DEVICE rather than exercise NOREPLACE.
+            return self._win_rename(source, str(destination), cls=win_class)
         old = self.open_parent(source.parent)
         try:
             new = self.open_parent(destination.parent)
