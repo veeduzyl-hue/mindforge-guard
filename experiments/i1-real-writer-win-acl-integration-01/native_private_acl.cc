@@ -261,7 +261,7 @@ Result createPrivateBound(const std::string& parentUtf,const std::string& baseUt
  NativeObjectAttributes attrs{sizeof(NativeObjectAttributes),ph.value,&uname,0x40u,sdRaw,nullptr};
  NativeIoStatus ios{};
  const char* isPause=getenv("I1_NATIVE_ACL_TEST_PAUSE_BEFORE_CREATE");
- const char* synthetic=getenv("I1_WIN_DACL_SYNTHETIC_ONLY");
+ const char* synthetic=getenv("I1_REAL_WIN_ACL_SYNTHETIC_ONLY");
  if(isPause&&strcmp(isPause,"1")==0&&synthetic&&strcmp(synthetic,"1")==0){
   fputs("I1_NATIVE_PARENT_HANDLE_PINNED\n",stdout);fflush(stdout);Sleep(1500);
  }
