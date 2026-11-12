@@ -313,20 +313,32 @@ function buildFoundation(packId, packValidation, parserSummary, snapshotId, samp
   };
 }
 
-export function buildSingleAgentReportPreview({ packRoot, parserSummary, packValidation }) {
+export function buildSingleAgentReportPreview({ packRoot, parserSummary, packValidation, fileView = null }) {
   const resolvedPackRoot = path.resolve(packRoot);
-  const manifest = readJsonIfExists(resolvedPackRoot, "manifest.json") || {};
-  const agentProfile = readJsonIfExists(resolvedPackRoot, "agent-profile.json") || {};
-  const sampleOutput = readJsonIfExists(resolvedPackRoot, "evidence/sample-output.json") || {};
-  const runRecord = readJsonIfExists(resolvedPackRoot, "evidence/run-record.json") || {};
-  const snapshot = readJsonIfExists(resolvedPackRoot, "snapshot.json") || {};
+  // I-1 exclusively supplies an in-memory frozen source view. Legacy callers
+  // without this optional view continue reading their original disk paths.
+  const readJson = rel => {
+    if (!fileView) return readJsonIfExists(resolvedPackRoot, rel);
+    if (!fileView.hasFile(rel)) return null;
+    try { return JSON.parse(fileView.readText(rel)); } catch { return null; }
+  };
+  const readTxt = rel => {
+    if (!fileView) return readTextIfExists(resolvedPackRoot, rel);
+    if (!fileView.hasFile(rel)) return "";
+    try { return normalizeText(fileView.readText(rel)); } catch { return ""; }
+  };
+  const manifest = readJson("manifest.json") || {};
+  const agentProfile = readJson("agent-profile.json") || {};
+  const sampleOutput = readJson("evidence/sample-output.json") || {};
+  const runRecord = readJson("evidence/run-record.json") || {};
+  const snapshot = readJson("snapshot.json") || {};
   const taskScopeSections = parseMarkdownSections(
-    readTextIfExists(resolvedPackRoot, "task-scope.md"),
+    readTxt("task-scope.md"),
     TASK_SCOPE_SECTIONS
   );
-  const actionBoundaryText = readTextIfExists(resolvedPackRoot, "action-boundary.yaml");
-  const dataSourcesText = readTextIfExists(resolvedPackRoot, "data-sources.yaml");
-  const toolsText = readTextIfExists(resolvedPackRoot, "tools.yaml");
+  const actionBoundaryText = readTxt("action-boundary.yaml");
+  const dataSourcesText = readTxt("data-sources.yaml");
+  const toolsText = readTxt("tools.yaml");
 
   const packId = manifest.pack_id || path.basename(resolvedPackRoot);
   const sampleId = sampleOutput.sample_id || `${packId}-sample`;

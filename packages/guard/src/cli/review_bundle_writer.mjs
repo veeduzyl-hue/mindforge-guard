@@ -46,9 +46,17 @@ function safeSourceBytes(file) {
   try {
     fd = fs.openSync(file, flags);
     const fstat = fs.fstatSync(fd);
-    if (!fstat.isFile() || fstat.size > MAX_FILE_BYTES) throw new ReviewInputError('Unsafe or oversized selected Pack file.');
+    const before = fs.lstatSync(file);
+    if (!fstat.isFile() || fstat.size > MAX_FILE_BYTES || before.isSymbolicLink() ||
+        before.dev !== fstat.dev || before.ino !== fstat.ino) {
+      throw new ReviewInputError('Selected Pack source identity changed while opening.');
+    }
     const bytes = fs.readFileSync(fd);
-    if (bytes.length !== fstat.size) throw new ReviewInputError('Selected Pack file changed while being read.');
+    const after = fs.fstatSync(fd);
+    if (bytes.length !== after.size || after.dev !== fstat.dev || after.ino !== fstat.ino ||
+        after.size !== fstat.size) {
+      throw new ReviewInputError('Selected Pack file changed while being read.');
+    }
     return bytes;
   } catch (e) {
     if (e instanceof ReviewInputError) throw e;
@@ -77,15 +85,15 @@ function enumeratedFiles(root) {
   }
   return results.sort();
 }
-function validateLocalReferences(root) {
+function validateLocalReferences(root, memoryFiles = null) {
   for (const [file, keys] of [
     ['evidence/sample-output.json', ['output_artifact_ref']],
     ['evidence/run-record.json', ['input_ref', 'output_ref']]
   ]) {
     const full=path.join(root,...file.split('/'));
-    if(!fs.existsSync(full)) continue;
+    if(memoryFiles ? !memoryFiles.has(file) : !fs.existsSync(full)) continue;
     let value;
-    try { value=JSON.parse(safeSourceBytes(full).toString('utf8')); }
+    try { value=JSON.parse((memoryFiles ? memoryFiles.get(file) : safeSourceBytes(full)).toString('utf8')); }
     catch {continue;} // Native parser will preserve a malformed-input result.
     if(!value || typeof value!=='object')continue;
     for(const key of keys){
@@ -147,25 +155,53 @@ function writeAtomic(stage, relative, bytes) {
   }
   return {path:relative, bytes:Buffer.byteLength(bytes), sha256:hashBytes(bytes)};
 }
+// I1-REAL-WRITER-DATAFLOW-01: read once, retain only a bounded in-process
+// frozen byte snapshot. NEVER write raw Pack bytes beneath the output parent.
+// The opt-in memory view is read-only to callers and preserves legacy parser
+// CRLF normalization and sorted-path hash semantics.
+function makeMemoryPackView(memoryFiles) {
+  return Object.freeze({
+    hasFile(relativePath) { return memoryFiles.has(relativePath.replace(/\\/g, '/')); },
+    readText(relativePath) {
+      const key=relativePath.replace(/\\/g, '/');
+      const bytes=memoryFiles.get(key);
+      if(!bytes) throw new ReviewInputError('Snapshot file is absent.');
+      return bytes.toString('utf8').replace(/\r\n/g, '\n');
+    },
+    listRelativeFiles() { return [...memoryFiles.keys()].sort(); }
+  });
+}
 export function takeReviewSnapshot(preflight) {
-  const stage = fs.mkdtempSync(path.join(preflight.parent, `.guard-i1-partial-${preflight.outputName}-`));
-  const copyRoot = path.join(stage, '.private-source', preflight.sourceName);
-  fs.mkdirSync(copyRoot, {recursive:true,mode:0o700});
   const expected = new Map();
-  let total = 0;
+  const memoryFiles = new Map();
+  let stage=null,total=0;
   try {
+    // Complete the bounded input capture BEFORE a staging directory exists.
     for(const rel of preflight.names){
       const src=path.join(preflight.packRoot,...rel.split('/'));
       const data=safeSourceBytes(src);
       total+=data.length;
       if(total>MAX_TOTAL_BYTES) throw new ReviewInputError('Selected Pack exceeds the 16 MiB I-1 input limit.');
-      expected.set(rel, hashBytes(data));
-      const dest=path.join(copyRoot,...rel.split('/'));
-      fs.mkdirSync(path.dirname(dest),{recursive:true, mode:0o700});
-      fs.writeFileSync(dest,data,{flag:'wx',mode:0o600});
+      expected.set(rel,hashBytes(data));
+      memoryFiles.set(rel,data);
     }
-    return {stage, copyRoot, expected, ...preflight};
-  } catch(e){fs.rmSync(stage,{recursive:true,force:true});throw e;}
+    validateLocalReferences(preflight.packRoot,memoryFiles);
+    stage=fs.mkdtempSync(path.join(preflight.parent, `.guard-i1-partial-${preflight.outputName}-`));
+    fs.chmodSync(stage,0o700); // Windows ACL must be separately verified.
+    return {stage,expected,memoryFiles,fileView:makeMemoryPackView(memoryFiles),
+      rawSourcePersisted:false, ...preflight};
+  }catch(e){
+    for(const buf of memoryFiles.values())buf.fill(0);
+    memoryFiles.clear();
+    if(stage)fs.rmSync(stage,{recursive:true,force:true});
+    throw e;
+  }
+}
+// Best-effort in-process Buffer wiping, NOT an anti-swap/core-dump guarantee.
+export function releaseReviewMemory(ctx) {
+  if(!ctx?.memoryFiles)return;
+  for(const bytes of ctx.memoryFiles.values())bytes.fill(0);
+  ctx.memoryFiles.clear();
 }
 export function verifySourceUnchanged(ctx) {
   const current = enumeratedFiles(ctx.packRoot);
@@ -175,9 +211,12 @@ export function verifySourceUnchanged(ctx) {
     if(hashBytes(bytes)!==ctx.expected.get(rel)) throw new ReviewInputError('Source content changed during review.');
   }
 }
+// A .private-source directory is forbidden by the new Writer dataflow.
 export function dropPrivateSnapshot(ctx) {
-  const p=path.join(ctx.stage,'.private-source');
-  if(fs.existsSync(p)) fs.rmSync(p,{recursive:true,force:true});
+  if(!ctx)return;
+  if(fs.existsSync(path.join(ctx.stage,'.private-source'))) {
+    throw new ReviewOutputError('Unexpected raw source copy on disk; refuse Bundle publication.');
+  }
 }
 // I1-SEC-01: an exclusive namespace claim closes the observed concurrent
 // empty-directory creation race.  On POSIX rename(2) otherwise *replaces* an
@@ -258,7 +297,8 @@ export function commitReviewBundle(ctx,{validation,validationExit,report,reportE
     '- This Bundle is a local review envelope, not an additional Evidence Contract.',
     '- No approval, certification, production assurance, compliance decision, or execution authority is granted.',
     '- Inputs are synthetic or explicitly user-supplied; actual origin and completeness were not independently verified.',
-    '- Component JSON may include input-provided identifiers and narrative. Review before sharing.', '',
+    '- No raw input Pack files are copied into staging. This does not guarantee secure RAM/swap erasure.',
+    '- Component JSON may include input-provided identifiers and narrative. Treat the Bundle as potentially sensitive and review before sharing.', '',
   ].join('\n');
   files.push(writeAtomic(ctx.stage,'review-summary.md',Buffer.from(summary,'utf8')));
   const manifest={kind:'mindforge_guard_review_bundle',bundle_version:'0.1-candidate',mode:'pack',

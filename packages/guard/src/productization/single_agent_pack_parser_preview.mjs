@@ -194,6 +194,18 @@ function stableHashForPack(rootDir) {
   return `sha256:${hash.digest("hex")}`;
 }
 
+// Opt-in memory-only view for I-1; legacy parser remains disk-based.
+function stableHashForMemoryView(fileView) {
+  const hash = crypto.createHash("sha256");
+  for (const relativePath of fileView.listRelativeFiles()) {
+    hash.update(relativePath);
+    hash.update("\n");
+    hash.update(fileView.readText(relativePath));
+    hash.update("\n");
+  }
+  return `sha256:${hash.digest("hex")}`;
+}
+
 function countYamlListItems(text, sectionName, itemIndent = 2) {
   const lines = text.split("\n");
   let inSection = false;
@@ -279,7 +291,7 @@ function validateMarkdownSections(summary, relativePath, text, sections, emptyIs
   }
 }
 
-function inspectLocalRef(summary, packRoot, relativePath, refValue) {
+function inspectLocalRef(summary, packRoot, relativePath, refValue, fileExists = null) {
   if (typeof refValue !== "string" || refValue.length < 1) {
     return;
   }
@@ -292,7 +304,7 @@ function inspectLocalRef(summary, packRoot, relativePath, refValue) {
     addWarning(summary, `suspicious local ref in ${relativePath}: ${refValue}`);
     return;
   }
-  if (!hasFile(packRoot, refPath)) {
+  if (!(fileExists ? fileExists(refPath) : hasFile(packRoot, refPath))) {
     addWarning(summary, `unverifiable local ref in ${relativePath}: ${refValue}`);
   }
 }
@@ -317,14 +329,24 @@ function finalizeSummary(summary) {
 export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
   const resolvedPackRoot = path.resolve(packRoot);
   const summary = createSummary(resolvedPackRoot);
+  const fileView = options?.fileView ?? null;
+  if (fileView && (typeof fileView.hasFile !== 'function' ||
+      typeof fileView.readText !== 'function' ||
+      typeof fileView.listRelativeFiles !== 'function')) {
+    throw new TypeError('I-1 memory Pack view is incomplete.');
+  }
+  const exists = relativePath => fileView ?
+    fileView.hasFile(relativePath) : hasFile(resolvedPackRoot, relativePath);
+  const read = relativePath => fileView ?
+    fileView.readText(relativePath) : readText(path.join(resolvedPackRoot, relativePath));
 
-  if (!fs.existsSync(resolvedPackRoot) || !fs.statSync(resolvedPackRoot).isDirectory()) {
+  if (!fileView && (!fs.existsSync(resolvedPackRoot) || !fs.statSync(resolvedPackRoot).isDirectory())) {
     throw new Error(`pack root must exist as a directory: ${resolvedPackRoot}`);
   }
 
   const expectedFiles = [...REQUIRED_FILES, ...RECOMMENDED_FILES];
   for (const relativePath of expectedFiles) {
-    if (hasFile(resolvedPackRoot, relativePath)) {
+    if (exists(relativePath)) {
       pushUnique(summary.parsed_files, relativePath);
     } else {
       pushUnique(summary.missing_files, relativePath);
@@ -347,11 +369,11 @@ export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
   const parsedJson = {};
 
   for (const relativePath of jsonFiles) {
-    if (!hasFile(resolvedPackRoot, relativePath)) {
+    if (!exists(relativePath)) {
       continue;
     }
     try {
-      parsedJson[relativePath] = safeReadJson(path.join(resolvedPackRoot, relativePath));
+      parsedJson[relativePath] = JSON.parse(read(relativePath));
       validateJsonFields(summary, relativePath, parsedJson[relativePath], JSON_REQUIRED_FIELDS[relativePath]);
     } catch (error) {
       pushUnique(summary.malformed_files, relativePath);
@@ -363,28 +385,28 @@ export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
   const yamlFiles = ["action-boundary.yaml", "data-sources.yaml", "tools.yaml"];
   const yamlText = {};
   for (const relativePath of yamlFiles) {
-    if (!hasFile(resolvedPackRoot, relativePath)) {
+    if (!exists(relativePath)) {
       continue;
     }
-    yamlText[relativePath] = readText(path.join(resolvedPackRoot, relativePath));
+    yamlText[relativePath] = read(relativePath);
     validateYamlKeys(summary, relativePath, yamlText[relativePath], YAML_REQUIRED_KEYS[relativePath]);
   }
 
-  if (hasFile(resolvedPackRoot, "task-scope.md")) {
+  if (exists("task-scope.md")) {
     validateMarkdownSections(
       summary,
       "task-scope.md",
-      readText(path.join(resolvedPackRoot, "task-scope.md")),
+      read("task-scope.md"),
       TASK_SCOPE_SECTIONS,
       false
     );
   }
 
-  if (hasFile(resolvedPackRoot, "review-standards.md")) {
+  if (exists("review-standards.md")) {
     validateMarkdownSections(
       summary,
       "review-standards.md",
-      readText(path.join(resolvedPackRoot, "review-standards.md")),
+      read("review-standards.md"),
       REVIEW_STANDARDS_SECTIONS,
       true
     );
@@ -448,7 +470,7 @@ export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
       sample_id: sampleOutput.sample_id ?? null,
       output_artifact_ref: sampleOutput.output_artifact_ref ?? null
     };
-    inspectLocalRef(summary, resolvedPackRoot, "evidence/sample-output.json", sampleOutput.output_artifact_ref);
+    inspectLocalRef(summary, resolvedPackRoot, "evidence/sample-output.json", sampleOutput.output_artifact_ref, exists);
   } else {
     addOmission(summary, "missing sample output evidence");
   }
@@ -461,8 +483,8 @@ export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
       environment: runRecord.environment ?? null,
       tool_call_count: Array.isArray(runRecord.tool_calls_summary) ? runRecord.tool_calls_summary.length : 0
     };
-    inspectLocalRef(summary, resolvedPackRoot, "evidence/run-record.json", runRecord.input_ref);
-    inspectLocalRef(summary, resolvedPackRoot, "evidence/run-record.json", runRecord.output_ref);
+    inspectLocalRef(summary, resolvedPackRoot, "evidence/run-record.json", runRecord.input_ref, exists);
+    inspectLocalRef(summary, resolvedPackRoot, "evidence/run-record.json", runRecord.output_ref, exists);
   }
 
   const snapshot = parsedJson["snapshot.json"];
@@ -475,6 +497,6 @@ export function parseSingleAgentGovernancePackPreview(packRoot, options = {}) {
     };
   }
 
-  summary.deterministic_pack_hash = stableHashForPack(resolvedPackRoot);
+  summary.deterministic_pack_hash = (fileView ? stableHashForMemoryView(fileView) : stableHashForPack(resolvedPackRoot));
   return finalizeSummary(summary);
 }
