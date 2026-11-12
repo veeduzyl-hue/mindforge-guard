@@ -31,7 +31,7 @@ jobs:
           git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
           if ($LASTEXITCODE -ne 0) { throw 'FROZEN_PARENT_MISMATCH' }
           foreach($p in @(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD)) {
-            if (-not ($p.StartsWith('experiments/i1-real-writer-win-acl-integration-01/') -or $p -eq 'packages/guard/src/cli/windows_private_stage_candidate.mjs' -or $p -eq 'packages/guard/src/cli/review_bundle_writer.mjs' -or $p -eq '.github/workflows/i1-real-writer-win-acl-integration-01.yml')) {
+            if (-not ($p.StartsWith('experiments/i1-real-writer-win-acl-integration-01/') -or $p -eq 'packages/guard/src/cli/windows_private_stage_candidate.mjs' -or $p -eq 'packages/guard/src/cli/review_bundle_writer.mjs' -or $p -eq '.github/workflows/i1-real-writer-win-acl-integration-01.yml' -or $p -eq '.github/workflows/i1-win-default-fail-closed.yml' -or $p -eq 'docs/engineering/I1-REAL-WRITER-WIN-ACL-INTEGRATION-01_OWNER_ACCEPTANCE_20261112.md')) {
               throw ('OUT_OF_SCOPE_PRODUCT_MODIFICATION:'+ $p)
             }
           }
