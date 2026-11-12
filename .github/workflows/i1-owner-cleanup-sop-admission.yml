@@ -1,0 +1,57 @@
+name: I1 Owner Cleanup SOP Admission and No-Delete Gate
+on:
+  push:
+    branches:
+      - experiment/i1-owner-cleanup-sop-admission-20261112
+    paths:
+      - 'experiments/i1-owner-manual-cleanup-01/**'
+      - 'docs/engineering/I1-OWNER-MANUAL-CLEANUP-CONTRACT-01_OWNER_ACCEPTANCE_20261112.md'
+      - '.github/workflows/i1-owner-cleanup-sop-admission.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  synthetic:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux
+            runner: ubuntu-22.04
+          - id: windows
+            runner: windows-2022
+    name: cleanup-${{ matrix.id }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 35
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Confirm frozen parent and experiment-only diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
+          test -z "$(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD | grep -Ev '^(experiments/i1-owner-manual-cleanup-01/|docs/engineering/I1-OWNER-MANUAL-CLEANUP-CONTRACT-01_OWNER_ACCEPTANCE_20261112\.md$|\.github/workflows/i1-owner-manual-cleanup-01.yml$|\.github/workflows/i1-owner-cleanup-sop-admission.yml$)' || true)"
+      - name: Run zero-customer-data Gate and preserve machine receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gate-cleanup"
+          I1_CLEANUP_RECEIPT_FILE="$RUNNER_TEMP/gate-cleanup/i1-manual-cleanup-receipt.json" node experiments/i1-owner-manual-cleanup-01/verify.mjs | tee "$RUNNER_TEMP/gate-cleanup/test.log"
+          node -e "let r=require(process.argv[1]);if(r.counts?.fail!==0)process.exit(2);" "$RUNNER_TEMP/gate-cleanup/i1-manual-cleanup-receipt.json"
+          I1_CLEANUP_POLICY_RECEIPT="$RUNNER_TEMP/gate-cleanup/i1-cleanup-admission.json" node experiments/i1-owner-manual-cleanup-01/verify_sop_admission.mjs | tee "$RUNNER_TEMP/gate-cleanup/sop-admission.log"
+          node -e "let r=require(process.argv[1]);if(r.counts?.fail!==0)process.exit(2);" "$RUNNER_TEMP/gate-cleanup/i1-cleanup-admission.json"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/gate-cleanup/tested-commit.txt"
+          printf '%s\n' "$(node -v)" > "$RUNNER_TEMP/gate-cleanup/node-version.txt"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-cleanup-${{ matrix.id }}-receipts
+          path: ${{ runner.temp }}/gate-cleanup/
+          retention-days: 30
+          if-no-files-found: warn
