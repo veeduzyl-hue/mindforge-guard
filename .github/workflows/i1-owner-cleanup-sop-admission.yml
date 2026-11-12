@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
-          test -z "$(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD | grep -Ev '^(experiments/i1-owner-manual-cleanup-01/|docs/engineering/I1-OWNER-MANUAL-CLEANUP-CONTRACT-01_OWNER_ACCEPTANCE_20261112\.md$|\.github/workflows/i1-owner-cleanup-sop-admission.yml$)' || true)"
+          test -z "$(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD | grep -Ev '^(experiments/i1-owner-manual-cleanup-01/|docs/engineering/I1-OWNER-MANUAL-CLEANUP-CONTRACT-01_OWNER_ACCEPTANCE_20261112\.md$|\.github/workflows/i1-owner-manual-cleanup-01.yml$|\.github/workflows/i1-owner-cleanup-sop-admission.yml$)' || true)"
       - name: Run zero-customer-data Gate and preserve machine receipt
         shell: bash
         run: |
