@@ -84,7 +84,7 @@ export function handleReviewPackSubcommand(args,{guardVersion='unknown'}={}){
     const reason=e instanceof ReviewInputError?e.code:e instanceof ReviewOutputError?'output_error':'output_error';
     const label=reason==='precondition_failed'?'precondition_failed':reason==='invalid_input'?'invalid_input':'output_error';
     const code=label==='invalid_input'?4:label==='precondition_failed'?2:30;
-    const detail=e instanceof ReviewInputError?e.message:'I-1 did not publish a complete Bundle; inspect the local partial directory if one exists.';
+    const detail=e instanceof ReviewInputError?e.message:'I-1 could not acknowledge a completed Bundle; inspect the requested output path and any retained partial before retry or cleanup.';
     return {exitCode:code,stderr:`I-1 ${label}: ${detail}${partial?' (partial retained in output parent)':''}\n`};
   }finally{
     releaseReviewMemory(ctx);
