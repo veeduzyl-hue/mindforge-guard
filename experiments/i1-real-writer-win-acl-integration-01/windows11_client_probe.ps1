@@ -87,10 +87,22 @@ public class I1WinAclPrivateCreate {
     $secure=ConvertTo-SecureString $password -AsPlainText -Force
     New-LocalUser -Name $otherName -Password $secure -PasswordNeverExpires -ErrorAction Stop | Out-Null
     $createdUser=$true
+    # This is an ordinary local account, not a member of Administrators.
+    $adminMembers=@(Get-LocalGroupMember -Group 'Administrators' -ErrorAction Stop |
+      ForEach-Object { $_.Name.ToLowerInvariant() })
+    if($adminMembers -contains ($env:COMPUTERNAME+'\'+$otherName).ToLowerInvariant()){
+      throw 'SYNTHETIC_SECOND_USER_IS_ADMIN'
+    }
+    $receipt.ordinaryNonElevatedUserExecution='CONFIRMED_LOCAL_NONADMIN_ACCOUNT'
     $cred=[pscredential]::new($env:COMPUTERNAME+'\'+$otherName,$secure)
+    $publicFile=Join-Path $parent 'public-positive-control.txt'
+    [System.IO.File]::WriteAllText($publicFile,'SYNTHETIC_POSITIVE_CONTROL_READABLE')
     $probe=Join-Path $root 'access-test.ps1'
     @'
-param([string]$protectedFile)
+param([string]$publicFile,[string]$protectedFile)
+try{
+  if([System.IO.File]::ReadAllText($publicFile) -ne 'SYNTHETIC_POSITIVE_CONTROL_READABLE'){exit 47}
+}catch {exit 46}
 try{
   $null=[System.IO.File]::ReadAllText($protectedFile)
   exit 44
@@ -102,7 +114,7 @@ catch {exit 55}
     $start=@{
       FilePath='powershell.exe'
       ArgumentList=@('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
-        '-File',('"'+$probe+'"'),'-protectedFile',('"'+$file+'"'))
+        '-File',('"'+$probe+'"'),'-publicFile',('"'+$publicFile+'"'),'-protectedFile',('"'+$file+'"'))
       Credential=$cred
       Wait=$true
       PassThru=$true
@@ -112,7 +124,8 @@ catch {exit 55}
     }
     $proc=Start-Process @start
     if($proc.ExitCode -eq 0){
-      $receipt.actualSecondUserAccess='PASS_ACTUAL_SECOND_ACCOUNT_READ_DENIED'
+      $receipt.actualSecondUserAccess='PASS_NONADMIN_SECOND_ACCOUNT_PUBLIC_READ_OK_PRIVATE_READ_DENIED'
+      $receipt.positiveAccessControlPassed=$true
     }else{
       $receipt.actualSecondUserAccess='NOT_ESTABLISHED_EXIT_'+$proc.ExitCode
     }
