@@ -114,12 +114,19 @@ function verifyBundle(bundleRoot){
   }
   const expectedPaths=['bundle-checksums.json',...indexed.keys()].sort();
   if(JSON.stringify(expectedPaths)!==JSON.stringify(actual))throw Error('INDEX_COVERAGE_MISMATCH');
-  if(manifest.artifacts.length!==indexed.size)throw Error('MANIFEST_ARTIFACT_COUNT_MISMATCH');
+  // The manifest cannot include its *own* SHA-256; it enumerates the
+  // preceding native component/summary files. The separate checksum index
+  // includes that manifest, and excludes only itself.
+  if(!indexed.has('review-manifest.json')||
+     manifest.artifacts.length!==indexed.size-1)throw Error('MANIFEST_ARTIFACT_COUNT_MISMATCH');
+  const manifestPaths=new Set();
   for(const item of manifest.artifacts){
     const known=indexed.get(item.path);
-    if(!known||item.sha256!==known.sha256||item.byte_length!==known.bytes){
+    if(item.path==='review-manifest.json'||manifestPaths.has(item.path)||
+       !known||item.sha256!==known.sha256||item.byte_length!==known.bytes){
       throw Error('MANIFEST_INDEX_MISMATCH');
     }
+    manifestPaths.add(item.path);
   }
   for(const [relative,item] of indexed){
     const data=relative==='review-manifest.json'?manifestBytes:read(relative);
@@ -228,7 +235,12 @@ export function inspectI1ReviewRecovery({parent,outputName,priorReceipt=null}={}
       finalStatus='COMPLETE_BUNDLE_MATCHES_UNAUTHENTICATED_PRIOR_AT_INSPECTION';
     }
   }
-  const receiptCandidate=integrity?{
+  // Re-observe the canonical parent after scanning; this is still a
+  // point-in-time check and cannot defeat malicious rename immediately later.
+  const parentAfter=lstat(canonical);
+  const parentChanged= !parentAfter||!sameId(parentId,identity(parentAfter));
+  if(parentChanged)finalStatus='PARENT_IDENTITY_CHANGED_DURING_INSPECTION';
+  const receiptCandidate=integrity&&!parentChanged?{
     kind:BASELINE_KIND,outputName,
     observedAt:new Date().toISOString(),
     parentIdentity:parentId,bundleIdentity:finalIdentity,
