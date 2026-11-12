@@ -282,6 +282,31 @@ await one('REC2-25','oversize artifact refused before large read',()=>{
  assert.equal(r.final.status,'PUBLISHED_INTEGRITY_UNVERIFIED_OWNER_REVIEW');
  return {status:r.final.status,readMaxBytes:32*1024*1024};
 });
+await one('REC2-26','concurrent file growth bounded during checksum inspection',()=>{
+ const {f}=completed('grow');
+ const filename=path.join(f.out,'review-summary.md');
+ const expectedId=fs.statSync(filename,{bigint:true});
+ const original=fs.readSync;
+ let injected=false;
+ fs.readSync=function(fd,buffer,offset,length,position){
+   const n=original(fd,buffer,offset,length,position);
+   if(!injected&&length>1){
+     const observed=fs.fstatSync(fd,{bigint:true});
+     if(observed.dev===expectedId.dev&&observed.ino===expectedId.ino){
+       fs.appendFileSync(filename,'SYNTHETIC_CONCURRENT_GROWTH');
+       injected=true;
+     }
+   }
+   return n;
+ };
+ let result;
+ try { result=inspect(f.name); }
+ finally { fs.readSync=original; }
+ assert.equal(injected,true);
+ assert.equal(result.final.status,'PUBLISHED_INTEGRITY_UNVERIFIED_OWNER_REVIEW');
+ assert.equal(result.final.inspectionError,'FILE_GREW_DURING_INSPECTION');
+ return {boundedRead:true,untrustedGrowthNotAccepted:true};
+});
 const failed=cases.filter(c=>c.status==='FAIL');
 const counts={pass:cases.filter(c=>c.status==='PASS_BOUNDED').length,fail:failed.length,
   not_tested:cases.filter(c=>c.status==='NOT_TESTED').length};
