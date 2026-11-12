@@ -19,8 +19,6 @@ jobs:
             runner: ubuntu-22.04
           - id: windows
             runner: windows-2022
-          - id: mac-arm64
-            runner: macos-15
     name: cleanup-${{ matrix.id }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
