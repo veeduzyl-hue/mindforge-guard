@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {isPrivateStageExperimentEnabled,createPrivateStageForRealWriter} from './windows_private_stage_candidate.mjs';
 
 const ALLOWED_ROOT = new Set([
   'README.md', 'manifest.json', 'agent-profile.json', 'task-scope.md',
@@ -186,8 +187,13 @@ export function takeReviewSnapshot(preflight) {
       memoryFiles.set(rel,data);
     }
     validateLocalReferences(preflight.packRoot,memoryFiles);
-    stage=fs.mkdtempSync(path.join(preflight.parent, `.guard-i1-partial-${preflight.outputName}-`));
-    fs.chmodSync(stage,0o700); // Windows ACL must be separately verified.
+    if(isPrivateStageExperimentEnabled()) {
+      const bound=createPrivateStageForRealWriter(preflight.parent,preflight.outputName);
+      stage=bound.stage; // Handle-bound NtCreateFile + verified private DACL at creation.
+    } else {
+      stage=fs.mkdtempSync(path.join(preflight.parent, `.guard-i1-partial-${preflight.outputName}-`));
+      fs.chmodSync(stage,0o700); // Prior candidate behavior, NOT Windows privacy assurance.
+    }
     return {stage,expected,memoryFiles,fileView:makeMemoryPackView(memoryFiles),
       rawSourcePersisted:false, ...preflight};
   }catch(e){
