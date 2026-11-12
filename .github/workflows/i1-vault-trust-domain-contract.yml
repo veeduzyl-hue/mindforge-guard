@@ -1,0 +1,59 @@
+name: I1 Receipt Custody External Trust Domain Admission
+on:
+  push:
+    branches:
+      - experiment/i1-vault-trust-domain-contract-20261112
+    paths:
+      - 'experiments/i1-independent-receipt-vault-01/**'
+      - 'docs/engineering/I1-INDEPENDENT-RECEIPT-VAULT-01_OWNER_ACCEPTANCE_20261112.md'
+      - '.github/workflows/i1-vault-trust-domain-contract.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  synthetic:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux
+            runner: ubuntu-22.04
+          - id: windows
+            runner: windows-2022
+          - id: mac-arm64
+            runner: macos-15
+    name: vault-${{ matrix.id }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 35
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Confirm frozen parent and experiment-only diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
+          test -z "$(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD | grep -Ev '^(experiments/i1-independent-receipt-vault-01/|docs/engineering/I1-INDEPENDENT-RECEIPT-VAULT-01_OWNER_ACCEPTANCE_20261112\.md$|\.github/workflows/i1-independent-receipt-vault-01.yml$|\.github/workflows/i1-vault-trust-domain-contract.yml$)' || true)"
+      - name: Run zero-customer-data Gate and preserve machine receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gate-vault"
+          I1_VAULT_RECEIPT_FILE="$RUNNER_TEMP/gate-vault/i1-independent-vault-receipt.json" node experiments/i1-independent-receipt-vault-01/verify.mjs | tee "$RUNNER_TEMP/gate-vault/test.log"
+          node -e "let r=require(process.argv[1]);if(r.counts?.fail!==0)process.exit(2);" "$RUNNER_TEMP/gate-vault/i1-independent-vault-receipt.json"
+          I1_VAULT_TRUST_RECEIPT="$RUNNER_TEMP/gate-vault/i1-vault-trust-contract.json" node experiments/i1-independent-receipt-vault-01/verify_admission.mjs | tee "$RUNNER_TEMP/gate-vault/trust-contract.log"
+          node -e "let r=require(process.argv[1]);if(r.counts?.fail!==0)process.exit(2);" "$RUNNER_TEMP/gate-vault/i1-vault-trust-contract.json"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/gate-vault/tested-commit.txt"
+          printf '%s\n' "$(node -v)" > "$RUNNER_TEMP/gate-vault/node-version.txt"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-vault-${{ matrix.id }}-receipts
+          path: ${{ runner.temp }}/gate-vault/
+          retention-days: 30
+          if-no-files-found: warn
