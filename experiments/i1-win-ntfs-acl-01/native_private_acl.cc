@@ -19,7 +19,13 @@ namespace {
 struct Handle {
   HANDLE value = INVALID_HANDLE_VALUE;
   Handle()=default; Handle(const Handle&)=delete;Handle&operator=(const Handle&)=delete;
-  ~Handle(){if(value!=INVALID_HANDLE_VALUE)CloseHandle(value);}
+  Handle(Handle&& o) noexcept:value(o.value){o.value=INVALID_HANDLE_VALUE;}
+  Handle& operator=(Handle&& o) noexcept {
+    if(this!=&o){if(value!=INVALID_HANDLE_VALUE)CloseHandle(value);
+      value=o.value;o.value=INVALID_HANDLE_VALUE;}
+    return *this;
+  }
+  ~Handle(){if(value!=INVALID_HANDLE_VALUE&&value!=nullptr)CloseHandle(value);}
   bool ok()const{return value!=INVALID_HANDLE_VALUE;}
 };
 struct Local {
