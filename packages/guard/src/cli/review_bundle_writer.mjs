@@ -187,12 +187,19 @@ export function takeReviewSnapshot(preflight) {
       memoryFiles.set(rel,data);
     }
     validateLocalReferences(preflight.packRoot,memoryFiles);
-    if(isPrivateStageExperimentEnabled()) {
+    if(process.platform==='win32') {
+      // I1-WIN-DEFAULT-DENY-01 engineering candidate. Windows NEVER falls back
+      // to mkdtempSync/chmod(0700) after private native staging was requested
+      // or was unavailable. The experimental connector remains SYNTHETIC_ONLY;
+      // absence of explicit opt-in means fail closed BEFORE any staging writes.
+      if(!isPrivateStageExperimentEnabled()){
+        throw new ReviewOutputError('I-1 Windows staging is unavailable without verified native private ACL support.');
+      }
       const bound=createPrivateStageForRealWriter(preflight.parent,preflight.outputName);
-      stage=bound.stage; // Handle-bound NtCreateFile + verified private DACL at creation.
+      stage=bound.stage;
     } else {
       stage=fs.mkdtempSync(path.join(preflight.parent, `.guard-i1-partial-${preflight.outputName}-`));
-      fs.chmodSync(stage,0o700); // Prior candidate behavior, NOT Windows privacy assurance.
+      fs.chmodSync(stage,0o700); // POSIX-only, not a Windows DACL policy.
     }
     return {stage,expected,memoryFiles,fileView:makeMemoryPackView(memoryFiles),
       rawSourcePersisted:false, ...preflight};

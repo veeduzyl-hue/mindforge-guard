@@ -1,0 +1,119 @@
+name: I1 Windows Default Fail-Closed Staging Admission Gate
+on:
+  push:
+    branches:
+      - experiment/i1-win-default-fail-closed-20261112
+    paths:
+      - 'experiments/i1-real-writer-win-acl-integration-01/**'
+      - 'packages/guard/src/cli/windows_private_stage_candidate.mjs'
+      - 'packages/guard/src/cli/review_bundle_writer.mjs'
+      - '.github/workflows/i1-win-default-fail-closed.yml'
+      - 'docs/engineering/I1_WINDOWS_DEFAULT_DENY_AND_SIGNED_DISTRIBUTION_v0.2.md'
+      - 'docs/engineering/I1-REAL-WRITER-WIN-ACL-INTEGRATION-01_OWNER_ACCEPTANCE_20261112.md'
+      - '.github/workflows/i1-win-default-fail-closed.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  windows-integration:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact frozen Recovery02 parent and no unauthorized changes
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'FROZEN_PARENT_MISMATCH' }
+          foreach($p in @(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD)) {
+            if (-not ($p.StartsWith('experiments/i1-real-writer-win-acl-integration-01/') -or $p -eq 'packages/guard/src/cli/windows_private_stage_candidate.mjs' -or $p -eq 'packages/guard/src/cli/review_bundle_writer.mjs' -or $p -eq '.github/workflows/i1-real-writer-win-acl-integration-01.yml' -or $p -eq '.github/workflows/i1-win-default-fail-closed.yml' -or $p -eq 'docs/engineering/I1-REAL-WRITER-WIN-ACL-INTEGRATION-01_OWNER_ACCEPTANCE_20261112.md' -or $p -eq 'docs/engineering/I1_WINDOWS_DEFAULT_DENY_AND_SIGNED_DISTRIBUTION_v0.2.md')) {
+              throw ('OUT_OF_SCOPE_PRODUCT_MODIFICATION:'+ $p)
+            }
+          }
+      - name: Exact official Node headers and import lib SHA256 (no trust bypass)
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          & './experiments/i1-real-writer-win-acl-integration-01/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'NODE_BUILD_DEPENDENCY_FAILURE' }
+      - name: Compile isolated native N-API8 NTFS protected HANDLE-bound creator
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-real-writer-win-acl-integration-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Real candidate Writer opt-in, 2-principal DACL, parent swap and fail closed
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'i1-real-writer-win-acl'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $env:I1_WIN_INTEGRATION_RECEIPT=Join-Path $out 'real-writer-win-acl-receipt.json'
+          node experiments/i1-real-writer-win-acl-integration-01/verify_actual_writer.mjs | Tee-Object -FilePath (Join-Path $out 'actual-writer-test.log')
+          if ($LASTEXITCODE -ne 0) { throw 'REAL_WRITER_DACL_AND_PARENT_BINDING_TEST_FAILED' }
+          Copy-Item experiments/i1-real-writer-win-acl-integration-01/build-receipt.json (Join-Path $out 'native-build-receipt.json')
+          (Get-FileHash -Algorithm SHA256 experiments/i1-real-writer-win-acl-integration-01/native_private_acl.cc).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-source.sha256')
+          (Get-FileHash -Algorithm SHA256 experiments/i1-real-writer-win-acl-integration-01/private_acl.node).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-binary.sha256')
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'tested-head.txt')
+      - name: Full legacy Guard regression (unflagged path compatibility)
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          npm ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          npm run verify
+          if ($LASTEXITCODE -ne 0) { throw 'GUARD_REGRESSION_FAILED' }
+          npm run verify:v7.0.1
+          if ($LASTEXITCODE -ne 0) { throw 'V701_REGRESSION_FAILED' }
+          $out=Join-Path $env:RUNNER_TEMP 'i1-real-writer-win-acl'
+          # The prior I-1 Windows success suites assume an unprotected default
+          # staging path; under this candidate they would violate policy.
+          # Do not claim them PASS or quietly enable synthetic env for arbitrary
+          # output parents. Record the exact intentional regression limit.
+          [ordered]@{
+            kind='I1_WINDOWS_DEFAULT_DENY_COMPATIBILITY_LIMIT'
+            candidateSha=$env:GITHUB_SHA
+            legacyI1SuccessSuites='NOT_RUN_ON_WINDOWS_DEFAULT_DENY'
+            reason='Protected native staging is a prerequisite; unsandboxed legacy fixtures must not publish'
+            windowsReleaseAdmission='HOLD'
+            productPackageDistribution='NOT_IMPLEMENTED'
+            signedAddon='NOT_ESTABLISHED'
+          } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $out 'default-deny-boundary.json')
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-real-win-acl-windows2022-evidence
+          path: ${{ runner.temp }}/i1-real-writer-win-acl/
+          retention-days: 30
+          if-no-files-found: warn
+  windows11-arm-client:
+    name: Windows 11 ARM64 desktop ACL + other-account attempt
+    runs-on: windows-11-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - name: Real Windows 11 ARM64 protected DACL and distinct ordinary account attempt
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          & './experiments/i1-real-writer-win-acl-integration-01/windows11_client_probe.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS11_DACL_TEST_NOT_ESTABLISHED' }
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-win11-arm64-client-acl-evidence
+          path: ${{ runner.temp }}/i1-win11-client-receipt/
+          retention-days: 30
+          if-no-files-found: warn

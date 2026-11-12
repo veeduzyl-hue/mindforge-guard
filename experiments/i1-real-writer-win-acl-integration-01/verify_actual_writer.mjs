@@ -98,17 +98,18 @@ test('WINI-07-DERIVED_FILES_INHERIT_PROTECTED_ACL',()=>{
  }
  return {derivedArtifactsChecked:3};
 });
-test('WINI-08-DEFAULT_OLD_BEHAVIOR_NOT_PRODUCT_PRIVACY_PROOF',()=>{
- // Explicitly verify that absent experimental opt-in the existing candidate
- // remains legacy, so no product admission follows from these tests.
- const p=newPack('legacy'),out=path.join(outParent,'bundle-legacy');
+test('WINI-08-WINDOWS_DEFAULT_FAILS_CLOSED_WITH_NO_NATIVE_OPT_IN',()=>{
+ const p=newPack('default-deny'),out=path.join(outParent,'bundle-default-deny');
+ const oldStageCount=stages().length;
  const r=spawnSync(process.execPath,[cli,'review','--pack',p,'--out',out,'--format','json'],
-  {encoding:'utf8',timeout:85000,windowsHide:true,env:{...process.env,
-   I1_REAL_WIN_ACL_INTEGRATION_EXPERIMENT:'0'}});
- assert.equal(r.status,0,r.stderr);
- const acl=addon.inspectAcl(out);
- assert.equal(acl.onlyTrustedAces,false);
- return {defaultProductStillUnprotected:true,realCustomerAdmission:'HOLD'};
+  {encoding:'utf8',timeout:85000,windowsHide:true,
+   env:{...process.env,I1_REAL_WIN_ACL_INTEGRATION_EXPERIMENT:'0'}});
+ assert.equal(r.status,30,r.stderr);
+ assert.equal(stages().length,oldStageCount);
+ assert(!fs.existsSync(out));
+ assert((r.stderr||'').includes('output_error'));
+ return {oldUnprotectedFallbackUsed:false,defaultUnavailableUntilNativeVerified:true,
+    windowsProductCompatibility:'INTENTIONALLY_BLOCKED_IN_CANDIDATE'};
 });
 test('WINI-09-NATIVE_RELATIVE_HANDLE_ATOMIC_COLLISION',()=>{
  const name='.guard-i1-partial-bounded-collision-test';
