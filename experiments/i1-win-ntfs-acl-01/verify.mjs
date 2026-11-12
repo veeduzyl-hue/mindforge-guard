@@ -120,7 +120,7 @@ record('ACL-10-PRE_EXISTING_SYMLINK_STAGE_REFUSED',()=>{
  let made=false;
  try{fs.symlinkSync(originalDir,link,'junction');made=true;}
  catch{ /* Candidate feature may be unavailable to restricted runner */ }
- if(!made)return {outcome:'NOT_TESTED_JUNCTION_CREATION_UNAVAILABLE'};
+ if(!made)throw Error('JUNCTION_CREATION_UNAVAILABLE_NOT_VERIFIED');
  const ret=createPrivateStage(opts('existing-link'));
  assert.equal(ret.status,'REFUSED_ALREADY_EXISTS');
  assert(fs.existsSync(originalDir));
@@ -167,7 +167,7 @@ record('ACL-13-RENAMED_DIRECTORY_RETURNS_RETAINED_PRIVATE_DACL',()=>{
  return {privateDaclRetainedAfterSyntheticRename:true,
   strictNoReplaceDuringRename:'NOT_TESTED_IN_THIS_ACL_PROBE'};
 });
-record('ACL-14-MODULE_MISSING_REFUSES_CREATION',async()=>{
+await asyncRecord('ACL-14-MODULE_MISSING_REFUSES_CREATION',async()=>{
  const p=path.join(root,'alternate-loader');
  fs.mkdirSync(p);
  fs.copyFileSync(path.join(baseDir,'load.mjs'),path.join(p,'load.mjs'));
