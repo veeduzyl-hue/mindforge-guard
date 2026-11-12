@@ -4,7 +4,7 @@ import { buildSingleAgentReportPreview } from '../productization/single_agent_re
 import { buildPackValidationFromSummary } from './pack_validate_preview.mjs';
 import {
   preflightReview, takeReviewSnapshot, verifySourceUnchanged,
-  commitReviewBundle, markReviewFailed, ReviewInputError, ReviewOutputError
+  commitReviewBundle, markReviewFailed, releaseReviewMemory, ReviewInputError, ReviewOutputError
 } from './review_bundle_writer.mjs';
 
 const USAGE = 'guard review --pack <existing-pack-directory> --out <new-directory> [--format text|json]';
@@ -54,16 +54,16 @@ export function handleReviewPackSubcommand(args,{guardVersion='unknown'}={}){
   try{
     const preflight=preflightReview(parsed.pack,parsed.out);
     ctx=takeReviewSnapshot(preflight);
-    // Single parser pass. Both components are built from the same frozen copy;
-    // the existing legacy commands remain unchanged.
-    const summary=parseSingleAgentGovernancePackPreview(ctx.copyRoot);
+    // One bounded in-memory source snapshot; no raw Pack copy on disk.
+    // Existing legacy commands retain their filesystem behavior.
+    const summary=parseSingleAgentGovernancePackPreview(ctx.packRoot,{fileView:ctx.fileView});
     const validation=buildPackValidationFromSummary(summary);
     validation.pack_path=ctx.sourceName; // do not leak absolute host or staging paths in Bundle
     const validationExit=NATIVE_STATUS_EXIT[validation.validation_status];
     if(!Number.isInteger(validationExit))throw new ReviewInputError('Unexpected native validation status.');
     let report=null;
     if(validation.validation_status!=='invalid_due_to_malformed_input'){
-      report=buildSingleAgentReportPreview({packRoot:ctx.copyRoot,parserSummary:summary,packValidation:validation});
+      report=buildSingleAgentReportPreview({packRoot:ctx.packRoot,parserSummary:summary,packValidation:validation,fileView:ctx.fileView});
       if(report.deterministic_hash!==validation.deterministic_pack_hash)throw new ReviewInputError('Pack and report hash disagree.');
     }
     verifySourceUnchanged(ctx);
@@ -86,5 +86,7 @@ export function handleReviewPackSubcommand(args,{guardVersion='unknown'}={}){
     const code=label==='invalid_input'?4:label==='precondition_failed'?2:30;
     const detail=e instanceof ReviewInputError?e.message:'I-1 did not publish a complete Bundle; inspect the local partial directory if one exists.';
     return {exitCode:code,stderr:`I-1 ${label}: ${detail}${partial?' (partial retained in output parent)':''}\n`};
+  }finally{
+    releaseReviewMemory(ctx);
   }
 }
