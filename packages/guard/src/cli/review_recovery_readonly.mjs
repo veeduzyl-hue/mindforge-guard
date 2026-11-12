@@ -42,7 +42,19 @@ function safeRegularRead(p,max=MAX_FILE_BYTES){
     if(!before.isFile()||before.isSymbolicLink()||
        before.dev!==prior.dev||before.ino!==prior.ino||
        before.size!==prior.size||before.size>BigInt(max))throw Error('FILE_IDENTITY_CHANGED');
-    const bytes=fs.readFileSync(fd);
+    // The descriptor may be grown by an uncooperative writer during our
+    // inspection. Read at most the observed bounded byte count, not an
+    // unbounded fs.readFileSync(fd) that can expand with the file.
+    const expected=Number(before.size);
+    const bytes=Buffer.alloc(expected);
+    let done=0;
+    while(done<expected){
+      const n=fs.readSync(fd,bytes,done,expected-done,null);
+      if(n===0)throw Error('FILE_TRUNCATED_DURING_INSPECTION');
+      done+=n;
+    }
+    const tail=Buffer.alloc(1);
+    if(fs.readSync(fd,tail,0,1,null)!==0)throw Error('FILE_GREW_DURING_INSPECTION');
     const after=fs.fstatSync(fd,{bigint:true});
     if(after.dev!==before.dev||after.ino!==before.ino||
        after.size!==before.size||BigInt(bytes.length)!==before.size)throw Error('FILE_CHANGED_DURING_INSPECTION');
