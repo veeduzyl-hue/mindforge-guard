@@ -88,3 +88,25 @@ jobs:
           path: ${{ runner.temp }}/i1-real-writer-win-acl/
           retention-days: 30
           if-no-files-found: warn
+  windows11-arm-client:
+    name: Windows 11 ARM64 desktop ACL + other-account attempt
+    runs-on: windows-11-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - name: Real Windows 11 ARM64 protected DACL and distinct ordinary account attempt
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          & './experiments/i1-real-writer-win-acl-integration-01/windows11_client_probe.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS11_DACL_TEST_NOT_ESTABLISHED' }
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-win11-arm64-client-acl-evidence
+          path: ${{ runner.temp }}/i1-win11-client-receipt/
+          retention-days: 30
+          if-no-files-found: warn
