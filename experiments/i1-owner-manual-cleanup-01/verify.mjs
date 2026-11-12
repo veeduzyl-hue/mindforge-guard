@@ -68,7 +68,7 @@ one('CLN-09-EXTERNAL_ROOT_AND_NAME_TRAVERSAL_REJECTED',()=>{
  return {traversalRefused:true};});
 one('CLN-10-STAGE_SYMLINK_REJECTED',()=>{
  const l=path.join(root,'.guard-i1-partial-link-synthetic');
- fs.symlinkSync(stage,l,'dir');
+ fs.symlinkSync(stage,l,process.platform==='win32'?'junction':'dir');
  const r=inspectCandidateDryRun({...first,stageName:path.basename(l)});
  assert.equal(r.status,'TARGET_NOT_PLAIN_DIRECTORY_HOLD');return {symlinkRefused:true};});
 one('CLN-11-FIXTURE_NOT_MODIFIED',()=>{
