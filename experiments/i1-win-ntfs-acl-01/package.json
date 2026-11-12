@@ -1,0 +1,12 @@
+{
+  "name": "@mindforge/i1-private-ntfs-acl-poc",
+  "version": "0.1.0-experiment.0",
+  "private": true,
+  "type": "module",
+  "description": "Isolated Windows NTFS private staging DACL creation PoC. Not a Guard package dependency.",
+  "scripts": {},
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,73 @@
+name: I1-WIN-NTFS-ACL-01 Protected Private Stage at Creation
+on:
+  push:
+    branches:
+      - experiment/i1-windows-ntfs-private-acl-20261112
+    paths:
+      - 'experiments/i1-win-ntfs-acl-01/**'
+      - '.github/workflows/i1-windows-ntfs-private-acl-20261112.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  win-ntfs-native-dacl:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    env:
+      NODE_OPTIONS: ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 35
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact isolated scope and frozen recovery parent
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git merge-base --is-ancestor 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'RECOVERY_PARENT_IDENTITY_MISMATCH' }
+          foreach ($p in @(git diff --name-only 05cc5eee25c53db164d2d766e73fa63afd853bf4 HEAD)) {
+            if (-not ($p.StartsWith('experiments/i1-win-ntfs-acl-01/') -or $p -eq '.github/workflows/i1-windows-ntfs-private-acl-20261112.yml')) { throw ('GUARD_PRODUCT_SOURCE_MODIFIED:' + $p) }
+          }
+          $env:GITHUB_SHA | Write-Output
+      - name: Acquire and SHA256 verify exact Node headers and import library
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & './experiments/i1-win-ntfs-acl-01/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'PINNED_NODE_HEADER_PREREQUISITES_FAILED' }
+      - name: Compile experimental private staging security descriptor module
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-win-ntfs-acl-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Actual NTFS DACL tests with permissive parent and real concurrent processes
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'i1-windows-private-acl'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $env:I1_ACL_RECEIPT_DIR = $out
+          node.exe experiments/i1-win-ntfs-acl-01/verify.mjs | Tee-Object -FilePath (Join-Path $out 'acl-test.log')
+          if ($LASTEXITCODE -ne 0) { throw 'PRIVATE_DACL_NATIVE_TEST_FAILED' }
+          Copy-Item experiments/i1-win-ntfs-acl-01/build-receipt.json (Join-Path $out 'build-receipt.json')
+          (Get-FileHash -Algorithm SHA256 experiments/i1-win-ntfs-acl-01/private_acl.node).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-binary.sha256')
+          (Get-FileHash -Algorithm SHA256 experiments/i1-win-ntfs-acl-01/native_private_acl.cc).Hash.ToLowerInvariant() | Set-Content -Encoding ascii (Join-Path $out 'native-source.sha256')
+          (node.exe -v) | Set-Content -Encoding ascii (Join-Path $out 'node-version.txt')
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'tested-candidate-sha.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'platform.txt')
+      - name: Persist bounded machine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i1-private-ntfs-acl-windows2022
+          path: ${{ runner.temp }}/i1-windows-private-acl/
+          retention-days: 30
+          if-no-files-found: warn
