@@ -1,0 +1,289 @@
+name: I1 Real Writer Recovery 02 read-only crash and locator
+on:
+  push:
+    branches:
+      - feat/i1-real-writer-recovery-02-20261112
+    paths:
+      - .github/workflows/guard-i1-real-writer-recovery-02.yml
+      - packages/guard/src/cli/review_bundle_writer.mjs
+      - packages/guard/src/cli/review_pack.mjs
+      - packages/guard/src/cli/review_recovery_readonly.mjs
+      - scripts/verify_i1_real_writer_recovery.mjs
+      - scripts/i1_real_writer_recovery_crash_child.mjs
+      - scripts/i1_real_writer_recovery_inspect.mjs
+      - docs/engineering/I1_DATAFLOW_01_OWNER_ACCEPTANCE_20261112.md
+      - docs/engineering/i1-real-writer-recovery-02-v0.1.md
+permissions:
+  contents: read
+  actions: read
+jobs:
+  i1-linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Full regressions, I1-local 21 cases, real canonical package smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor a9afa99391ad36f2f47449eeaaf7d10d52c4448c HEAD
+          test -z "$(git diff --name-only a9afa99391ad36f2f47449eeaaf7d10d52c4448c HEAD | grep -Ev '^(packages/guard/src/cli/(review_bundle_writer|review_pack|review_recovery_readonly)\.mjs|scripts/(verify_i1_real_writer_recovery|i1_real_writer_recovery_crash_child|i1_real_writer_recovery_inspect)\.mjs|docs/engineering/(I1_DATAFLOW_01_OWNER_ACCEPTANCE_20261112|i1-real-writer-recovery-02-v0\.1)\.md|\.github/workflows/guard-i1-real-writer-recovery-02\.yml)$' || true)"
+          test "$(node -p process.platform)" = "linux"
+          test "$(node -p process.arch)" = "x64"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          python3 scripts/build_a2_sample_pack.py
+          python3 scripts/verify_a2_sample_pack.py
+          git diff --exit-code -- downloads/ package-lock.json packages/guard/package.json
+          OUT="$RUNNER_TEMP/i1-candidate-linux"
+          PREFIX="$RUNNER_TEMP/i1-install-linux"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
+          I1_DATAFLOW_RECEIPT_FILE="$OUT/i1-real-writer-dataflow.json" node scripts/verify_i1_real_writer_dataflow.mjs | tee "$OUT/i1-real-writer-dataflow.log"
+          I1_RECOVERY_02_RECEIPT="$OUT/i1-real-writer-recovery-02.json" node scripts/verify_i1_real_writer_recovery.mjs | tee "$OUT/i1-real-writer-recovery-02.log"
+          npm pack --workspace @veeduzyl/mindforge-guard --pack-destination "$OUT" --json > "$OUT/npm-pack.json"
+          TGZ="$OUT/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          test -s "$TGZ"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip "$OUT/"
+          cp downloads/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256 "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          GITHUB_SHA="$GITHUB_SHA" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          I1_CANONICAL_TGZ="$TGZ" I1_INSTALL_PREFIX="$PREFIX" I1_SAMPLE_DIR="$OUT/sample/hr-self-service-agent" I1_RECEIPT_DIR="$OUT" I1_TESTED_SHA="$GITHUB_SHA" node scripts/verify_i1_packaged_smoke.mjs
+          shasum -a 256 "$TGZ" > "$OUT/i1-canonical-tarball.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/tested-candidate-sha.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/platform.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i1-recovery-02-linux-receipt
+          path: ${{ runner.temp }}/i1-candidate-linux/
+          retention-days: 30
+          if-no-files-found: warn
+  i1-windows:
+    needs: i1-linux
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/download-artifact@v4
+        with:
+          name: i1-recovery-02-linux-receipt
+          path: ${{ runner.temp }}/i1-canonical-linux
+      - name: Windows PS5.1 full regressions and canonical installed candidate
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'PS5_1_REQUIRED' }
+          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) { throw 'HEAD_MISMATCH' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          foreach ($task in @('verify','verify:v7.0.1')) {
+            npm.cmd run $task
+            if ($LASTEXITCODE -ne 0) { throw ('REGRESSION_FAILED:' + $task) }
+          }
+          foreach ($script in @('verify_commercial_edition_boundary.mjs','verify_v7_role_based_report_render.mjs','verify_v7_1_rc_consistency.mjs')) {
+            node.exe ('scripts/' + $script)
+            if ($LASTEXITCODE -ne 0) { throw ('TARGETED_FAILED:' + $script) }
+          }
+          $out = Join-Path $env:RUNNER_TEMP 'i1-candidate-windows'
+          $prefix = Join-Path $env:RUNNER_TEMP 'i1-install-windows'
+          $canon = Join-Path $env:RUNNER_TEMP 'i1-canonical-linux'
+          $tgz = Join-Path $canon 'veeduzyl-mindforge-guard-7.1.0-rc.0.tgz'
+          New-Item -ItemType Directory -Force $out,$prefix,(Join-Path $out 'sample') | Out-Null
+          if (-not (Test-Path $tgz)) { throw 'CANONICAL_TARBALL_MISSING' }
+          Copy-Item $tgz $out
+          Copy-Item (Join-Path $canon 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip') $out
+          Copy-Item (Join-Path $canon 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256') $out
+          Expand-Archive -LiteralPath (Join-Path $out 'mindforge-guard-hr-self-service-sample-pack-v0.1.zip') -DestinationPath (Join-Path $out 'sample')
+          $env:I1_TEST_RECEIPT = Join-Path $out 'i1-local-tests.json'
+          node.exe scripts/verify_i1_pack_review.mjs | Tee-Object -FilePath (Join-Path $out 'i1-local-tests.log')
+          if ($LASTEXITCODE -ne 0) { throw 'I1_LOCAL_SUITE_FAILED' }
+          $env:I1_SEC_RECEIPT = Join-Path $out 'i1-sec-01-tests.json'
+          node.exe scripts/verify_i1_sec_01_hardening.mjs | Tee-Object -FilePath (Join-Path $out 'i1-sec-01-tests.log')
+          if ($LASTEXITCODE -ne 0) { throw 'I1_SEC_01_FAILED' }
+          $env:I1_DATAFLOW_RECEIPT_FILE = Join-Path $out 'i1-real-writer-dataflow.json'
+          node.exe scripts/verify_i1_real_writer_dataflow.mjs | Tee-Object -FilePath (Join-Path $out 'i1-real-writer-dataflow.log')
+          if ($LASTEXITCODE -ne 0) { throw 'I1_DATAFLOW_SUITE_FAILED' }
+          $env:I1_RECOVERY_02_RECEIPT = Join-Path $out 'i1-real-writer-recovery-02.json'
+          node.exe scripts/verify_i1_real_writer_recovery.mjs | Tee-Object -FilePath (Join-Path $out 'i1-real-writer-recovery-02.log')
+          if ($LASTEXITCODE -ne 0) { throw 'I1_REAL_WRITER_RECOVERY_02_FAILED' }
+          $aclDir=Join-Path $env:RUNNER_TEMP 'i1-dataflow-synthetic-acl-dir'
+          node.exe -e "require('fs').mkdirSync(process.argv[1],{mode:0o700})" $aclDir
+          if ($LASTEXITCODE -ne 0) { throw 'ACL_FIXTURE_CREATION_FAILED' }
+          $acl=Get-Acl -LiteralPath $aclDir
+          [ordered]@{
+            kind='I1_DATAFLOW_SYNTHETIC_NTFS_ACL_OBSERVATION'
+            observed=$true
+            isAccessRuleProtected=$acl.AreAccessRulesProtected
+            sddl=$acl.Sddl
+            aclText=$acl.AccessToString
+            scope='synthetic staging analog only'
+            privacyGuarantee='NOT_ESTABLISHED'
+            windows10Windows11UserTest='NOT_TESTED'
+          } | ConvertTo-Json -Depth 4 | Out-File -Encoding utf8 (Join-Path $out 'windows-acl-observation.json')
+          npm.cmd install --prefix $prefix --ignore-scripts --no-audit --no-fund $tgz
+          if ($LASTEXITCODE -ne 0) { throw 'CANONICAL_INSTALL_FAILED' }
+          $env:GUARD_RC_OUTPUT_DIR = $out
+          $env:GUARD_RC_INSTALL_DIR = $prefix
+          $env:GUARD_RC_TGZ = $tgz
+          node.exe scripts/verify_v7_1_rc_install.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'BASELINE_INSTALL_VERIFY_FAILED' }
+          $env:I1_CANONICAL_TGZ = $tgz
+          $env:I1_INSTALL_PREFIX = $prefix
+          $env:I1_SAMPLE_DIR = Join-Path $out 'sample/hr-self-service-agent'
+          $env:I1_RECEIPT_DIR = $out
+          $env:I1_TESTED_SHA = $env:GITHUB_SHA
+          node.exe scripts/verify_i1_packaged_smoke.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'I1_INSTALLED_SMOKE_FAILED' }
+          (Get-FileHash -Algorithm SHA256 $tgz).Hash.ToLowerInvariant() + '  veeduzyl-mindforge-guard-7.1.0-rc.0.tgz' | Set-Content -Encoding ascii (Join-Path $out 'i1-canonical-tarball.sha256')
+          $env:GITHUB_SHA | Set-Content -Encoding ascii (Join-Path $out 'tested-candidate-sha.txt')
+          (node -v) | Set-Content -Encoding ascii (Join-Path $out 'node-version.txt')
+          [System.Runtime.InteropServices.RuntimeInformation]::OSDescription | Set-Content -Encoding ascii (Join-Path $out 'platform.txt')
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i1-recovery-02-windows-receipt
+          path: ${{ runner.temp }}/i1-candidate-windows/
+          retention-days: 30
+          if-no-files-found: warn
+  i1-mac-arm64:
+    needs: i1-linux
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: i1-recovery-02-linux-receipt
+          path: ${{ runner.temp }}/i1-canonical-linux
+      - name: Apple Silicon full regressions and canonical installed candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(uname -m)" = "arm64"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          OUT="$RUNNER_TEMP/i1-candidate-mac-arm64"
+          PREFIX="$RUNNER_TEMP/i1-install-mac-arm64"
+          CANON="$RUNNER_TEMP/i1-canonical-linux"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          test -s "$TGZ"
+          cp "$TGZ" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
+          I1_DATAFLOW_RECEIPT_FILE="$OUT/i1-real-writer-dataflow.json" node scripts/verify_i1_real_writer_dataflow.mjs | tee "$OUT/i1-real-writer-dataflow.log"
+          I1_RECOVERY_02_RECEIPT="$OUT/i1-real-writer-recovery-02.json" node scripts/verify_i1_real_writer_recovery.mjs | tee "$OUT/i1-real-writer-recovery-02.log"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="$GITHUB_SHA" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          I1_CANONICAL_TGZ="$TGZ" I1_INSTALL_PREFIX="$PREFIX" I1_SAMPLE_DIR="$OUT/sample/hr-self-service-agent" I1_RECEIPT_DIR="$OUT" I1_TESTED_SHA="$GITHUB_SHA" node scripts/verify_i1_packaged_smoke.mjs
+          shasum -a 256 "$TGZ" > "$OUT/i1-canonical-tarball.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/tested-candidate-sha.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/platform.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i1-recovery-02-macos-arm64-receipt
+          path: ${{ runner.temp }}/i1-candidate-mac-arm64/
+          retention-days: 30
+          if-no-files-found: warn
+  i1-mac-intel:
+    needs: i1-linux
+    runs-on: macos-15-intel
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: i1-recovery-02-linux-receipt
+          path: ${{ runner.temp }}/i1-canonical-linux
+      - name: Intel macOS full regressions and canonical installed candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(uname -m)" = "x86_64"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_commercial_edition_boundary.mjs
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_v7_1_rc_consistency.mjs
+          OUT="$RUNNER_TEMP/i1-candidate-mac-intel"
+          PREFIX="$RUNNER_TEMP/i1-install-mac-intel"
+          CANON="$RUNNER_TEMP/i1-canonical-linux"
+          TGZ="$CANON/veeduzyl-mindforge-guard-7.1.0-rc.0.tgz"
+          mkdir -p "$OUT/sample" "$PREFIX"
+          test -s "$TGZ"
+          cp "$TGZ" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/"
+          cp "$CANON/mindforge-guard-hr-self-service-sample-pack-v0.1.zip.sha256" "$OUT/"
+          python3 -m zipfile -e "$OUT/mindforge-guard-hr-self-service-sample-pack-v0.1.zip" "$OUT/sample"
+          I1_TEST_RECEIPT="$OUT/i1-local-tests.json" node scripts/verify_i1_pack_review.mjs | tee "$OUT/i1-local-tests.log"
+          I1_SEC_RECEIPT="$OUT/i1-sec-01-tests.json" node scripts/verify_i1_sec_01_hardening.mjs | tee "$OUT/i1-sec-01-tests.log"
+          I1_DATAFLOW_RECEIPT_FILE="$OUT/i1-real-writer-dataflow.json" node scripts/verify_i1_real_writer_dataflow.mjs | tee "$OUT/i1-real-writer-dataflow.log"
+          I1_RECOVERY_02_RECEIPT="$OUT/i1-real-writer-recovery-02.json" node scripts/verify_i1_real_writer_recovery.mjs | tee "$OUT/i1-real-writer-recovery-02.log"
+          npm install --prefix "$PREFIX" --ignore-scripts --no-audit --no-fund "$TGZ"
+          GITHUB_SHA="$GITHUB_SHA" GUARD_RC_OUTPUT_DIR="$OUT" GUARD_RC_INSTALL_DIR="$PREFIX" GUARD_RC_TGZ="$TGZ" node scripts/verify_v7_1_rc_install.mjs
+          I1_CANONICAL_TGZ="$TGZ" I1_INSTALL_PREFIX="$PREFIX" I1_SAMPLE_DIR="$OUT/sample/hr-self-service-agent" I1_RECEIPT_DIR="$OUT" I1_TESTED_SHA="$GITHUB_SHA" node scripts/verify_i1_packaged_smoke.mjs
+          shasum -a 256 "$TGZ" > "$OUT/i1-canonical-tarball.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$OUT/tested-candidate-sha.txt"
+          printf '%s\n' "$(node -v)" > "$OUT/node-version.txt"
+          printf '%s\n' "$(uname -s) $(uname -m)" > "$OUT/platform.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i1-recovery-02-macos-intel-receipt
+          path: ${{ runner.temp }}/i1-candidate-mac-intel/
+          retention-days: 30
+          if-no-files-found: warn

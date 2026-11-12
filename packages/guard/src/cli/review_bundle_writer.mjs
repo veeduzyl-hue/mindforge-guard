@@ -321,11 +321,20 @@ export function commitReviewBundle(ctx,{validation,validationExit,report,reportE
 }
 export function markReviewFailed(ctx,err) {
   if(!ctx) return null;
+  // I1-REAL-WRITER-RECOVERY-02: if final rename already happened, stage no
+  // longer exists. NEVER recreate a phantom partial stage, or claim that
+  // a missing acknowledgement proves there was no successful publication.
+  let stageStat;
+  try { stageStat=fs.lstatSync(ctx.stage); } catch { return null; }
+  if(stageStat.isSymbolicLink()||!stageStat.isDirectory())return null;
   try {
     dropPrivateSnapshot(ctx);
-    const failure={status:'INCOMPLETE',reason:err?.code||'unexpected_error',message:'I-1 did not publish a completed Bundle. Inspect the invoking CLI stderr.',time:new Date().toISOString()};
+    const failure={status:'INCOMPLETE',reason:err?.code||'unexpected_error',
+      message:'I-1 command ended without an acknowledged completion. Inspect both the output and any retained partial before retry or manual cleanup.',
+      time:new Date().toISOString(),automatic_cleanup_performed:false,
+      completed_publication:'NOT_ESTABLISHED'};
     writeAtomic(ctx.stage,'INCOMPLETE.json',Buffer.from(JSON.stringify(failure,null,2)+'\n','utf8'));
-  }catch{/* Do not mask the original failure. */}
+  }catch{/* Preserve the original failure and an untrusted stage for Owner review. */}
   return ctx.stage;
 }
 export function removeSnapshotOnFailure(ctx) {if(ctx)dropPrivateSnapshot(ctx);}
