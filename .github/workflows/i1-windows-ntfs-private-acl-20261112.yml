@@ -39,7 +39,7 @@ jobs:
           I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
         run: |
           $ErrorActionPreference = 'Stop'
-          & './experiments/i1-native-adapter-spike-v0.1/windows_official_node_headers.ps1'
+          & './experiments/i1-win-ntfs-acl-01/windows_official_node_headers.ps1'
           if ($LASTEXITCODE -ne 0) { throw 'PINNED_NODE_HEADER_PREREQUISITES_FAILED' }
       - name: Compile experimental private staging security descriptor module
         shell: cmd
