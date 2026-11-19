@@ -90,6 +90,64 @@ a{color:var(--teal)}a:focus-visible,label:focus-visible,input:focus-visible{outl
 .panel-header{margin:0 0 15px}.panel-header h2{margin:0 0 4px;font-size:21px}.panel-header p{color:var(--muted);margin:0;font-size:13px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card h3{font-size:16px;margin:0 0 8px}.card p{color:#405269;margin:0 0 11px;font-size:13px;line-height:1.77;white-space:pre-wrap;overflow-wrap:anywhere}.full{grid-column:1/-1}.path{font-size:10px;color:#7c8a9a;padding-top:9px;border-top:1px solid #edf1f5;overflow-wrap:anywhere}.path code{font:11px Consolas,monospace;color:#536e82}.ref-list{margin:0 0 12px;padding-left:19px}.ref-list li{margin:5px 0;font-size:12px;overflow-wrap:anywhere}.ref-list code,.code{font:12px Consolas,monospace;overflow-wrap:anywhere}.kv{display:flex;justify-content:space-between;gap:12px;margin:8px 0}.kv dt{color:var(--muted);font-size:12px}.kv dd{margin:0;font-size:12px;text-align:right;font-weight:700;overflow-wrap:anywhere}.finding{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #edf1f5}.finding:last-child{border:0}.finding strong{font-size:12px}.finding p{margin:4px 0}.number{flex:0 0 24px;height:24px;border-radius:7px;background:#e5f3f1;color:var(--teal);display:grid;place-items:center;font-size:11px;font-weight:800}.fine{color:var(--muted)!important;font-size:11px!important}
 .raw{margin:26px 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px}.raw summary{cursor:pointer;font-weight:800}.raw p{font-size:12px;color:var(--muted)}.raw pre{background:#102238;color:#e1ebf0;padding:17px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:440px;overflow-y:auto;font:11px/1.6 Consolas,monospace}
 footer{padding:15px 0 35px;font-size:12px;color:var(--muted)}@media(max-width:750px){.container{padding:0 14px}.hero{padding:25px;display:block}.hero-aside{margin-top:18px}.grid,.meta{grid-template-columns:1fr}.card{padding:17px}.selector{display:grid;grid-template-columns:1fr}.selector label{width:100%}}@media print{body{background:#fff}.hero{background:#fff!important;color:#111;border:1px solid #ccc}.hero p{color:#555}.notice{border:1px solid #bbb}.selector{display:none}.panels .panel{display:block!important;break-before:page}.card{break-inside:avoid}.raw pre{max-height:none}}
+/* FIRST_REPORT_P1_LEGIBILITY_V01
+   Visual-only overrides: the same source JSON, posture, fields and hash.
+   W3C WCAG 2.2 1.4.3 normal text >=4.5:1, 2.4.7 visible focus.
+   Do not infer full accessibility compliance without live-browser checks. */
+:root{--ink:#20324a;--muted:#455970;--teal:#075d69;--line:#cbd6e3}
+body{font-size:16px;line-height:1.65;background:#f3f6fa;color:#20324a}
+a{color:#075d69;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:650}
+a:hover{color:#073e52;text-decoration-thickness:2px}
+a:focus-visible,.raw summary:focus-visible,.selector label:focus-visible{outline:3px solid #0a6a86;outline-offset:3px}
+.brand{font-size:17px}
+.micro{font-size:12.5px;letter-spacing:.055em;color:#46596c}
+.hero .micro{color:#d6eef6}
+.hero p{color:#e8f4f7;font-size:15px;line-height:1.65}
+.hero-aside p{font-size:14px;line-height:1.6;color:#f0f7f9}
+.hero-aside strong{font-size:19px}
+.notice{color:#634416}
+.notice p{font-size:15px;line-height:1.65}
+.mini .value{font-size:14.5px;line-height:1.55}
+.mini .sub{font-size:13px;line-height:1.55;color:#455970}
+.section-head p{font-size:15px;line-height:1.55}
+.selector label{font-size:15px;color:#34465b;padding:12px 17px;border-color:#b9c7d6}
+.selector label:hover{background:#e8f3f5}
+.role-interface input#view-business:focus-visible ~ .selector label[for=view-business],
+.role-interface input#view-technical:focus-visible ~ .selector label[for=view-technical],
+.role-interface input#view-governance:focus-visible ~ .selector label[for=view-governance]{
+  outline:3px solid #0a6a86;outline-offset:3px;box-shadow:0 0 0 6px #ffffff
+}
+.panel-header p{font-size:15px;line-height:1.6}
+.card h3{font-size:17px}
+.card p{font-size:15.5px;line-height:1.7;color:#34465b}
+.path{font-size:13px;line-height:1.65;color:#41566b;border-color:#dce4ed}
+.path code{font-size:13px;color:#344e65}
+.path a{color:#075d69;font-size:13.5px;font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px}
+.ref-list li{font-size:14px;line-height:1.65}
+.ref-list code,.code{font-size:13px}
+.kv dt,.kv dd{font-size:14px;line-height:1.5}
+.finding strong{font-size:14px}
+.number{font-size:13px}
+.fine{font-size:13px!important;line-height:1.6}
+.raw summary{font-size:16px;color:#20324a}
+.raw p{font-size:14px;color:#455970;line-height:1.65}
+.raw pre{font-size:13px;line-height:1.65;color:#e1ebf0;background:#102238}
+footer{font-size:13.5px;color:#455970;line-height:1.65}
+@media(max-width:750px){
+  .card p{font-size:15.5px}
+  .hero p{font-size:15px}
+  .selector label{font-size:15px}
+  .path{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{
+  .hero{background:#fff!important;color:#20324a!important;border-color:#7f91a3}
+  .hero p,.hero-aside p,.hero .micro{color:#20324a!important}
+  .hero-aside{background:#fff!important;border-color:#7f91a3}
+  a,.path a{color:#124c65!important;text-decoration:underline!important}
+  .path,.micro,.mini .sub,.raw p,footer{color:#455970!important}
+}
+
 `;
   return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; connect-src 'none'; object-src 'none'">\n<title>MindForge Guard | ${esc(report.agent_identity.agent_label)} | Review Presentation</title>\n<style>${css}</style>\n</head><body>\n<header class="top"><div class="container"><div class="logo" aria-hidden="true">M</div><div><div class="brand">MindForge Guard</div><div class="micro">Evidence presentation · English</div></div></div></header>\n<main class="container"><div class="hero"><div><div class="micro">Single-agent governance report · preview</div><h1>${esc(report.agent_identity.agent_label)}</h1><p>${esc(display(report.intent_summary))}</p></div><div class="hero-aside"><div class="micro">Source review posture</div><strong>${esc(formatStatus(report.review_posture))}</strong><p>Review routing only. Not approval, certification, or permission to execute.</p></div></div>\n<div class="notice"><strong>Human review required · No operational authority</strong><p>The source JSON is a preview derived from an Evidence Pack. The renderer only presents its statements; it does not independently verify evidence, issue approvals, certify compliance, execute actions, or confer merge/deployment authority. References may be generated identifiers, not authenticated receipts.</p></div>\n<div class="meta"><div class="mini"><div class="micro">Source report timestamp</div><div class="value">${esc(display(report.generated_at))}</div><div class="sub">Source-supplied; not the HTML rendering or test time.</div></div><div class="mini"><div class="micro">Reported evidence hash</div><div class="value code">${esc(report.deterministic_hash)}</div><div class="sub">Input report value; not reverified by this renderer.</div></div><div class="mini"><div class="micro">Input JSON byte digest</div><div class="value code">sha256:${byteDigest}</div><div class="sub">Calculated from exact UTF-8 source bytes; distinct digest domain.</div></div></div>\n<div class="section-head"><h2>Choose a reader perspective</h2><p>Three presentations of the same report. Source values and review posture are never recalculated.</p></div>\n<div class="role-interface">\n<input type="radio" id="view-business" name="role" checked><input type="radio" id="view-technical" name="role"><input type="radio" id="view-governance" name="role">\n<nav class="selector" aria-label="Reader perspective"><label for="view-business">Business owner</label><label for="view-technical">Technical reviewer</label><label for="view-governance">Governance / risk reviewer</label></nav>\n<div class="panels">\n<section class="panel role-business"><div class="panel-header"><h2>Business owner</h2><p>What is this agent intended to do, and what should humans review?</p></div><div class="grid">\n${card('Intended task', report.intent_summary, '/intent_summary')}
 ${card('Observed or summarized action', report.action_summary, '/action_summary')}
