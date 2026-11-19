@@ -36,13 +36,7 @@ const one=(id,reason,cb)=>{
 try{
  assert(fs.existsSync(verifier));
  assert(fs.existsSync(source),'Real compiled unsigned x64 Node-API8 addon required');
- // Parse verification is enforced using PowerShell's own language parser.
- const parse=spawnSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-  '$tok=$null;$err=$null;'+
-  '[System.Management.Automation.Language.Parser]::ParseFile($args[0],[ref]$tok,[ref]$err)|Out-Null;'+
-  'if($err.Count -gt 0){$err|Out-String|Write-Error;exit 13};exit 0',verifier],
- {encoding:'utf8',windowsHide:true,timeout:30000});
- assert.equal(parse.status,0,'PowerShell parser rejected preflight: '+parse.stdout+parse.stderr);
+ // The workflow's PowerShell Parser.ParseFile step already verified source syntax.
  const addon=path.join(root,'private_acl.node');
  fs.copyFileSync(source,addon,fs.constants.COPYFILE_EXCL);
  const bytes=fs.readFileSync(addon);
