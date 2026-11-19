@@ -71,7 +71,7 @@ try{
  const policySha=writePolicy(policyBase);
  one('AV02-SIGN-N01','HOLD_MISSING_SIGNED_ARTIFACT_OR_OWNER_PINNED_POLICY',()=>run([]));
  one('AV02-SIGN-N02','BLOCKED_INVALID_POLICY_SHA_OR_SOURCE_IDENTITY',()=>
-  run(exactArgs('0'.repeat(64))));
+  run(exactArgs('g'.repeat(64))));
  one('AV02-SIGN-N03','BLOCKED_OWNER_POLICY_SHA_MISMATCH',()=>
   run(exactArgs('a'.repeat(64))));
  one('AV02-SIGN-N04','BLOCKED_POLICY_CONTRACT_OR_SOURCE_MISMATCH',()=>
