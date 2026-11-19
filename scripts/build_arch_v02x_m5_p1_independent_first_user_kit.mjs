@@ -123,7 +123,24 @@ if(run('git',['status','--porcelain=v1'],checkout).trim())throw Error('M5_OFFLIN
 assert(fs.existsSync(path.join(checkout,'scripts','arch_v02x_m3_first_report_walkthrough_synthetic.mjs')));
 const forbidden=run('git',['ls-tree','-r','--name-only',P1],checkout).split('\n')
  .filter(x=>/\.(pfx|p12|key|pem)$/i.test(x)||/\/\.env(?:\.|$)/i.test(x));
-if(forbidden.length)throw Error('PUBLIC_SOURCE_HAS_CREDENTIAL_LIKE_TRACKED_FILE_NAMES');
+// Only two independently reviewed known-safe public files, pinned by exact Git
+// blob identity. This checks the current tree, not all public Git history.
+const allowedPublic=new Map([
+ ['apps/license-hub/.env.example','82b38461c20c14b5613ce5177b79ab3c954e7c64'],
+ ['packages/guard/src/product/keys/guard_ed25519_public.pem','7bdc259a0b2b9836044c2a2acd0e524814997b16']
+]);
+for(const rel of forbidden){
+ const expected=allowedPublic.get(rel);
+ if(!expected)throw Error('UNREVIEWED_CREDENTIAL_LIKE_TRACKED_FILE_IN_SOURCE_TREE');
+ const blob=run('git',['hash-object','--',rel],checkout).trim();
+ if(blob!==expected)throw Error('APPROVED_PUBLIC_EXAMPLE_BLOB_CHANGED');
+ const body=fs.readFileSync(path.join(checkout,...rel.split('/')),'utf8');
+ if(rel.endsWith('.env.example')&&(!body.includes('REPLACE_ME')||
+    !body.includes('replace-with-long-random-secret')||
+    !body.includes('admin@example.com')))throw Error('PUBLIC_ENV_EXAMPLE_NO_LONGER_PLACEHOLDER');
+ if(rel.endsWith('guard_ed25519_public.pem')&&(!body.startsWith('-----BEGIN PUBLIC KEY-----')||
+    body.includes('BEGIN PRIVATE KEY')))throw Error('PUBLISHED_PUBLIC_KEY_UNSAFE');
+}
 for(const [rootDir,track] of [[reading,'A_REPORT_READING_ONLY'],[technical,'B_WINDOWS_FIRST_USER_WORKFLOW']]){
  const lead=[
   'MINDFORGE GUARD — M5 P1 INDEPENDENT FIRST-USER TRIAL (EXPERIMENTAL)',
@@ -193,6 +210,9 @@ const receipt={
  source_class:'CI_SYNTHETIC_PACKAGING_ONLY',
  m4_original_62:'NOT_RUN',
  source_and_signer_identity_not_verified:true,
+ public_git_history_full_secret_audit:'NOT_PERFORMED',
+ private_external_distribution:'REQUIRES_OWNER_REVIEW',
+ current_tree_known_public_examples_pinned:true,
  no_main_merge_no_release:true
 };
 fs.writeFileSync(path.join(receiptDir,'M5_BUILD_RECEIPT.json'),json(receipt),{flag:'wx'});
