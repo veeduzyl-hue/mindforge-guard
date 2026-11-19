@@ -1,0 +1,146 @@
+name: ARCH v0.2.x First Report P1 legibility visual-only
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-first-report-p1-legibility-20261120
+    paths:
+      - packages/guard/src/presentation/role_based_html_report.mjs
+      - scripts/verify_arch_v02x_first_report_p1_legibility.mjs
+      - docs/engineering/ARCH_V02X_FIRST_REPORT_P1_LEGIBILITY_REVIEW_v0.1.md
+      - .github/workflows/arch-v02x-first-report-p1-legibility-20261120.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-m3-first-report-synthetic-walkthrough-20261119
+permissions:
+  contents: read
+jobs:
+  linux-p1-legibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Frozen source and strict four-file change contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=b45c8f4b38a3cfe73787657421486f6a7d413cc1
+          git merge-base --is-ancestor "$base" HEAD
+          actual="$(git diff --name-only "$base" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/arch-v02x-first-report-p1-legibility-20261120.yml' \
+            'docs/engineering/ARCH_V02X_FIRST_REPORT_P1_LEGIBILITY_REVIEW_v0.1.md' \
+            'packages/guard/src/presentation/role_based_html_report.mjs' \
+            'scripts/verify_arch_v02x_first_report_p1_legibility.mjs')"
+          test "$actual" = "$expected"
+          git diff --check "$base" HEAD
+          node --check packages/guard/src/presentation/role_based_html_report.mjs
+          node --check scripts/verify_arch_v02x_first_report_p1_legibility.mjs
+          echo "P1_FIXED_SOURCE_SHA=$(git rev-parse HEAD)"
+      - name: Existing Guard behavior, unchanged semantics, M3 demo regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_arch_v02x_first_report_p1_legibility.mjs
+          node scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          after="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$before" != "$after" ]];then
+            echo 'P1_REGRESSIONS_MUTATED_REPOSITORY';exit 88
+          fi
+          if [[ -n "$before" ]];then
+            bin='packages/guard/bin/guard.mjs'
+            if [[ "$before" != " M $bin" ]] ||
+               [[ "$(git ls-files --stage -- "$bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$bin")" != "$(git rev-parse "HEAD:$bin")" ]] ||
+               [[ ! -x "$bin" ]];then
+              echo 'P1_UNATTRIBUTED_WORKTREE_CHANGE';exit 89
+            fi
+            echo 'NPM_ONLY_EXECUTABLE_MODE_DRIFT=BYTE_IDENTICAL'
+          fi
+          echo 'P1_VISUAL_ONLY=SOURCE_FIELDS_AND_AUTHORITY_UNCHANGED'
+          echo 'M5_EXTERNAL_USER=NOT_TESTED'
+      - name: Render fixed P1 synthetic HTML report to review artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/arch-v02x-p1-readable-demo"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          node packages/guard/bin/guard.mjs report single-agent --pack examples/single-agent-governance-pack/hr-self-service-agent --preview --json > "$out/report.json"
+          node packages/guard/bin/guard.mjs report render --input "$out/report.json" --out "$out/report.html" --format html
+          node -e 'const fs=require("fs"),p=require("path");const root=process.argv[1],json=JSON.parse(fs.readFileSync(p.join(root,"report.json"),"utf8")),html=fs.readFileSync(p.join(root,"report.html"),"utf8");if(json.review_posture!=="ready_for_review"||!html.includes("FIRST_REPORT_P1_LEGIBILITY_V01")||!html.includes("Human review required"))process.exit(3);' "$out"
+          echo 'VISUAL_PREVIEW_ARTIFACT=EXAMPLE_ONLY'
+          echo 'THREE_ROLE_BROWSER_INTERACTION=NOT_INDEPENDENTLY_TESTED'
+      - name: Upload fixed synthetic P1 HTML and input JSON only
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-p1-legible-fixed-synthetic-html
+          path: ${{ runner.temp }}/arch-v02x-p1-readable-demo/
+          retention-days: 30
+          if-no-files-found: error
+  windows-server2022-p1-legibility:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Verify source identity and exact renderer-only scope
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='b45c8f4b38a3cfe73787657421486f6a7d413cc1'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_FROZEN_PARENT'}
+          $allow=@(
+            '.github/workflows/arch-v02x-first-report-p1-legibility-20261120.yml',
+            'docs/engineering/ARCH_V02X_FIRST_REPORT_P1_LEGIBILITY_REVIEW_v0.1.md',
+            'packages/guard/src/presentation/role_based_html_report.mjs',
+            'scripts/verify_arch_v02x_first_report_p1_legibility.mjs'
+          )
+          $actual=@(git diff --name-only $base HEAD)
+          if($actual.Count -ne 4){throw 'UNEXPECTED_CHANGED_FILE_COUNT'}
+          foreach($file in $actual){if($file -notin $allow){throw ('OUT_OF_SCOPE_CHANGE:'+ $file)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check packages/guard/src/presentation/role_based_html_report.mjs
+          if($LASTEXITCODE -ne 0){throw 'RENDERER_SYNTAX_FAILED'}
+          node --check scripts/verify_arch_v02x_first_report_p1_legibility.mjs
+          if($LASTEXITCODE -ne 0){throw 'P1_TEST_SYNTAX_FAILED'}
+          Write-Output ('P1_FIXED_SOURCE_SHA='+(git rev-parse HEAD).Trim())
+      - name: Existing Guard and bounded presentation/full M3 demo regression
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'BASELINE_VERIFICATION_FAILED'}
+          $before=@(git status --porcelain=v1 --untracked-files=normal)
+          node scripts/verify_v7_role_based_report_render.mjs
+          if($LASTEXITCODE -ne 0){throw 'ROLE_RENDERER_LEGACY_FAILED'}
+          node scripts/verify_arch_v02x_first_report_p1_legibility.mjs
+          if($LASTEXITCODE -ne 0){throw 'P1_LEGIBILITY_REGRESSION_FAILED'}
+          node scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3_DEMO_REGRESSION_FAILED'}
+          $after=@(git status --porcelain=v1 --untracked-files=normal)
+          if(($before -join [char]10) -ne ($after -join [char]10)){throw 'P1_CHANGED_WORKTREE'}
+          if(@($after|Where-Object {$_ -ne ''}).Count -ne 0){throw 'WINDOWS_WORKTREE_DIRTY'}
+          Write-Output 'P1_VISUAL_ONLY=SOURCE_FIELDS_AND_AUTHORITY_UNCHANGED'
+          Write-Output 'M5_EXTERNAL_USER=NOT_TESTED'
