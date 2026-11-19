@@ -28,7 +28,8 @@ function DownloadVerified([string] $relative,[string] $output) {
   Invoke-WebRequest -UseBasicParsing -Uri ($base+$relative) -OutFile $output -TimeoutSec 120
   $actual=(Get-FileHash -Algorithm SHA256 -LiteralPath $output).Hash.ToLowerInvariant()
   if ($actual -ne $expected) { throw ('OFFICIAL_HASH_MISMATCH:'+$relative) }
-  Write-Output ('ARCH_ARM_OFFICIAL_SHA256_VERIFIED '+$relative+' '+$actual)
+  # Write-Host does not contaminate the function's return value / SHA receipt field.
+  Write-Host ('ARCH_ARM_OFFICIAL_SHA256_VERIFIED '+$relative+' '+$actual)
   return $actual
 }
 $headersName='node-'+$version+'-headers.tar.gz'
