@@ -45,7 +45,12 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           npm run verify:v7.0.1
           node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
-          test -z "$(git status --porcelain=v1 --untracked-files=normal)"
+          status="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ -n "$status" ]]; then
+            echo 'ARCH_M3_WORKTREE_DIRTY_AFTER_SUITE'
+            printf '%s\n' "$status"
+            exit 88
+          fi
           echo 'M3_SOURCE_INVENTORY=EXPERIMENTAL_SYNTHETIC_ONLY'
           echo 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
           echo 'SIGNING=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
