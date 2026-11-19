@@ -1,0 +1,120 @@
+name: ARCH v0.2.x Win11 x64 signed Native admission negative gate
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-win11-x64-authenticode-admission-20261119
+    paths:
+      - scripts/arch_v02x_win11_x64_signed_addon_preflight.ps1
+      - scripts/arch_v02x_win11_x64_signed_pack_synthetic.ps1
+      - scripts/verify_arch_v02x_win11_x64_signer_negative_ci.mjs
+      - docs/engineering/ARCH_V02X_WIN11_X64_SIGNED_NATIVE_DISTRIBUTION_ADMISSION_v0.1.md
+      - .github/workflows/arch-v02x-win11-x64-signer-deny-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-win-x64-desktop-admission-prep-20261119
+permissions:
+  contents: read
+jobs:
+  windows-server-2022-x64-unsigned-deny:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 40
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Exact candidate lineage and strict source syntax
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='adb43e60a71729c5fab4ac8e1804804bc8d10038'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'INVALID_PARENT_IDENTITY'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-win11-x64-signer-deny-20261119.yml',
+            'scripts/arch_v02x_win11_x64_signed_addon_preflight.ps1',
+            'scripts/arch_v02x_win11_x64_signed_pack_synthetic.ps1',
+            'scripts/verify_arch_v02x_win11_x64_signer_negative_ci.mjs',
+            'docs/engineering/ARCH_V02X_WIN11_X64_SIGNED_NATIVE_DISTRIBUTION_ADMISSION_v0.1.md'
+          )
+          $modified=@(git diff --name-only $base HEAD)
+          if($modified.Count -ne 5){throw 'UNEXPECTED_SCOPE_COUNT'}
+          foreach($f in $modified){if($f -notin $allowed){throw ('UNAUTHORIZED_SCOPE_PATH:'+$f)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_WHITESPACE_ERROR'}
+          foreach($file in @(
+            'scripts/arch_v02x_win11_x64_signed_addon_preflight.ps1',
+            'scripts/arch_v02x_win11_x64_signed_pack_synthetic.ps1')){
+            $tokens=$null
+            $parseErrors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path -LiteralPath $file).Path,
+              [ref]$tokens,[ref]$parseErrors) | Out-Null
+            if($parseErrors.Count -ne 0){throw ('POWERSHELL_PARSE_FAILED:'+ $file + ':' + ($parseErrors | Out-String))}
+          }
+          node --check scripts/verify_arch_v02x_win11_x64_signer_negative_ci.mjs
+          if($LASTEXITCODE -ne 0){throw 'NODE_TEST_PARSE_FAILED'}
+          Write-Output ('SIGNED_ADMISSION_EXACT_SOURCE_SHA='+(git rev-parse HEAD).Trim())
+      - name: Check Node official build dependencies (no signer keys)
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          & ./experiments/i1-real-writer-win-acl-integration-01/windows_official_node_headers.ps1
+          if($LASTEXITCODE -ne 0){throw 'OFFICIAL_NODE_DEPENDENCIES_FAILED'}
+      - name: Compile existing UNSIGNED native x64 PE only
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-real-writer-win-acl-integration-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Legacy verification and signer-policy FAIL-CLOSED negatives
+        shell: powershell
+        env:
+          ARCH_V02X_SIGNER_NEGATIVE_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'V701_VERIFY_FAILED'}
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-winx64-signer-negatives'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $env:ARCH_V02X_SIGNER_NEGATIVE_RECEIPT=Join-Path $out 'unsigned-native-denials.json'
+          node scripts/verify_arch_v02x_win11_x64_signer_negative_ci.mjs
+          if($LASTEXITCODE -ne 0){throw 'SIGNER_NEGATIVE_CASES_FAILED'}
+          $stdout=@(& powershell.exe -NoProfile -NonInteractive -File ./scripts/arch_v02x_win11_x64_signed_pack_synthetic.ps1)
+          if($LASTEXITCODE -ne 24){throw 'UNSIGNED_POSITIVE_WRAPPER_MUST_HOLD_WITHOUT_SIGNER'}
+          if(-not (@($stdout|Where-Object {$_ -match 'ARCH_WIN11_SIGNED_PACK=NOT_RUN_SIGNER_OR_POLICY_HOLD'}).Count -eq 1)){
+            throw 'POSITIVE_WRAPPER_DID_NOT_EXPLICITLY_BLOCK'
+          }
+          $pre=[ordered]@{
+            kind='ARCH_V02X_WIN11_X64_SIGNER_CI_BOUNDARY'
+            testedHead=(git rev-parse HEAD).Trim()
+            scope='WINDOWS_SERVER_2022_X64_SYNTHETIC_ONLY'
+            signingKeySupplied=$false
+            nativeCodeSigner='NOT_ESTABLISHED'
+            publisherChain='NOT_ESTABLISHED'
+            signedPositiveBundle='NOT_RUN'
+            windows11x64Client='NOT_TESTED'
+            offlineRevocationAndSignature='NOT_TESTED_WITH_REAL_SIGNED_ARTIFACT'
+            productRelease='HOLD'
+            originalM4_62='NOT_RUN'
+          }
+          $pre | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $out 'evidence-boundary.json') -Encoding ascii
+          Write-Output ('ARCH_V02X_SIGNER_CI_BOUNDARY '+($pre|ConvertTo-Json -Compress -Depth 6))
+      - name: Upload sanitized negative receipts only; never upload .node or keys
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-win-x64-native-signer-negative-only
+          path: ${{ runner.temp }}/arch-v02x-winx64-signer-negatives/
+          retention-days: 30
+          if-no-files-found: warn
