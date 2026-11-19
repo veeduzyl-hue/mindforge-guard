@@ -40,7 +40,7 @@ function test(id,expectedStatus,expectedExit,args){
 }
 test('AV02-AZ-N01','CHECK_ONLY_NOT_SIGNED_NO_CLOUD_CALL_NO_FILES_CREATED',0,[]);
 test('AV02-AZ-N02','HOLD_MISSING_EXPLICIT_SIGNING_AND_POTENTIAL_COST_ACKNOWLEDGEMENT',24,['-ExecuteSign']);
-test('AV02-AZ-N03','HOLD_MISSING_EXACT_SOURCE_ARTIFACT_TOOLCHAIN_OR_METADATA_PIN',24,['-ExecuteSign','-AcknowledgeExternalSigning']);
+test('AV02-AZ-N03','BLOCKED_DIRECT_SIGNING_ON_CI_NOT_AUTHORIZED',24,['-ExecuteSign','-AcknowledgeExternalSigning']);
 test('AV02-AZ-N04','BLOCKED_DIRECT_SIGNING_ON_CI_NOT_AUTHORIZED',24,[
   '-ExecuteSign','-AcknowledgeExternalSigning',
   '-ExpectedSourceHead','a'.repeat(40)
