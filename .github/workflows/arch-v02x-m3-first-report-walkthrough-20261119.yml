@@ -74,6 +74,32 @@ jobs:
           echo 'M3_SYNTHETIC_DEMO_USER_PATH=TESTED_NO_PUBLIC_ADMISSION'
           echo 'M4_ORIGINAL_62=NOT_RUN; M5_REAL_HUMAN=NOT_TESTED'
           echo 'SIGNED_ADDON=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
+      - name: Produce downloadable synthetic First Report example (CI choices only, NOT human)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ARCH_V02X_FIRST_REPORT_DEMO_SYNTHETIC_ONLY=1
+          demo="$(node -e 'const os=require("os");const p=require("path");const c=require("crypto");process.stdout.write(p.join(os.tmpdir(),"guard-v02x-synthetic-"+c.randomUUID().replaceAll("-","")))')"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode prepare --workspace "$demo"
+          # CI deliberately synthesizes all eight choices. This is NOT human review.
+          node -e 'const fs=require("fs");const p=require("path");const file=p.join(process.argv[1],"mapping-decisions.synthetic.json");const v=JSON.parse(fs.readFileSync(file,"utf8"));for(const row of v.decisions){row.decision="confirm";row.basis="source_reviewed";row.notes=["synthetic_checked_structure"];}fs.writeFileSync(file,JSON.stringify(v,null,2)+"\n");' "$demo"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode complete --workspace "$demo"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode status --workspace "$demo"
+          out="$RUNNER_TEMP/arch-v02x-m3-synthetic-delivery-example"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          cp -R "$demo/delivery/." "$out/"
+          node -e 'const fs=require("fs"),p=require("path");const r=JSON.parse(fs.readFileSync(p.join(process.argv[1],"demo-delivery-manifest.json"),"utf8"));if(r.human_first_user_witnessed!==false||r.delivery_type!=="SYNTHETIC_DEMO_NOT_I1_SECURE_REVIEW_BUNDLE")process.exit(32);' "$out"
+          echo 'CI_SYNTHETIC_AUTOMATED_MAPPING_DECISIONS=NOT_HUMAN_REVIEW'
+          echo 'SYNTHETIC_DELIVERY_ARTIFACT_GENERATED=TRUE'
+          echo 'NOT_I1_SECURE_REVIEW_BUNDLE; NOT_PRODUCTION_ADMITTED'
+      - name: Upload sample-only HTML/Pack demonstration (NO customer data, no .node binaries)
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-synthetic-first-report-html-and-pack
+          path: ${{ runner.temp }}/arch-v02x-m3-synthetic-delivery-example/
+          retention-days: 30
+          if-no-files-found: error
   windows-server-2022-x64-synthetic-user-path:
     runs-on: windows-2022
     timeout-minutes: 45
