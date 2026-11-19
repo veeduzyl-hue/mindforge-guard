@@ -62,17 +62,17 @@ if(Test-Path -LiteralPath $work){throw 'TEST_ROOT_COLLISION'}
 New-Item -ItemType Directory -Path $work | Out-Null
 $pkgdir=Join-Path $work 'package'
 $prefix=Join-Path $work 'prefix'
-$home=Join-Path $work 'home'
+$testHome=Join-Path $work 'home'
 $cache=Join-Path $work 'cache'
 $sampleCopy=Join-Path $work 'synthetic-pack'
-foreach($p in @($pkgdir,$prefix,$home,$cache)){New-Item -ItemType Directory -Path $p | Out-Null}
+foreach($p in @($pkgdir,$prefix,$testHome,$cache)){New-Item -ItemType Directory -Path $p | Out-Null}
 $keys=@('HOME','USERPROFILE','npm_config_cache','npm_config_update_notifier',
  'I1_REAL_WIN_ACL_INTEGRATION_EXPERIMENT','I1_REAL_WIN_ACL_SYNTHETIC_ONLY',
  'I1_REAL_WIN_ACL_MODULE_PATH','I1_REAL_WIN_ACL_MODULE_SHA256')
 $old=@{}
 foreach($k in $keys){$old[$k]=[Environment]::GetEnvironmentVariable($k,'Process')}
 try{
- $env:HOME=$home;$env:USERPROFILE=$home;$env:npm_config_cache=$cache;$env:npm_config_update_notifier='false'
+ $env:HOME=$testHome;$env:USERPROFILE=$testHome;$env:npm_config_cache=$cache;$env:npm_config_update_notifier='false'
  $env:I1_REAL_WIN_ACL_INTEGRATION_EXPERIMENT='0'
  $env:I1_REAL_WIN_ACL_SYNTHETIC_ONLY='0'
  $env:I1_REAL_WIN_ACL_MODULE_PATH=''
