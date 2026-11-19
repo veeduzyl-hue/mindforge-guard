@@ -114,8 +114,49 @@ jobs:
           node scripts/verify_arch_v02x_windows_private_pack_positive.mjs
           if($LASTEXITCODE -ne 0){throw 'WINDOWS11_ARM_NATIVE_PACK_FAIL'}
           $env:ARCH_V02X_ARM_OFFLINE_RECEIPT=Join-Path $out 'win11-arm-unsigned-offline-identity.json'
-          node scripts/verify_arch_v02x_native_addon_offline_identity.mjs
-          if($LASTEXITCODE -ne 0){throw 'ARM_OFFLINE_IDENTITY_NEGATIVES_FAIL'}
+          $cleanupRef=Join-Path $out 'sidecar-cleanup-ref.txt'
+          $env:ARCH_V02X_ARM_SIDECAR_CLEANUP_REF=$cleanupRef
+          $sidecarExit=-1
+          try {
+            node scripts/verify_arch_v02x_native_addon_offline_identity.mjs
+            $sidecarExit=$LASTEXITCODE
+          } finally {
+            # Native Windows modules cannot be removed while loaded in the same
+            # process. CI deletes only the exact *owned* synthetic temp root after
+            # the Node verifier process exits, never customer or producer Evidence.
+            if(Test-Path -LiteralPath $cleanupRef) {
+              $sidecar=(Get-Content -LiteralPath $cleanupRef -Raw).Trim()
+              $parentPath=(Resolve-Path -LiteralPath (Split-Path -Path $sidecar -Parent)).Path.TrimEnd('\')
+              $tempPath=(Resolve-Path -LiteralPath $env:RUNNER_TEMP).Path.TrimEnd('\')
+              $leaf=Split-Path -Path $sidecar -Leaf
+              if($parentPath -ne $tempPath -or $leaf -notmatch '^arch-v02x-arm-sidecar-[A-Za-z0-9_-]+
+          Copy-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'arch-v02x-win11-arm-native-prereqs/official-native-prerequisites.json') -Destination (Join-Path $out 'official-build-prerequisites.json')
+          Write-Output 'WINDOWS11_ARM64_NATIVE_SYNTHETIC_ONLY'
+          Write-Output 'UNSIGNED_ADDON_INTEGRITY_ONLY_NOT_DISTRIBUTION_APPROVAL'
+          Write-Output 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED; WIN10_WIN11_X64=NOT_TESTED'
+          Write-Output 'NO_MAIN_MERGE_NO_RELEASE_NO_CUSTOMER_EVIDENCE'
+      - name: Upload receipts only, no .node binary and no customer Pack
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-win11-arm64-synthetic-native-receipts
+          path: ${{ runner.temp }}/arch-v02x-win11-arm-evidence/
+          retention-days: 30
+          if-no-files-found: warn
+) {
+                throw 'UNTRUSTED_SIDECAR_CLEANUP_TARGET_REFUSED'
+              }
+              $item=Get-Item -LiteralPath $sidecar -Force -ErrorAction Stop
+              if(-not $item.PSIsContainer -or ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+                throw 'SIDECAR_CLEANUP_REPARSE_OR_TYPE_REFUSED'
+              }
+              Remove-Item -LiteralPath $sidecar -Recurse -Force -ErrorAction Stop
+              if(Test-Path -LiteralPath $sidecar){throw 'SYNTHETIC_SIDECAR_CLEANUP_NOT_CONFIRMED'}
+              Remove-Item -LiteralPath $cleanupRef -Force
+              Write-Output 'ARM_SYNTHETIC_SIDECAR_POST_PROCESS_CLEANUP=PASS'
+            }
+          }
+          if($sidecarExit -ne 0){throw 'ARM_OFFLINE_IDENTITY_NEGATIVES_FAIL'}
           Copy-Item -LiteralPath 'experiments/i1-real-writer-win-acl-integration-01/build-receipt.json' -Destination (Join-Path $out 'native-build-receipt.json')
           Copy-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'arch-v02x-win11-arm-native-prereqs/official-native-prerequisites.json') -Destination (Join-Path $out 'official-build-prerequisites.json')
           Write-Output 'WINDOWS11_ARM64_NATIVE_SYNTHETIC_ONLY'
