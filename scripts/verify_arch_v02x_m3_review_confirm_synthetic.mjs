@@ -263,27 +263,28 @@ try{
        'CONFIRMATION_FILE_MUST_BE_OUTSIDE_SELECTED_SOURCE');
    }finally{fs.unlinkSync(inner);}
  });
- test('M3RC-23','file symlink cannot substitute decision file',()=>{
+ {
    const v=review(),q=request(v);
    const real=path.join(root,'private-real-confirm.json');
    fs.writeFileSync(real,JSON.stringify(q));
-   const link=decisionFile;
    try {
-     try{fs.unlinkSync(link);}catch(e){if(e.code!=='ENOENT')throw e;}
-     try{fs.symlinkSync(real,link,'file');}
+     try{fs.unlinkSync(decisionFile);}catch(e){if(e.code!=='ENOENT')throw e;}
+     let symlinkAvailable=true;
+     try{fs.symlinkSync(real,decisionFile,'file');}
      catch(e){
-       if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code)){
-         notTested('M3RC-23','Windows runner cannot create symlink fixture');
-         return;
-       }
-       throw e;
+       if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code))
+         symlinkAvailable=false;
+       else throw e;
      }
-     expectRefused(confirm(),'CONFIRMATION_PATH_REPARSE_REFUSED');
-   } finally {
-     try{fs.unlinkSync(link);}catch(e){if(e.code!=='ENOENT')throw e;}
+     if(!symlinkAvailable)notTested('M3RC-23','Windows runner cannot construct symlink; no false PASS');
+     else test('M3RC-23','file symlink cannot substitute decision file',()=>{
+       expectRefused(confirm(),'CONFIRMATION_PATH_REPARSE_REFUSED');
+     });
+   }finally{
+     try{fs.unlinkSync(decisionFile);}catch(e){if(e.code!=='ENOENT')throw e;}
      fs.unlinkSync(real);
    }
- });
+ }
  test('M3RC-24','malformed confirmation JSON cannot create partial record',()=>{
    review();
    fs.writeFileSync(decisionFile,'{"kind":');
