@@ -13,10 +13,11 @@ $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 $repo=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $gate=Join-Path $PSScriptRoot 'arch_v02x_win11_x64_signed_addon_preflight.ps1'
-$gateArgs=@('-NoProfile','-NonInteractive','-File',$gate,
- '-AddonFile',$AddonFile,'-PolicyFile',$PolicyFile,
- '-ExpectedPolicySha256',$ExpectedPolicySha256,
- '-ExpectedSourceHead',$ExpectedSourceHead)
+$gateArgs=@('-NoProfile','-NonInteractive','-File',$gate)
+if($AddonFile){$gateArgs+=@('-AddonFile',$AddonFile)}
+if($PolicyFile){$gateArgs+=@('-PolicyFile',$PolicyFile)}
+if($ExpectedPolicySha256){$gateArgs+=@('-ExpectedPolicySha256',$ExpectedPolicySha256)}
+if($ExpectedSourceHead){$gateArgs+=@('-ExpectedSourceHead',$ExpectedSourceHead)}
 $gateOutput=@(& powershell.exe @gateArgs)
 $gateExit=$LASTEXITCODE
 $gateLines=@($gateOutput|Where-Object {$_ -like 'ARCH_V02X_SIGNED_ADDON_PREFLIGHT *'})
