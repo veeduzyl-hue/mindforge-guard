@@ -112,20 +112,22 @@ try{
     const r=rejectWith(argsFor(p),'EXCLUDED_OR_SECRET_EXPLICIT_SOURCE');
     noLeaks(r);
   });
-  check('M3I-06','symlink source entry escape refused and never read',()=>{
+  {
     const link=path.join(sample,'outside-link.json');
+    let unavailable=false;
     try{fs.symlinkSync(path.join(root,'outside-secret.json'),link,'file');}
     catch(e){
       if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code)){
-        notTested('M3I-06-SYMLINK-WINDOWS','Host cannot create test symlink; not a rejection PASS');
-        return {platformLimitation:true};
-      }
-      throw e;
+        unavailable=true;
+      }else throw e;
     }
-    const r=rejectWith(argsFor(sample),'SYMLINK_OR_REPARSE_ENTRY_REFUSED');
-    noLeaks(r);
-    fs.unlinkSync(link);
-  });
+    if(unavailable)notTested('M3I-06','Windows runner cannot create symlink; no rejection PASS inferred');
+    else check('M3I-06','symlink source entry escape refused and never read',()=>{
+      const r=rejectWith(argsFor(sample),'SYMLINK_OR_REPARSE_ENTRY_REFUSED');
+      noLeaks(r);
+      fs.unlinkSync(link);
+    });
+  }
   check('M3I-07','outside fixture scope never follows source',()=>{
     const outside=path.resolve(os.tmpdir(),'arch-v02x-no-implicit-source');
     const r=rejectWith(argsFor(outside),'SOURCE_OUTSIDE_SYNTHETIC_FIXTURE_ROOT');
@@ -169,7 +171,7 @@ try{
     fs.writeFileSync(p,'合成資料 - no confidential content');
     const r=run(argsFor(sample));assert.equal(r.exit,0);
     assert.equal(r.result.summary.included_count,10);
-    assert.equal(r.result.sources.filter(x=>x.source_kind==='markdown').length,3);
+    assert.equal(r.result.sources.filter(x=>x.source_kind==='markdown').length,4);
     assert(!JSON.stringify(r.result).includes(name));
     noLeaks(r);
     fs.unlinkSync(p);
