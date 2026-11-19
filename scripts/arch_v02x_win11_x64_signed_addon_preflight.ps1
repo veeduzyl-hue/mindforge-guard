@@ -131,7 +131,7 @@ try {
   $chain.ChainPolicy.RevocationMode=[System.Security.Cryptography.X509Certificates.X509RevocationMode]::Offline
   $chain.ChainPolicy.RevocationFlag=[System.Security.Cryptography.X509Certificates.X509RevocationFlag]::ExcludeRoot
   $chain.ChainPolicy.VerificationFlags=[System.Security.Cryptography.X509Certificates.X509VerificationFlags]::NoFlag
-  $chain.ChainPolicy.ApplicationPolicy.Add((New-Object System.Security.Cryptography.Oid('1.3.6.1.5.5.7.3.3')))
+  $chain.ChainPolicy.ApplicationPolicy.Add(([System.Security.Cryptography.Oid]::new('1.3.6.1.5.5.7.3.3')))
   $built=$chain.Build($cert)
   $statuses=@($chain.ChainStatus|Where-Object {$_.Status -ne [System.Security.Cryptography.X509Certificates.X509ChainStatusFlags]::NoError})
   if(-not $built -or $statuses.Count -gt 0 -or $chain.ChainElements.Count -lt 2){
