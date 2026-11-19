@@ -1,0 +1,78 @@
+name: ARCH v0.2.x Azure Artifact Signing operator negative-only
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-azure-artifact-signing-operator-kit-20261119
+    paths:
+      - scripts/arch_v02x_azure_artifact_signing_operator.ps1
+      - scripts/verify_arch_v02x_azure_signing_operator_negative_ci.mjs
+      - docs/engineering/ARCH_V02X_AZURE_ARTIFACT_SIGNING_OPERATOR_RUNBOOK_v0.1.md
+      - .github/workflows/arch-v02x-azure-signing-operator-negative-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-win11-x64-authenticode-admission-20261119
+permissions:
+  contents: read
+jobs:
+  windows-2022-signing-default-deny:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 35
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Read-only scope, fixed parent and Windows PS5.1 syntax
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $parent='eff4112d3a2c6329fd01a45ba0289405b87dd6da'
+          git merge-base --is-ancestor $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_FROZEN_PARENT'}
+          $allow=@(
+            'scripts/arch_v02x_azure_artifact_signing_operator.ps1',
+            'scripts/verify_arch_v02x_azure_signing_operator_negative_ci.mjs',
+            'docs/engineering/ARCH_V02X_AZURE_ARTIFACT_SIGNING_OPERATOR_RUNBOOK_v0.1.md',
+            '.github/workflows/arch-v02x-azure-signing-operator-negative-20261119.yml'
+          )
+          $changed=@(git diff --name-only $parent HEAD)
+          if($changed.Count -ne 4){throw ('SCOPE_CHANGED:'+ $changed.Count)}
+          foreach($file in $changed){if($file -notin $allow){throw ('UNAUTHORIZED_DIFF:'+ $file)}}
+          git diff --check $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'GIT_DIFF_CHECK_FAILED'}
+          $tokens=$null
+          $errors=$null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path -LiteralPath './scripts/arch_v02x_azure_artifact_signing_operator.ps1').Path,
+            [ref]$tokens,[ref]$errors) | Out-Null
+          if($errors.Count -ne 0){throw ('SIGNING_OPERATOR_POWERSHELL_SYNTAX_FAILED:'+ ($errors|Out-String))}
+          node --check ./scripts/verify_arch_v02x_azure_signing_operator_negative_ci.mjs
+          if($LASTEXITCODE -ne 0){throw 'JS_NEGATIVE_TEST_SYNTAX_FAILED'}
+          Write-Output ('ARCH_V02X_AZURE_SIGNING_TESTED_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Legacy Guard verification
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_GUARD_VERIFICATION_FAILED'}
+      - name: Signing operator remains inert without actual Azure authority
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          node scripts/verify_arch_v02x_azure_signing_operator_negative_ci.mjs
+          if($LASTEXITCODE -ne 0){throw 'AZURE_OPERATOR_NEGATIVE_CASES_FAILED'}
+          $dirty=@(git status --porcelain=v1 --untracked-files=normal)
+          if($LASTEXITCODE -ne 0 -or @($dirty|Where-Object {$_ -ne ''}).Count -gt 0){
+            throw 'NEGATIVE_TEST_MUTATED_REPO'
+          }
+          Write-Output 'AZURE_SIGNING_ACTUAL_OPERATION=NOT_RUN'
+          Write-Output 'SIGNED_NATIVE_BINARY=NOT_CREATED'
+          Write-Output 'WINDOWS_11_X64_SIGNED_CLIENT_BUNDLE=NOT_RUN'
+          Write-Output 'NO_AZURE_CREDENTIALS_NO_MAIN_MERGE_NO_RELEASE'
