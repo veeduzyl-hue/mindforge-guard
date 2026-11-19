@@ -1,0 +1,157 @@
+name: ARCH v0.2.x M5 P1 independent first-user kit (NOT human test)
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-m5-p1-independent-first-user-kit-20261120
+    paths:
+      - docs/validation/M5_P1_INDEPENDENT_TESTER_GUIDE_v0.2.md
+      - docs/validation/M5_P1_OBSERVATION_FORM_v0.2.md
+      - docs/validation/M5_P1_OBSERVER_AND_ACCEPTANCE_PROTOCOL_v0.2.md
+      - docs/validation/M5_P1_PRIVATE_INVITATION_v0.2.md
+      - scripts/build_arch_v02x_m5_p1_independent_first_user_kit.mjs
+      - .github/workflows/arch-v02x-m5-p1-independent-kit-20261120.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-first-report-p1-legibility-20261120
+permissions:
+  contents: read
+jobs:
+  package-m5-independent-invitation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout kit source (no Guard product changes)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: kit-builder
+          persist-credentials: false
+          fetch-depth: 45
+      - name: Checkout exactly P1 readability source for uncoached test
+        uses: actions/checkout@v4
+        with:
+          ref: 2a5365ea422b6dfb7f3d7bba81138e1e53862be1
+          path: source-fixed
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fixed source, strict six-path candidate and syntax checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd kit-builder
+          parent=2a5365ea422b6dfb7f3d7bba81138e1e53862be1
+          git merge-base --is-ancestor "$parent" HEAD
+          actual="$(git diff --name-only "$parent" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/arch-v02x-m5-p1-independent-kit-20261120.yml' \
+            'docs/validation/M5_P1_INDEPENDENT_TESTER_GUIDE_v0.2.md' \
+            'docs/validation/M5_P1_OBSERVATION_FORM_v0.2.md' \
+            'docs/validation/M5_P1_OBSERVER_AND_ACCEPTANCE_PROTOCOL_v0.2.md' \
+            'docs/validation/M5_P1_PRIVATE_INVITATION_v0.2.md' \
+            'scripts/build_arch_v02x_m5_p1_independent_first_user_kit.mjs')"
+          test "$actual" = "$expected"
+          git diff --check "$parent" HEAD
+          node --check scripts/build_arch_v02x_m5_p1_independent_first_user_kit.mjs
+          test "$(git -C ../source-fixed rev-parse HEAD)" = "$parent"
+          test -z "$(git status --porcelain=v1 --untracked-files=normal)"
+          test -z "$(git -C ../source-fixed status --porcelain=v1 --untracked-files=normal)"
+          echo "M5_KIT_CANDIDATE_SHA=$(git rev-parse HEAD)"
+          echo "M5_FIXED_P1_SOURCE_SHA=$parent"
+      - name: Build separately scoped offline source and reading-only kits
+        shell: bash
+        env:
+          ARCH_V02X_M5_PACK_BUILD_SYNTHETIC_ONLY: '1'
+          ARCH_V02X_M5_BUILDER_ROOT: ${{ github.workspace }}/kit-builder
+          ARCH_V02X_M5_FIXED_SOURCE_ROOT: ${{ github.workspace }}/source-fixed
+        run: |
+          set -euo pipefail
+          node kit-builder/scripts/build_arch_v02x_m5_p1_independent_first_user_kit.mjs
+          echo 'M5_INDEPENDENT_FIRST_USER=NOT_TESTED'
+          echo 'M5_SESSION_CONSENT=NOT_OBTAINED'
+          echo 'M5_READING_KIT=CREATED_SYNTHETIC_ONLY'
+          echo 'M5_WINDOWS_FULL_TRIAL_KIT=CREATED_SYNTHETIC_ONLY'
+          echo 'NO_CUSTOMER_DATA_NO_MAIN_MERGE_NO_RELEASE'
+      - name: Upload reading-only independent user test packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m5-p1-reading-only-first-user-kit
+          path: ${{ runner.temp }}/arch-v02x-m5-p1-output/reading-only-kit/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload independent first-time Windows full-workflow test packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m5-p1-offline-windows-first-user-kit
+          path: ${{ runner.temp }}/arch-v02x-m5-p1-output/full-windows-first-user-kit/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload BUILD receipt only — no individual human results
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m5-p1-kit-build-receipt-no-human-session
+          path: ${{ runner.temp }}/arch-v02x-m5-p1-output/internal-build-receipt/
+          retention-days: 30
+          if-no-files-found: error
+  hosted-windows-bundle-handoff:
+    needs: package-m5-independent-invitation
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Download produced offline Windows first-user test packet
+        uses: actions/download-artifact@v4
+        with:
+          name: arch-v02x-m5-p1-offline-windows-first-user-kit
+          path: ${{ runner.temp }}/arch-v02x-m5-p1-windows-handoff/
+      - name: Read packet hashes, offline clone fixed P1 source, no human claim
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $kit=Join-Path $env:RUNNER_TEMP 'arch-v02x-m5-p1-windows-handoff'
+          $manifest=Get-Content -LiteralPath (Join-Path $kit 'M5_PACKAGE_INDEX.json') -Raw -Encoding UTF8|ConvertFrom-Json
+          if($manifest.fixed_source_head -ne '2a5365ea422b6dfb7f3d7bba81138e1e53862be1' -or
+            $manifest.m5_independent_human_session -ne 'NOT_TESTED' -or
+            $manifest.actual_reviewer_consent -ne 'NOT_OBTAINED' -or
+            $manifest.track -ne 'B_WINDOWS_FIRST_USER_WORKFLOW'){
+            throw 'M5_PACKET_FALSE_HUMAN_RESULT_OR_SOURCE'
+          }
+          $checked=0
+          foreach($f in $manifest.files){
+            $rel=[string]$f.relative_path
+            if($rel -notmatch '^[A-Za-z0-9_./-]+$' -or $rel.StartsWith('/') -or
+              @($rel.Split('/')) -contains '..'){
+              throw 'M5_UNSAFE_ARTIFACT_PATH'
+            }
+            $target=Join-Path $kit ($rel.Replace('/','\'))
+            if(-not (Test-Path -LiteralPath $target -PathType Leaf)){throw 'M5_MISSING_PACKET_MEMBER'}
+            $sha=(Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+            if($sha -ne $f.sha256 -or (Get-Item -LiteralPath $target).Length -ne [int64]$f.bytes){
+              throw ('M5_BAD_PACKAGE_MEMBER:'+ $rel)
+            }
+            $checked++
+          }
+          if($checked -lt 7){throw 'M5_INCOMPLETE_PACKAGE'}
+          $bundle=Join-Path $kit 'source\mindforge-guard-p1-fixed.bundle'
+          $source=Join-Path $env:RUNNER_TEMP 'arch-v02x-m5-p1-offline-source-clone'
+          if(Test-Path -LiteralPath $source){throw 'M5_SOURCE_CLONE_COLLISION'}
+          git clone --quiet $bundle $source
+          if($LASTEXITCODE -ne 0){throw 'M5_OFFLINE_SOURCE_CLONE_FAILED'}
+          $head=(git -C $source rev-parse HEAD).Trim()
+          if($head -ne '2a5365ea422b6dfb7f3d7bba81138e1e53862be1'){
+            throw 'M5_OFFLINE_SOURCE_SHA_CHANGED'
+          }
+          $env:ARCH_V02X_FIRST_REPORT_DEMO_SYNTHETIC_ONLY='1'
+          Set-Location $source
+          node scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M5_OFFLINE_SOURCE_DEMO_REGRESSION_FAILED'}
+          Write-Output ('M5_PACKET_FILES_CHECKED='+$checked)
+          Write-Output ('M5_FIXED_OFFLINE_SOURCE_SHA='+ $head)
+          Write-Output 'M5_INDEPENDENT_HUMAN_FIRST_USE=NOT_TESTED'
+          Write-Output 'M5_REAL_USER_TIME_COMPREHENSION_CONSENT=NOT_RECORDED'
+          Write-Output 'NO_CUSTOMER_DATA_NO_RELEASE'
