@@ -44,12 +44,29 @@ jobs:
           set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
           npm run verify:v7.0.1
+          before_inventory="$(git status --porcelain=v1 --untracked-files=normal)"
           node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
-          status="$(git status --porcelain=v1 --untracked-files=normal)"
-          if [[ -n "$status" ]]; then
-            echo 'ARCH_M3_WORKTREE_DIRTY_AFTER_SUITE'
-            printf '%s\n' "$status"
+          after_inventory="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$before_inventory" != "$after_inventory" ]]; then
+            echo 'ARCH_M3_SOURCE_INVENTORY_ADDED_WORKTREE_MUTATION'
+            printf 'before=%q after=%q\n' "$before_inventory" "$after_inventory"
             exit 88
+          fi
+          # npm ci on Linux sets the declared CLI bin file executable.
+          # Accept ONLY a previously observed, byte-identical mode-only drift
+          # caused before this inventory suite ran. Do not hide any other change.
+          if [[ -n "$before_inventory" ]]; then
+            guard_bin='packages/guard/bin/guard.mjs'
+            if [[ "$before_inventory" != " M $guard_bin" ]] ||
+               [[ "$(git ls-files --stage -- "$guard_bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$guard_bin")" != "$(git rev-parse "HEAD:$guard_bin")" ]] ||
+               [[ ! -x "$guard_bin" ]]; then
+              echo 'ARCH_M3_UNEXPECTED_BASELINE_WORKTREE_MUTATION'
+              printf '%s\n' "$before_inventory"
+              exit 89
+            fi
+            echo 'NPM_CI_EXECUTABLE_MODE_ONLY_COMPAT_LIMIT=ACCEPTED_FOR_CI_ONLY'
+            echo 'M3_SOURCE_INVENTORY_NEW_WORKTREE_CHANGES=NONE'
           fi
           echo 'M3_SOURCE_INVENTORY=EXPERIMENTAL_SYNTHETIC_ONLY'
           echo 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
