@@ -1,0 +1,161 @@
+name: ARCH v0.2.x M3 First Report synthetic user path
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-m3-first-report-synthetic-walkthrough-20261119
+    paths:
+      - scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+      - scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+      - docs/engineering/ARCH_V02X_M3_FIRST_REPORT_SYNTHETIC_USER_PATH_v0.1.md
+      - .github/workflows/arch-v02x-m3-first-report-walkthrough-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-m3-review-confirm-synthetic-20261119
+permissions:
+  contents: read
+jobs:
+  linux-synthetic-user-path:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 45
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fixed parent/allowed paths and no modified product runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent='ce1a235aeccebc5df9be7609ac20bc9ed3e059ac'
+          git merge-base --is-ancestor "$parent" HEAD
+          actual="$(git diff --name-only "$parent" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/arch-v02x-m3-first-report-walkthrough-20261119.yml' \
+            'docs/engineering/ARCH_V02X_M3_FIRST_REPORT_SYNTHETIC_USER_PATH_v0.1.md' \
+            'scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs' \
+            'scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs')"
+          test "$actual" = "$expected"
+          git diff --check "$parent" HEAD
+          node --check scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          node --check scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          echo "M3_FIRST_REPORT_TESTED_SHA=$(git rev-parse HEAD)"
+      - name: Previously validated suites plus new complete demo path
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+          node scripts/verify_arch_v02x_m3_discover_draft_synthetic.mjs
+          node scripts/verify_arch_v02x_m3_review_confirm_synthetic.mjs
+          node scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          after="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$before" != "$after" ]]; then
+            echo 'M3_FIRST_REPORT_WORKTREE_MUTATED'
+            printf 'before=%q after=%q\n' "$before" "$after"
+            exit 88
+          fi
+          if [[ -n "$before" ]]; then
+            bin='packages/guard/bin/guard.mjs'
+            if [[ "$before" != " M $bin" ]] ||
+               [[ "$(git ls-files --stage -- "$bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$bin")" != "$(git rev-parse "HEAD:$bin")" ]] ||
+               [[ ! -x "$bin" ]]; then
+              echo 'BASELINE_WORKTREE_MUTATION_UNATTRIBUTED'
+              exit 89
+            fi
+            echo 'NPM_ONLY_EXECUTABLE_BIT_MODE_DRIFT=BYTE_IDENTICAL'
+          fi
+          echo 'M3_SYNTHETIC_DEMO_USER_PATH=TESTED_NO_PUBLIC_ADMISSION'
+          echo 'M4_ORIGINAL_62=NOT_RUN; M5_REAL_HUMAN=NOT_TESTED'
+          echo 'SIGNED_ADDON=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
+      - name: Produce downloadable synthetic First Report example (CI choices only, NOT human)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ARCH_V02X_FIRST_REPORT_DEMO_SYNTHETIC_ONLY=1
+          demo="$(node -e 'const os=require("os");const p=require("path");const c=require("crypto");process.stdout.write(p.join(os.tmpdir(),"guard-v02x-synthetic-"+c.randomUUID().replaceAll("-","")))')"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode prepare --workspace "$demo"
+          # CI deliberately synthesizes all eight choices. This is NOT human review.
+          node -e 'const fs=require("fs");const p=require("path");const file=p.join(process.argv[1],"mapping-decisions.synthetic.json");const v=JSON.parse(fs.readFileSync(file,"utf8"));for(const row of v.decisions){row.decision="confirm";row.basis="source_reviewed";row.notes=["synthetic_checked_structure"];}fs.writeFileSync(file,JSON.stringify(v,null,2)+"\n");' "$demo"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode complete --workspace "$demo"
+          node scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode status --workspace "$demo"
+          out="$RUNNER_TEMP/arch-v02x-m3-synthetic-delivery-example"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          cp -R "$demo/delivery/." "$out/"
+          node -e 'const fs=require("fs"),p=require("path");const r=JSON.parse(fs.readFileSync(p.join(process.argv[1],"demo-delivery-manifest.json"),"utf8"));if(r.human_first_user_witnessed!==false||r.delivery_type!=="SYNTHETIC_DEMO_NOT_I1_SECURE_REVIEW_BUNDLE")process.exit(32);' "$out"
+          echo 'CI_SYNTHETIC_AUTOMATED_MAPPING_DECISIONS=NOT_HUMAN_REVIEW'
+          echo 'SYNTHETIC_DELIVERY_ARTIFACT_GENERATED=TRUE'
+          echo 'NOT_I1_SECURE_REVIEW_BUNDLE; NOT_PRODUCTION_ADMITTED'
+      - name: Upload sample-only HTML/Pack demonstration (NO customer data, no .node binaries)
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-synthetic-first-report-html-and-pack
+          path: ${{ runner.temp }}/arch-v02x-m3-synthetic-delivery-example/
+          retention-days: 30
+          if-no-files-found: error
+  windows-server-2022-x64-synthetic-user-path:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 45
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Fixed parent and bounded scope
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $parent='ce1a235aeccebc5df9be7609ac20bc9ed3e059ac'
+          git merge-base --is-ancestor $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'UNEXPECTED_PARENT'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-m3-first-report-walkthrough-20261119.yml',
+            'docs/engineering/ARCH_V02X_M3_FIRST_REPORT_SYNTHETIC_USER_PATH_v0.1.md',
+            'scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs',
+            'scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs'
+          )
+          $changed=@(git diff --name-only $parent HEAD)
+          if($changed.Count -ne 4){throw 'UNEXPECTED_SCOPE_COUNT'}
+          foreach($p in $changed){if($p -notin $allowed){throw ('UNAUTHORIZED_CHANGE:'+ $p)}}
+          git diff --check $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'GIT_DIFF_CHECK_FAILED'}
+          node --check scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'DEMO_SCRIPT_SYNTAX_FAIL'}
+          node --check scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'DEMO_TEST_SCRIPT_SYNTAX_FAIL'}
+          Write-Output ('M3_FIRST_REPORT_TESTED_SHA='+(git rev-parse HEAD).Trim())
+      - name: Fixed M3 predecessor and full synthetic demo workflow
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_V701_FAILED'}
+          $before=@(git status --porcelain=v1 --untracked-files=normal)
+          node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3I_REGRESSION_FAILED'}
+          node scripts/verify_arch_v02x_m3_discover_draft_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3D_REGRESSION_FAILED'}
+          node scripts/verify_arch_v02x_m3_review_confirm_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3RC_REGRESSION_FAILED'}
+          node scripts/verify_arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3_FIRST_REPORT_DEMO_FAILED'}
+          $after=@(git status --porcelain=v1 --untracked-files=normal)
+          if(($before -join [char]10) -ne ($after -join [char]10)){throw 'M3_DEMO_CHANGED_WORKTREE'}
+          if(@($after|Where-Object {$_ -ne ''}).Count -gt 0){throw 'WINDOWS_WORKTREE_DIRTY'}
+          Write-Output 'M3_SYNTHETIC_DEMO_USER_PATH=TESTED_NO_PUBLIC_ADMISSION'
+          Write-Output 'M4_ORIGINAL_62=NOT_RUN; M5_REAL_HUMAN=NOT_TESTED'
+          Write-Output 'SIGNED_ADDON=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
