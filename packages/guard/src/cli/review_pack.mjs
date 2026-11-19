@@ -8,6 +8,7 @@ import {
 } from './review_bundle_writer.mjs';
 
 const USAGE = 'guard review --pack <existing-pack-directory> --out <new-directory> [--format text|json]';
+const SHARE_CAUTION = 'Review Bundle may contain input-derived narratives and identifiers. Inspect locally before sharing; storage sync and retention have not been verified.';
 const NATIVE_STATUS_EXIT = Object.freeze({
   valid_with_no_omissions:0, valid_with_limitations:2,
   invalid_due_to_omissions:3, invalid_due_to_malformed_input:4
@@ -72,11 +73,13 @@ export function handleReviewPackSubcommand(args,{guardVersion='unknown'}={}){
     const external={status:overallStatus,mode:'pack',bundle_dir:result.finalPath,source_basename:ctx.sourceName,
       native_pack_validation_status:validation.validation_status,native_pack_validation_exit_code:validationExit,
       native_report_review_posture:report?.review_posture||'not_generated',native_report_exit_code:report?validationExit:null,
-      deterministic_pack_hash:validation.deterministic_pack_hash,not_approval:true,not_execution_authority:true};
+      deterministic_pack_hash:validation.deterministic_pack_hash,not_approval:true,not_execution_authority:true,
+      share_caution:SHARE_CAUTION};
     const stdout=parsed.format==='json'?JSON.stringify(external,null,2)+'\n':[
       'I-1 Guard Pack Review (candidate)',`Status: ${overallStatus}`,`Bundle: ${result.finalPath}`,
       `Validation: ${validation.validation_status}`,`Report posture: ${external.native_report_review_posture}`,
-      'This is review evidence only, not approval, certification, or execution permission.',''
+      'This is review evidence only, not approval, certification, or execution permission.',
+      SHARE_CAUTION,''
     ].join('\n');
     return {exitCode:validationExit,stdout};
   }catch(e){

@@ -1,0 +1,74 @@
+name: ARCH v0.2.x Pack Review bounded synthetic admission
+on:
+  pull_request:
+    branches:
+      - experiment/i1-win-default-fail-closed-20261112
+    paths:
+      - packages/guard/src/cli/review_pack.mjs
+      - scripts/verify_arch_v02x_pack_share_disclosure.mjs
+      - .github/workflows/arch-v02x-pack-review-bounded-20261119.yml
+  push:
+    branches:
+      - experiment/arch-v02x-pack-share-warning-20261119
+    paths:
+      - packages/guard/src/cli/review_pack.mjs
+      - scripts/verify_arch_v02x_pack_share_disclosure.mjs
+      - .github/workflows/arch-v02x-pack-review-bounded-20261119.yml
+permissions:
+  contents: read
+jobs:
+  linux-synthetic-pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify fixed source HEAD
+        shell: bash
+        run: |
+          git rev-parse HEAD
+          git status --porcelain=v1
+          git diff --check
+      - name: Full baseline verification + scoped POSIX Pack tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify
+          npm run verify:v7.0.1
+          node scripts/verify_i1_pack_review.mjs
+          node scripts/verify_arch_v02x_pack_share_disclosure.mjs
+  windows-default-deny:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify fixed source HEAD
+        shell: pwsh
+        run: |
+          git rev-parse HEAD
+          git status --porcelain=v1
+          git diff --check
+      - name: Full baseline verification + Windows synthetic default-deny (not a Win Bundle success test)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          npm.cmd run verify
+          if ($LASTEXITCODE -ne 0) { throw 'BASE_VERIFY_FAILED' }
+          npm.cmd run verify:v7.0.1
+          if ($LASTEXITCODE -ne 0) { throw 'V701_VERIFY_FAILED' }
+          node scripts/verify_arch_v02x_pack_share_disclosure.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PACK_DEFAULT_DENY_TEST_FAILED' }
+          Write-Output 'I1_WINDOWS_LEGACY_POSITIVE_SUITE=NOT_RUN_UNDER_DEFAULT_DENY'
+          Write-Output 'WINDOWS_CLIENT_PRODUCT_ADMISSION=HOLD'
