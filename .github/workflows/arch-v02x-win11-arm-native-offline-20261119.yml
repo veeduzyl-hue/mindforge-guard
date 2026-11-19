@@ -16,6 +16,7 @@ on:
       - .github/workflows/arch-v02x-win11-arm-native-offline-20261119.yml
 permissions:
   contents: read
+# Fixed-source rerun after Windows post-process native sidecar cleanup correction.
 jobs:
   win11-arm64-native:
     runs-on: windows-11-vs2026-arm
