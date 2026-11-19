@@ -113,11 +113,30 @@ try{
  }
  $target=Join-Path $work 'refused-bundle'
  $stderr=Join-Path $work 'expected-deny-stderr.txt'
- $dummy=(& node.exe $cli review --pack $sampleCopy --out $target --format json 2> $stderr)
- $denyExit=$LASTEXITCODE
+ # Windows PowerShell 5.1 treats expected native stderr as an ErrorRecord
+ # under ErrorActionPreference=Stop. Observe the child exit and both streams
+ # separately; never weaken or ignore the Guard failure semantics.
+ $psi=New-Object System.Diagnostics.ProcessStartInfo
+ $psi.FileName=(Get-Command node.exe).Source
+ $psi.Arguments=('"'+$cli+'" review --pack "'+$sampleCopy+'" --out "'+$target+'" --format json')
+ $psi.UseShellExecute=$false
+ $psi.RedirectStandardOutput=$true
+ $psi.RedirectStandardError=$true
+ $psi.CreateNoWindow=$true
+ $proc=[System.Diagnostics.Process]::Start($psi)
+ if(-not $proc){throw 'DEFAULT_DENY_CHILD_NOT_STARTED'}
+ $diagnostic=$proc.StandardError.ReadToEnd()
+ $unexpectedStdout=$proc.StandardOutput.ReadToEnd()
+ if(-not $proc.WaitForExit(90000)){
+   try{$proc.Kill()}catch{}
+   throw 'DEFAULT_DENY_CHILD_TIMEOUT'
+ }
+ $denyExit=$proc.ExitCode
+ [System.IO.File]::WriteAllText($stderr,$diagnostic,[System.Text.UTF8Encoding]::new($false))
+ $proc.Dispose()
  if($denyExit -ne 30 -or (Test-Path -LiteralPath $target)){throw 'WINDOWS_DEFAULT_DENY_INVARIANT_FAILED'}
- $diagnostic=Get-Content -LiteralPath $stderr -Raw
  if($diagnostic -notmatch 'output_error'){throw 'EXPECTED_DENY_DIAGNOSTIC_MISSING'}
+ if($unexpectedStdout){throw 'UNEXPECTED_SUCCESS_STDOUT_ON_DEFAULT_DENY'}
  $partial=@(Get-ChildItem -LiteralPath $work -Force | Where-Object {$_.Name -like '.guard-i1-partial-*'})
  if($partial.Count -gt 0){throw 'DEFAULT_DENY_LEFT_PARTIAL'}
  $after=(Get-FileHash -LiteralPath (Join-Path $sampleCopy 'manifest.json') -Algorithm SHA256).Hash
