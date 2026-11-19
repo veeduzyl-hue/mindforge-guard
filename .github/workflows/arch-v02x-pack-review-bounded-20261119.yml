@@ -1,5 +1,12 @@
 name: ARCH v0.2.x Pack Review bounded synthetic admission
 on:
+  pull_request:
+    branches:
+      - experiment/i1-win-default-fail-closed-20261112
+    paths:
+      - packages/guard/src/cli/review_pack.mjs
+      - scripts/verify_arch_v02x_pack_share_disclosure.mjs
+      - .github/workflows/arch-v02x-pack-review-bounded-20261119.yml
   push:
     branches:
       - experiment/arch-v02x-pack-share-warning-20261119
