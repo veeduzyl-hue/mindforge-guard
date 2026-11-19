@@ -1,0 +1,126 @@
+name: ARCH v0.2.x M3 Source Inventory synthetic bounded
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-m3-inventory-synthetic-20261119
+    paths:
+      - scripts/arch_v02x_m3_source_inventory_synthetic.mjs
+      - scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+      - docs/engineering/ARCH_V02X_M3_SYNTHETIC_SOURCE_INVENTORY_v0.1.md
+      - .github/workflows/arch-v02x-m3-inventory-synthetic-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-win-x64-desktop-admission-prep-20261119
+permissions:
+  contents: read
+jobs:
+  linux-m3-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 40
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Frozen source identity and four-file-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent='adb43e60a71729c5fab4ac8e1804804bc8d10038'
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git diff --name-only "$parent" HEAD | wc -l)" -eq 4
+          git diff --check "$parent" HEAD
+          git status --porcelain=v1
+          git rev-parse HEAD
+          node --check scripts/arch_v02x_m3_source_inventory_synthetic.mjs
+          node --check scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+      - name: Existing First Report compatibility and synthetic inventory security suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before_inventory="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+          after_inventory="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$before_inventory" != "$after_inventory" ]]; then
+            echo 'ARCH_M3_SOURCE_INVENTORY_ADDED_WORKTREE_MUTATION'
+            printf 'before=%q after=%q\n' "$before_inventory" "$after_inventory"
+            exit 88
+          fi
+          # npm ci on Linux sets the declared CLI bin file executable.
+          # Accept ONLY a previously observed, byte-identical mode-only drift
+          # caused before this inventory suite ran. Do not hide any other change.
+          if [[ -n "$before_inventory" ]]; then
+            guard_bin='packages/guard/bin/guard.mjs'
+            if [[ "$before_inventory" != " M $guard_bin" ]] ||
+               [[ "$(git ls-files --stage -- "$guard_bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$guard_bin")" != "$(git rev-parse "HEAD:$guard_bin")" ]] ||
+               [[ ! -x "$guard_bin" ]]; then
+              echo 'ARCH_M3_UNEXPECTED_BASELINE_WORKTREE_MUTATION'
+              printf '%s\n' "$before_inventory"
+              exit 89
+            fi
+            echo 'NPM_CI_EXECUTABLE_MODE_ONLY_COMPAT_LIMIT=ACCEPTED_FOR_CI_ONLY'
+            echo 'M3_SOURCE_INVENTORY_NEW_WORKTREE_CHANGES=NONE'
+          fi
+          echo 'M3_SOURCE_INVENTORY=EXPERIMENTAL_SYNTHETIC_ONLY'
+          echo 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
+          echo 'SIGNING=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
+  windows-x64-m3-inventory:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 40
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Frozen source identity and limited paths
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $parent='adb43e60a71729c5fab4ac8e1804804bc8d10038'
+          git merge-base --is-ancestor $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_FROZEN_PARENT'}
+          $allowed=@(
+            'scripts/arch_v02x_m3_source_inventory_synthetic.mjs',
+            'scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs',
+            'docs/engineering/ARCH_V02X_M3_SYNTHETIC_SOURCE_INVENTORY_v0.1.md',
+            '.github/workflows/arch-v02x-m3-inventory-synthetic-20261119.yml'
+          )
+          $changed=@(git diff --name-only $parent HEAD)
+          if($changed.Count -ne 4){throw 'UNAUTHORIZED_SCOPE_COUNT'}
+          foreach($f in $changed){if($f -notin $allowed){throw ('OUT_OF_SCOPE_CHANGE:'+ $f)}}
+          git diff --check $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check scripts/arch_v02x_m3_source_inventory_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'INVENTORY_JS_PARSE_FAILURE'}
+          node --check scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'INVENTORY_TEST_JS_PARSE_FAILURE'}
+          Write-Output ('ARCH_M3_INVENTORY_TESTED_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Prior Guard baseline and M3 experimental negative/positive suite
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'V701_VERIFY_FAILED'}
+          node scripts/verify_arch_v02x_m3_source_inventory_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'M3_INVENTORY_SYNTHETIC_TESTS_FAILED'}
+          $dirty=@(git status --porcelain=v1 --untracked-files=normal)
+          if($LASTEXITCODE -ne 0 -or @($dirty|Where-Object {$_ -ne ''}).Count -gt 0){
+            throw 'INVENTORY_TEST_MUTATED_REPO'
+          }
+          Write-Output 'M3_SOURCE_INVENTORY=EXPERIMENTAL_SYNTHETIC_ONLY'
+          Write-Output 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
+          Write-Output 'SIGNED_ADDON=DEFERRED; NO_MAIN_MERGE; NO_RELEASE'
