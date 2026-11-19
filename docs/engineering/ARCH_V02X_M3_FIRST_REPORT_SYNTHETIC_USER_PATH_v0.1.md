@@ -75,3 +75,44 @@ The full M3 9-stage contract is NOT yet implemented as a general product. No sou
 An Owner can evaluate whether the whole demonstration is understandable using its HTML report and safe tutorial. To offer it to an **external first-time usability tester**, first review the exact source and the generated local demo deliverables, then supply a controlled, easy-to-launch package with explicit access boundaries. The tester should not need to handle actual corporate evidence or install a native module. A true **M5 Human First-User** requires a real uncoached session and separately recorded feedback; running these automated tests cannot substitute for it.
 
 Stop: Draft PR only. `NO MAIN MERGE`, `NO RELEASE`, `NO CUSTOMER DATA`, `NO_SIGNED_ADDON`, original M4 `NOT RUN`, M5 `NOT TESTED`, OR-01..05, T2/S04/G03/Sebbi states unchanged.
+
+## 6. 中文快速上手：Windows 普通用户（只用合成资料）
+
+**只针对固定 HR 合成样例。** 这不是 Guard 已发布的新功能。不可放入任何真实客户文件、个人信息或密钥。请在独立固定提交的实验分支、普通权限 PowerShell 下运行，确认 `git status --porcelain` 为空。
+
+**第一步 — 准备演示工作区**
+
+```powershell
+$env:ARCH_V02X_FIRST_REPORT_DEMO_SYNTHETIC_ONLY = '1'
+$demo = Join-Path $env:TEMP ('guard-v02x-synthetic-' + [guid]::NewGuid().ToString('N'))
+node .\scripts\arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode prepare --workspace $demo
+notepad (Join-Path $demo 'START_HERE.txt')
+notepad (Join-Path $demo 'mapping-review.synthetic.json')
+notepad (Join-Path $demo 'mapping-decisions.synthetic.json')
+explorer.exe (Join-Path $demo 'synthetic-input-pack')
+```
+
+**第二步 — 逐项核对八个候选映射。** 审阅文件中的 `mapping_item_id`、`source_id`、`source_locator`、`target_locator` 和 `loss_notes` 说明建议的来源和位置。查看旁边 `synthetic-input-pack` 中相应的合成 JSON/YAML 内容。不要把 Owner/工具许可等示例文本当成真实授权。
+
+决策文件的八项初始值全部是 `defer`（暂缓）。只有实际检查了对应的**合成**字段位置，才可逐项将 `decision` 改为 `confirm`，并将 `basis` 改为 `source_reviewed`。不要全局替换所有项目为确认。可以维持 `defer` 或选择 `reject`，但本演示完整交付路径要求八项全部逐项确认，否则会失败关闭；这不是业务审批失败。
+
+示例决策行：
+
+```json
+{"mapping_item_id":"mapitem_001","decision":"confirm","basis":"source_reviewed","notes":["synthetic_checked_structure"]}
+```
+
+**第三步 — 执行已核对的合成报告路径：**
+
+```powershell
+node .\scripts\arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode complete --workspace $demo
+node .\scripts\arch_v02x_m3_first_report_walkthrough_synthetic.mjs --mode status --workspace $demo
+Invoke-Item (Join-Path $demo 'delivery\report.html')
+notepad (Join-Path $demo 'delivery\DELIVERY-READ-ME.txt')
+```
+
+只有出现 `SYNTHETIC_DEMO_DELIVERY_CREATED` 才打开交付文件夹。HTML 来源于 Guard 真实的原生 Pack Validate、Single-Agent Preview 和报告渲染命令，但数据仍然只有固定合成样例，**不是正式独立验证、客户可用的安全 Bundle 或发布版本**。
+
+**遇到 BLOCKED：** 记录 `reason`，不要强行覆盖或删除原文件。程序不自动清除 `.partial-synthetic-delivery-*`；只有确认新建目录纯属自己的合成实验工作区后才可人工决定如何处理。重试建议使用全新的 `$demo`。
+
+**证据边界：** `M4_ORIGINAL_62=NOT_RUN`、`M5_REAL_HUMAN_FIRST_USER=NOT_TESTED`、身份/组织权限未验证、正式签名和 Native Addon 仍暂缓。本流程在 Windows Server CI 通过不等于已经验证普通用户的 Windows 11 本机体验。
