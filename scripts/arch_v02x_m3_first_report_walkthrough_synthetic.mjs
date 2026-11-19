@@ -74,7 +74,14 @@ function isOwnWorkspace(workspace){
 function verifyMarker(workspace){
  isOwnWorkspace(workspace);
  const st=fs.lstatSync(workspace);
- if(!st.isDirectory()||st.isSymbolicLink()||fs.realpathSync(workspace)!==workspace)
+ const actualReal=fs.realpathSync(workspace);
+ const expectedReal=path.join(fs.realpathSync(path.dirname(workspace)),path.basename(workspace));
+ // Windows often exposes the same non-reparse TEMP directory via 8.3/long
+ // path aliases. Compare canonical directory identities, not caller spelling.
+ const sameReal=process.platform==='win32'
+   ?actualReal.toLowerCase()===expectedReal.toLowerCase()
+   :actualReal===expectedReal;
+ if(!st.isDirectory()||st.isSymbolicLink()||!sameReal)
    fail('UNSAFE_WORKSPACE_ROOT');
  for(const [name,expected] of [
    [WORK_MARKER,WORK_MARKER_VALUE],[INVENTORY_MARKER,INVENTORY_MARKER_VALUE]
