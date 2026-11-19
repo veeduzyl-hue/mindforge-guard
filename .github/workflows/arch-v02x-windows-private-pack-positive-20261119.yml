@@ -1,0 +1,96 @@
+name: ARCH v0.2.x Windows native private Pack positive synthetic
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-windows-positive-bundle-20261119
+    paths:
+      - scripts/verify_arch_v02x_windows_private_pack_positive.mjs
+      - .github/workflows/arch-v02x-windows-private-pack-positive-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-pack-share-warning-20261119
+    paths:
+      - scripts/verify_arch_v02x_windows_private_pack_positive.mjs
+      - .github/workflows/arch-v02x-windows-private-pack-positive-20261119.yml
+permissions:
+  contents: read
+jobs:
+  win2022-native-positive:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 35
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fixed parent, no Guard product changes, test source identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='73941378226489fd8a2bf7af2d3a7365b389639a'
+          git merge-base --is-ancestor $base HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'ARCH_FROZEN_PARENT_NOT_ANCESTOR' }
+          $changed=@(git diff --name-only $base HEAD)
+          $allowed=@(
+            'scripts/verify_arch_v02x_windows_private_pack_positive.mjs',
+            '.github/workflows/arch-v02x-windows-private-pack-positive-20261119.yml'
+          )
+          foreach($file in $changed) {
+            if($file -notin $allowed) { throw ('UNAUTHORIZED_FILE_CHANGED:'+$file) }
+          }
+          if($changed.Count -ne 2) { throw 'WINDOWS_POSITIVE_DIFF_NOT_EXACTLY_TWO_PATHS' }
+          git diff --check $base HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'DIFF_CHECK_FAILED' }
+          $sha=(git rev-parse HEAD).Trim()
+          Write-Output ('ARCH_WINDOWS_TEST_SOURCE_SHA=' + $sha)
+          Write-Output ('ARCH_WINDOWS_FROZEN_PARENT=' + $base)
+      - name: Exact official Node 24 headers and import lib by SHA256
+        shell: pwsh
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          & './experiments/i1-real-writer-win-acl-integration-01/windows_official_node_headers.ps1'
+          if ($LASTEXITCODE -ne 0) { throw 'NODE_HEADER_IDENTITY_CHECK_FAILED' }
+      - name: Build existing synthetic-only N-API8 native private NTFS creator
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-real-writer-win-acl-integration-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Baseline regression and three native Windows positive equivalents
+        shell: pwsh
+        env:
+          ARCH_V02X_WINDOWS_POSITIVE_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'NPM_CI_FAILED' }
+          npm.cmd run verify
+          if ($LASTEXITCODE -ne 0) { throw 'LEGACY_VERIFY_FAILED' }
+          npm.cmd run verify:v7.0.1
+          if ($LASTEXITCODE -ne 0) { throw 'V701_VERIFY_FAILED' }
+          $dir=Join-Path $env:RUNNER_TEMP 'arch-v02x-win-positive'
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          $env:ARCH_V02X_WIN_POSITIVE_RECEIPT=Join-Path $dir 'windows-equivalent-receipt.json'
+          node scripts/verify_arch_v02x_windows_private_pack_positive.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_NATIVE_POSITIVE_EQUIVALENCE_FAILED' }
+          Copy-Item 'experiments/i1-real-writer-win-acl-integration-01/build-receipt.json' (Join-Path $dir 'native-build-receipt.json')
+          (git rev-parse HEAD) | Set-Content -LiteralPath (Join-Path $dir 'exact-tested-head.txt') -Encoding ascii
+          Write-Output 'ORIGINAL_POSIX_P04_P05_P06_ON_WINDOWS=NOT_TESTED'
+          Write-Output 'WINDOWS_EQUIVALENTS_WP04_WP05_WP06=RUN_IN_SYNTHETIC_NTFS_SCOPE'
+          Write-Output 'WINDOWS10_11_X64_PRODUCT_ADMISSION=HOLD'
+          Write-Output 'NO_MAIN_MERGE_NO_RELEASE'
+      - name: Preserve bounded machine receipts only (no binaries or Pack data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-win2022-native-pack-synthetic-receipts
+          path: ${{ runner.temp }}/arch-v02x-win-positive/
+          retention-days: 30
+          if-no-files-found: warn
