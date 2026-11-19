@@ -1,0 +1,145 @@
+name: ARCH v0.2.x Windows x64 hosted prerequisite and desktop kit
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-win-x64-desktop-admission-prep-20261119
+    paths:
+      - scripts/arch_v02x_win_x64_installed_cli_admission.ps1
+      - scripts/arch_v02x_win_x64_interrupt_child.mjs
+      - scripts/verify_arch_v02x_win_x64_stage_crash_observation.mjs
+      - .github/workflows/arch-v02x-win-x64-admission-prep-20261119.yml
+      - docs/engineering/ARCH_V02X_WIN_X64_DESKTOP_ADMISSION_RUNBOOK_v0.1.md
+  pull_request:
+    branches:
+      - experiment/arch-v02x-win11-arm-native-offline-20261119
+permissions:
+  contents: read
+jobs:
+  windows-server-2022-x64-synthetic:
+    runs-on: windows-2022
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Identity, exact scope and preflight
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='4ba21c5efd59acb54538e6fe702e679acc507673'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'ARCH_X64_FROZEN_PARENT_NOT_ANCESTOR'}
+          $expected=@(
+            'scripts/arch_v02x_win_x64_installed_cli_admission.ps1',
+            'scripts/arch_v02x_win_x64_interrupt_child.mjs',
+            'scripts/verify_arch_v02x_win_x64_stage_crash_observation.mjs',
+            '.github/workflows/arch-v02x-win-x64-admission-prep-20261119.yml',
+            'docs/engineering/ARCH_V02X_WIN_X64_DESKTOP_ADMISSION_RUNBOOK_v0.1.md'
+          )
+          $changed=@(git diff --name-only $base HEAD)
+          if($changed.Count -ne 5){throw 'X64_SCOPE_DIFF_COUNT_MISMATCH'}
+          foreach($f in $changed){if($f -notin $expected){throw ('UNAUTHORIZED_CHANGED_PATH:'+$f)}}
+          $sha=(git rev-parse HEAD).Trim()
+          Write-Output ('ARCH_X64_FIXED_TEST_SOURCE='+$sha)
+          if((node.exe -p 'process.arch').Trim() -ne 'x64'){throw 'X64_NODE_REQUIRED'}
+          $os=Get-CimInstance Win32_OperatingSystem
+          if([int]$os.ProductType -eq 1){throw 'HOSTED_SERVER_TEST_MUST_NOT_BE_DESKTOP'}
+          New-Item -ItemType Directory -Path (Join-Path $env:RUNNER_TEMP 'arch-v02x-x64-receipts') -ErrorAction Stop | Out-Null
+      - name: Actual isolated npm tarball install and default-deny, not desktop acceptance
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $head=(git rev-parse HEAD).Trim()
+          & ./scripts/arch_v02x_win_x64_installed_cli_admission.ps1 -Execute -HostedServerCi -ExpectedHead $head
+          if($LASTEXITCODE -ne 0){throw 'INSTALLED_CLI_TEST_FAILED'}
+          $roots=@(Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Directory -Filter 'arch-v02x-win-x64-installed-*')
+          if($roots.Count -ne 1){throw 'X64_INSTALLED_TEST_RECEIPT_ROOT_NOT_UNIQUE'}
+          Copy-Item -LiteralPath (Join-Path $roots[0].FullName 'receipt.json') -Destination (Join-Path $env:RUNNER_TEMP 'arch-v02x-x64-receipts/installed-cli-server2022.json')
+      - name: Official Node x64 dependency identity
+        shell: powershell
+        env:
+          I1_SPIKE_ALLOW_NODE_OFFICIAL_DOWNLOAD: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          & ./experiments/i1-real-writer-win-acl-integration-01/windows_official_node_headers.ps1
+          if($LASTEXITCODE -ne 0){throw 'OFFICIAL_BUILD_DEPENDENCY_FAILED'}
+      - name: Compile experiment-only NTFS private ACL binary on Server 2022
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-real-writer-win-acl-integration-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Full regressions, native Pack positive, attack refusal and synthetic interrupted stage
+        shell: powershell
+        env:
+          ARCH_V02X_WINDOWS_POSITIVE_SYNTHETIC_ONLY: '1'
+          ARCH_V02X_X64_CRASH_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'V701_VERIFY_FAILED'}
+          npm.cmd run verify
+          if($LASTEXITCODE -ne 0){throw 'BASE_VERIFY_FAILED'}
+          node scripts/verify_arch_v02x_windows_private_pack_positive.mjs
+          if($LASTEXITCODE -ne 0){throw 'X64_BUNDLE_POSITIVE_FAILED'}
+          $env:I1_WIN_INTEGRATION_RECEIPT=Join-Path $env:RUNNER_TEMP 'arch-v02x-x64-receipts/native-writer-attack-server2022.json'
+          node experiments/i1-real-writer-win-acl-integration-01/verify_actual_writer.mjs
+          if($LASTEXITCODE -ne 0){throw 'X64_NATIVE_WRITER_NEGATIVE_FAILED'}
+          node scripts/verify_arch_v02x_win_x64_stage_crash_observation.mjs
+          if($LASTEXITCODE -ne 0){throw 'X64_STAGE_INTERRUPTION_OBSERVATION_FAILED'}
+          Copy-Item -LiteralPath 'experiments/i1-real-writer-win-acl-integration-01/build-receipt.json' -Destination (Join-Path $env:RUNNER_TEMP 'arch-v02x-x64-receipts/native-build-server2022.json')
+          Write-Output 'WIN_SERVER2022_X64_VERIFIED_BOUNDED_SYNTHETIC'
+          Write-Output 'WIN10_WIN11_X64_DESKTOP_NOT_TESTED'
+          Write-Output 'SIGNED_ADDON_DISTRIBUTION_NOT_ESTABLISHED'
+      - name: Upload receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-windows-server-2022-x64-synthetic-receipts
+          path: ${{ runner.temp }}/arch-v02x-x64-receipts/
+          retention-days: 30
+          if-no-files-found: warn
+  windows-server-2025-x64-offline-cli:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Installed tarball on second hosted x64 Server baseline
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $head=(git rev-parse HEAD).Trim()
+          & ./scripts/arch_v02x_win_x64_installed_cli_admission.ps1 -Execute -HostedServerCi -ExpectedHead $head
+          if($LASTEXITCODE -ne 0){throw 'SERVER2025_PACKAGED_INSTALL_FAILED'}
+          $roots=@(Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Directory -Filter 'arch-v02x-win-x64-installed-*')
+          if($roots.Count -ne 1){throw 'INSTALLED_RECEIPT_ROOT_NOT_UNIQUE'}
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-x64-2025-receipts'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          Copy-Item -LiteralPath (Join-Path $roots[0].FullName 'receipt.json') -Destination (Join-Path $out 'installed-cli-server2025.json')
+          Write-Output 'WIN_SERVER2025_X64_OFFLINE_CLI_ONLY'
+          Write-Output 'WIN10_WIN11_X64_DESKTOP_NOT_TESTED'
+      - name: Upload bounded install receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-windows-server-2025-x64-install-receipt
+          path: ${{ runner.temp }}/arch-v02x-x64-2025-receipts/
+          retention-days: 30
+          if-no-files-found: warn
