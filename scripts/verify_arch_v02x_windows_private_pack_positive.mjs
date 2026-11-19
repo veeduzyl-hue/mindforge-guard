@@ -185,7 +185,11 @@ try {
 const failures=cases.filter(x=>x.status==='FAIL');
 const receipt={
   kind:'ARCH_V02X_WIN_NTFS_SYNTHETIC_POSITIVE_EQUIVALENCE',
-  sourceHead:process.env.GITHUB_SHA||'LOCAL_UNPINNED',
+  sourceHead:(()=>{const r=spawnSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8',timeout:10000,windowsHide:true});
+    if(r.error||r.status!==0)throw Error('CHECKOUT_SHA_NOT_READABLE');
+    const sha=r.stdout.trim();assert.match(sha,/^[a-f0-9]{40}$/);return sha;})(),
+  workflowEventSha:process.env.GITHUB_SHA||null,
+  sourceIdentity:'GIT_WORKTREE_HEAD_READBACK',
   originalPosixCaseIds:['AV02-P04','AV02-P05','AV02-P06'],
   windowsEquivalentIds:['AV02-WP04','AV02-WP05','AV02-WP06'],
   platform:process.platform,arch:process.arch,node:process.version,
