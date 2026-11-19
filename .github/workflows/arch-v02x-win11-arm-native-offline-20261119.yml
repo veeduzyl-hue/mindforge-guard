@@ -1,0 +1,132 @@
+name: ARCH v0.2.x Win11 ARM64 real native Pack synthetic and offline identity
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-win11-arm-native-offline-20261119
+    paths:
+      - scripts/arch_v02x_win11_arm_official_build_deps.ps1
+      - scripts/verify_arch_v02x_native_addon_offline_identity.mjs
+      - .github/workflows/arch-v02x-win11-arm-native-offline-20261119.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-windows-positive-bundle-20261119
+    paths:
+      - scripts/arch_v02x_win11_arm_official_build_deps.ps1
+      - scripts/verify_arch_v02x_native_addon_offline_identity.mjs
+      - .github/workflows/arch-v02x-win11-arm-native-offline-20261119.yml
+permissions:
+  contents: read
+jobs:
+  win11-arm64-native:
+    runs-on: windows-11-vs2026-arm
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 30
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: 'arm64'
+      - name: Exact source and true Win11 ARM64 desktop NTFS synthetic scope
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='8c2a895e985dfba65a353a6440207de64225653e'
+          git merge-base --is-ancestor $base HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'WRONG_FROZEN_PARENT' }
+          $allowed=@(
+            'scripts/arch_v02x_win11_arm_official_build_deps.ps1',
+            'scripts/verify_arch_v02x_native_addon_offline_identity.mjs',
+            '.github/workflows/arch-v02x-win11-arm-native-offline-20261119.yml'
+          )
+          $changed=@(git diff --name-only $base HEAD)
+          if($changed.Count -ne 3) { throw 'UNEXPECTED_CHANGED_FILE_COUNT' }
+          foreach($f in $changed){if($f -notin $allowed){throw ('OUT_OF_SCOPE_CHANGE:'+$f)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_WHITESPACE_FAILURE'}
+          $version=(& node.exe -p "process.version").Trim()
+          $platform=(& node.exe -p "process.platform").Trim()
+          $arch=(& node.exe -p "process.arch").Trim()
+          if($platform -ne 'win32' -or $arch -ne 'arm64' -or $version -notmatch '^v24\.[0-9]+\.[0-9]+$'){
+            throw ('NODE_NATIVE_ARCH_INCORRECT:'+ $version + '/' + $platform + '/' + $arch)
+          }
+          $os=Get-CimInstance -ClassName Win32_OperatingSystem
+          if([int]$os.BuildNumber -lt 22000 -or $os.Caption -notmatch 'Windows 11'){
+            throw ('NOT_WINDOWS11_DESKTOP:'+ $os.Caption + '/' + $os.BuildNumber)
+          }
+          $root=([System.IO.Path]::GetPathRoot($env:RUNNER_TEMP))
+          $drive=$root.Substring(0,1)
+          $fileSystem=(Get-Volume -DriveLetter $drive).FileSystem
+          if($fileSystem -ne 'NTFS'){ throw ('NON_NTFS_RUNNER_TEMP_REFUSED:'+ $fileSystem) }
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-win11-arm-evidence'
+          if(Test-Path -LiteralPath $out){throw 'EXISTING_EVIDENCE_ROOT_REFUSED'}
+          New-Item -ItemType Directory -Path $out | Out-Null
+          $receipt=[ordered]@{
+            kind='ARCH_V02X_WINDOWS11_ARM64_HOST_IDENTITY'
+            sourceHead=(git rev-parse HEAD).Trim()
+            osCaption=$os.Caption
+            build=$os.BuildNumber
+            osArchitecture=$os.OSArchitecture
+            node=$version
+            nodeArchitecture=$arch
+            fixtureDriveFilesystem=$fileSystem
+            workload='SYNTHETIC_ONLY'
+            firstUser='NOT_TESTED'
+            windows11x64='NOT_TESTED'
+            windows10x64='NOT_TESTED'
+            productAdmission='HOLD'
+          }
+          $receipt | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $out 'platform.json') -Encoding utf8
+          Write-Output ('ARCH_V02X_WIN11_ARM64_HOST '+($receipt | ConvertTo-Json -Compress -Depth 5))
+      - name: Official Node ARM64 headers and import library checksum validation
+        shell: pwsh
+        env:
+          ARCH_V02X_ARM_CI_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          & './scripts/arch_v02x_win11_arm_official_build_deps.ps1'
+          if($LASTEXITCODE -ne 0){throw 'OFFICIAL_ARM64_NODE_BUILD_PREREQ_FAILED'}
+      - name: Compile existing experimental native Node-API8 protected DACL addon with ARM64 MSVC
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\18\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=arm64 -host_arch=arm64
+          if errorlevel 1 exit /b 23
+          node experiments\i1-real-writer-win-acl-integration-01\build.mjs
+          if errorlevel 1 exit /b 24
+      - name: Legacy Guard regressions, actual protected Bundle, unsigned sidecar negatives
+        shell: pwsh
+        env:
+          ARCH_V02X_ARM_CI_SYNTHETIC_ONLY: '1'
+          ARCH_V02X_WINDOWS_POSITIVE_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'V701_REGRESSION_FAILED'}
+          npm.cmd run verify
+          if($LASTEXITCODE -ne 0){throw 'CURRENT_REGRESSION_FAILED'}
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-win11-arm-evidence'
+          $env:ARCH_V02X_WIN_POSITIVE_RECEIPT=Join-Path $out 'win11-arm-native-bundle-positive.json'
+          node scripts/verify_arch_v02x_windows_private_pack_positive.mjs
+          if($LASTEXITCODE -ne 0){throw 'WINDOWS11_ARM_NATIVE_PACK_FAIL'}
+          $env:ARCH_V02X_ARM_OFFLINE_RECEIPT=Join-Path $out 'win11-arm-unsigned-offline-identity.json'
+          node scripts/verify_arch_v02x_native_addon_offline_identity.mjs
+          if($LASTEXITCODE -ne 0){throw 'ARM_OFFLINE_IDENTITY_NEGATIVES_FAIL'}
+          Copy-Item -LiteralPath 'experiments/i1-real-writer-win-acl-integration-01/build-receipt.json' -Destination (Join-Path $out 'native-build-receipt.json')
+          Copy-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'arch-v02x-win11-arm-native-prereqs/official-native-prerequisites.json') -Destination (Join-Path $out 'official-build-prerequisites.json')
+          Write-Output 'WINDOWS11_ARM64_NATIVE_SYNTHETIC_ONLY'
+          Write-Output 'UNSIGNED_ADDON_INTEGRITY_ONLY_NOT_DISTRIBUTION_APPROVAL'
+          Write-Output 'M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED; WIN10_WIN11_X64=NOT_TESTED'
+          Write-Output 'NO_MAIN_MERGE_NO_RELEASE_NO_CUSTOMER_EVIDENCE'
+      - name: Upload receipts only, no .node binary and no customer Pack
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-win11-arm64-synthetic-native-receipts
+          path: ${{ runner.temp }}/arch-v02x-win11-arm-evidence/
+          retention-days: 30
+          if-no-files-found: warn
