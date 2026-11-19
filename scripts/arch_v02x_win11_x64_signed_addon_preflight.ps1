@@ -33,7 +33,8 @@ function IsNoReparsePath([string]$p){
  $x=Get-Item -LiteralPath $p -Force -ErrorAction Stop
  while($null -ne $x){
   if(($x.Attributes -band [IO.FileAttributes]::ReparsePoint)){return $false}
-  $x=$x.Parent
+  if($x -is [System.IO.FileInfo]){$x=$x.Directory}
+  else{$x=$x.Parent}
  }
  return $true
 }
