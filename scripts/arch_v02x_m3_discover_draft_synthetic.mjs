@@ -6,8 +6,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
-const INVENTORY_CLI=path.resolve('scripts/arch_v02x_m3_source_inventory_synthetic.mjs');
+const SCRIPT_DIR=path.dirname(fileURLToPath(import.meta.url));
+const INVENTORY_CLI=path.join(SCRIPT_DIR,'arch_v02x_m3_source_inventory_synthetic.mjs');
 const MAX_LINES=1024;
 const MAX_EVENTS=64;
 const MAX_OBSERVATIONS=128;
