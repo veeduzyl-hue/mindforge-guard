@@ -10,7 +10,7 @@ import {createRequire} from 'node:module';
 import {spawnSync} from 'node:child_process';
 const require=createRequire(import.meta.url);
 const guard=(reason)=>{throw Error(reason);};
-if(process.platform!=='win32'||process.arch!=='arm64'||process.env.ARCH_V02X_ARM_CI_SYNTHETIC_ONLY!=='1'){
+if(process.platform!=='win32'||process.arch!=='arm64'||process.env.ARCH_V02X_ARM_CI_SYNTHETIC_ONLY!=='1'||process.env.GITHUB_ACTIONS!=='true'){
   guard('ARM64_WINDOWS_GITHUB_SYNTHETIC_ONLY');
 }
 const repo=path.resolve('.');
@@ -29,7 +29,9 @@ assert.equal(br.arch,'arm64');
 assert.equal(br.node,process.version);
 assert.equal(br.productIntegration,false);
 assert.equal(br.experimentalOnly,true);
-const sandbox=fs.mkdtempSync(path.join(os.tmpdir(),'arch-v02x-arm-sidecar-'));
+const runnerTemp=process.env.RUNNER_TEMP;
+assert(runnerTemp&&path.isAbsolute(runnerTemp),'RUNNER_TEMP_ABSOLUTE_REQUIRED');
+const sandbox=fs.mkdtempSync(path.join(runnerTemp,'arch-v02x-arm-sidecar-'));
 const dst=path.join(sandbox,'native_private_acl.node');
 const cases=[];
 const test=(id,title,fn)=>{
@@ -109,8 +111,17 @@ try{
     assert.equal(assessDistribution(forged),'DISTRIBUTION_NOT_ADMITTED');
   });
 }finally{
-  // Disposable and newly-created test-root only; no source cleanup.
-  fs.rmSync(sandbox,{recursive:true,force:true});
+  // Windows locks a loaded native .node until this process exits. Do NOT
+  // misclassify that normal EPERM as an addon integrity or trust failure.
+  // Defer removal to the CI shell AFTER this Node process has terminated.
+  // This pointer can reference ONLY the test's new RUNNER_TEMP child.
+  const cleanupRef=process.env.ARCH_V02X_ARM_SIDECAR_CLEANUP_REF;
+  assert(cleanupRef&&path.isAbsolute(cleanupRef),'ABSOLUTE_CLEANUP_POINTER_REQUIRED');
+  assert(path.dirname(sandbox)===runnerTemp,'SIDECAR_ROOT_NOT_DIRECT_CHILD_OF_RUNNER_TEMP');
+  assert(path.basename(sandbox).startsWith('arch-v02x-arm-sidecar-'),'SIDECAR_PREFIX_UNEXPECTED');
+  assert(path.dirname(cleanupRef).startsWith(runnerTemp),'CLEANUP_POINTER_OUTSIDE_RUNNER_TEMP');
+  fs.writeFileSync(cleanupRef,sandbox+'\n',{flag:'wx'});
+  console.log('ARCH_V02X_ARM_SIDECAR_POST_PROCESS_CLEANUP_REQUIRED');
 }
 const failed=cases.filter(x=>x.status==='FAIL');
 const receipt={kind:'ARCH_V02X_NATIVE_ARM_OFFLINE_IDENTITY_SYNTHETIC',
