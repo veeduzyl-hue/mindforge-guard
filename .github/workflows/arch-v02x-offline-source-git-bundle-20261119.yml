@@ -1,0 +1,103 @@
+name: ARCH v0.2.x offline source Git bundle for Windows local demo
+on:
+  push:
+    branches:
+      - ops/arch-v02x-offline-source-bundle-20261119
+    paths:
+      - .github/workflows/arch-v02x-offline-source-git-bundle-20261119.yml
+permissions:
+  contents: read
+jobs:
+  pin-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact previously tested PR377 source, NOT this transport branch
+        uses: actions/checkout@v4
+        with:
+          ref: b45c8f4b38a3cfe73787657421486f6a7d413cc1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify immutable checkout and build offline git bundle for Windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=b45c8f4b38a3cfe73787657421486f6a7d413cc1
+          test "$(git rev-parse HEAD)" = "$expected"
+          test -z "$(git status --porcelain=v1 --untracked-files=normal)"
+          test -f scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          test -f scripts/arch_v02x_m3_review_confirm_synthetic.mjs
+          test -f docs/engineering/ARCH_V02X_M3_FIRST_REPORT_SYNTHETIC_USER_PATH_v0.1.md
+          node --check scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs
+          node --check scripts/arch_v02x_m3_review_confirm_synthetic.mjs
+          out="$RUNNER_TEMP/arch-v02x-offline-source"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          bundle="$out/mindforge-guard-b45c8f4-offline.bundle"
+          git bundle create "$bundle" HEAD
+          git bundle verify "$bundle"
+          tmp="$RUNNER_TEMP/arch-v02x-verify-offline-clone"
+          test ! -e "$tmp"
+          git clone --quiet "$bundle" "$tmp"
+          test "$(git -C "$tmp" rev-parse HEAD)" = "$expected"
+          test -z "$(git -C "$tmp" status --porcelain=v1 --untracked-files=normal)"
+          node --check "$tmp/scripts/arch_v02x_m3_first_report_walkthrough_synthetic.mjs"
+          test -f "$tmp/examples/single-agent-governance-pack/hr-self-service-agent/manifest.json"
+          hash="$(sha256sum "$bundle" | awk '{print $1}')"
+          printf '%s  %s\n' "$hash" "$(basename "$bundle")" > "$out/SHA256SUMS.txt"
+          cat > "$out/README_OFFLINE_SOURCE_CN.txt" <<'EOF'
+          MindForge Guard v0.2.x M3 演示源码离线恢复包（Git bundle）
+          只包含公开仓库固定提交的 Git 历史与已验证脚本。没有客户数据、Azure 私钥或 Native 签名证书。
+          固定提交（必须逐字节匹配）:
+          b45c8f4b38a3cfe73787657421486f6a7d413cc1
+
+          步骤：
+          1. 在 ChatGPT 下载此 ZIP，右键解压到自己的 Downloads 文件夹。
+          2. 打开普通用户权限 PowerShell，执行以下命令（$bundle 替换成实际解压目录）：
+
+          $bundle = Join-Path $env:USERPROFILE 'Downloads\Guard-v02x-Offline-Source\mindforge-guard-b45c8f4-offline.bundle'
+          $target = Join-Path $env:USERPROFILE 'Documents\Guard-v02x-M3-Demo'
+          if (-not (Test-Path -LiteralPath $bundle)) { throw 'OFFLINE_BUNDLE_NOT_FOUND' }
+          if (Test-Path -LiteralPath $target) { throw 'TARGET_ALREADY_EXISTS_STOP' }
+          $hash = (Get-FileHash -LiteralPath $bundle -Algorithm SHA256).Hash.ToLowerInvariant()
+          # 将 $hash 与同一目录 SHA256SUMS.txt 中的值对照，确认一致。
+          git clone $bundle $target
+          Set-Location $target
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -ne 'b45c8f4b38a3cfe73787657421486f6a7d413cc1') { throw 'WRONG_SOURCE_SHA' }
+          git status --porcelain
+          # 现在才能继续原 M3 演示 prepare / complete。
+
+          3. 参照 docs/engineering/ARCH_V02X_M3_FIRST_REPORT_SYNTHETIC_USER_PATH_v0.1.md。
+          4. 禁止客户资料、真实审批/授权、签名操作、发布、main 合并。
+          EOF
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"arch-v02x-offline-source"
+          b=p/"mindforge-guard-b45c8f4-offline.bundle"
+          obj={"kind":"ARCH_V02X_FIXED_SOURCE_GIT_BUNDLE_TRANSPORT",
+               "source_head":"b45c8f4b38a3cfe73787657421486f6a7d413cc1",
+               "sha256":hashlib.sha256(b.read_bytes()).hexdigest(),
+               "bytes":b.stat().st_size,
+               "verified_offline_clone":True,
+               "contains_fixed_public_repository_history":True,
+               "includes_local_git_commit_identity":True,
+               "client_user_execution":"NOT_TESTED",
+               "customer_data":"NOT_INCLUDED",
+               "production_release":"NOT_AUTHORIZED"}
+          (p/"OFFLINE_SOURCE_TRANSPORT_RECEIPT.json").write_text(json.dumps(obj,indent=2)+"\n",encoding="utf-8")
+          print("ARCH_V02X_OFFLINE_GIT_BUNDLE_RECEIPT",json.dumps(obj))
+          PY
+          echo 'ARCH_V02X_OFFLINE_BUNDLE_SOURCE_VERIFIED=TRUE'
+          echo 'OWNER_LOCAL_WINDOWS_DEMO_EXECUTION=NOT_TESTED'
+          echo 'NO_MAIN_MERGE_NO_RELEASE_NO_CUSTOMER_EVIDENCE'
+      - name: Upload only fixed-public-source Git bundle, digest and readme
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-b45c8f4-offline-source-git-bundle
+          path: ${{ runner.temp }}/arch-v02x-offline-source/
+          retention-days: 30
+          if-no-files-found: error
