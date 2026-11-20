@@ -1,0 +1,99 @@
+name: ARCH v0.2.x M5 P1 one-commit shallow offline candidate (NOT distribution)
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-m5-shallow-offline-checkout-20261120
+    paths:
+      - scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs
+      - docs/security/ARCH_V02X_M5_ONE_COMMIT_SHALLOW_OFFLINE_HANDOFF_v0.1.md
+      - .github/workflows/arch-v02x-m5-one-commit-shallow-offline-20261120.yml
+  pull_request:
+    branches:
+      - security/arch-v02x-m5-git-history-preflight-20261120
+permissions:
+  contents: read
+jobs:
+  linux-single-shallow-commit-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Frozen base and three files, preserving P1 commit identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=f43862f93741a0e377358e820f2f45f8d92f8424
+          git merge-base --is-ancestor "$base" HEAD
+          git cat-file -e '2a5365ea422b6dfb7f3d7bba81138e1e53862be1^{commit}'
+          test "$(git diff --name-only "$base" HEAD | wc -l)" -eq 3
+          git diff --check "$base" HEAD
+          node --check scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs
+          echo "SHALLOW_CANDIDATE_SOURCE_HEAD=$(git rev-parse HEAD)"
+      - name: Legacy Guard and one-commit shallow local-only end-to-end path
+        shell: bash
+        env:
+          ARCH_V02X_M5_SHALLOW_SNAPSHOT_SYNTHETIC_ONLY: '1'
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          node scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs
+          echo 'M5_FULL_HISTORY_KIT_EXTERNAL_DISTRIBUTION=HOLD'
+          echo 'ONE_COMMIT_STILL_HAS_AUTHOR_METADATA; NEVER_CALL_GIT_FREE'
+          echo 'NO_SOURCE_ARTIFACT_UPLOADED; NO_REAL_HUMAN_M5'
+  windows-server2022-single-shallow-commit-synthetic:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Fixed parent and three-file allowlist
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='f43862f93741a0e377358e820f2f45f8d92f8424'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_SOURCE_PARENT'}
+          git cat-file -e '2a5365ea422b6dfb7f3d7bba81138e1e53862be1^{commit}'
+          if($LASTEXITCODE -ne 0){throw 'P1_FIXED_SOURCE_COMMIT_ABSENT'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-m5-one-commit-shallow-offline-20261120.yml',
+            'docs/security/ARCH_V02X_M5_ONE_COMMIT_SHALLOW_OFFLINE_HANDOFF_v0.1.md',
+            'scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs'
+          )
+          $delta=@(git diff --name-only $base HEAD)
+          if($delta.Count -ne 3){throw 'SCOPE_COUNT_MISMATCH'}
+          foreach($path in $delta){if($path -notin $allowed){throw ('UNAUTHORIZED_PATH:'+ $path)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs
+          if($LASTEXITCODE -ne 0){throw 'TEST_SCRIPT_PARSE_FAILED'}
+          Write-Output ('SHALLOW_CANDIDATE_SOURCE_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Native Guard existing checks and local shallow-clone synthetic report
+        shell: pwsh
+        env:
+          ARCH_V02X_M5_SHALLOW_SNAPSHOT_SYNTHETIC_ONLY: '1'
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_GUARD_FAILED'}
+          node scripts/verify_arch_v02x_m5_single_commit_shallow_offline.mjs
+          if($LASTEXITCODE -ne 0){throw 'SHALLOW_OFFLINE_CANDIDATE_TEST_FAILED'}
+          Write-Output 'M5_FULL_HISTORY_KIT_EXTERNAL_DISTRIBUTION=HOLD'
+          Write-Output 'NO_SOURCE_ARTIFACT_UPLOADED; NO_REAL_HUMAN_M5'
