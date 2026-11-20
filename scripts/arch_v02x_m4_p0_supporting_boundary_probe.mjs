@@ -19,7 +19,7 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const safeEnv={
  PATH:process.env.PATH||'',Path:process.env.Path||'',SystemRoot:process.env.SystemRoot||'',
  HOME:path.join(ROOT,'isolated-home'),USERPROFILE:path.join(ROOT,'isolated-home'),
- TEMP:ROOT,TMP:ROOT,
+ TEMP:os.tmpdir(),TMP:os.tmpdir(),
  I1_REAL_WIN_ACL_INTEGRATION_EXPERIMENT:'0',
  I1_REAL_WIN_ACL_SYNTHETIC_ONLY:'0',
  I1_REAL_WIN_ACL_MODULE_PATH:'',
