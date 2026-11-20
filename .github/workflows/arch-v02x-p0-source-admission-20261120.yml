@@ -1,0 +1,115 @@
+name: ARCH v0.2.x P0 synthetic source admission trust gate
+on:
+  push:
+    branches:
+      - experiment/arch-v02x-p0-source-admission-gate-20261120
+    paths:
+      - scripts/arch_v02x_source_admission_gate_synthetic.mjs
+      - scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+      - docs/engineering/ARCH_V02X_P0_SOURCE_ADMISSION_TRUST_BOUNDARY_v0.1.md
+      - .github/workflows/arch-v02x-p0-source-admission-20261120.yml
+  pull_request:
+    branches:
+      - test/arch-v02x-m4-p0-boundary-slice-20261120
+permissions:
+  contents: read
+jobs:
+  linux-synthetic-source-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact source SHA ancestry and four-file allowlist
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent=6b4503478fe58636ca25a06d29ed741a3c9240be
+          git merge-base --is-ancestor "$parent" HEAD
+          wanted="$(printf '%s\n' \
+            '.github/workflows/arch-v02x-p0-source-admission-20261120.yml' \
+            'docs/engineering/ARCH_V02X_P0_SOURCE_ADMISSION_TRUST_BOUNDARY_v0.1.md' \
+            'scripts/arch_v02x_source_admission_gate_synthetic.mjs' \
+            'scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs')"
+          test "$(git diff --name-only "$parent" HEAD)" = "$wanted"
+          git diff --check "$parent" HEAD
+          node --check scripts/arch_v02x_source_admission_gate_synthetic.mjs
+          node --check scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          echo "P0_SOURCE_ADMISSION_TESTED_HEAD=$(git rev-parse HEAD)"
+      - name: Legacy Guard plus source-gate test; M4 original remains NOT RUN
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          after="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$after" != "$before" ]];then echo 'WORKTREE_MUTATION_IN_P0_GATE';exit 88;fi
+          if [[ -n "$before" ]];then
+            bin='packages/guard/bin/guard.mjs'
+            if [[ "$before" != " M $bin" ]] ||
+               [[ "$(git ls-files --stage -- "$bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$bin")" != "$(git rev-parse "HEAD:$bin")" ]] ||
+               [[ ! -x "$bin" ]];then echo 'UNEXPECTED_LEGACY_WORKTREE_MUTATION';exit 89;fi
+          fi
+          echo 'M4_ORIGINAL_62=NOT_RUN'
+          echo 'LEGACY_PACK_PARSER_UNCHANGED; NO_REAL_DATA; NO_MAIN_MERGE'
+  windows-server2022-synthetic-source-admission:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Pin exact tested head and source boundary
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $parent='6b4503478fe58636ca25a06d29ed741a3c9240be'
+          git merge-base --is-ancestor $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_SOURCE_PARENT'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-p0-source-admission-20261120.yml',
+            'docs/engineering/ARCH_V02X_P0_SOURCE_ADMISSION_TRUST_BOUNDARY_v0.1.md',
+            'scripts/arch_v02x_source_admission_gate_synthetic.mjs',
+            'scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs'
+          )
+          $changed=@(git diff --name-only $parent HEAD)
+          if($changed.Count -ne 4){throw 'CHANGED_FILE_COUNT_MISMATCH'}
+          foreach($x in $changed){if($x -notin $allowed){throw ('UNAUTHORIZED_PATH:'+ $x)}}
+          git diff --check $parent HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check scripts/arch_v02x_source_admission_gate_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'GATE_PARSE_FAILED'}
+          node --check scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'PROBE_PARSE_FAILED'}
+          Write-Output ('P0_SOURCE_ADMISSION_TESTED_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Guard legacy regressions plus synthetic source-gate checks
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_GUARD_FAILED'}
+          $before=@(git status --porcelain=v1 --untracked-files=normal)
+          node scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'SOURCE_GATE_SYNTHETIC_NEGATIVES_FAILED'}
+          $after=@(git status --porcelain=v1 --untracked-files=normal)
+          if(($before -join [char]10) -ne ($after -join [char]10)){throw 'WORKTREE_MUTATED'}
+          if(@($after|Where-Object {$_ -ne ''}).Count -ne 0){throw 'WINDOWS_WORKTREE_DIRTY'}
+          Write-Output 'M4_ORIGINAL_62=NOT_RUN'
+          Write-Output 'LEGACY_PACK_PARSER_UNCHANGED; NO_REAL_DATA; NO_MAIN_MERGE'
