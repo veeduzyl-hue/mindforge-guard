@@ -53,11 +53,11 @@ function scanText(s){
 // Classify *structure* privately without disclosing body or object paths. A
 // plausible PEM enclosure is not proof of an actual valid private key.
 function classifyPrivatePemStructure(s){
- const re=/-----BEGIN ((?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY)-----([\\s\\S]{1,24000}?)-----END \\1-----/g;
+ const re=/-----BEGIN ((?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY)-----([\s\S]{1,24000}?)-----END \1-----/g;
  let match;
  while((match=re.exec(s))!==null){
   const body=match[2].trim();
-  const lines=body.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+  const lines=body.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   const base64=lines.join('');
   if(base64.length>=96&&base64.length<=24000&&
      /^[A-Za-z0-9+/]+={0,2}$/.test(base64)&&base64.length%4===0){
