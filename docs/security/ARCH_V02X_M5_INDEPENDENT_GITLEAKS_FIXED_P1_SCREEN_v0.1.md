@@ -54,3 +54,19 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP for Owner review of sanitized findings;** neither a scanner success status nor a zero-finding count authorizes source-history export to an uncoached first user.
+
+## 6. Confidential structural triage of Gitleaks current-tree rule
+
+After the initial fixed-HEAD independent Gitleaks run identified one `private-key` rule finding in P1 history and one in the P1 current tree, an additional bounded in-memory private classifier was added. This operation **does not disclose** the finding's file path, line number, raw bytes, matched value or Git author identity.
+
+The code reads only current-tree Gitleaks finding paths that resolve beneath the separately extracted exact fixed P1 root, rejects symlinks and too-large/untrusted files, checks each file's Git object hash against `P1:<relative path>`, then tries to locate paired PEM private-key delimiters and parse any complete PEM as a private key using Node's `crypto.createPrivateKey`. Results are limited to count categories: distinct resolved paths, source-object verification, paired delimiters, cryptographically parseable private keys, delimiter-only files and unresolved paths. A positive parsing result must be escalated as a potential key incident; a negative result **does not clear** encrypted/unrecognized formats or other secret rules.
+
+This is automated structural triage, **not confidential human signoff or independent key ownership/validity verification**. The independent Gitleaks rule finding remains a `HOLD` unless a suitably authorized reviewer can inspect and classify the underlying material privately and, if necessary, revoke/rotate verified credentials. No external Windows kit distribution, history deletion, main merge or source release is permitted.
+
+```text
+GITLEAKS_RULE_FINDING=RETAINS_HOLD
+CURRENT_TREE_PRIVATE_STRUCTURAL_TRIAGE=BOUNDED_AUTOMATION_ONLY
+PRIVATE_HUMAN_CREDENTIAL_CLASSIFICATION=NOT_PERFORMED
+NO_RAW_PATH_OR_VALUE_EXPORTED
+NO_EXTERNAL_WINDOWS_SOURCE_KIT_HANDOFF
+```
