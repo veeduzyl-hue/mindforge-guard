@@ -58,6 +58,87 @@ function group(report){
  }
  return Object.fromEntries(Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0])));
 }
+// Private bounded structural triage. No report path, fragment, byte, author,
+// line number or key is exported. A parse error does NOT mean "secret-free".
+function triagePrivateKeyPatterns(rows,root,repoRoot){
+ const base=fs.realpathSync(root);
+ const unique=new Set(),stats={
+  gitleaks_private_key_findings:0,
+  distinct_reported_paths_resolved:0,
+  source_object_identity_verified:0,
+  unresolved_or_untrusted_path_count:0,
+  files_with_paired_private_key_delimiters:0,
+  files_with_cryptographically_parseable_private_key:0,
+  files_with_no_paired_delimiters:0
+ };
+ for(const row of rows){
+  if(row.RuleID!=='private-key')continue;
+  stats.gitleaks_private_key_findings++;
+  if(typeof row.File!=='string'||row.File.length>4096){
+   stats.unresolved_or_untrusted_path_count++;continue;
+  }
+  // The Gitleaks dir scanner may use absolute or root-relative file paths.
+  // Never follow the report to a file outside the pinned extracted P1 root.
+  const candidate=path.resolve(base,row.File);
+  if(unique.has(candidate))continue;
+  unique.add(candidate);
+  const rel=path.relative(base,candidate);
+  if(!rel||rel==='..'||rel.startsWith('..'+path.sep)||path.isAbsolute(rel)){
+   stats.unresolved_or_untrusted_path_count++;continue;
+  }
+  try{
+   const st=fs.lstatSync(candidate);
+   if(!st.isFile()||st.isSymbolicLink()||st.size>16*1024*1024){
+    stats.unresolved_or_untrusted_path_count++;continue;
+   }
+   const canonical=fs.realpathSync(candidate);
+   const realRel=path.relative(base,canonical);
+   if(realRel!==rel){
+    stats.unresolved_or_untrusted_path_count++;continue;
+   }
+   stats.distinct_reported_paths_resolved++;
+   const expected=run('git',['rev-parse',P1+':'+rel.split(path.sep).join('/')],repoRoot);
+   const actual=run('git',['hash-object',candidate],repoRoot);
+   if(expected.status!==0||actual.status!==0||expected.stdout.trim()!==actual.stdout.trim()){
+    stats.unresolved_or_untrusted_path_count++;continue;
+   }
+   stats.source_object_identity_verified++;
+   const content=fs.readFileSync(candidate).toString('utf8');
+   const regex=/-----BEGIN ((?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY)-----([\s\S]{0,24000}?)-----END \1-----/g;
+   let foundPair=false,parsed=false,match;
+   while((match=regex.exec(content))!==null){
+    foundPair=true;
+    try{
+      const key=crypto.createPrivateKey({key:match[0],format:'pem'});
+      if(key?.type==='private')parsed=true;
+    }catch{}
+   }
+   if(foundPair)stats.files_with_paired_private_key_delimiters++;
+   else stats.files_with_no_paired_delimiters++;
+   if(parsed)stats.files_with_cryptographically_parseable_private_key++;
+  }catch{
+   stats.unresolved_or_untrusted_path_count++;
+  }
+ }
+ return {
+  scope:'PRIVATE_IN_MEMORY_STRUCTURAL_TRIAGE_ONLY',
+  counts:stats,
+  syntactic_delimiter_absence_does_not_prove_secret_free:true,
+  encrypted_or_unrecognized_private_key_formats_not_ruled_out:true,
+  actual_credential_validity_or_ownership:'NOT_ESTABLISHED',
+  independent_human_classification:'NOT_PERFORMED'
+ };
+}
+// Pure synthetic malformed marker checks; no key generation or sensitive logs.
+{
+ const test='-----BEGIN PRIVATE KEY-----\nSYNTHETIC_NOT_A_PRIVATE_KEY\n-----END PRIVATE KEY-----';
+ let parserRejected=false;
+ try{crypto.createPrivateKey({key:test,format:'pem'})}
+ catch{parserRejected=true}
+ assert(parserRejected);
+ assert(!/-----BEGIN ((?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY)-----/.test('-----BEGIN PUBLIC KEY-----'));
+}
+
 let temp=null,receipt=null;
 try{
  if(process.env.GITHUB_ACTIONS!=='true'||
@@ -112,6 +193,7 @@ try{
  // Files, paths, email, line, RuleID match strings, tokens and report content are
  // never uploaded. Only finite normalized categories/counts from the tool.
  const hCounts=group(all),tCounts=group(seen);
+ const privateTriage=triagePrivateKeyPatterns(seen,tree,checkout);
  receipt={
   kind:'ARCH_V02X_M5_INDEPENDENT_GITLEAKS_FIXED_P1_SCREEN',
   version:'0.1',tool:'gitleaks',tool_version:'8.30.1',
@@ -126,6 +208,7 @@ try{
   current_tree_finding_count:seen.length,
   history_rule_categories:hCounts,
   current_tree_rule_categories:tCounts,
+  current_tree_private_key_structural_triage:privateTriage,
   original_382_first_party_pem_markers:'7_DELIMITER_HITS_0_STRUCTURAL_ENCODED_BLOCKS',
   independent_tool_scope:'RECOGNIZED_GITLEAKS_RULE_PATTERNS_ONLY',
   independent_secret_free_certification:'NOT_ESTABLISHED',
