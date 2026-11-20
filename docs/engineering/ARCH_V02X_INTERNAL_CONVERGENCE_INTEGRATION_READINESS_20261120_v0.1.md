@@ -164,3 +164,54 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP at Owner review of PR #383–#385 and this amended matrix.** No real-data importer authorization, release, verified signer trust, changed Schema/EAK/License, credential exposure ruling or M5 actual human finding is implied.
+
+## 11. Superseding update: Owner-reviewed P1 merger and two P0 follow-ups — 2026-11-20
+
+**This section supersedes the earlier status for PR #385 only.** The earlier 'NO MAIN MERGE' statement records the then-current pre-authorization state; it must not be retroactively overwritten. Other previous candidate and frozen gate statuses remain as recorded unless explicitly updated below.
+
+### Owner-limited PR #385 squash merge
+
+- Owner explicitly reviewed PR #385 and authorized continuation with the previously recommended small CSS-only integration. GitHub PR was marked ready, then **squash-merged** using `expected_head_sha=4b55a20db00bae382845f7d62bfc35c7d29e2340`.
+- GitHub reported merge commit `6701f40fce4307118fca47176e81d6be7d05ef3e`; post-merge main branch and renderer Git blob were independently re-read. Exactly 4 files were merged: report CSS-only renderer, scoped test, design note and CI. No other M3/I1 prototype ancestry was imported.
+- Prior fixed-HEAD Linux/Windows P1 and A2 UX CI all SUCCESS; no new release, npm publish, Native signing, user/data admission or M5 human validation was performed.
+
+### P0 source compatibility decision — PR #386
+
+- New Draft PR #386 from post-merge clean main `6701f40...` contains **one documentation file only** recommending a versioned, explicit opt-in strict Source Admission route **Option B**, while retaining legacy Pack Parser behavior/hash for the existing `--pack` command. This is a proposed Owner contract, not an accepted engineering/public-API change.
+- A pre-existing P1 extraction workflow incorrectly triggered on unrelated main-targeting PRs and refused PR #386 (run #44682625339) because it required the original #385 four-file diff. That is an **unrelated CI scoping failure**, not an M4 Product Source Admission test or a parser regression.
+
+### Independent M5 Gitleaks second-opinion — PR #387
+
+- Independent, official SHA-pinned Gitleaks v8.30.1 scanned fixed M5 P1 SHA `2a5365ea422b6dfb7f3d7bba81138e1e53862be1` in two separate modes. Git ancestry scan reported **one** `private-key` rule finding and fixed current-tree scan reported **one** `private-key` rule finding; they may refer to the same bytes, not two distinct credentials.
+- PR #387 Push #44683202331 and PR #44683246562 both `FAILED/HOLD` **as designed** (exit 31) after scan execution; only sanitized category counts were uploaded. A real private key was NOT confirmed and NO 'false positive' or 'secret free' conclusion was made. Previous PR #382 seven delimiter-only observations remain separate; no raw source path/key values shared.
+- External M5 Windows full Git-history kit remains `HOLD`; HTML-only reading kit is separate Owner-review candidate. An access-controlled confidential manual triage plus developer/legal disclosure review is a distinct next security step.
+
+### CI lifecycle defect after PR #385 — PR #388
+
+- One-file CI fix Draft PR #388 (`c68ed58e8ac96f78de3c142dc155fbccd95f80e9`) restricts the P1 regression workflow to relevant renderer/test/workflow changes and removes obsolete four-file extraction assertions. Linux/Windows P1 regression **7 PASS per platform**, run #44683796148 `SUCCESS`.
+- No P1 renderer source changed in this repair; it is NOT merged, and Owner has NOT authorized a second main merge. Prior PR #386 red CI remains historical evidence and is not reclassified.
+
+### Current exact dispositions
+
+```text
+MAIN_HEAD_AFTER_OWNER_APPROVED_PR385_MERGE=6701f40fce4307118fca47176e81d6be7d05ef3e
+PR385=MERGED_SQUASH_CSS_ONLY
+PR386_SOURCE_ADMISSION_STRATEGY=DRAFT_OWNER_DECISION_PENDING
+PR387_INDEPENDENT_GITLEAKS=EXECUTED_WITH_1_RULE_FINDING_PER_SCOPE
+PR388_CI_SCOPE_REPAIR=VERIFIED_BOUNDED_DRAFT_UNMERGED
+LEGACY_PACK_SOURCE_TRUST_GAPS=OPEN
+M5_FULL_WINDOWS_GIT_HISTORY_HANDOFF=HOLD
+M4_ORIGINAL_62=NOT_RUN
+M5_INDEPENDENT_REAL_HUMAN=NOT_TESTED
+SIGNED_NATIVE_ADDON=DEFERRED
+OR_01_TO_05=UNCHANGED
+T2_FORMAL_CLOSURE=BLOCKED
+S04_FACTUAL_ADMISSION=UNRESOLVED
+G03_IMPLEMENTATION=FROZEN
+SEBBI=HOLD
+NO_ADDITIONAL_MAIN_MERGE
+NO_RELEASE
+NO_CUSTOMER_DATA
+```
+
+**STOP at Owner review for PR #386, #387 and #388.** The PR #385 accepted merge does not confer authority to merge any other PR, publish, certify secret-free history, or ingest customer sources.
