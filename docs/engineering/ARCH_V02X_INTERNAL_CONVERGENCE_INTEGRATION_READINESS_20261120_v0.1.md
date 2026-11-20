@@ -115,3 +115,11 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP for separate Owner decisions.** This addendum does not authorize parser remediation, public distribution, identity/secret adjudication, source-history rewrite, or a product release.
+
+## 9. Final M5 history marker scope refinement (without disclosure)
+
+Following the initial Track C HOLD, final PR #382 source HEAD `f43862f93741a0e377358e820f2f45f8d92f8424` executed the same pinned P1 scan under Linux and Windows. Fixed P1 contains **1,356 unique current-tree blob IDs**. Of the **7** PRIVATE KEY BEGIN marker-bearing reachable blobs, **1** is present in the fixed current tree and **6** occur only in history. **0** of the seven are structurally paired/long Base64 PEM candidate blocks according to the limited detector.
+
+CI #44669102299 (push) and #44669107597 (PR) remain FAILED/HOLD as designed; that is the correct distribution admission signal. These counts are a private-classification prioritization, **not** credential validity proof, secret-free clearance, Git history declassification, or an authorization to publish the full Windows M5 kit. The earlier C source SHA/result remain historical evidence in the prior section.
+
+Final Track A/B/C closeout remains: no main merge, original M4 62 NOT RUN, M5 independent first-user NOT TESTED, external Windows git-bundle handoff HOLD, and source trust P0 remediation separately required.
