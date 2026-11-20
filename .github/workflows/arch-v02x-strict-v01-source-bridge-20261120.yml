@@ -1,0 +1,130 @@
+name: ARCH v0.2.x strict-v0.1 synthetic Source Admission transition
+on:
+  push:
+    branches: [experiment/arch-v02x-strict-source-bridge-synthetic-20261120]
+    paths:
+      - scripts/arch_v02x_source_admission_gate_synthetic.mjs
+      - scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+      - scripts/arch_v02x_strict_source_bridge_synthetic.mjs
+      - scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+      - docs/engineering/ARCH_V02X_STRICT_V01_SYNTHETIC_SOURCE_BRIDGE_v0.1.md
+      - .github/workflows/arch-v02x-strict-v01-source-bridge-20261120.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/arch_v02x_strict_source_bridge_synthetic.mjs
+      - scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+      - .github/workflows/arch-v02x-strict-v01-source-bridge-20261120.yml
+permissions:
+  contents: read
+jobs:
+  linux-strict-v01-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pin post-388 main and only six scoped changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=6cfc5fbc109c9d39ea6c592c121c419f81009051
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git diff --name-only "$base" HEAD | wc -l)" -eq 6
+          test "$(git hash-object scripts/arch_v02x_source_admission_gate_synthetic.mjs)" = '13add114e1a668746b47729995b4062227589abc'
+          test "$(git hash-object scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs)" = '7f9682b9cddc440ff1a3324dd2e6883fd3a6c0e7'
+          git diff --check "$base" HEAD
+          node --check scripts/arch_v02x_source_admission_gate_synthetic.mjs
+          node --check scripts/arch_v02x_strict_source_bridge_synthetic.mjs
+          node --check scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+          echo "STRICT_V01_FIXED_HEAD=$(git rev-parse HEAD)"
+      - name: Legacy regressions and explicit strict synthetic transition tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          node scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+          after="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$after" != "$before" ]]; then
+            echo 'STRICT_SOURCE_TEST_WORKTREE_MUTATED'
+            exit 88
+          fi
+          if [[ -n "$before" ]]; then
+            bin='packages/guard/bin/guard.mjs'
+            if [[ "$before" != " M $bin" ]] ||
+               [[ "$(git ls-files --stage -- "$bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$bin")" != "$(git rev-parse "HEAD:$bin")" ]] ||
+               [[ ! -x "$bin" ]]; then
+                echo 'UNEXPECTED_BASELINE_MUTATION'
+                exit 89
+            fi
+          fi
+          echo 'STRICT_V01=BOUND_ONLY_SYNTHETIC; ORIGINAL_M4_62=NOT_RUN'
+          echo 'NO_PRODUCTION_SOURCE_IMPORT; NO_MAIN_MERGE; NO_RELEASE'
+  windows-server2022-strict-v01-synthetic:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Pin clean main source, exact old gate blobs, six file scope
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='6cfc5fbc109c9d39ea6c592c121c419f81009051'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_MAIN_SOURCE'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-strict-v01-source-bridge-20261120.yml',
+            'docs/engineering/ARCH_V02X_STRICT_V01_SYNTHETIC_SOURCE_BRIDGE_v0.1.md',
+            'scripts/arch_v02x_source_admission_gate_synthetic.mjs',
+            'scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs',
+            'scripts/arch_v02x_strict_source_bridge_synthetic.mjs',
+            'scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs'
+          )
+          $changed=@(git diff --name-only $base HEAD)
+          if($changed.Count -ne 6){throw 'UNEXPECTED_SCOPE_COUNT'}
+          foreach($file in $changed){if($file -notin $allowed){throw ('UNAUTHORIZED_PATH:'+ $file)}}
+          if((git hash-object scripts/arch_v02x_source_admission_gate_synthetic.mjs).Trim() -ne '13add114e1a668746b47729995b4062227589abc'){throw 'ORIGINAL_P0_GATE_CHANGED'}
+          if((git hash-object scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs).Trim() -ne '7f9682b9cddc440ff1a3324dd2e6883fd3a6c0e7'){throw 'ORIGINAL_P0_TEST_CHANGED'}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'GIT_DIFF_FAILED'}
+          node --check scripts/arch_v02x_strict_source_bridge_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'BRIDGE_SYNTAX_FAILED'}
+          node --check scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'BRIDGE_TEST_SYNTAX_FAILED'}
+          Write-Output ('STRICT_V01_FIXED_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Existing Pack and new strict-v0.1 synthetic tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'GUARD_BASELINE_FAILED'}
+          $before=@(git status --porcelain=v1 --untracked-files=normal)
+          node scripts/verify_arch_v02x_p0_source_admission_gate_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'P0_GATE_REGRESSION_FAILED'}
+          node scripts/verify_arch_v02x_strict_source_bridge_synthetic.mjs
+          if($LASTEXITCODE -ne 0){throw 'STRICT_BRIDGE_REGRESSION_FAILED'}
+          $after=@(git status --porcelain=v1 --untracked-files=normal)
+          if(($before -join [char]10) -ne ($after -join [char]10)){throw 'BRIDGE_CHANGED_WORKTREE'}
+          if(@($after|Where-Object {$_ -ne ''}).Count -ne 0){throw 'WINDOWS_WORKTREE_DIRTY'}
+          Write-Output 'STRICT_V01=BOUND_ONLY_SYNTHETIC; ORIGINAL_M4_62=NOT_RUN'
+          Write-Output 'NO_PRODUCTION_SOURCE_IMPORT; NO_MAIN_MERGE; NO_RELEASE'
