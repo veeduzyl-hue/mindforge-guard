@@ -1,0 +1,127 @@
+name: ARCH v0.2.x M4 P0 supporting probes (NOT original M4 62)
+on:
+  push:
+    branches:
+      - test/arch-v02x-m4-p0-boundary-slice-20261120
+    paths:
+      - scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs
+      - docs/validation/ARCH_V02X_M4_P0_APPLICABILITY_AND_SUPPORTING_PROBES_20261120_v0.1.md
+      - .github/workflows/arch-v02x-m4-p0-supporting-probes-20261120.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-m5-p1-independent-first-user-kit-20261120
+permissions:
+  contents: read
+jobs:
+  linux-m4-diagnostic-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Frozen parent and only 3 changed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=2e38044ecb65f4e026f9ffa7441a428277c3f985
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git diff --name-only "$base" HEAD | wc -l)" -eq 3
+          git diff --check "$base" HEAD
+          node --check scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs
+          echo "M4_DIAGNOSTIC_SOURCE_HEAD=$(git rev-parse HEAD)"
+      - name: Legacy Guard verification and sanitized M4 P0 supporting probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          out="$RUNNER_TEMP/arch-v02x-m4-support"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          node scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs | tee "$out/probe-receipt.jsonl"
+          node - "$out/probe-receipt.jsonl" <<'NODE'
+          const fs=require('node:fs');
+          const lines=fs.readFileSync(process.argv[2],'utf8').trim().split('\n');
+          const receipt=JSON.parse(lines.at(-1).slice('ARCH_M4_P0_SUPPORTING_RECEIPT '.length));
+          if(receipt.count!==6||receipt.original_m4_62!=='NOT_RUN'||
+            receipt.original_m4_cases_closed!==0||receipt.execution_errors!==0)process.exit(24);
+          console.log('M4_ORIGINAL_62=NOT_RUN; SUPPORTING_PROBES_DIAGNOSTIC_ONLY');
+          console.log('M4_P0_CURRENT_INTERFACE_GAPS='+receipt.critical_findings_count);
+          console.log('NO_PRODUCT_ADMISSION; NO_MAIN_MERGE; NO_RELEASE');
+          NODE
+      - name: Save sanitized probe receipt only (synthetic, no input files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m4-p0-linux-diagnostic-not-admission
+          path: ${{ runner.temp }}/arch-v02x-m4-support/
+          retention-days: 30
+          if-no-files-found: error
+  windows-server2022-m4-diagnostic-only:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 40
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Fixed parent and syntax
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='2e38044ecb65f4e026f9ffa7441a428277c3f985'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_M4_P0_PARENT'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-m4-p0-supporting-probes-20261120.yml',
+            'docs/validation/ARCH_V02X_M4_P0_APPLICABILITY_AND_SUPPORTING_PROBES_20261120_v0.1.md',
+            'scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs'
+          )
+          $change=@(git diff --name-only $base HEAD)
+          if($change.Count -ne 3){throw 'UNEXPECTED_M4_P0_SCOPE'}
+          foreach($p in $change){if($p -notin $allowed){throw ('OUTSIDE_SCOPE:'+ $p)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs
+          if($LASTEXITCODE -ne 0){throw 'M4_P0_PARSE_FAILED'}
+          Write-Output ('M4_DIAGNOSTIC_SOURCE_HEAD='+(git rev-parse HEAD).Trim())
+      - name: Guard legacy baseline and M4 P0 bounded negative probes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_GUARD_FAILED'}
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-m4-support'
+          if(Test-Path -LiteralPath $out){throw 'EXISTING_PROBE_OUTPUT_REFUSED'}
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $lines=@(node scripts/arch_v02x_m4_p0_supporting_boundary_probe.mjs)
+          if($LASTEXITCODE -ne 0){throw 'M4_P0_PROBE_EXCEPTION'}
+          $lines | Set-Content -LiteralPath (Join-Path $out 'probe-receipt.jsonl') -Encoding UTF8
+          $last=@($lines | Where-Object {$_ -like 'ARCH_M4_P0_SUPPORTING_RECEIPT *'})[-1]
+          $receipt=([string]$last).Substring('ARCH_M4_P0_SUPPORTING_RECEIPT '.Length)|ConvertFrom-Json
+          if($receipt.count -ne 6 -or $receipt.original_m4_62 -ne 'NOT_RUN' -or
+             $receipt.original_m4_cases_closed -ne 0 -or $receipt.execution_errors -ne 0){
+            throw 'M4_DIAGNOSTIC_REPORT_NOT_COMPLETE'
+          }
+          Write-Output 'M4_ORIGINAL_62=NOT_RUN; SUPPORTING_PROBES_DIAGNOSTIC_ONLY'
+          Write-Output ('M4_P0_CURRENT_INTERFACE_GAPS='+$receipt.critical_findings_count)
+          Write-Output 'NO_PRODUCT_ADMISSION; NO_MAIN_MERGE; NO_RELEASE'
+      - name: Save sanitized Windows probe observations only
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m4-p0-win2022-diagnostic-not-admission
+          path: ${{ runner.temp }}/arch-v02x-m4-support/
+          retention-days: 30
+          if-no-files-found: error
