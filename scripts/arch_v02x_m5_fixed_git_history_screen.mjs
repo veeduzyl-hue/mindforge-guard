@@ -49,6 +49,23 @@ function scanText(s){
  }
  return [...found];
 }
+// A literal BEGIN token may appear in safe documentation or unit-test strings.
+// Classify *structure* privately without disclosing body or object paths. A
+// plausible PEM enclosure is not proof of an actual valid private key.
+function classifyPrivatePemStructure(s){
+ const re=/-----BEGIN ((?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY)-----([\\s\\S]{1,24000}?)-----END \\1-----/g;
+ let match;
+ while((match=re.exec(s))!==null){
+  const body=match[2].trim();
+  const lines=body.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+  const base64=lines.join('');
+  if(base64.length>=96&&base64.length<=24000&&
+     /^[A-Za-z0-9+/]+={0,2}$/.test(base64)&&base64.length%4===0){
+    return 'POSSIBLE_ENCODED_PEM_BLOCK';
+  }
+ }
+ return 'DELIMITER_ONLY_OR_NON_BASE64_TEXT';
+}
 function selfCheck(){
  assert(scanText('-----BEGIN PRIVATE KEY-----\nINTERNAL_CANARY_NOT_A_SECRET')
     .includes('private_key_pem'));
@@ -92,6 +109,7 @@ function screen(){
  }
  const findings={};
  let scanned=0,consumed=0,lfsPointers=0;
+ let pemEncodedCandidateBlobs=0,pemDelimiterOnlyBlobs=0;
  if(selected.length){
    const input=selected.map(x=>x.oid).join('\n')+'\n';
    const result=fsGit(['cat-file','--batch'],input,{
@@ -113,6 +131,11 @@ function screen(){
      const encoded=blob.toString('latin1');
      const hits=scanText(encoded);
      for(const id of hits)findings[id]=(findings[id]||0)+1;
+     if(hits.includes('private_key_pem')){
+       const pemClass=classifyPrivatePemStructure(encoded);
+       if(pemClass==='POSSIBLE_ENCODED_PEM_BLOCK')pemEncodedCandidateBlobs++;
+       else pemDelimiterOnlyBlobs++;
+     }
      if(encoded.startsWith('version https://git-lfs.github.com/spec/v1'))
        lfsPointers++;
      pos=end+1;
@@ -152,8 +175,12 @@ function screen(){
   first_party_scanner:true,
   signatures_covered:PATTERNS.map(x=>x.kind),
   findings_by_category:findings,
-  high_confidence_finding_blob_category_count:findings,
-  high_confidence_finding_total: findingCount,
+  private_key_pem_structure_triage:{
+    possible_encoded_pem_block_blobs:pemEncodedCandidateBlobs,
+    delimiter_only_or_non_base64_blobs:pemDelimiterOnlyBlobs,
+    identity_validity_and_revocation:'NOT_VERIFIED'
+  },
+  high_confidence_finding_total:findingCount,
   coverage,disposition,
   current_tree_only:false,
   full_secret_audit:'NOT_ESTABLISHED',
