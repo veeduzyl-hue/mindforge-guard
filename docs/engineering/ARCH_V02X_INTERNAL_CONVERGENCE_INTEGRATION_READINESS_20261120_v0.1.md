@@ -82,3 +82,36 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP at Owner review of this matrix.** Any later change in `main`, a PR head, M4 case state or artifact digest must trigger a new readback, not a silent amendment.
+
+## 8. Executed Sprint v0.1 readback — P0 findings and source identities
+
+**Track A:** Draft PR #380 is this document-only integration matrix; original fixed parent PR #379 head `2e38044ecb65f4e026f9ffa7441a428277c3f985`. Main remains as read `3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c`; PR #379 ahead by 107 commits / 69 paths, including I1 experimental ancestry. **NO DIRECT MAIN MERGE**.
+
+**Track B:** independent Draft PR #381, source `6b4503478fe58636ca25a06d29ed741a3c9240be`. Push CI #44667390315 and PR CI #44667442879 both COMPLETED/SUCCESS in hosted Linux/Windows x64 (this is **diagnostic execution** only). Six scoped supporting probes produced **two P0 GAP findings**: legacy Pack Validate accepted synthetic extra hidden/binary source and reflected it in Pack digest (`REL-05`-related), and accepted a synthetic symlink to an outside-root source with digest changed (`REL-06/BND-07`-related). Four other supporting checks were enforced on the current standalone interfaces. **Zero of 62 original M4 cases closed**: these are explicitly non-equivalent representative probes. Do not generalize a new `guard review --source` path until input confinement, filtering and backward compatibility are separately designed and authorized.
+
+**Track C:** independent Draft PR #382, source `9e5568bb83fbb2fb94e8d954c08bd1a4c3aaaa43`. Push #44668365818 and PR #44668371754 both completed FAILED/HOLD **as intentionally gated**. The fixed M5 P1 Git history `2a5365ea422b6dfb7f3d7bba81138e1e53862be1` contained 1,250 reachable commits and 2,483 unique blobs / 21,710,832 bytes read. Seven distinct blobs contained a PRIVATE KEY BEGIN marker; **zero** formed a structurally paired Base64-encoded PEM block by the constrained private triage. This is **not proof of a valid secret nor an independent no-secrets verdict**. No raw bytes, matches, paths or Git personal metadata were published. Hold Windows full-history external kit pending confidential classification / independent scanner and Owner release approval. Reading-only HTML kit is a separate candidate.
+
+**Version/trust boundary:** CI green in B means probe harness completed, not case PASS; CI red in C means the security gate correctly refused ambiguous history. Both preserve old failures and exact proof boundaries. Any actual PEM/credential found by follow-on private investigation must trigger a separate preservation/rotation/incident Owner decision, not automatic public Git rewrite.
+
+### Recommended next three bounded Owner dispositions
+
+1. `P0-SOURCE-ADMISSION`: request a separate remediation design for Pack parser hidden/binary/symlink-root handling, with compatibility tests on existing valid packs and explicit rejection of untrusted real sources. Do NOT make a silent parser or canonical Schema change.
+2. `P0-M5-DISTRIBUTION`: keep Windows Git-history kit HOLD; commission independent private secret scanner and legal/historical-metadata review, or choose the HTML-only report track before a first independent user.
+3. `P1-NARROW-CANDIDATE-EXTRACTION`: only after gaps are acknowledged, present exact minimal candidate change subsets (for example CSS-only P1) for separate Owner acceptance. Do not retarget/merge #374–#379 aggregate history.
+
+```text
+INTERNAL_CONVERGENCE_SPRINT_V01=A_B_C_EXECUTED_WITH_FINDINGS
+TRACK_A_DOCS_ONLY_REVIEW=COMPLETED_OWNER_ACCEPTANCE_PENDING
+TRACK_B_SUPPORTING_PROBES=6_RUN_2_GAPS_0_ORIGINAL_M4_CLOSED
+TRACK_C_FIXED_P1_HISTORY=2483_BLOBS_SCREENED_7_PEM_MARKERS_0_STRUCTURAL_PEM_BLOCKS
+TRACK_C_WINDOWS_FULL_KIT_EXTERNAL_HANDOFF=HOLD
+M4_ORIGINAL_62=NOT_RUN
+M5_REAL_HUMAN_FIRST_USER=NOT_TESTED
+OR_01_TO_05=UNCHANGED
+PRODUCT_ADMISSION=HOLD
+NO_MAIN_MERGE
+NO_RELEASE
+NO_CUSTOMER_DATA
+```
+
+**STOP for separate Owner decisions.** This addendum does not authorize parser remediation, public distribution, identity/secret adjudication, source-history rewrite, or a product release.
