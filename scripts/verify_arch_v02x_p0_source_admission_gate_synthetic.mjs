@@ -103,34 +103,45 @@ try{
   const outside=path.resolve(os.tmpdir(),'out-of-scope-customer-must-not-be-read');
   reject('SOURCE_OUTSIDE_MARKED_ROOT',outside);
  });
- const link=path.join(PACK,'evidence','external-link.json');
+ const link=path.join(PACK,'evidence','sample-output.json');
  const external=path.join(ROOT,'external-controlled-synthetic.json');
- fs.writeFileSync(external,'SYNTHETIC_ONLY');
+ fs.writeFileSync(external,'{"source":"SYNTHETIC_ONLY"}');
+ const oldSample=fs.readFileSync(link);
+ fs.unlinkSync(link);
  let canLink=true;
  try{fs.symlinkSync(external,link,'file');}
- catch(e){if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code))canLink=false;else throw e}
- if(!canLink)notTested('P0G-11','Symlink fixture unavailable on Windows hosted runner');
- else check('P0G-11','file symlink to outside synthetic root denied',()=>{
-  try{reject('SOURCE_EXTRA_HIDDEN_BINARY_OR_UNRELATED_ENTRY');}
-  finally{fs.unlinkSync(link);}
+ catch(e){
+  if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code))canLink=false;
+  else throw e;
+ }
+ if(!canLink){
+  fs.writeFileSync(link,oldSample);
+  notTested('P0G-11','Windows hosted runner cannot create symlink fixture');
+ }else check('P0G-11','allowlisted evidence file symlink to outside root denied',()=>{
+  try{reject('SOURCE_SYMLINK_OR_REPARSE_DENY');}
+  finally{fs.unlinkSync(link);fs.writeFileSync(link,oldSample);}
  });
- const junction=path.join(PACK,'evidence','nested-junction');
+ const evidence=path.join(PACK,'evidence');
+ const relocated=path.join(ROOT,'relocated-controlled-evidence');
  let canJunction=true;
- try{
-  const d=path.join(ROOT,'outside-synthetic-dir');fs.mkdirSync(d);
-  fs.symlinkSync(d,junction,process.platform==='win32'?'junction':'dir');
- }catch(e){if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code))canJunction=false;else throw e}
- if(!canJunction)notTested('P0G-12','Junction/symlink fixture unavailable');
- else check('P0G-12','directory junction/reparse denied',()=>{
-  try{reject('SOURCE_EXTRA_HIDDEN_BINARY_OR_UNRELATED_ENTRY');}
-  finally{fs.unlinkSync(junction);}
+ fs.renameSync(evidence,relocated);
+ try{fs.symlinkSync(relocated,evidence,process.platform==='win32'?'junction':'dir');}
+ catch(e){
+  if(process.platform==='win32'&&['EPERM','EACCES','UNKNOWN'].includes(e.code))canJunction=false;
+  else throw e;
+ }
+ if(!canJunction){
+  fs.renameSync(relocated,evidence);
+  notTested('P0G-12','Windows junction/symlink fixture unavailable');
+ }else check('P0G-12','allowlisted evidence directory junction/reparse refused',()=>{
+  try{reject('SOURCE_SYMLINK_OR_REPARSE_DENY');}
+  finally{fs.unlinkSync(evidence);fs.renameSync(relocated,evidence);}
  });
- check('P0G-13','hardlink duplicate source identity denied where available',()=>{
-  const dst=path.join(PACK,'evidence','additional-hardlink.json');
+ check('P0G-13','hardlinked canonical Pack file rejected by identity link-count',()=>{
+  const dst=path.join(ROOT,'duplicate-hardlink-outside-pack.json');
   fs.linkSync(manifest,dst);
-  try{reject('SOURCE_EXTRA_HIDDEN_BINARY_OR_UNRELATED_ENTRY');}
+  try{reject('SOURCE_NOT_UNIQUE_REGULAR_FILE');}
   finally{fs.unlinkSync(dst);}
-  // Original manifest now again nlink=1.
   assert.equal(run().exit,0);
  });
  check('P0G-14','per-file size limit and no partial output',()=>{
