@@ -215,3 +215,52 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP at Owner review for PR #386, #387 and #388.** The PR #385 accepted merge does not confer authority to merge any other PR, publish, certify secret-free history, or ingest customer sources.
+
+## 12. Owner-authorized PR #388 merge and bounded Option B/M5 triage — 2026-11-20
+
+**Owner review authorization:** Owner accepted the previous recommended next steps. This section records three independent actions against fixed source identities and their strict stop conditions; all earlier evidence remains historical and is not rewritten.
+
+### Completed limited CI repair merge — #388
+
+- PR #388 fixed candidate HEAD `c68ed58e8ac96f78de3c142dc155fbccd95f80e9` (one workflow YAML path) had 7/7 P1 regression PASS on both Linux and Windows Server 2022 x64, run #44683796148. Main branch source was `6701f40fce4307118fca47176e81d6be7d05ef3e`.
+- Owner-authorized limited PR #388 Squash Merge succeeded with GitHub merge commit `6cfc5fbc109c9d39ea6c592c121c419f81009051`, confirmed exactly one workflow change and unchanged renderer/product code. P1 CI trigger now filters only report-related PR changes; docs-only PR #386's prior unrelated CI failure remains historical, not relabeled PASS.
+
+### Option B accepted for bounded design, new clean-main prototype #389
+
+- PR #386 docs decision was accepted as **bounded design direction**, not general customer source admission or a product/public CLI change. Updated PR #386 head `309c126703ffe4141909993bda4e55d233056e6d`; it remains Draft unmerged with original compatibility options preserved.
+- PR #389 starts directly at post-PR388 clean main `6cfc5fbc...`, exact head `88552a78a72b9a6651e97ab4093319282deafa50`. It imports the byte-identical PR #383 synthetic gate and its tests, adds the explicit `strict-v0.1-synthetic` pre/postcheck bridge around **unchanged** existing Guard Pack Validate, documentation and separate CI. Exactly 6 changed paths and no I1/M3 107-commit stacked history.
+- Push #44686196440 and PR #44686279555 both COMPLETED/SUCCESS on hosted Linux and Windows Server x64. Each OS: 15/15 original P0G cases + 12/12 SRC-TXB bridge cases, **27 PASS/0 FAIL/0 NOT_TESTED**; native legacy valid Pack hash/status parity retained. Directly calling the old Parser still admits broader extra/symlinked inputs, and hostile source TOCTOU/secure snapshot remains unestablished.
+
+### Independent fixed P1 secret finding structural triage — #387
+
+- Updated PR #387 exact head `15a149ec22415995146edc5a60cf658f3cc8a6d5`. Official SHA-pinned Gitleaks v8.30.1 separately found one `private-key` category rule hit in P1 Git ancestry and one in extracted P1 current tree. Push #44686875498 and PR #44686880778 both **FAILED/HOLD intentionally** because the safety gate requires further adjudication.
+- One reported current-tree source location was internally resolved and verified byte-identical to fixed P1 Git object, without disclosing file name/path or raw match. Automated check found **one BEGIN/END paired private-key delimiter block** but **zero PEM private keys parseable** by Node crypto. This is neither proof of a valid leaked key nor an independent human false-positive clearance. Encrypted/other formats and Git author/legal metadata remain unreviewed; full Windows Git-history M5 handoff stays HOLD.
+
+### Current exact statuses
+
+```text
+MAIN_HEAD=6cfc5fbc109c9d39ea6c592c121c419f81009051
+PR385=MERGED_CSS_ONLY
+PR388=MERGED_CI_ONLY
+PR386_OPTION_B=OWNER_ACCEPTED_BOUNDED_DESIGN_DIRECTION_DRAFT_UNMERGED
+PR389_SYNTHETIC_STRICT_SOURCE_BRIDGE=27_PASS_PER_OS_DRAFT_UNMERGED
+LEGACY_PACK_PARSER_GAPS=OPEN_DIRECT_LEGACY_PATH
+SECURE_IMMUTABLE_REAL_DATA_SNAPSHOT=NOT_ESTABLISHED
+PR387_GITLEAKS=RULE_FINDINGS_UNRESOLVED
+PR387_CURRENT_TREE_PAIRED_PEM_MARKER_COUNT=1
+PR387_CURRENT_TREE_CRYPTO_PARSEABLE_PRIVATE_KEY_COUNT=0
+M5_WINDOWS_FULL_GIT_HISTORY_EXTERNAL_HANDOFF=HOLD
+M5_INDEPENDENT_REAL_FIRST_USER=NOT_TESTED
+M4_ORIGINAL_62=NOT_RUN
+OR_01_TO_05=UNCHANGED
+T2_FORMAL_CLOSURE=BLOCKED
+S04_FACTUAL_ADMISSION=UNRESOLVED
+G03_IMPLEMENTATION=FROZEN
+SEBBI=HOLD
+SIGNED_NATIVE_ADDON=DEFERRED
+NO_ADDITIONAL_MAIN_MERGE
+NO_RELEASE
+NO_CUSTOMER_DATA
+```
+
+**Next separate Owner decisions:** accept/hold PR #389 as a bounded prototype (not product), commission controlled human adjudication of PR #387’s single current-tree rule match plus historical metadata, decide whether to use M5 reading-only Track A before any Windows full-source Track B external test. None of these is automatic execution/merge permission.
