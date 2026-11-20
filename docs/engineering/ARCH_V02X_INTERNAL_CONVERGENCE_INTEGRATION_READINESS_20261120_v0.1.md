@@ -123,3 +123,44 @@ Following the initial Track C HOLD, final PR #382 source HEAD `f43862f93741a0e37
 CI #44669102299 (push) and #44669107597 (PR) remain FAILED/HOLD as designed; that is the correct distribution admission signal. These counts are a private-classification prioritization, **not** credential validity proof, secret-free clearance, Git history declassification, or an authorization to publish the full Windows M5 kit. The earlier C source SHA/result remain historical evidence in the prior section.
 
 Final Track A/B/C closeout remains: no main merge, original M4 62 NOT RUN, M5 independent first-user NOT TESTED, external Windows git-bundle handoff HOLD, and source trust P0 remediation separately required.
+
+## 10. Authorized follow-on engineering closeout — PR #383–#385
+
+**Owner authorization:** continue the previously recommended P0 input trust remediation contract, P0 M5 source-history exposure reduction, and P1 CSS-only extraction without main merge or product release. This section reconciles three distinct GitHub evidence objects; NONE upgrades the original M4/M5 gates.
+
+| Work | Exact tested candidate HEAD | Actual bounded result | HOLD or remaining work |
+| --- | --- | --- | --- |
+| P0 source trust / [PR #383](https://github.com/veeduzyl-hue/mindforge-guard/pull/383) | `475d0705b581c7535dfe6fb4e5832b0e75432a51` | Linux + Windows Server x64 15/15 synthetic P0G probes per platform, fixed canonical sample accepted, hidden/binary/symlink/junction/hardlink and out-of-root inputs rejected in new **standalone, default-off** gate | Legacy canonical Pack Parser STILL accepts broader files/symlink hashing. General M3 real-data admission NOT AUTHORIZED; no silent parser/hash migration. M4 62 NOT RUN. |
+| P0-2 shallow offline source / [PR #384](https://github.com/veeduzyl-hue/mindforge-guard/pull/384) | `b240f3b83db171634bebb124e0e78acf55751cf8` | Linux + Windows hosted tests rebuilt an exact P1 shallow checkout with **one** reachable Git commit / clean workspace / no remotes / no ancestor objects, executed fixed synthetic PREPARE→COMPLETE, 17/17 digest checks and native report hash parity | NOT a fully Git-free archive: one commit and author metadata remain, one earlier current-tree marker unresolved; not distributed, private full Windows M5 kit still HOLD. M5 real user NOT TESTED. |
+| P1 exact renderer CSS extraction / [PR #385](https://github.com/veeduzyl-hue/mindforge-guard/pull/385) | `4b55a20db00bae382845f7d62bfc35c7d29e2340` | Branch directly from main HEAD `3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c`; exact 3,018-character CSS insertion from PR #378 with **only 4 changed paths**, 7/7 P1UX tests on Linux + Windows and old renderer/Guard/A2 UX regressions | Draft **unmerged**. Full WCAG, first-time-user M5, release acceptance not proven. Needs independent Owner merge authorization. |
+
+**CI source identity:** PR #383 #44672956448 / #44673001571 both `SUCCESS`; PR #384 #44673504008 / #44673539892 both `SUCCESS`; PR #385 #44674054488 / #44674103769 both `SUCCESS`; PR #385 also inherited A2 UX regression #44674103989 `SUCCESS`. CI labels remain scoped to the exact source/head and test context; they do not establish independent Assurance.
+
+### Decision sequence (not automatic permission expansion)
+
+1. **P0 source contract:** retain PR #383 as standalone synthetic gate. Require a separate Source Admission Transition & Backward Compatibility Owner decision before changing legacy Pack Parser or exposing a real-data source path.
+2. **P0 M5 distribution:** keep complete-history Track B kit HOLD. PR #384 shows a narrower exact-SHA one-commit route is feasible; it remains an internal candidate until source-tree and commit-metadata review, independent secret scan, and signed/pinned external package distribution conditions. For faster actual independent user feedback, prefer privately reviewing the **HTML-only Track A** package with no Git source history.
+3. **P1 product UX:** PR #385 is a small independently testable clean-main CSS-only candidate. Owner may separately accept/review a merge, but this document does not authorize it. Avoid bundling the 107-commit M3/I1 experiment ancestry.
+
+```text
+FOLLOW_ON_SPRINT=THREE_CANDIDATES_IMPLEMENTED_AND_TESTED_BOUNDED
+P0_SOURCE_GATE=STANDALONE_SYNTHETIC_ONLY
+LEGACY_SOURCE_PARSER_GAPS=OPEN
+P0_M5_HISTORY_MINIMIZATION=ONE_COMMIT_SHALLOW_CANDIDATE_ONLY
+FULLY_GIT_FREE_M5_WINDOWS_PACKAGE=NOT_IMPLEMENTED
+EXTERNAL_WINDOWS_FULL_KIT=HOLD
+P1_CSS_CLEAN_MAIN_EXTRACTION=VERIFIED_BOUNDED_DRAFT
+OWNER_PR383_384_385_ACCEPTANCE=PENDING
+M4_ORIGINAL_62=NOT_RUN
+M5_INDEPENDENT_FIRST_USER=NOT_TESTED
+OR_01_TO_05=UNCHANGED
+T2_FORMAL_CLOSURE=BLOCKED
+S04_FACTUAL_ADMISSION=UNRESOLVED
+G03_IMPLEMENTATION=FROZEN
+SEBBI=HOLD
+NO_MAIN_MERGE
+NO_RELEASE
+NO_CUSTOMER_DATA
+```
+
+**STOP at Owner review of PR #383–#385 and this amended matrix.** No real-data importer authorization, release, verified signer trust, changed Schema/EAK/License, credential exposure ruling or M5 actual human finding is implied.
