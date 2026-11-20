@@ -1,0 +1,114 @@
+name: ARCH v0.2.x M5 fixed P1 Git history secret pattern preflight
+on:
+  push:
+    branches:
+      - security/arch-v02x-m5-git-history-preflight-20261120
+    paths:
+      - scripts/arch_v02x_m5_fixed_git_history_screen.mjs
+      - docs/security/ARCH_V02X_M5_PRIVATE_DISTRIBUTION_GIT_HISTORY_PREFLIGHT_20261120_v0.1.md
+      - .github/workflows/arch-v02x-m5-fixed-history-security-preflight-20261120.yml
+  pull_request:
+    branches:
+      - experiment/arch-v02x-m5-p1-independent-first-user-kit-20261120
+permissions:
+  contents: read
+jobs:
+  linux-fixed-history-pattern-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pin source and exact 3 path diff; no executable payload processing
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=2e38044ecb65f4e026f9ffa7441a428277c3f985
+          git merge-base --is-ancestor "$base" HEAD
+          git cat-file -e 2a5365ea422b6dfb7f3d7bba81138e1e53862be1^{commit}
+          test "$(git diff --name-only "$base" HEAD | wc -l)" -eq 3
+          git diff --check "$base" HEAD
+          node --check scripts/arch_v02x_m5_fixed_git_history_screen.mjs
+          echo "M5_GIT_HISTORY_SCREEN_TESTED_HEAD=$(git rev-parse HEAD)"
+      - name: Scan fixed bundled P1 history patterns, fail closed on findings/incomplete scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/arch-v02x-m5-history-screen"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          export ARCH_V02X_M5_SECURITY_RECEIPT_FILE="$out/sanitized-history-screen.json"
+          node scripts/arch_v02x_m5_fixed_git_history_screen.mjs
+          echo 'M5_FULL_HISTORY_SECRET_AUDIT=NOT_ESTABLISHED'
+          echo 'M5_EXTERNAL_WINDOWS_SOURCE_BUNDLE=OWNER_REVIEW_REQUIRED'
+          echo 'NO_MAIN_MERGE; NO_RELEASE; NO_CUSTOMER_DATA'
+      - name: Preserve ONLY redacted aggregate receipt; no raw blob/path/token
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m5-fixed-history-pattern-screen-linux
+          path: ${{ runner.temp }}/arch-v02x-m5-history-screen/
+          retention-days: 30
+          if-no-files-found: warn
+  windows-fixed-history-pattern-screen:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Fixed P1 source object and only 3 changed paths
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='2e38044ecb65f4e026f9ffa7441a428277c3f985'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'WRONG_SECURITY_PARENT'}
+          git cat-file -e '2a5365ea422b6dfb7f3d7bba81138e1e53862be1^{commit}'
+          if($LASTEXITCODE -ne 0){throw 'P1_FIXED_COMMIT_MISSING'}
+          $allowed=@(
+            '.github/workflows/arch-v02x-m5-fixed-history-security-preflight-20261120.yml',
+            'docs/security/ARCH_V02X_M5_PRIVATE_DISTRIBUTION_GIT_HISTORY_PREFLIGHT_20261120_v0.1.md',
+            'scripts/arch_v02x_m5_fixed_git_history_screen.mjs'
+          )
+          $changed=@(git diff --name-only $base HEAD)
+          if($changed.Count -ne 3){throw 'UNEXPECTED_M5_SECURITY_SCOPE'}
+          foreach($x in $changed){if($x -notin $allowed){throw ('OUT_OF_SCOPE_FILE:'+ $x)}}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check scripts/arch_v02x_m5_fixed_git_history_screen.mjs
+          if($LASTEXITCODE -ne 0){throw 'SECURITY_SCRIPT_PARSE_FAILED'}
+          Write-Output ('M5_GIT_HISTORY_SCREEN_TESTED_HEAD='+(git rev-parse HEAD).Trim())
+      - name: No-credentials history screen, HOLD if matches or incomplete
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'arch-v02x-m5-history-screen'
+          if(Test-Path -LiteralPath $out){throw 'EXISTING_SCREEN_OUTPUT_REFUSED'}
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $env:ARCH_V02X_M5_SECURITY_RECEIPT_FILE=Join-Path $out 'sanitized-history-screen.json'
+          node scripts/arch_v02x_m5_fixed_git_history_screen.mjs
+          if($LASTEXITCODE -ne 0){throw 'M5_GIT_HISTORY_FINDINGS_OR_UNSCANNED_OBJECTS_HOLD'}
+          Write-Output 'M5_FULL_HISTORY_SECRET_AUDIT=NOT_ESTABLISHED'
+          Write-Output 'M5_EXTERNAL_WINDOWS_SOURCE_BUNDLE=OWNER_REVIEW_REQUIRED'
+          Write-Output 'NO_MAIN_MERGE; NO_RELEASE; NO_CUSTOMER_DATA'
+      - name: Upload only bounded aggregate JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-v02x-m5-fixed-history-pattern-screen-win2022
+          path: ${{ runner.temp }}/arch-v02x-m5-history-screen/
+          retention-days: 30
+          if-no-files-found: warn
