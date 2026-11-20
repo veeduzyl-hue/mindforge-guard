@@ -1,0 +1,90 @@
+name: ARCH v0.2.x M5 independent pinned Gitleaks fixed-P1 scan
+on:
+  push:
+    branches: [security/m5-independent-gitleaks-fixed-p1-20261120]
+    paths:
+      - scripts/verify_arch_v02x_m5_independent_gitleaks_fixed_p1.mjs
+      - docs/security/ARCH_V02X_M5_INDEPENDENT_GITLEAKS_FIXED_P1_SCREEN_v0.1.md
+      - .github/workflows/arch-v02x-m5-independent-gitleaks-fixed-p1-20261120.yml
+  pull_request:
+    branches: [security/arch-v02x-m5-git-history-preflight-20261120]
+permissions:
+  contents: read
+jobs:
+  linux-fixed-P1-secret-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check frozen source, scope and no untrusted links
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=f43862f93741a0e377358e820f2f45f8d92f8424
+          fixed=2a5365ea422b6dfb7f3d7bba81138e1e53862be1
+          git merge-base --is-ancestor "$base" HEAD
+          git cat-file -e "$fixed^{commit}"
+          actual="$(git diff --name-only "$base" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/arch-v02x-m5-independent-gitleaks-fixed-p1-20261120.yml' \
+            'docs/security/ARCH_V02X_M5_INDEPENDENT_GITLEAKS_FIXED_P1_SCREEN_v0.1.md' \
+            'scripts/verify_arch_v02x_m5_independent_gitleaks_fixed_p1.mjs')"
+          test "$actual" = "$expected"
+          git diff --check "$base" HEAD
+          node --check scripts/verify_arch_v02x_m5_independent_gitleaks_fixed_p1.mjs
+          if git ls-tree -r "$fixed" | grep -Eq '^(120000|160000) '; then
+            echo 'P1_HAS_SYMLINK_OR_SUBMODULE_HOLD'
+            exit 24
+          fi
+          echo "GITLEAKS_EXACT_CANDIDATE_SHA=$(git rev-parse HEAD)"
+      - name: Download SHA256-pinned official Gitleaks v8.30.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/arch-v02x-m5-gitleaks-private"
+          test ! -e "$out"
+          mkdir -m 700 "$out"
+          url='https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz'
+          curl --fail --location --silent --show-error --retry 2 --max-time 75 "$url" --output "$out/tool.tar.gz"
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  '"$out/tool.tar.gz" | sha256sum --check --status
+          tar -tzf "$out/tool.tar.gz" | grep -qx 'gitleaks'
+          tar -xzf "$out/tool.tar.gz" -C "$out" gitleaks
+          chmod 700 "$out/gitleaks"
+          "$out/gitleaks" version | grep -q '8.30.1'
+          echo "ARCH_V02X_M5_VERIFIED_GITLEAKS_BIN=$out/gitleaks" >> "$GITHUB_ENV"
+          echo "ARCH_V02X_M5_VERIFIED_GITLEAKS_ARCHIVE=$out/tool.tar.gz" >> "$GITHUB_ENV"
+      - name: Extract current fixed P1 tree only for local independent scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          tree="$RUNNER_TEMP/arch-v02x-m5-private-current-tree"
+          test ! -e "$tree"
+          mkdir -m 700 "$tree"
+          git archive --format=tar 2a5365ea422b6dfb7f3d7bba81138e1e53862be1 | tar -xf - -C "$tree"
+          test -f "$tree/packages/guard/src/presentation/role_based_html_report.mjs"
+          echo "ARCH_V02X_M5_EXTRACTED_P1_TREE=$tree" >> "$GITHUB_ENV"
+      - name: Run Gitleaks on exact P1 ancestry and separate current tree
+        shell: bash
+        env:
+          ARCH_V02X_M5_GITLEAKS_FIXED_SCOPE: '1'
+        run: |
+          set -euo pipefail
+          export ARCH_V02X_M5_GITLEAKS_SANITIZED_RECEIPT="$RUNNER_TEMP/arch-v02x-m5-gitleaks-private/sanitized-summary.json"
+          node scripts/verify_arch_v02x_m5_independent_gitleaks_fixed_p1.mjs
+          echo 'FULL_WINDOWS_M5_HISTORY_KIT=HOLD; NO_EXTERNAL_DISTRIBUTION'
+          echo 'M5_HUMAN=NOT_TESTED; M4_62=NOT_RUN'
+      - name: Upload sanitized aggregate only, never private findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m5-fixed-P1-gitleaks-aggregate-receipt-only
+          path: ${{ runner.temp }}/arch-v02x-m5-gitleaks-private/sanitized-summary.json
+          retention-days: 30
+          if-no-files-found: warn
