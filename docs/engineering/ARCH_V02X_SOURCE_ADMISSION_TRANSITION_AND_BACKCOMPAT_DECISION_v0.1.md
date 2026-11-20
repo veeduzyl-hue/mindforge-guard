@@ -79,3 +79,25 @@ NO_CUSTOMER_DATA
 ```
 
 **STOP for Owner review of the contract.** No new production code, public `--source` flag, canonical Schema/API or Pack hash migration is implemented by this document.
+
+## 7. Owner decision and bounded implementation evidence — 2026-11-20
+
+The Owner accepted the previous recommended next steps after reviewing the candidate PRs. This records **Option B = ACCEPTED_AS_BOUNDED_DESIGN_DIRECTION**, not a public API/product/real-data admission or a formal approval to change existing `guard pack validate` behavior. The original alternative analysis and all legacy compatibility concerns above remain in force.
+
+Owner authorization supports **synthetic-only, default-off engineering verification**. PR #389 therefore independently started from post-PR #388 main `6cfc5fbc109c9d39ea6c592c121c419f81009051`, brought across the exact old PR #383 standalone admission gate/test blobs, and added a new `strict-v0.1-synthetic` explicit opt-in bridge without modifying the canonical Pack Parser.
+
+At exact PR #389 HEAD `88552a78a72b9a6651e97ab4093319282deafa50`: Push CI #44686196440 and PR CI #44686279555 both COMPLETED/SUCCESS on Linux and Windows Server 2022 x64. Each platform executed original P0G 15/15 synthetic cases plus new SRC-TXB 12/12 cases, 0 failures/not-tested. Native Pack hash/status agrees with direct old route on the fixed synthetic sample, while extras, symlink and stale digest paths are rejected **by the new opt-in gate only**.
+
+**Still not established:** atomic immutable source snapshot and hostile race protection, private Windows real-data DACL, arbitrary source type/size, public CLI contract, full M4 exact scenarios, M5 independent first user, real customer authorization, signed Native distribution or release approval. The legacy Pack Parser's original two input gaps remain if users invoke it directly.
+
+```text
+OWNER_OPTION_B=ACCEPTED_AS_BOUNDED_DESIGN_DIRECTION
+PR389_STRICT_SOURCE_BRIDGE=VERIFIED_BOUNDED_SYNTHETIC
+PUBLIC_SOURCE_CLI=NOT_IMPLEMENTED
+SECURE_REAL_DATA_SNAPSHOT=NOT_ESTABLISHED
+LEGACY_PACK_HASH_DOMAIN=UNCHANGED
+M4_ORIGINAL_62=NOT_RUN
+NO_MAIN_MERGE_OF_PR386_OR_PR389
+NO_RELEASE
+NO_CUSTOMER_DATA
+```
