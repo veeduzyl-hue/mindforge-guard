@@ -40,7 +40,9 @@ function blocked(r,reason){
  assert(!r.stdout.includes(ROOT));
 }
 function item(id,title,fn){
- try{const data=fn()||{};tests.push({id,title,status:'PASS',evidence:data});console.log('PASS '+id)}
+ try{const data=fn()||{};
+  if(data.fixture_unavailable){tests.push({id,title,status:'NOT_TESTED',reason:'WINDOWS_SYMLINK_FIXTURE_UNAVAILABLE'});console.log('NOT_TESTED '+id);return;}
+  tests.push({id,title,status:'PASS',evidence:data});console.log('PASS '+id)}
  catch(e){tests.push({id,title,status:'FAIL',error_type:e?.name||'Error'});
   console.error('FAIL '+id+' '+String(e?.message||e));}
 }
@@ -143,7 +145,8 @@ const receipt={kind:'ARCH_V02X_STRICT_V0_1_SYNTHETIC_SOURCE_BRIDGE_TEST',
  user_or_customer_data:'NOT_AUTHORIZED',
  m4_original_62:'NOT_RUN',
  m5_independent_first_user:'NOT_TESTED',
- synthetic_test_results:{pass:tests.length-failed.length,fail:failed.length},
+ synthetic_test_results:{pass:tests.filter(x=>x.status==='PASS').length,fail:failed.length,
+  not_tested:tests.filter(x=>x.status==='NOT_TESTED').length},
  cases:tests};
 console.log('ARCH_STRICT_V01_BRIDGE_TEST_RECEIPT '+JSON.stringify(receipt));
 if(failed.length)process.exitCode=1;
