@@ -99,6 +99,11 @@ function screen(){
    return {oid,type,size:Number(size)};
  });
  if(records.length!==ids.length)throw Error('HISTORY_BATCH_CHECK_INCOMPLETE');
+ const refs=fsGit(['ls-tree','-r',FIXED_P1]).split(/\r?\n/);
+ const currentTreeBlobOids=new Set(refs.map(row=>
+   row.match(/^(?:100644|100755|120000) blob ([a-f0-9]{40,64})\t/)?.[1]
+ ).filter(Boolean));
+ if(currentTreeBlobOids.size<1)throw Error('FIXED_P1_CURRENT_TREE_BLOBS_MISSING');
  const blobs=records.filter(x=>x.type==='blob');
  let sizeSum=0,skippedOversized=0,totalExceeded=false;
  const selected=[];
@@ -110,6 +115,7 @@ function screen(){
  const findings={};
  let scanned=0,consumed=0,lfsPointers=0;
  let pemEncodedCandidateBlobs=0,pemDelimiterOnlyBlobs=0;
+ let currentTreePemMarkerBlobs=0,currentTreePemCandidateBlobs=0;
  if(selected.length){
    const input=selected.map(x=>x.oid).join('\n')+'\n';
    const result=fsGit(['cat-file','--batch'],input,{
@@ -135,6 +141,10 @@ function screen(){
        const pemClass=classifyPrivatePemStructure(encoded);
        if(pemClass==='POSSIBLE_ENCODED_PEM_BLOCK')pemEncodedCandidateBlobs++;
        else pemDelimiterOnlyBlobs++;
+       if(currentTreeBlobOids.has(b.oid)){
+         currentTreePemMarkerBlobs++;
+         if(pemClass==='POSSIBLE_ENCODED_PEM_BLOCK')currentTreePemCandidateBlobs++;
+       }
      }
      if(encoded.startsWith('version https://git-lfs.github.com/spec/v1'))
        lfsPointers++;
@@ -143,12 +153,12 @@ function screen(){
    }
    if(pos!==bytes.length)throw Error('GIT_BATCH_UNEXPECTED_TRAILING_BYTES');
  }
- const refs=fsGit(['ls-tree','-r',FIXED_P1]).split(/\r?\n/);
  const submodules=refs.filter(s=>s.startsWith('160000 commit ')).length;
  const coverage={
    scanned_commit_ancestry_count:commits,
    reachable_object_count:records.length,
    reachable_blob_count:blobs.length,
+   fixed_commit_current_tree_unique_blobs:currentTreeBlobOids.size,
    scanned_blob_count:scanned,
    scanned_blob_bytes:consumed,
    oversized_blobs_unscanned:skippedOversized,
@@ -177,6 +187,9 @@ function screen(){
   findings_by_category:findings,
   private_key_pem_structure_triage:{
     possible_encoded_pem_block_blobs:pemEncodedCandidateBlobs,
+    in_fixed_current_tree_marker_blobs:currentTreePemMarkerBlobs,
+    in_fixed_current_tree_encoded_candidate_blobs:currentTreePemCandidateBlobs,
+    history_only_marker_blobs:(findings.private_key_pem||0)-currentTreePemMarkerBlobs,
     delimiter_only_or_non_base64_blobs:pemDelimiterOnlyBlobs,
     identity_validity_and_revocation:'NOT_VERIFIED'
   },
