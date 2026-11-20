@@ -1,0 +1,121 @@
+name: First Report P1 CSS-only extraction from clean main
+on:
+  push:
+    branches:
+      - experiment/first-report-p1-css-main-extraction-20261120
+    paths:
+      - packages/guard/src/presentation/role_based_html_report.mjs
+      - scripts/verify_first_report_p1_css_main_extraction.mjs
+      - docs/engineering/FIRST_REPORT_P1_CSS_CLEAN_MAIN_EXTRACTION_20261120_v0.1.md
+      - .github/workflows/first-report-p1-css-main-extraction-20261120.yml
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  linux-p1-clean-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 45
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pin clean main base, exact P1 renderer and four scoped files
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c
+          git merge-base --is-ancestor "$base" HEAD
+          want="$(printf '%s\n' \
+           '.github/workflows/first-report-p1-css-main-extraction-20261120.yml' \
+           'docs/engineering/FIRST_REPORT_P1_CSS_CLEAN_MAIN_EXTRACTION_20261120_v0.1.md' \
+           'packages/guard/src/presentation/role_based_html_report.mjs' \
+           'scripts/verify_first_report_p1_css_main_extraction.mjs')"
+          test "$(git diff --name-only "$base" HEAD)" = "$want"
+          test "$(git hash-object packages/guard/src/presentation/role_based_html_report.mjs)" = 8078a934badae529bdaba1423bbf193ec0cdb761
+          git diff --check "$base" HEAD
+          node --check packages/guard/src/presentation/role_based_html_report.mjs
+          node --check scripts/verify_first_report_p1_css_main_extraction.mjs
+          echo "P1_CLEAN_MAIN_EXTRACT_SOURCE=$(git rev-parse HEAD)"
+      - name: Legacy Guard, old role renderer, exact CSS-only regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run verify:v7.0.1
+          before="$(git status --porcelain=v1 --untracked-files=normal)"
+          node scripts/verify_v7_role_based_report_render.mjs
+          node scripts/verify_first_report_p1_css_main_extraction.mjs
+          after="$(git status --porcelain=v1 --untracked-files=normal)"
+          if [[ "$before" != "$after" ]];then echo 'P1_TEST_MUTATED_WORKTREE';exit 88;fi
+          if [[ -n "$before" ]];then
+            bin='packages/guard/bin/guard.mjs'
+            if [[ "$before" != " M $bin" ]] ||
+               [[ "$(git ls-files --stage -- "$bin" | awk '{print $1}')" != '100644' ]] ||
+               [[ "$(git hash-object "$bin")" != "$(git rev-parse "HEAD:$bin")" ]] ||
+               [[ ! -x "$bin" ]];then echo 'UNEXPECTED_WORKTREE_CHANGE';exit 89;fi
+          fi
+          echo 'P1_MAIN_EXTRACT=CSS_ONLY'
+          echo 'NO_MAIN_MERGE; NO_RELEASE; M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
+  windows-server2022-p1-clean-main:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 45
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          architecture: x64
+      - name: Frozen main and renderer identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $base='3bad6d7fc69b64cdc7ef594edff97cfaeba62b0c'
+          git merge-base --is-ancestor $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'UNEXPECTED_MAIN_BASE'}
+          $allowed=@(
+            '.github/workflows/first-report-p1-css-main-extraction-20261120.yml',
+            'docs/engineering/FIRST_REPORT_P1_CSS_CLEAN_MAIN_EXTRACTION_20261120_v0.1.md',
+            'packages/guard/src/presentation/role_based_html_report.mjs',
+            'scripts/verify_first_report_p1_css_main_extraction.mjs'
+          )
+          $changed=@(git diff --name-only $base HEAD)
+          if($changed.Count -ne 4){throw 'UNEXPECTED_CHANGED_PATH_COUNT'}
+          foreach($file in $changed){if($file -notin $allowed){throw ('OUTSIDE_SCOPE_FILE:'+ $file)}}
+          $blob=(git hash-object packages/guard/src/presentation/role_based_html_report.mjs).Trim()
+          if($blob -ne '8078a934badae529bdaba1423bbf193ec0cdb761'){throw 'P1_RENDERER_SHA_MISMATCH'}
+          git diff --check $base HEAD
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          node --check packages/guard/src/presentation/role_based_html_report.mjs
+          if($LASTEXITCODE -ne 0){throw 'RENDERER_PARSE_FAILED'}
+          node --check scripts/verify_first_report_p1_css_main_extraction.mjs
+          if($LASTEXITCODE -ne 0){throw 'TEST_SYNTAX_FAILED'}
+          Write-Output ('P1_CLEAN_MAIN_EXTRACT_SOURCE='+(git rev-parse HEAD).Trim())
+      - name: Existing role + exact P1 visual-only content parity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if($LASTEXITCODE -ne 0){throw 'NPM_CI_FAILED'}
+          npm.cmd run verify:v7.0.1
+          if($LASTEXITCODE -ne 0){throw 'BASELINE_REGRESSION_FAILED'}
+          $before=@(git status --porcelain=v1 --untracked-files=normal)
+          node scripts/verify_v7_role_based_report_render.mjs
+          if($LASTEXITCODE -ne 0){throw 'LEGACY_ROLE_RENDER_FAILED'}
+          node scripts/verify_first_report_p1_css_main_extraction.mjs
+          if($LASTEXITCODE -ne 0){throw 'P1_CSS_TEST_FAILED'}
+          $after=@(git status --porcelain=v1 --untracked-files=normal)
+          if(($before -join [char]10) -ne ($after -join [char]10)){throw 'P1_TEST_MUTATED_WORKTREE'}
+          if(@($after|Where-Object {$_ -ne ''}).Count -gt 0){throw 'WINDOWS_WORKTREE_NOT_CLEAN'}
+          Write-Output 'P1_MAIN_EXTRACT=CSS_ONLY'
+          Write-Output 'NO_MAIN_MERGE; NO_RELEASE; M4_62=NOT_RUN; M5_HUMAN=NOT_TESTED'
